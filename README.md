@@ -1,7 +1,4 @@
 # FunFlux
-<<<<<<< HEAD
-FunFlux: A dedicated workflow for fungal genome assembly from short reads, decontamination, completeness validation, and comprehensive gene annotation.
-=======
 Integrated workflow for fungal genome assembly and annotation.
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥8.16.0-brightgreen.svg)](https://snakemake.readthedocs.io/en/stable/)
@@ -465,4 +462,3 @@ In preparation.
 36. Thomas, P. D., Ebert, D., Muruganujan, A., Mushayahama, T., Albou, L.-P., & Mi, H. (2022). PANTHER: Making genome-scale phylogenetics accessible to all. Protein Science, 31(1), 8–22. https://doi.org/10.1002/pro.4218
 
 37. Zheng, J., Ge, Q., Yan, Y., Zhang, X., Huang, L., & Yin, Y. (2023). dbCAN3: Automated carbohydrate-active enzyme and substrate annotation. Nucleic Acids Research, 51(W1), W115–W121. https://doi.org/10.1093/nar/gkad328
->>>>>>> Initial commit of FunFlux project.
