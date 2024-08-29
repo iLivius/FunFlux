@@ -1,0 +1,471 @@
+print(r'''
+__________                          _____       _____              
+___  ____/___  _______________________  /______ __  /______________
+__  /_   _  / / /_  __ \_  __ \  __ \  __/  __ `/  __/  __ \_  ___/
+_  __/   / /_/ /_  / / /  / / / /_/ / /_ / /_/ // /_ / /_/ /  /    
+/_/      \__,_/ /_/ /_//_/ /_/\____/\__/ \__,_/ \__/ \____//_/     
+                                                                                                                                                                                                                                                                                          
+Funnotator v1.0.3
+
+
+Livio Antonielli, August 2024
+''')
+
+# Configuration file:
+configfile: 'config/config_funnotator.yaml'
+
+# Modules:
+import os
+import sys
+import pandas as pd
+
+# Define not allowed characters
+not_allowed_chars = set("_*#@%^/! ?&:;|<>")
+
+# Path to DBs and input/output directories in config file:
+workdir: config['directories']['out_dir']
+INPUTDIR = config['directories']['input_dir']
+DMNDDB = config['directories']['eggnog_db']
+FUNANNOTATEDB = config['directories']['funannotate_db']
+GENEMARKDIR = config['directories']['genemark_dir']
+ITSDB = config['files']['its_db']
+IPRSCAN = config['files']['iprscan']
+ANNOTATION = config['files']['annotation_params']
+
+# Hardware resources in config file:
+CPUS = config['resources']['threads']
+
+# Parse information from sample features, after diagnostic:
+def parse_annotation_file(annotation_file):
+    if not os.path.exists(annotation_file):
+        raise FileNotFoundError(f"Annotation file '{annotation_file}' not found.")
+    
+    annotations = {}
+    with open(annotation_file, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line.startswith("#") or not line:
+                continue  # Skip commented or empty lines
+            fields = line.split("\t")
+            #print(f"Parsing line: {line}")  # Debugging print
+            #print(f"Fields: {fields}")      # Debugging print
+            if len(fields) != 4:
+                raise ValueError(f"Line '{line}' is not formatted correctly.")
+            sample, species, protein_file, augustus_model = fields
+
+            # Check if protein file exists
+            if not os.path.exists(protein_file):
+                sys.stderr.write(f"Error: Protein file '{protein_file}' for sample '{sample}' does not exist.\n")
+                sys.exit(1)
+
+            # Check if protein file is non-empty
+            if os.path.getsize(protein_file) == 0:
+                sys.stderr.write(f"Error: Protein file '{protein_file}' for sample '{sample}' is empty.\n")
+                sys.exit(1)
+
+            annotations[sample] = {
+                'species_name': species,
+                'protein_file': protein_file,
+                'augustus_model': augustus_model
+            }
+    
+    return annotations
+
+annotations = parse_annotation_file(ANNOTATION)
+
+# Import FASTA files from input dir:
+SAMPLES, EXTENSIONS = glob_wildcards(os.path.join(INPUTDIR, '{sample}.{extn}'))
+
+if len(SAMPLES) == 0:
+    sys.stderr.write(f"No files in {INPUTDIR}. Please, check directory.\n")
+    sys.exit(1)
+else:
+    for sample in sorted(SAMPLES):
+        if any(char in sample for char in not_allowed_chars):
+            sys.stderr.write(f"Sample name '{sample}' contains not allowed characters.\n")
+            sys.exit(1)
+        print(f"Sample {sample} in process...")
+
+# Check if files have non-unique extension:
+for extension in EXTENSIONS:
+    if extension.endswith(("fasta", "fa", "fna")):
+        if len(set(EXTENSIONS)) != 1:
+            sys.stderr.write("More than one type of file extension detected\n\t")
+            sys.stderr.write("\n\t".join(set(EXTENSIONS)))
+            sys.exit(1)
+    else:
+        sys.stderr.write("\nFile format not recognized.\n")
+        sys.exit(1)
+
+# Validate that samples from FASTQ files exist in the annotation file
+CHECK_SAMPLES = []
+for sample in SAMPLES:
+    if sample not in annotations:
+        sys.stderr.write(f"Sample name '{sample}' not found in annotation file.\n")
+        sys.exit(1)
+    CHECK_SAMPLES.append(sample)
+
+# Create sample objects
+EXTN = EXTENSIONS[0]
+FASTA = '{sample}.' + EXTN
+
+rule all:
+    input:
+        contigs = expand("01.pre-processing/pre_filtering/{sample}/contigs_filt.fasta", sample=CHECK_SAMPLES),
+        quast_dir = expand("01.pre-processing/assembly_evaluation/{sample}", sample=CHECK_SAMPLES),
+        busco_dir = expand("01.pre-processing/completeness_evaluation/{sample}", sample=CHECK_SAMPLES),
+        full = expand("01.pre-processing/ITS_extraction/{sample}/{sample}.full.fasta", sample=CHECK_SAMPLES),
+        its1 = expand("01.pre-processing/ITS_extraction/{sample}/{sample}.ITS1.fasta", sample=CHECK_SAMPLES),
+        its2 = expand("01.pre-processing/ITS_extraction/{sample}/{sample}.ITS2.fasta", sample=CHECK_SAMPLES),
+        summary = expand("01.pre-processing/ITS_extraction/{sample}/{sample}.summary.txt", sample=CHECK_SAMPLES),
+        its_tax = expand("01.pre-processing/ITS_extraction/{sample}/{sample}_ITS2_taxonomy.txt", sample=CHECK_SAMPLES),
+        multiqc_dir = "report",
+        funannotate_dir = expand("02.annotation/{sample}/funannotate", sample=CHECK_SAMPLES),
+        contigs_clean = expand("02.annotation/{sample}/contigs_clean.fasta", sample=CHECK_SAMPLES),
+        contigs_sort = expand("02.annotation/{sample}/contigs_sort.fasta", sample=CHECK_SAMPLES),
+        contigs_mask = expand("02.annotation/{sample}/contigs_mask.fasta", sample=CHECK_SAMPLES),
+        iprscan_out = expand("02.annotation/{sample}/iprscan/interproscan_out.xml", sample=CHECK_SAMPLES),
+        eggnog_dir = expand("02.annotation/{sample}/eggnog", sample=CHECK_SAMPLES),
+        antismash_dir = expand("02.annotation/{sample}/antismash", sample=CHECK_SAMPLES),
+        cleanup_complete = expand("02.annotation/{sample}/.cleanup_complete.txt", sample=CHECK_SAMPLES)
+
+FASTA_LIN_CMD = r"""{if(NR==1) {printf "%s\n", $0} else {if(/^>/) {printf "\n%s\n", $0} else {printf $0}}}"""
+FASTA_SEL_CMD = r"""{if (NR % 2 == 1) {seq_name = $0} else {seq = $0; if (length(seq) > 500) {print seq_name; print seq}}}"""
+
+rule filter_contigs:
+    input:
+        contigs = os.path.join(INPUTDIR, FASTA)    
+    output:
+        contigs = "01.pre-processing/pre_filtering/{sample}/contigs_filt.fasta"
+    message:
+        "--- Remove short contigs (<500 bp). ---"
+    priority: 11   
+    shell:
+        """
+        cat {input.contigs} | \
+        awk {FASTA_LIN_CMD:q} | \
+        awk {FASTA_SEL_CMD:q} > {output.contigs}
+        """
+
+rule genome_assembly_evaluation:
+    input:
+        contigs = "01.pre-processing/pre_filtering/{sample}/contigs_filt.fasta"
+    output:
+        quast_dir = directory("01.pre-processing/assembly_evaluation/{sample}")
+    resources:
+        cpus = CPUS
+    conda:
+        "envs/quast.yaml"
+    message:
+        "--- QUAST: Genome assembly evaluation. ---"
+    log:
+        "logs/assembly_evaluation_{sample}.log"
+    priority: 5    
+    shell:
+        """
+        quast {input.contigs} -o {output.quast_dir} --no-icarus -t {resources.cpus} > {log} 2>&1
+        """
+
+rule completeness:
+    input:
+        contigs = "01.pre-processing/pre_filtering/{sample}/contigs_filt.fasta"
+    output:
+        busco_dir = directory("01.pre-processing/completeness_evaluation/{sample}"),
+        busco_tmp = temp(directory("01.pre-processing/completeness_evaluation/{sample}/busco_tmp"))
+    params:
+        basename = "{sample}"
+    resources:
+        cpus = CPUS
+    conda:
+        "envs/busco.yaml"
+    message:
+        "--- BUSCO: Assessment of genome completenness. ---"
+    log:
+        "logs/completeness_{sample}.log"
+    priority: 5
+    shell:
+        """
+        busco --mode genome -i {input.contigs} --out {params.basename} --out_path {output.busco_dir} \
+        --download_path {output.busco_tmp} --auto-lineage-euk --cpu {resources.cpus} --force > {log} 2>&1
+        rm -rf {output.busco_dir}/{wildcards.sample}/run_*
+        rm -rf {output.busco_dir}/{wildcards.sample}/auto_lineage
+        mv {output.busco_dir}/{params.basename}/* {output.busco_dir}
+        rm -rf {output.busco_dir}/{params.basename} 
+        """
+
+rule its_extraction:
+    input:
+        contigs = os.path.join(INPUTDIR, FASTA)
+    output:
+        full = "01.pre-processing/ITS_extraction/{sample}/{sample}.full.fasta",
+        its1 = "01.pre-processing/ITS_extraction/{sample}/{sample}.ITS1.fasta",
+        its2 = "01.pre-processing/ITS_extraction/{sample}/{sample}.ITS2.fasta",
+        summary = "01.pre-processing/ITS_extraction/{sample}/{sample}.summary.txt"
+    params:
+        basename = "01.pre-processing/ITS_extraction/{sample}/{sample}"
+    resources:
+        cpus = CPUS
+    conda:
+        "envs/itsx.yaml"
+    message:
+        "--- ITSx: ITS extraction from contigs. ---"
+    log:
+        "logs/its_extraction_{sample}.log"
+    priority: 5    
+    shell:
+        """
+        ITSx -i {input.contigs} -o {params.basename} \
+        --preserve T --only_full F --graphical F --complement T --positions F --not_found F \
+        -E 0.001 --plus T --nhmmer T --cpu {resources.cpus} > {log} 2>&1
+        """
+
+rule its_classification:
+    input:
+        its = "01.pre-processing/ITS_extraction/{sample}/{sample}.ITS2.fasta"
+    output:
+        its_tax = "01.pre-processing/ITS_extraction/{sample}/{sample}_ITS2_taxonomy.txt"
+    params:
+        its_db = ITSDB,
+        cutoff = 0.8
+    resources:
+        cpus = CPUS
+    conda:
+        "envs/vsearch.yaml"
+    message:
+        "--- VSEARCH: Classifying ITS sequences using UNITE db. ---"
+    log:
+        "logs/classify_its_{sample}.log"
+    priority: 4    
+    shell:
+        """
+        # Launch VSEARCH if the output of ITSx is not empty
+        if [ -s {input.its} ]; then
+            vsearch --sintax {input.its} \
+                    --db {params.its_db} \
+                    --tabbedout {output.its_tax} \
+                    --sintax_cutoff {params.cutoff} \
+                    --threads {resources.cpus} >> {log} 2>&1
+        else
+            echo "ITS2 FASTA file is empty for sample {wildcards.sample}. Skipping classification." >> {log} 2>&1
+            touch {output.its_tax}
+        fi
+        """
+
+rule multiqc:
+    input:
+        quast_dir = expand("01.pre-processing/assembly_evaluation/{sample}", sample=CHECK_SAMPLES),
+        busco_dir = expand("01.pre-processing/completeness_evaluation/{sample}", sample=CHECK_SAMPLES)
+    output:
+        multiqc_dir = directory("report"),
+        multiqc_yaml = temp("report/multiqc_config.yaml")
+    conda:
+        "envs/multiqc.yaml"
+    message:
+        "--- MultiQC: Aggregate results. ---"
+    log:
+        "logs/multiqc.log"
+    priority: 4      
+    shell:
+        """
+        printf "%s\n" "show_analysis_paths: False" "show_analysis_time: False" > {output.multiqc_yaml}
+        multiqc --config {output.multiqc_yaml} --outdir {output.multiqc_dir} \
+        -d -dd 1 {input.quast_dir} {input.busco_dir} > {log} 2>&1
+        """
+
+rule funannotate_prediction:
+    input:
+        contigs = "01.pre-processing/pre_filtering/{sample}/contigs_filt.fasta"
+    output:
+        funannotate_dir = directory("02.annotation/{sample}/funannotate"),
+        contigs_clean = "02.annotation/{sample}/contigs_clean.fasta",
+        contigs_sort = "02.annotation/{sample}/contigs_sort.fasta",
+        contigs_mask = "02.annotation/{sample}/contigs_mask.fasta"
+    params:
+        genemark_dir = GENEMARKDIR,
+        funannotate_db = FUNANNOTATEDB,
+        species = lambda wildcards: annotations[wildcards.sample]['species_name'],
+        proteins = lambda wildcards: annotations[wildcards.sample]['protein_file'],
+        model = lambda wildcards: annotations[wildcards.sample]['augustus_model'],
+    resources:
+        cpus = CPUS
+    conda:
+        "envs/funannotate.yaml"
+    message:
+        "--- Funannotate: Gene prediction. ---"
+    log:
+        "logs/funannotate_prediction_{sample}.log"
+    priority: 4    
+    shell:
+        """
+        export FUNANNOTATE_DB="{params.funannotate_db}"
+        export GENEMARK_PATH="{params.genemark_dir}"
+        funannotate setup -d {params.funannotate_db} > {log} 2>&1
+        funannotate clean -i {input.contigs} -o {output.contigs_clean} >> {log} 2>&1
+        funannotate sort -i {output.contigs_clean} -o {output.contigs_sort} >> {log} 2>&1
+        funannotate mask -i {output.contigs_sort} -o {output.contigs_mask} --cpus {resources.cpus} >> {log} 2>&1
+        funannotate predict -i {output.contigs_mask} -o {output.funannotate_dir} \
+        -s "{params.species}" --name {wildcards.sample} --strain {wildcards.sample} \
+        --augustus_species {params.model} --protein_evidence {params.proteins} \
+        {params.funannotate_db}/uniprot_sprot.fasta --cpus {resources.cpus} >> {log} 2>&1
+        """
+
+rule iprscan_annotation:
+    input:
+        funannotate_dir = "02.annotation/{sample}/funannotate"
+    output:
+        iprscan_out = "02.annotation/{sample}/iprscan/interproscan_out.xml"
+    params:
+        iprscan = IPRSCAN
+    resources:
+        cpus = 10
+    conda:
+        "envs/funannotate.yaml"
+    message:
+        "--- InterProScan: Gene annotation. ---"
+    log:
+        "logs/iprscan_annotation_{sample}.log"
+    priority: 3
+    shell:
+        """
+        funannotate iprscan -i {input.funannotate_dir} -o {output.iprscan_out} \
+        -m local --iprscan_path {params.iprscan} -n 1000 --cpus {resources.cpus} > {log} 2>&1
+        """
+
+rule antismash_db:
+  output:
+    antismash_db = temp(directory("02.annotation/antismash_db"))
+  conda:
+    "envs/antismash.yaml"
+  message:
+    "--- antiSMASH: Database download. ---"
+  log:
+    "logs/antismash_db.log"
+  priority: 16
+  shell:
+    """
+    download-antismash-databases --database-dir {output.antismash_db} > {log} 2>&1
+    """    
+
+rule antismash_annotation:
+    input:
+        antismash_db = "02.annotation/antismash_db",
+        funannotate_dir = "02.annotation/{sample}/funannotate"
+    output:
+        antismash_dir = directory("02.annotation/{sample}/antismash")
+    params:
+        basename = "antismash",
+        genefinding_tool = "none",
+        gbk_file = lambda wildcards: os.path.join(
+            "02.annotation", 
+            wildcards.sample, 
+            "funannotate", 
+            "predict_results", 
+            f"{annotations[wildcards.sample]['species_name'].replace(' ', '_')}_{wildcards.sample}.gbk"
+        )
+    resources:
+        cpus = CPUS // 2
+    conda:
+        "envs/antismash.yaml"
+    message:
+        "--- antiSMASH: Secondary metabolite prediction. ---"
+    log:
+        "logs/antismash_annotation_{sample}.log"
+    priority: 3    
+    shell:
+        """
+        antismash --taxon fungi --output-dir {output.antismash_dir} --output-basename {params.basename} \
+        --databases {input.antismash_db} --genefinding-tool {params.genefinding_tool} \
+        {params.gbk_file} > {log} 2>&1
+        """
+
+rule eggnog_annotation:
+  input:
+    funannotate_dir = "02.annotation/{sample}/funannotate"
+  output:
+    temp_dir = temp(directory("02.annotation/{sample}/eggnog/eggnog_tmp")),
+    eggnog_dir = directory("02.annotation/{sample}/eggnog")
+  params:
+    dmnd_db = DMNDDB,
+    species = lambda wildcards: annotations[wildcards.sample]['species_name'],
+    protein_file = lambda wildcards: os.path.join(
+            "02.annotation", 
+            wildcards.sample, 
+            "funannotate", 
+            "predict_results", 
+            f"{annotations[wildcards.sample]['species_name'].replace(' ', '_')}_{wildcards.sample}.proteins.fa"
+        )
+  resources:
+    cpus = CPUS // 2
+  conda:
+    "envs/eggnog-mapper.yaml"
+  message:
+    "--- EggNOG: Functional annotation. ---"
+  log:
+    "logs/eggnog_annotation_{sample}.log"
+  priority: 3
+  shell:
+    """
+    mkdir -p {output.temp_dir} {output.eggnog_dir}
+
+    emapper.py -i {params.protein_file} --output_dir {output.eggnog_dir} \
+    --cpu {resources.cpus} -m diamond --data_dir {params.dmnd_db} \
+    --output {wildcards.sample} --temp_dir {output.temp_dir} --override > {log} 2>&1
+    """
+
+rule funannotate_annotation:
+    input:
+        funannotate_dir = "02.annotation/{sample}/funannotate",
+        iprscan_out = "02.annotation/{sample}/iprscan/interproscan_out.xml",
+        eggnog_dir = "02.annotation/{sample}/eggnog",
+        antismash_dir = "02.annotation/{sample}/antismash"
+    output:
+        annotate_complete = temp("02.annotation/{sample}/.annotation_complete.txt")
+    params:
+        funannotate_db = FUNANNOTATEDB
+    resources:
+        cpus = 10
+    conda:
+        "envs/funannotate.yaml"
+    message:
+        "--- Funannotate: Functional annotation. ---"
+    log:
+        "logs/funannotate_annotation_{sample}.log"
+    priority: 2    
+    shell:
+        """
+        # Set funannotate db directory as environmental variable, again
+        export FUNANNOTATE_DB="{params.funannotate_db}"
+        funannotate annotate -i {input.funannotate_dir} \
+        --antismash {input.antismash_dir}/antismash.gbk --iprscan {input.iprscan_out} --eggnog {input.eggnog_dir}/{wildcards.sample}.emapper.annotations \
+        --cpus {resources.cpus} > {log} 2>&1
+
+        # Create a dummy file to execute the rule, since funannotate ignores the -o option
+        touch {output.annotate_complete} 
+        """
+
+rule cleanup:
+    input:
+        annotate_complete = "02.annotation/{sample}/.annotation_complete.txt",
+    output:
+        cleanup_complete = temp("02.annotation/{sample}/.cleanup_complete.txt")
+    message:
+        "--- Cleaning up the output dir. ---"
+    log:
+        "logs/funannotate_annotation_{sample}.log"
+    priority: 1    
+    shell:
+        """
+        # Check if the .annotation_complete.txt file exists
+        if [ -f {input.annotate_complete} ]; then
+
+            # Perform the cleanup
+            rm -rf 02.annotation/{wildcards.sample}/genome.fixedproducts
+            rm -rf 02.annotation/{wildcards.sample}/*.log
+            rm -rf clean_*
+            rm -rf *.log
+            rm -rf genome.fixedproducts
+
+            # Create a dummy file to execute the rule
+            touch {output.cleanup_complete}
+        fi    
+        """

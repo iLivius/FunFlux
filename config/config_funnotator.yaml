@@ -1,0 +1,12 @@
+directories:
+  out_dir:  /path/to/output_dir
+  input_dir: /path/to/fasta/input_dir
+  eggnog_db: /path/to/eggnog_db
+  genemark_dir: /path/to/gmes_linux_64_4
+  funannotate_db: /path/to/funannotate_db
+files:
+  its_db: /path/to/ITS_db.fa
+  annotation_params: /path/to/annotation_parameters.tsv
+  iprscan: /path/to/interproscan-5.65-97.0/interproscan.sh  
+resources:
+  threads: 56

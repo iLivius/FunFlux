@@ -1,0 +1,18 @@
+links:
+  phix_link: ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/819/615/GCF_000819615.1_ViralProj14015/GCF_000819615.1_ViralProj14015_genomic.fna.gz
+directories:
+  out_dir:  /path/to/output_dir
+  fastq_dir: /path/to/fastq/input_dir
+  blast_db: /path/to/NCBI_nt_core_db
+  eggnog_db: /path/to/eggnog_db
+  genemark_dir: /path/to/gmes_linux_64_4
+  funannotate_db: /path/to/funannotate_db
+files:
+  its_db: /path/to/ITS_db.fa
+  annotation_params: /path/to/annotation_parameters.tsv
+  iprscan: /path/to/interproscan-5.65-97.0/interproscan.sh  
+resources:
+  threads: 56
+  ram_gb: 256
+parameters:
+  genus:
