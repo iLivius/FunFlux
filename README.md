@@ -327,7 +327,6 @@ conda activate snakemake
 # Launch the workflow
 snakemake --sdm conda --cores 50 --jobs 2
 ```
-*NOTE:  Starting from Snakemake version 8.4.7, the --use-conda option has been deprecated. Instead, you should now use --software-deployment-method conda or --sdm conda.*
 
 **IMPORTANT**: If you need to analyze previously assembled fungal genomes, provided as FASTA files, use `Funnotator`, instead:
 ```bash
