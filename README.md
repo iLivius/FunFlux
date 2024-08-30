@@ -1,7 +1,7 @@
 # FunFlux
 Integrated workflow for fungal genome assembly and annotation.
 
-[![Snakemake](https://img.shields.io/badge/snakemake-≥8.16.0-brightgreen.svg)](https://snakemake.readthedocs.io/en/stable/)
+[![Snakemake](https://img.shields.io/badge/snakemake-≥8.16.0-brightgreen.svg)](https://snakemake.readthedocs.io/en/stable/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13612159.svg)](https://doi.org/10.5281/zenodo.13612159)
 
 ```bash
 __________             _______________              
@@ -385,7 +385,7 @@ Here's a breakdown of the sub-directories created by `FunFlux` within the main o
 This work was supported by [BeXyl](https://cordis.europa.eu/project/id/101060593) (Beyond Xylella, Integrated Management Strategies for Mitigating *Xylella fastidiosa* impact in Europe) - HORIZON-CL6-2021-FARM2FORK-01-04, grant ID 101060593.
 
 ## Citation
-In preparation.
+Antonielli, L., Brader, G., & Compant, S. (2024). FunFlux: Integrated workflow for fungal genome assembly and annotation. Zenodo. https://doi.org/10.5281/zenodo.13612159
 
 ## References
 01. Bankevich, A., Nurk, S., Antipov, D., Gurevich, A. A., Dvorkin, M., Kulikov, A. S., Lesin, V. M., Nikolenko, S. I., Pham, S., Prjibelski, A. D., Pyshkin, A. V., Sirotkin, A. V., Vyahhi, N., Tesler, G., Alekseyev, M. A., & Pevzner, P. A. (2012). SPAdes: A New Genome Assembly Algorithm and Its Applications to Single-Cell Sequencing. Journal of Computational Biology, 19(5), 455–477. https://doi.org/10.1089/cmb.2012.0021
