@@ -337,8 +337,8 @@ conda activate snakemake
 
 # Customize the "config_funnotator.yaml" configuration file in the "config" sub-directory 
 
-# Launch the workflow specifying the "Funannotator" Snakefile
-snakemake --snakefile workflow/Funannotator --sdm conda --cores 50 --jobs 2
+# Launch the workflow specifying the "Funnotator" Snakefile
+snakemake --snakefile workflow/Funnotator --sdm conda --cores 50 --jobs 2
 ```
 
 ## Output
