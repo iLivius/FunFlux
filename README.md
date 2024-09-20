@@ -166,7 +166,7 @@ Here's a breakdown of the `FunFlux` workflow:
         wget -c 'ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz'
         gunzip nucl_gb.accession2taxid.gz
         ```
-        *NOTE: **Skip the download if you provide ly assembled contigs as input.** The complete NCBI core nt database and taxonomy-related files should take around 223 GB of hard drive space.*
+        *NOTE: **Skip the download if you provide assembled contigs as input.** The complete NCBI core nt database and taxonomy-related files should take around 223 GB of hard drive space.*
 
     * `UNITE` database:
 
