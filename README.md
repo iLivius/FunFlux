@@ -1,7 +1,7 @@
 # FunFlux
 Integrated workflow for fungal genome assembly and annotation.
 
-[![Snakemake](https://img.shields.io/badge/snakemake-≥8.16.0-brightgreen.svg)](https://snakemake.readthedocs.io/en/stable/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13612159.svg)](https://doi.org/10.5281/zenodo.13612159)
+[![Snakemake](https://img.shields.io/badge/snakemake-≥9.5.0-brightgreen.svg)](https://snakemake.readthedocs.io/en/stable/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13612159.svg)](https://doi.org/10.5281/zenodo.13612159)
 
 ```bash
 __________             _______________              
@@ -10,9 +10,9 @@ __  /_   _  / / /_  __ \_  /_   __  /_  / / /_  |/_/
 _  __/   / /_/ /_  / / /  __/   _  / / /_/ /__>  <  
 /_/      \__,_/ /_/ /_//_/      /_/  \__,_/ /_/|_|
               
-FunFlux v1.0.3
+FunFlux v1.0.4
 
-August 2024
+June 2025
 ```
 
 ## Authors and Contributors
@@ -102,7 +102,7 @@ Here's a breakdown of the `FunFlux` workflow:
 
     - [EggNOG-mapper](https://github.com/eggnogdb/eggnog-mapper) (v2.1.12): This software is used to predict orthology and functional annotations based on the `EggNOG` database (v5.0). It helps in assigning Gene Ontology (GO) terms, enzyme codes, and pathway annotations to the gene models, offering insights into the biological roles of the proteins.
         
-    - [antiSMASH](https://github.com/antismash/antismash) (v7.1): For fungal genomes, secondary metabolite gene clusters related to antibiotics or toxins are of particolar interest.
+    - [antiSMASH](https://github.com/antismash/antismash) (v8.0.1): For fungal genomes, secondary metabolite gene clusters related to antibiotics or toxins are of particolar interest.
 
     - HMMer for [PFAM](http://pfam.xfam.org/) database (v36.0)
 
@@ -131,7 +131,7 @@ Here's a breakdown of the `FunFlux` workflow:
     `FunFlux` relies on [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) to manage the workflow execution. Find the official and complete set of instructions [here](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html). To install Snakemake as a Conda environment:
     ```bash
     # Install Snakemake in a new Conda environment
-    mamba create -c conda-forge -c bioconda -n snakemake snakemake
+    conda create -c conda-forge -c bioconda -n snakemake snakemake
     ```
 
 3. **Databases:**
@@ -351,21 +351,21 @@ Here's a breakdown of the sub-directories created by `FunFlux` within the main o
 ├── logs
 └── report
 ```
-- `01.pre-processing`: QC and statistics of raw reads and trimmed reads, produced by [fastp](https://github.com/OpenGene/fastp) (v0.23.4).
+- `01.pre-processing`: QC and statistics of raw reads and trimmed reads, produced by [fastp](https://github.com/OpenGene/fastp) (v0.26.0).
 
-- `02.assembly`: Content output by [SPAdes](https://github.com/ablab/spades) (v4.0.0). In addition to the raw contigs, you will also find the filtered contigs (>500bp and at least 2x) and the selected contigs, which are the contigs selected after BLAST search and decontamination (see `parameters` in the [configuration](#configuration) section above). The follow-up applications used during the worflow will either use selected contigs (i.e. for annotation purposes) or raw, filtered and selected contigs (i.e. to evaluate the genome completenness and contamination).
+- `02.assembly`: Content output by [SPAdes](https://github.com/ablab/spades) (v4.2.0). In addition to the raw contigs, you will also find the filtered contigs (>500bp and at least 2x) and the selected contigs, which are the contigs selected after BLAST search and decontamination (see `parameters` in the [configuration](#configuration) section above). The follow-up applications used during the worflow will either use selected contigs (i.e. for annotation purposes) or raw, filtered and selected contigs (i.e. to evaluate the genome completenness and contamination).
 
 - `03.post-processing`: Contains the following sub-directories:
     - **mapping_evaluation**: [QualiMap](http://qualimap.conesalab.org/) (v2.3) output based on filtered contigs.
-    - **contaminants**: Contig selection based on [BLAST+](https://blast.ncbi.nlm.nih.gov/doc/blast-help/) (v2.15.0) search and [BlobTools](https://github.com/DRL/blobtools) (1.1.1) analysis. Check the `composition` text file for a quick overview of the relative composition of your assembly.
-    - **assembly_evaluation**: [Quast](https://github.com/ablab/quast) (v5.2.0) output based on selected contigs.
+    - **contaminants**: Contig selection based on [BLAST+](https://blast.ncbi.nlm.nih.gov/doc/blast-help/) (v2.16.0) search and [BlobTools](https://github.com/DRL/blobtools) (1.1.1) analysis. Check the `composition` text file for a quick overview of the relative composition of your assembly.
+    - **assembly_evaluation**: [Quast](https://github.com/ablab/quast) (v5.3.0) output based on selected contigs.
     - **completenness_evaluation**: [BUSCO](https://busco.ezlab.org/) (v5.5.0) output based on selected contigs.
-     - **ITS_extraction**: [ITSx](https://microbiology.se/software/itsx/) (v1.1.3) output based on raw contigs and classified using the [SINTAX](https://www.drive5.com/sintax/) algorithm re-implemented in [VSEARCH](https://github.com/torognes/vsearch) (v2.28.1). It is recommendable to use the latest [UNITE](https://unite.ut.ee/repository.php) database, as reference.
+     - **ITS_extraction**: [ITSx](https://microbiology.se/software/itsx/) (v1.1.3) output based on raw contigs and classified using the [SINTAX](https://www.drive5.com/sintax/) algorithm re-implemented in [VSEARCH](https://github.com/torognes/vsearch) (v2.30.0). It is recommendable to use the latest [UNITE](https://unite.ut.ee/repository.php) database, as reference.
  
 - `04.annotation`: Contains the following sub-directories:
     - **iprscan**: Annotation output by [InterProScan](https://github.com/ebi-pf-team/interproscan) (v5.65-97.0), in XML format. 
     - **eggnog**: Functional annotation produced by [eggNOG](https://github.com/eggnogdb) mapper (v2.1.12).
-    - **antismash**: Secondary metabolites inferred by [antiSMASH](https://github.com/antismash/antismash) (v7.1.0).
+    - **antismash**: Secondary metabolites inferred by [antiSMASH](https://github.com/antismash/antismash) (v8.0.1).
     - **funannotate**: Prediction and annotation directories output by [funannotate](https://github.com/nextgenusfs/funannotate) (v1.8.15).
         ```
         ├── annotate_misc
@@ -375,10 +375,10 @@ Here's a breakdown of the sub-directories created by `FunFlux` within the main o
         └── predict_results
         ```
    
-- `report`: [MultiQC](https://github.com/MultiQC/MultiQC) (v1.23) is used to parse and aggregate the results of the following tools:
-    1. [fastp](https://github.com/OpenGene/fastp) (v0.23.4)
+- `report`: [MultiQC](https://github.com/MultiQC/MultiQC) (v1.29) is used to parse and aggregate the results of the following tools:
+    1. [fastp](https://github.com/OpenGene/fastp) (v0.26.0)
     2. [QualiMap](http://qualimap.conesalab.org/) (v2.3)
-    3. [Quast](https://github.com/ablab/quast) (v5.2.0)
+    3. [Quast](https://github.com/ablab/quast) (v5.3.0)
     4. [BUSCO](https://busco.ezlab.org/) (v5.5.0)
 
 ## Acknowledgements
