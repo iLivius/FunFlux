@@ -5,24 +5,26 @@ __  /_   _  / / /_  __ \_  __ \  __ \  __/  __ `/  __/  __ \_  ___/
 _  __/   / /_/ /_  / / /  / / / /_/ / /_ / /_/ // /_ / /_/ /  /    
 /_/      \__,_/ /_/ /_//_/ /_/\____/\__/ \__,_/ \__/ \____//_/     
                                                                                                                                                                                                                                                                                           
-Funnotator v1.0.4
+Funnotator v1.0.5
 
-Livio Antonielli, June 2025
+Livio Antonielli, January 2026
 ''')
 
 # Configuration file:
-configfile: 'config/config_funnotator.yaml'
+configfile: 'config/config.yaml'
 
 # Modules:
 import os
 import sys
 import pandas as pd
+from urllib.parse import urlparse, unquote
 
 # Define not allowed characters
 not_allowed_chars = set("_*#@%^/! ?&:;|<>")
 
 # Path to DBs and input/output directories in config file:
-workdir: config['directories']['out_dir']
+workdir: config['directories']['output_dir']
+FUNANNOTATEURL = config['links']['funannotate_link']
 INPUTDIR = config['directories']['input_dir']
 DMNDDB = config['directories']['eggnog_db']
 FUNANNOTATEDB = config['directories']['funannotate_db']
@@ -104,6 +106,48 @@ for sample in SAMPLES:
         sys.exit(1)
     CHECK_SAMPLES.append(sample)
 
+# Return an ID from a provided URL by extracting the filename without extension
+def id_from_url(url: str) -> str:
+    path = unquote(urlparse(url).path)
+    filename = os.path.basename(path)
+    if not filename:
+        raise ValueError(f"Cannot parse filename from URL: {url}")
+
+    # strip .tar.gz or .tgz
+    if filename.endswith(".tar.gz"):
+        return filename[:-len(".tar.gz")]
+    if filename.endswith(".tgz"):
+        return filename[:-len(".tgz")]
+
+    # generic fallback: strip one extension
+    return os.path.splitext(filename)[0]
+
+# Extract ID from funannotate db URL
+if FUNANNOTATEURL:
+    FUNANNOTATEID = id_from_url(FUNANNOTATEURL)
+else:
+    raise ValueError("The link is missing or empty")
+
+# Extract Zenodo record ID from a Zenodo files URL
+def zenodo_record_from_url(url: str) -> str:
+    path = urlparse(url).path.strip("/")
+    parts = path.split("/")
+
+    # Expected: records/<id>/files/<filename>
+    if len(parts) >= 3 and parts[0] == "records":
+        return parts[1]
+
+    raise ValueError(f"Cannot infer Zenodo record ID from URL: {url}")
+
+# Get Zenodo record ID and SHA256 URL
+ZENODORECORD = zenodo_record_from_url(FUNANNOTATEURL)
+
+# Construct SHA256 URL
+FUNANNOTATESHAURL = (
+    f"https://zenodo.org/records/{ZENODORECORD}/files/"
+    f"{FUNANNOTATEID}.sha256?download=1"
+)    
+
 # Create sample objects
 EXTN = EXTENSIONS[0]
 FASTA = '{sample}.' + EXTN
@@ -117,8 +161,10 @@ rule all:
         its1 = expand("01.pre-processing/ITS_extraction/{sample}/{sample}.ITS1.fasta", sample=CHECK_SAMPLES),
         its2 = expand("01.pre-processing/ITS_extraction/{sample}/{sample}.ITS2.fasta", sample=CHECK_SAMPLES),
         summary = expand("01.pre-processing/ITS_extraction/{sample}/{sample}.summary.txt", sample=CHECK_SAMPLES),
-        its_tax = expand("01.pre-processing/ITS_extraction/{sample}/{sample}_ITS2_taxonomy.txt", sample=CHECK_SAMPLES),
+        its1_tax = expand("01.pre-processing/ITS_extraction/{sample}/{sample}_ITS1_taxonomy.txt", sample=CHECK_SAMPLES),
+        its2_tax = expand("01.pre-processing/ITS_extraction/{sample}/{sample}_ITS2_taxonomy.txt", sample=CHECK_SAMPLES),
         multiqc_dir = "report",
+        funannotate_db_info = os.path.join(FUNANNOTATEDB, "funannotate-db-info.txt"),
         funannotate_dir = expand("02.annotation/{sample}/funannotate", sample=CHECK_SAMPLES),
         contigs_clean = expand("02.annotation/{sample}/contigs_clean.fasta", sample=CHECK_SAMPLES),
         contigs_sort = expand("02.annotation/{sample}/contigs_sort.fasta", sample=CHECK_SAMPLES),
@@ -220,9 +266,11 @@ rule its_extraction:
 
 rule its_classification:
     input:
-        its = "01.pre-processing/ITS_extraction/{sample}/{sample}.ITS2.fasta"
+        its1 = "01.pre-processing/ITS_extraction/{sample}/{sample}.ITS1.fasta",
+        its2 = "01.pre-processing/ITS_extraction/{sample}/{sample}.ITS2.fasta"
     output:
-        its_tax = "01.pre-processing/ITS_extraction/{sample}/{sample}_ITS2_taxonomy.txt"
+        its1_tax = "01.pre-processing/ITS_extraction/{sample}/{sample}_ITS1_taxonomy.txt",
+        its2_tax = "01.pre-processing/ITS_extraction/{sample}/{sample}_ITS2_taxonomy.txt"
     params:
         its_db = ITSDB,
         cutoff = 0.8
@@ -238,15 +286,26 @@ rule its_classification:
     shell:
         """
         # Launch VSEARCH if the output of ITSx is not empty
-        if [ -s {input.its} ]; then
-            vsearch --sintax {input.its} \
+        if [ -s {input.its1} ]; then
+            vsearch --sintax {input.its1} \
+                    --db {params.its_db} \
+                    --tabbedout {output.its1_tax} \
+                    --sintax_cutoff {params.cutoff} \
+                    --threads {resources.cpus} >> {log} 2>&1
+        else
+            echo "ITS1 FASTA file is empty for sample {wildcards.sample}. Skipping classification." >> {log} 2>&1
+            touch {output.its1_tax}
+        fi
+
+        if [ -s {input.its2} ]; then
+            vsearch --sintax {input.its2} \
                     --db {params.its_db} \
                     --tabbedout {output.its_tax} \
                     --sintax_cutoff {params.cutoff} \
                     --threads {resources.cpus} >> {log} 2>&1
         else
             echo "ITS2 FASTA file is empty for sample {wildcards.sample}. Skipping classification." >> {log} 2>&1
-            touch {output.its_tax}
+            touch {output.its2_tax}
         fi
         """
 
@@ -271,9 +330,50 @@ rule multiqc:
         -d -dd 1 {input.quast_dir} {input.busco_dir} > {log} 2>&1
         """
 
+rule funannotate_db:
+    output:
+        db_info = os.path.join(FUNANNOTATEDB, "funannotate-db-info.txt")
+    params:
+        funannotate_tar_url = FUNANNOTATEURL,
+        funannotate_sha_url = FUNANNOTATESHAURL,
+        funannotate_tar = os.path.join(FUNANNOTATEDB, f"{FUNANNOTATEID}.tar.gz"),
+        funannotate_sha = os.path.join(FUNANNOTATEDB, f"{FUNANNOTATEID}.sha256"),
+        funannotate_db = FUNANNOTATEDB
+    log:
+        "logs/funannotate_db.log"
+    message:
+        "--- Funannotate: Download and verify funannotate database. ---"
+    priority: 10
+    shell:
+        """
+        mkdir -p "{params.funannotate_db}"
+
+        # If SHA file not present, download both SHA and TAR
+        if [ ! -f "{params.funannotate_sha}" ]; then
+            echo "[funannotate_db] sha file not found, downloading sha and tar.gz files" > {log}
+
+            # Download SHA
+            curl -L --fail -o "{params.funannotate_sha}" "{params.funannotate_sha_url}" >> {log} 2>&1
+
+            # Download TAR
+            curl -L --fail -o "{params.funannotate_tar}" "{params.funannotate_tar_url}" >> {log} 2>&1
+        else
+            echo "[funannotate_db] sha file exists: {params.funannotate_sha} (skip download)" >> {log}
+
+            # Ensure tar exists; if missing, download only tar
+            if [ ! -f "{params.funannotate_tar}" ]; then
+                echo "[funannotate_db] missing, downloading tar.gz only" >> {log}
+                curl -L --fail -o "{params.funannotate_tar}" "{params.funannotate_tar_url}" >> {log} 2>&1
+            fi
+        fi
+
+        tar -xzf "{params.funannotate_tar}" --strip-components=1 -C "{params.funannotate_db}" >> {log} 2>&1
+        """
+
 rule funannotate_prediction:
     input:
-        contigs = "01.pre-processing/pre_filtering/{sample}/contigs_filt.fasta"
+        contigs = "01.pre-processing/pre_filtering/{sample}/contigs_filt.fasta",
+        db_info = os.path.join(FUNANNOTATEDB, "funannotate-db-info.txt")
     output:
         funannotate_dir = directory("02.annotation/{sample}/funannotate"),
         contigs_clean = "02.annotation/{sample}/contigs_clean.fasta",
@@ -296,9 +396,11 @@ rule funannotate_prediction:
     priority: 4    
     shell:
         """
+        # Set environment variables for funannotate
         export FUNANNOTATE_DB="{params.funannotate_db}"
         export GENEMARK_PATH="{params.genemark_dir}"
-        funannotate setup -d {params.funannotate_db} > {log} 2>&1
+        
+        # Run funannotate prediction pipeline
         funannotate clean -i {input.contigs} -o {output.contigs_clean} >> {log} 2>&1
         funannotate sort -i {output.contigs_clean} -o {output.contigs_sort} >> {log} 2>&1
         funannotate mask -i {output.contigs_sort} -o {output.contigs_mask} --cpus {resources.cpus} >> {log} 2>&1

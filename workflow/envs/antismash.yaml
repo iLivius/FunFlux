@@ -3,4 +3,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - antismash=8.0.1
+  - antismash=8.0.4
