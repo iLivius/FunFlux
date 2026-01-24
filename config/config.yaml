@@ -2,7 +2,7 @@ links:
   phix_link: ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/819/615/GCF_000819615.1_ViralProj14015/GCF_000819615.1_ViralProj14015_genomic.fna.gz
   funannotate_link: https://zenodo.org/records/18271295/files/funannotate_db_1.8.15_2025-12-15.tar.gz?download=1
 directories:
-  output_dir:  /path/to/output_dir
+  output_dir: /path/to/output_dir
   input_dir: /path/to/input_dir
   blast_db: /path/to/NCBI_nt_core_db
   eggnog_db: /path/to/eggnog_db
