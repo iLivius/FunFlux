@@ -3,6 +3,7 @@ Integrated workflow for fungal genome assembly and annotation.
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥9.14.6-brightgreen.svg)](https://snakemake.readthedocs.io/en/stable/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13612159.svg)](https://doi.org/10.5281/zenodo.13612159)
 
+---
 ```bash
 __________             _______________              
 ___  ____/___  ___________  ____/__  /___  _____  __
@@ -10,10 +11,12 @@ __  /_   _  / / /_  __ \_  /_   __  /_  / / /_  |/_/
 _  __/   / /_/ /_  / / /  __/   _  / / /_/ /__>  <  
 /_/      \__,_/ /_/ /_//_/      /_/  \__,_/ /_/|_|
               
-FunFlux v1.0.5
+FunFlux v1.0.6
+
 
 January 2026
 ```
+---
 
 ## Authors and Contributors
 [AIT Austrian Institute of Technology, Center for Health & Bioresources](https://www.ait.ac.at/en/research-topics/bioresources)
@@ -23,7 +26,7 @@ January 2026
 - Stéphane Compant
 
 ## Synopsis
-`FunFlux` is a [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) workflow designed for the genome assembly and annotation of fungal short reads sequenced with Illumina technology.  It also supports the analysis of pre-assembled contigs. The workflow includes features such as contig selection and decontamination, genome completeness assessment, ITS extraction with taxonomic assignment, and precise gene prediction and annotation.
+`FunFlux` is a [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) workflow designed for the genome assembly and annotation of fungal short reads sequenced with Illumina technology. It also supports the analysis of pre-assembled contigs. The workflow includes features such as contig selection and decontamination, genome completeness assessment, ITS extraction with taxonomic assignment, and precise gene prediction and annotation.
 
 ## Table of Contents
 - [Rationale](#rationale)
@@ -39,7 +42,9 @@ January 2026
 ## Rationale
 The analysis of fungal whole-genome sequencing (WGS) data involves a complex series of bioinformatic steps that can be challenging to execute manually. This process is often time-consuming, prone to errors, and difficult to reproduce. `FunFlux` addresses these challenges by offering a comprehensive and automated [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) workflow specifically designed for fungal genomic data analysis.
 
-`FunFlux` is designed to streamline the annotation process with [funannotate](https://github.com/nextgenusfs/funannotate) in the absence of RNA sequencing evidence. It relies on both *ab initio* annotation and protein FASTA sequences from organisms of the same species or genus to enhance the accuracy of gene prediction and annotation. 
+`FunFlux` is designed to streamline the annotation process with [funannotate](https://github.com/nextgenusfs/funannotate) in the absence of RNA sequencing evidence. It relies on both *ab initio* annotation and protein FASTA sequences from organisms of the same species or genus to enhance the accuracy of gene prediction and annotation.
+
+[⬆ Back to Table of Contents](#table-of-contents)
 
 ## Description
 Here's a breakdown of the `FunFlux` workflow:
@@ -114,6 +119,8 @@ Here's a breakdown of the `FunFlux` workflow:
 
 06. **Report:**
     * Results are parsed and aggregated to generate a report using [MultiQC](https://github.com/MultiQC/MultiQC).
+
+[⬆ Back to Table of Contents](#table-of-contents)
 
 ## Installation
 `FunFlux` automatically downloads most of dependencies and several databases. However, some external software and databases require manual download before running the workflow.
@@ -227,6 +234,7 @@ Here's a breakdown of the `FunFlux` workflow:
         # Check the shell script, inside the iprscan dir:
         ./interproscan.sh
         ```
+[⬆ Back to Table of Contents](#table-of-contents)
 
 ## Configuration
 Before running `FunFlux`, you must edit the `config.yaml` file with a text editor. The file is organized in different sections: `links`, `directories`, `files`, `resources` and `parameters`, respectively.
@@ -317,6 +325,8 @@ Before running `FunFlux`, you must edit the `config.yaml` file with a text edito
     
     - **Disabling** the `genus` filtering: if either the automatic inference of contaminant contigs or the manual selection of the desired taxon are still not working for you, simply delete the `genus` option from the `parameters`. In this case, only contigs tagged as "no-hit" after `BLAST` search will be filtered out.
 
+[⬆ Back to Table of Contents](#table-of-contents)
+
 ## Running FunFlux
 `FunFlux` can be executed as simply as a `Snakefile`. Please refer to the official [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/index.html) for more details.
 ```bash
@@ -339,6 +349,7 @@ conda activate snakemake
 # Navigate inside the FunFlux directory and launch the workflow as follows:
 snakemake --snakefile workflow/Funnotator --sdm conda --cores 50 --jobs 2
 ```
+[⬆ Back to Table of Contents](#table-of-contents)
 
 ## Output
 Here's a breakdown of the sub-directories created by `FunFlux` within the main output folder, along with explanations of their contents. Please notice that `Funnotator` will produce a similar, simplified output.
@@ -379,6 +390,8 @@ Here's a breakdown of the sub-directories created by `FunFlux` within the main o
     2. [QualiMap](http://qualimap.conesalab.org/) (v2.3)
     3. [Quast](https://github.com/ablab/quast) (v5.3.0)
     4. [BUSCO](https://busco.ezlab.org/) (v5.5.0)
+
+[⬆ Back to Table of Contents](#table-of-contents)
 
 ## Acknowledgements
 This work was originally supported by the [BeXyl] project (https://cordis.europa.eu/project/id/101060593) (Beyond Xylella, Integrated Management Strategies for Mitigating *Xylella fastidiosa* impact in Europe), funded under the HORIZON-CL6-2021-FARM2FORK-01-04 programme (grant agreement No. 101060593).
