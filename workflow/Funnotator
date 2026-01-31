@@ -312,12 +312,7 @@ rule its_classification:
                 --db {params.its_db} \
                 --tabbedout {output.its1_tax} \
                 --sintax_cutoff {params.cutoff} \
-                --threads {resources.cpus} >> {log} 2>&1
-            vsearch --sintax {input.its1} \
-                    --db {params.its_db} \
-                    --tabbedout {output.its1_tax} \
-                    --sintax_cutoff {params.cutoff} \
-                    --threads {resources.cpus} > {log} 2>&1
+                --threads {resources.cpus} > {log} 2>&1
         else
             echo "ITS1 FASTA file is empty for sample {wildcards.sample}. Skipping classification." >> {log} 2>&1
             touch {output.its1_tax}
