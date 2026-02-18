@@ -44,8 +44,6 @@ The analysis of fungal whole-genome sequencing (WGS) data involves a complex ser
 
 `FunFlux` is designed to streamline the annotation process with [funannotate](https://github.com/nextgenusfs/funannotate) in the absence of RNA sequencing evidence. It relies on both *ab initio* annotation and protein FASTA sequences from organisms of the same species or genus to enhance the accuracy of gene prediction and annotation.
 
-[⬆ Back to Table of Contents](#table-of-contents)
-
 ## Description
 Here's a breakdown of the `FunFlux` workflow:
 
