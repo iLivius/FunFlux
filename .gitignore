@@ -1,3 +1,11 @@
 
 # Snakemake runtime
 .snakemake/
+*_output/
+*.log
+__pycache__/
+
+# Local run-specific configs and scratch examples
+config/config_custom.yaml
+config/config_funflux.yaml
+configs/

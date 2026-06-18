@@ -1,6 +1,7 @@
 links:
   phix_link: ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/819/615/GCF_000819615.1_ViralProj14015/GCF_000819615.1_ViralProj14015_genomic.fna.gz
   funannotate_link: https://zenodo.org/records/18271295/files/funannotate_db_1.8.15_2025-12-15.tar.gz?download=1
+  unite_its_link: https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz
 directories:
   output_dir: /path/to/output_dir
   input_dir: /path/to/input_dir
@@ -9,11 +10,23 @@ directories:
   genemark_dir: /path/to/gmes_linux_64_4
   funannotate_db: /path/to/funannotate_db
 files:
-  its_db: /path/to/ITS_db.fa
   annotation_params: /path/to/annotation_parameters.tsv
-  iprscan: /path/to/interproscan-5.65-97.0/interproscan.sh  
+  iprscan: /path/to/interproscan-5.77-108.0/interproscan.sh
 resources:
   threads: 24
   ram_gb: 128
 parameters:
-  genus:
+  decontamination:
+    mode: off # Options: off, auto, include, exclude
+    discard_no_hit: true
+    include_genera:
+    include_genera_by_sample:
+    exclude_genera:
+    exclude_genera_file:
+    sample_overrides:
+  its_taxonomy_cutoff: 0.8
+  masking_method: tantan
+  repeatmodeler_quick: true
+  repeatmodeler_ltrstruct: false
+  # Alternative masking methods:
+  # masking_method: repeatmodeler_repeatmasker

@@ -1,0 +1,9 @@
+name: repeatmasking
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - tantan=51
+  - repeatmodeler=2.0.8
+  - repeatmasker=4.2.3
+  - perl
