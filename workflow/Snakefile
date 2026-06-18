@@ -5,41 +5,135 @@ __  /_   _  / / /_  __ \_  /_   __  /_  / / /_  |/_/
 _  __/   / /_/ /_  / / /  __/   _  / / /_/ /__>  <  
 /_/      \__,_/ /_/ /_//_/      /_/  \__,_/ /_/|_|  
                                                                                                                                       
-FunFlux v1.0.7 — Fungal Genome Analysis Workflow
+FunFlux v1.1.0
+Fungal Short-Read Genome Analysis Workflow
 
-
-Livio Antonielli, February 2026
+Livio Antonielli, June 2026
 ''')
 
-# Configuration file:
+# Default config. A user-supplied --configfile replaces this when launching.
 configfile: 'config/config.yaml'
 
-# Modules:
+# Python is used here to check inputs, parse small metadata tables, and choose
+# workflow branches before Snakemake builds the DAG.
 import os
 import sys
 import pandas as pd
 from urllib.parse import urlparse, unquote
 
-# Define not allowed characters
+# Sample names become filenames, report labels, and Funannotate IDs. These
+# characters are rejected because they make paths or downstream IDs ambiguous.
 not_allowed_chars = set("_*#@%^/! ?&:;|<>")
 
-# Path to DBs and input/output directories in config file:
+# Pull config values into clear names. Rules below should read as workflow
+# steps, not repeated config dictionary access.
 workdir: config['directories']['output_dir']
 FUNANNOTATEURL = config['links']['funannotate_link']
+UNITEURL = config.get('links', {}).get('unite_its_link', '')
 INPUTDIR = config['directories']['input_dir']
 BLASTDB = config['directories']['blast_db']
 DMNDDB = config['directories']['eggnog_db']
 FUNANNOTATEDB = config['directories']['funannotate_db']
 GENEMARKDIR = config['directories']['genemark_dir']
-ITSDB = config['files']['its_db']
 IPRSCAN = config['files']['iprscan']
 ANNOTATION = config['files']['annotation_params']
 
-# Hardware resources in config file:
+# Global resources and helper paths. Tool-specific rules can still cap CPU use
+# where a program does not benefit from all available threads.
 CPUS = config['resources']['threads']
 RAM = config['resources']['ram_gb']
+WORKFLOW_DIR = workflow.basedir
+PARAMETERS = config.get('parameters', {}) or {}
 
-# Parse information from sample features, after diagnostic:
+# The UNITE database is workflow-local in the output tree so taxonomic ITS
+# classification does not depend on a manually prepared external file.
+UNITE_FASTA = "03.post-processing/ITS_extraction/unite_its_sintax.fasta"
+ITS_TAXONOMY_CUTOFF = float(PARAMETERS.get("its_taxonomy_cutoff", 0.8))
+MASKING_METHOD = str(PARAMETERS.get("masking_method", "tantan")).strip().lower()
+
+# Shared helper used after BlobTools. It reads contig taxonomy assignments and
+# decides which contigs are kept, discarded, or left untouched.
+SELECT_TAXONOMY_SCRIPT = os.path.join(WORKFLOW_DIR, "scripts", "select_contigs_by_taxonomy.py")
+
+# Config files often store booleans as strings. This helper makes those values
+# explicit before they control masking or decontamination behavior.
+def _config_bool(value, default=False):
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    text = str(value).strip().lower()
+    if text in {"true", "1", "yes", "on"}:
+        return True
+    if text in {"false", "0", "no", "off"}:
+        return False
+    raise ValueError(f"Invalid boolean config value: {value!r}")
+
+# RepeatModeler options are parsed once here; the masking rule only consumes
+# normalized booleans.
+REPEATMODELER_QUICK = _config_bool(PARAMETERS.get("repeatmodeler_quick", True), True)
+REPEATMODELER_LTRSTRUCT = _config_bool(PARAMETERS.get("repeatmodeler_ltrstruct", False), False)
+
+# Masking method is a high-impact biological choice. Fail early if the config
+# asks for a strategy that the workflow does not implement.
+if MASKING_METHOD not in {"tantan", "repeatmodeler_repeatmasker"}:
+    raise ValueError(
+        "Invalid masking_method. Expected one of: tantan, "
+        "repeatmodeler_repeatmasker."
+    )
+
+# ITS classification depends on the UNITE FASTA. Require the download link
+# before the rules begin.
+if not UNITEURL:
+    raise ValueError("links.unite_its_link is missing.")
+
+
+# Convert optional genus lists and file paths to plain text for the shared
+# contig selector script.
+def _as_decontam_text(value):
+    if value is None:
+        return ""
+    if isinstance(value, (list, tuple, set)):
+        return ";".join(str(item).strip() for item in value if str(item).strip())
+    return str(value).strip()
+
+
+# Build one normalized decontamination policy. The legacy "genus" parameter is
+# translated into include mode so older configs remain understandable.
+def _decontam_settings(default_mode):
+    params = config.get("parameters", {}) or {}
+    settings = dict(params.get("decontamination") or {})
+    if not settings:
+        legacy_genus = params.get("genus", None)
+        if legacy_genus is not None and str(legacy_genus).strip():
+            settings = {"mode": "include", "include_genera": legacy_genus}
+        elif "genus" in params:
+            settings = {"mode": "auto"}
+        else:
+            settings = {"mode": default_mode}
+
+    mode = str(settings.get("mode", default_mode) or default_mode).strip().lower()
+    if mode not in {"auto", "include", "exclude", "off"}:
+        raise ValueError("Invalid decontamination.mode. Expected one of: auto, include, exclude, off.")
+    settings["mode"] = mode
+    settings["include_genera"] = _as_decontam_text(settings.get("include_genera", ""))
+    settings["include_genera_by_sample"] = _as_decontam_text(settings.get("include_genera_by_sample", ""))
+    settings["exclude_genera"] = _as_decontam_text(settings.get("exclude_genera", ""))
+    settings["exclude_genera_file"] = _as_decontam_text(settings.get("exclude_genera_file", ""))
+    settings["sample_overrides"] = _as_decontam_text(settings.get("sample_overrides", ""))
+    settings["discard_no_hit"] = str(_config_bool(settings.get("discard_no_hit"), False)).lower()
+    return settings
+
+
+# Fungal workflows default to no contig removal unless explicitly configured.
+DECONTAMINATION = _decontam_settings("off")
+print(
+    "Decontamination mode: "
+    f"{DECONTAMINATION['mode']} (discard_no_hit={DECONTAMINATION['discard_no_hit']})."
+)
+
+# Read the per-sample annotation table. Each row tells Funannotate the species
+# name, the protein evidence file, and the AUGUSTUS model to use.
 def parse_annotation_file(annotation_file):
     if not os.path.exists(annotation_file):
         raise FileNotFoundError(f"Annotation file '{annotation_file}' not found.")
@@ -51,18 +145,17 @@ def parse_annotation_file(annotation_file):
             if line.startswith("#") or not line:
                 continue  # Skip commented or empty lines
             fields = line.split("\t")
-            #print(f"Parsing line: {line}") # Debugging print
-            #print(f"Fields: {fields}") # Debugging print
             if len(fields) != 4:
                 raise ValueError(f"Line '{line}' is not formatted correctly.")
             sample, species, protein_file, augustus_model = fields
 
-            # Check if protein file exists
+            # Funannotate can use protein evidence only if the file exists.
             if not os.path.exists(protein_file):
                 sys.stderr.write(f"Error: Protein file '{protein_file}' for sample '{sample}' does not exist.\n")
                 sys.exit(1)
 
-            # Check if protein file is non-empty
+            # An empty protein file is worse than no evidence: it looks valid
+            # until a downstream tool fails with little context.
             if os.path.getsize(protein_file) == 0:
                 sys.stderr.write(f"Error: Protein file '{protein_file}' for sample '{sample}' is empty.\n")
                 sys.exit(1)
@@ -75,11 +168,15 @@ def parse_annotation_file(annotation_file):
     
     return annotations
 
+# Parse the annotation table before sample discovery so missing metadata is
+# caught before expensive rules are scheduled.
 annotations = parse_annotation_file(ANNOTATION)
 
-# Import FASTQ files from input dir:
+# Discover samples from Illumina R1 files; R2 paths are derived from the same
+# sample name and extension.
 SAMPLES, EXTENSIONS = glob_wildcards(os.path.join(INPUTDIR, '{sample}_R1.{extn}'))
 
+# Stop before rule execution if inputs are missing or sample names are unsafe.
 if len(SAMPLES) == 0:
     sys.stderr.write(f"No files in {INPUTDIR}. Please, check directory.\n")
     sys.exit(1)
@@ -90,7 +187,8 @@ else:
             sys.exit(1)
         print(f"Sample {sample} in process...")
 
-# Check if files have non-unique extension:
+# Require one FASTQ extension for the batch. Mixed extensions make R1/R2
+# wildcard expansion unreliable.
 for extension in EXTENSIONS:
     if extension.endswith(("fastq", "fq", "fastq.gz", "fq.gz")):
         if len(set(EXTENSIONS)) != 1:
@@ -101,7 +199,8 @@ for extension in EXTENSIONS:
         sys.stderr.write("\nFile format not recognized.\n")
         sys.exit(1)
 
-# Validate that samples from FASTQ files exist in the annotation file
+# Every sequenced sample must have an annotation row. This prevents hidden
+# mismatches between FASTQ names and annotation metadata.
 CHECK_SAMPLES = []
 for sample in SAMPLES:
     if sample not in annotations:
@@ -109,7 +208,8 @@ for sample in SAMPLES:
         sys.exit(1)
     CHECK_SAMPLES.append(sample)
 
-# Return an ID from a provided URL by extracting the filename without extension
+# Extract a stable database ID from a URL. For Funannotate this ID becomes the
+# expected local archive/database name.
 def id_from_url(url: str) -> str:
     path = unquote(urlparse(url).path)
     filename = os.path.basename(path)
@@ -125,13 +225,15 @@ def id_from_url(url: str) -> str:
     # generic fallback: strip one extension
     return os.path.splitext(filename)[0]
 
-# Extract ID from funannotate db URL
+# The Funannotate database link must be present because the db rule uses both
+# the archive URL and its derived ID.
 if FUNANNOTATEURL:
     FUNANNOTATEID = id_from_url(FUNANNOTATEURL)
 else:
     raise ValueError("The link is missing or empty")
 
-# Extract Zenodo record ID from a Zenodo files URL
+# The SHA256 checksum sits next to the archive on Zenodo. We infer its URL from
+# the same record ID to verify the downloaded database.
 def zenodo_record_from_url(url: str) -> str:
     path = urlparse(url).path.strip("/")
     parts = path.split("/")
@@ -142,16 +244,15 @@ def zenodo_record_from_url(url: str) -> str:
 
     raise ValueError(f"Cannot infer Zenodo record ID from URL: {url}")
 
-# Get Zenodo record ID and SHA256 URL
+# Build the checksum URL once so the database rule does not need URL parsing.
 ZENODORECORD = zenodo_record_from_url(FUNANNOTATEURL)
 
-# Construct SHA256 URL
 FUNANNOTATESHAURL = (
     f"https://zenodo.org/records/{ZENODORECORD}/files/"
     f"{FUNANNOTATEID}.sha256?download=1"
 )
 
-# Create sample objects
+# Reusable wildcard patterns for paired-end reads.
 EXTN = EXTENSIONS[0]
 R1 = '{sample}_R1.' + EXTN
 R2 = '{sample}_R2.' + EXTN
@@ -269,7 +370,7 @@ rule trim_adapters:
         html = "01.pre-processing/{sample}_fastp.html",
         json = "01.pre-processing/{sample}_fastp.json"
     resources:
-        cpus = 16
+        cpus = min(CPUS, 16)
     conda:
         "envs/fastp.yaml"
     message:
@@ -413,9 +514,13 @@ rule map_contigs:
 
 rule map_evaluation:
     input:
-        bam = "03.post-processing/{sample}/{sample}_map.bam"
+        bam = "03.post-processing/{sample}/{sample}_map.bam",
+        bai = "03.post-processing/{sample}/{sample}_map.bam.bai"
     output:
         qualimap_dir = directory("03.post-processing/mapping_evaluation/{sample}")
+    resources:
+        java_mem = min(RAM, 64),
+        threads = min(CPUS, 24)
     conda:
         "envs/qualimap.yaml"
     message:
@@ -427,6 +532,8 @@ rule map_evaluation:
         """
         qualimap bamqc \
             -bam {input.bam} \
+            --java-mem-size={resources.java_mem}G \
+            -nt {resources.threads} \
             -outdir {output.qualimap_dir} \
             -outformat html > {log} 2>&1
         """
@@ -518,82 +625,43 @@ rule blob_table:
             --hits >> {log} 2>&1
         """
 
-# Execute either one rule or another according to presence/absence of 'genus' parameter
-if config.get('parameters') is not None and "genus" in config['parameters'] and config['parameters']['genus'] is not None and len(config['parameters']['genus']) > 0:
-  rule:
+rule select_contigs:
     input:
-      bestscore = "03.post-processing/contaminants/{sample}/bestscore.blob.blobDB.table.txt",
-      contigs = "02.assembly/{sample}/contigs_filt.fasta"
+        bestscore = "03.post-processing/contaminants/{sample}/bestscore.blob.blobDB.table.txt",
+        contigs = "02.assembly/{sample}/contigs_filt.fasta"
     output:
-      abund = "03.post-processing/contaminants/{sample}/{sample}_composition.txt",
-      list = "03.post-processing/contaminants/{sample}/contigs.list",
-      contigs = "02.assembly/{sample}/contigs_sel.fasta"
+        abund = "03.post-processing/contaminants/{sample}/{sample}_composition.txt",
+        list = "03.post-processing/contaminants/{sample}/contigs.list",
+        decisions = "03.post-processing/contaminants/{sample}/contig_taxonomy_decisions.tsv",
+        contigs = "02.assembly/{sample}/contigs_sel.fasta"
     params:
-      genus = config['parameters']['genus']    
+        selector = SELECT_TAXONOMY_SCRIPT,
+        mode = DECONTAMINATION["mode"],
+        include_genera = DECONTAMINATION["include_genera"],
+        include_genera_by_sample = DECONTAMINATION["include_genera_by_sample"],
+        exclude_genera = DECONTAMINATION["exclude_genera"],
+        exclude_genera_file = DECONTAMINATION["exclude_genera_file"],
+        sample_overrides = DECONTAMINATION["sample_overrides"],
+        discard_no_hit = DECONTAMINATION["discard_no_hit"]
     priority: 6
     shell:
-      """
-      for i in $(cat {input.bestscore} | sed '1,11d' | cut -f 22 | sort -u); do \
-        cat {input.bestscore} | sed '1,11d' | awk -v var=$i 'BEGIN {{printf "%s%s", var, ": "}} $22 == var {{count++}} END {{printf "%.2f\\n", count/NR}}'; \
-      done > {output.abund}
-      
-      echo "Sample {wildcards.sample} composition:"
-      cat {output.abund}
-      
-      awk -v var="{params.genus}" 'tolower($22) ~ tolower("[:alpha:]*"var) {{print $1}}' {input.bestscore} > {output.list}
-      
-      grep -A1 -f {output.list} {input.contigs} | sed '/--/d' > {output.contigs}
-      """
-elif config.get('parameters') is not None and "genus" in config['parameters'] and (config['parameters']['genus'] is None or len(config['parameters']['genus']) == 0):
-  rule:
-    input:
-      bestscore = "03.post-processing/contaminants/{sample}/bestscore.blob.blobDB.table.txt",
-      contigs = "02.assembly/{sample}/contigs_filt.fasta"
-    output:
-      abund = "03.post-processing/contaminants/{sample}/{sample}_composition.txt",
-      list = "03.post-processing/contaminants/{sample}/contigs.list",
-      contigs = "02.assembly/{sample}/contigs_sel.fasta"
-    priority: 6
-    shell:
-      """
-      for i in $(cat {input.bestscore} | sed '1,11d' | cut -f 22 | sort -u); do \
-        cat {input.bestscore} | sed '1,11d' | awk -v var=$i 'BEGIN {{printf "%s%s", var, ": "}} $22 == var {{count++}} END {{printf "%.2f\\n", count/NR}}'; \
-      done > {output.abund}
-      
-      echo "Sample {wildcards.sample} composition:"
-      cat {output.abund}
-      
-      for i in $(cat {output.abund} | sort -t':' -k2 -nr | cut -d':' -f1 | sed -n '1p' | sed -e 's/Para//;s/Pseudo//;s/Paen//;s/Paeni//;s/Brady//;s/Meso//;s/Neo//;s/Sino//;s/Aeri//;s/Caldi//;s/Geo//' | tr '[:upper:]' '[:lower:]'); do \
-        awk -v var="$i" 'tolower($22) ~ tolower("[:alpha:]*"var) {{print $1}}' {input.bestscore}; \
-      done > {output.list}
-    
-      grep -A1 -f {output.list} {input.contigs} | sed '/--/d' > {output.contigs}
-      """
-else:
-  rule:
-    input:
-      bestscore = "03.post-processing/contaminants/{sample}/bestscore.blob.blobDB.table.txt",
-      contigs = "02.assembly/{sample}/contigs_filt.fasta"
-    output:
-      abund = "03.post-processing/contaminants/{sample}/{sample}_composition.txt",
-      list = "03.post-processing/contaminants/{sample}/contigs.list",
-      contigs = "02.assembly/{sample}/contigs_sel.fasta"
-    params:
-      nohit = "no-hit"   
-    priority: 6
-    shell:
-      """
-      for i in $(cat {input.bestscore} | sed '1,11d' | cut -f 22 | sort -u); do \
-        cat {input.bestscore} | sed '1,11d' | awk -v var=$i 'BEGIN {{printf "%s%s", var, ": "}} $22 == var {{count++}} END {{printf "%.2f\\n", count/NR}}'; \
-      done > {output.abund}
-      
-      echo "Sample {wildcards.sample} composition:"
-      cat {output.abund}
-      
-      awk -v var="{params.nohit}" 'tolower($22) !~ tolower("[:alpha:]*"var) {{print $1}}' {input.bestscore} > {output.list}
-      
-      grep -A1 -f {output.list} {input.contigs} | sed '/--/d' > {output.contigs}
-      """
+        """
+        python {params.selector:q} \
+            --bestscore {input.bestscore:q} \
+            --contigs {input.contigs:q} \
+            --sample {wildcards.sample:q} \
+            --mode {params.mode:q} \
+            --include-genera {params.include_genera:q} \
+            --include-genera-by-sample {params.include_genera_by_sample:q} \
+            --exclude-genera {params.exclude_genera:q} \
+            --exclude-genera-file {params.exclude_genera_file:q} \
+            --sample-overrides {params.sample_overrides:q} \
+            --discard-no-hit {params.discard_no_hit:q} \
+            --output-list {output.list:q} \
+            --output-fasta {output.contigs:q} \
+            --composition {output.abund:q} \
+            --decisions {output.decisions:q}
+        """
 
 rule genome_assembly_evaluation:
     input:
@@ -614,6 +682,7 @@ rule genome_assembly_evaluation:
         quast \
             {input.contigs} \
             -o {output.quast_dir} \
+            --labels {wildcards.sample} \
             --no-icarus \
             -t {resources.cpus} > {log} 2>&1
         """
@@ -652,6 +721,25 @@ rule completeness:
         rm -rf {output.busco_dir}/{params.basename} 
         """
 
+rule download_unite_its_db:
+    output:
+        its_db = UNITE_FASTA
+    params:
+        link = UNITEURL
+    conda:
+        "envs/vsearch.yaml"
+    message:
+        "--- UNITE: Download ITS SINTAX database. ---"
+    log:
+        "logs/download_unite_its_db.log"
+    priority: 8
+    shell:
+        """
+        set -euo pipefail
+        mkdir -p 03.post-processing/ITS_extraction logs
+        curl -L --fail "{params.link}" 2> {log} | gzip -dc > {output.its_db} 2>> {log}
+        """
+
 rule its_extraction:
     input:
         contigs = "02.assembly/{sample}/contigs.fasta"
@@ -667,15 +755,24 @@ rule its_extraction:
     conda:
         "envs/itsx.yaml"
     message:
-        "--- ITSx: ITS extraction from contigs. ---"
+        "--- ITS marker extraction from contigs. ---"
     log:
         "logs/its_extraction_{sample}.log"
     priority: 5    
     shell:
         """
+        set -euo pipefail
+        mkdir -p $(dirname "{params.basename}")
+
+        temp_dir="{params.basename}.ITSx_tmp"
+        rm -rf "$temp_dir"
+        mkdir -p "$temp_dir"
+        trap 'rm -rf "$temp_dir"' EXIT
+
         ITSx \
             -i {input.contigs} \
             -o {params.basename} \
+            --temp "$temp_dir" \
             --preserve T \
             --only_full F \
             --graphical F \
@@ -691,13 +788,13 @@ rule its_extraction:
 rule its_classification:
     input:
         its1 = "03.post-processing/ITS_extraction/{sample}/{sample}.ITS1.fasta",
-        its2 = "03.post-processing/ITS_extraction/{sample}/{sample}.ITS2.fasta"
+        its2 = "03.post-processing/ITS_extraction/{sample}/{sample}.ITS2.fasta",
+        its_db = UNITE_FASTA
     output:
         its1_tax = "03.post-processing/ITS_extraction/{sample}/{sample}_ITS1_taxonomy.txt",
         its2_tax = "03.post-processing/ITS_extraction/{sample}/{sample}_ITS2_taxonomy.txt"
     params:
-        its_db = ITSDB,
-        cutoff = 0.8
+        cutoff = ITS_TAXONOMY_CUTOFF
     resources:
         cpus = min(CPUS, 24)
     conda:
@@ -706,14 +803,14 @@ rule its_classification:
         "--- VSEARCH: Classifying ITS sequences using UNITE db. ---"
     log:
         "logs/classify_its_{sample}.log"
-    priority: 4    
+    priority: 4
     shell:
         """
         # Launch VSEARCH if the output of ITSx is not empty
         if [ -s {input.its1} ]; then
             vsearch \
                 --sintax {input.its1} \
-                --db {params.its_db} \
+                --db {input.its_db} \
                 --tabbedout {output.its1_tax} \
                 --sintax_cutoff {params.cutoff} \
                 --threads {resources.cpus} >> {log} 2>&1
@@ -725,7 +822,7 @@ rule its_classification:
         if [ -s {input.its2} ]; then
             vsearch \
                 --sintax {input.its2} \
-                --db {params.its_db} \
+                --db {input.its_db} \
                 --tabbedout {output.its2_tax} \
                 --sintax_cutoff {params.cutoff} \
                 --threads {resources.cpus} >> {log} 2>&1
@@ -752,14 +849,36 @@ rule multiqc:
         "logs/multiqc.log"
     priority: 4      
     shell:
-        """
+        r"""
+        mkdir -p {output.multiqc_dir}
+
         printf "%s\n" "show_analysis_paths: False" "show_analysis_time: False" > {output.multiqc_yaml}
-        
+
+        cat >> {output.multiqc_yaml} << 'EOF'
+sample_names_replace_regex: true
+sample_names_replace_exact: true
+
+sample_names_replace:
+  '^(?:.* \| )?01\.pre-processing \| *([^|]+?)_fastp$': 'fastp read QC | \1'
+  '^(?:.* \| )?01\.pre-processing \| *([^|. ]+)\.1$': 'fastp read QC | \1'
+  '^(?:.* \| )?01\.pre-processing \| *([^|]+?) *$': 'fastp read QC | \1'
+  '^(?:.* \| )?03\.post-processing \| mapping_evaluation \| *([^|]+?) *\| *([^|]+?)_map *$': 'mapping QC | \2'
+  '^(?:.* \| )?03\.post-processing \| mapping_evaluation \| *([^|]+?) *\| raw_data$': 'mapping QC | \1'
+  '^(?:.* \| )?03\.post-processing \| mapping_evaluation \| *([^|]+?) *\| raw_data_qualimapReport \| *\1$': 'mapping QC | \1'
+  '^(?:.* \| )?03\.post-processing \| assembly_evaluation \| *([^|]+?) *\| *\1 *$': 'QUAST assembly QC | \1'
+  '^(?:.* \| )?03\.post-processing \| assembly_evaluation \| *([^|]+?) *\| contigs_sel$': 'QUAST assembly QC | \1'
+  '^(?:.* \| )?03\.post-processing \| completeness_evaluation \| *([^|]+?) *\| short_summary\.(?:generic|specific)\.([^.]+_odb(?:10|12))\.\1$': 'BUSCO completeness QC (\2) | \1'
+  '^([^| ]+) \| \1_map$': 'mapping QC | \1'
+  '^([^| ]+) \| raw_data$': 'mapping QC | \1'
+  '^([^| ]+) \| raw_data_qualimapReport \| \1$': 'mapping QC | \1'
+  '^([^| ]+) \| contigs_sel$': 'QUAST assembly QC | \1'
+  '^([^| ]+) \| short_summary\.(?:generic|specific)\.([^.]+_odb(?:10|12))\.\1$': 'BUSCO completeness QC (\2) | \1'
+EOF
+
         multiqc \
             --config {output.multiqc_yaml} \
             --outdir {output.multiqc_dir} \
             -d \
-            -dd 1 \
             {input.fastp_json} \
             {input.qualimap_dir} \
             {input.quast_dir} \
@@ -806,15 +925,97 @@ rule funannotate_db:
         tar -xzf "{params.funannotate_tar}" --strip-components=1 -C "{params.funannotate_db}" >> {log} 2>&1
         """
 
-rule funannotate_prediction:
+rule funannotate_preprocess:
     input:
         contigs = "02.assembly/{sample}/contigs_sel.fasta",
         db_info = os.path.join(FUNANNOTATEDB, "funannotate-db-info.txt")
     output:
-        funannotate_dir = directory("04.annotation/{sample}/funannotate"),
         contigs_clean = "04.annotation/{sample}/contigs_clean.fasta",
-        contigs_sort = "04.annotation/{sample}/contigs_sort.fasta",
+        contigs_sort = "04.annotation/{sample}/contigs_sort.fasta"
+    params:
+        funannotate_db = FUNANNOTATEDB
+    resources:
+        cpus = CPUS
+    conda:
+        "envs/funannotate.yaml"
+    message:
+        "--- Funannotate: Clean and sort contigs before masking. ---"
+    log:
+        "logs/funannotate_preprocess_{sample}.log"
+    priority: 4
+    shell:
+        """
+        set -euo pipefail
+
+        export FUNANNOTATE_DB="{params.funannotate_db}"
+
+        funannotate clean \
+            -i {input.contigs} \
+            -o {output.contigs_clean} > {log} 2>&1
+
+        funannotate sort \
+            -i {output.contigs_clean} \
+            -o {output.contigs_sort} \
+            --minlen 0 >> {log} 2>&1
+        """
+
+rule repeat_masking:
+    input:
+        contigs_sort = "04.annotation/{sample}/contigs_sort.fasta"
+    output:
         contigs_mask = "04.annotation/{sample}/contigs_mask.fasta"
+    params:
+        method = MASKING_METHOD,
+        work_dir = "04.annotation/{sample}/repeatmasking",
+        quick_arg = "-quick" if REPEATMODELER_QUICK else "",
+        ltrstruct_arg = "-LTRStruct" if REPEATMODELER_LTRSTRUCT else ""
+    threads:
+        min(CPUS, 12)
+    conda:
+        "envs/repeatmasking.yaml"
+    message:
+        "--- Repeat masking: Softmask contigs. ---"
+    log:
+        "logs/repeat_masking_{sample}.log"
+    priority: 4
+    shell:
+        """
+        set -euo pipefail
+
+        mkdir -p logs
+        input_fasta=$(readlink -f {input.contigs_sort})
+        output_fasta=$(readlink -f {output.contigs_mask})
+        log_file=$(readlink -f {log})
+        work_dir="{params.work_dir}"
+
+        rm -rf "$work_dir"
+        mkdir -p "$work_dir"
+
+        if [ "{params.method}" = "tantan" ]; then
+            tantan "$input_fasta" > "$output_fasta" 2> "$log_file"
+        elif [ "{params.method}" = "repeatmodeler_repeatmasker" ]; then
+            cd "$work_dir"
+            BuildDatabase -name {wildcards.sample}_rm "$input_fasta" > "$log_file" 2>&1
+            RepeatModeler -database {wildcards.sample}_rm -threads {threads} {params.quick_arg} {params.ltrstruct_arg} >> "$log_file" 2>&1
+            families="{wildcards.sample}_rm-families.fa"
+            if [ ! -s "$families" ] && [ -s "consensi.fa.classified" ]; then
+                families="consensi.fa.classified"
+            fi
+            if [ ! -s "$families" ]; then
+                echo "RepeatModeler did not produce a usable repeat library." >> "$log_file"
+                exit 1
+            fi
+            RepeatMasker -pa {threads} -xsmall -lib "$families" -dir . "$input_fasta" >> "$log_file" 2>&1
+            cp "$(basename "$input_fasta").masked" "$output_fasta"
+        fi
+        """
+
+rule funannotate_prediction:
+    input:
+        contigs_mask = "04.annotation/{sample}/contigs_mask.fasta",
+        db_info = os.path.join(FUNANNOTATEDB, "funannotate-db-info.txt")
+    output:
+        funannotate_dir = directory("04.annotation/{sample}/funannotate")
     params:
         genemark_dir = GENEMARKDIR,
         funannotate_db = FUNANNOTATEDB,
@@ -829,28 +1030,14 @@ rule funannotate_prediction:
         "--- Funannotate: Gene prediction. ---"
     log:
         "logs/funannotate_prediction_{sample}.log"
-    priority: 4    
+    priority: 3
     shell:
         """
-        # Set environment variables for funannotate
         export FUNANNOTATE_DB="{params.funannotate_db}"
         export GENEMARK_PATH="{params.genemark_dir}"
-        
-        # Run funannotate prediction pipeline
-        funannotate clean \
-            -i {input.contigs} \
-            -o {output.contigs_clean} >> {log} 2>&1
-        
-        funannotate sort \
-            -i {output.contigs_clean} \
-            -o {output.contigs_sort} >> {log} 2>&1
-        
-        funannotate mask \
-            -i {output.contigs_sort} \
-            -o {output.contigs_mask} >> {log} 2>&1
 
         funannotate predict \
-            -i {output.contigs_mask} \
+            -i {input.contigs_mask} \
             -o {output.funannotate_dir} \
             -s "{params.species}" \
             --name {wildcards.sample} \
@@ -868,9 +1055,13 @@ rule iprscan_annotation:
     params:
         iprscan = IPRSCAN
     resources:
-        cpus = 10
+        # InterProScan benefits from multiple CPUs, but very high values can be
+        # inefficient and may put unnecessary pressure on shared systems.
+        cpus = min(CPUS, 10)
     conda:
-        "envs/funannotate.yaml"
+        # Keep InterProScan in its own Java 11 environment. The main
+        # funannotate environment can still resolve with Java 8 dependencies.
+        "envs/interproscan.yaml"
     message:
         "--- InterProScan: Gene annotation. ---"
     log:
@@ -878,13 +1069,79 @@ rule iprscan_annotation:
     priority: 3
     shell:
         """
-        funannotate iprscan \
-            -i {input.funannotate_dir} \
-            -o {output.iprscan_out} \
-            -m local \
-            --iprscan_path {params.iprscan} \
-            -n 1000 \
-            --cpus {resources.cpus} > {log} 2>&1
+        # Fail immediately on command errors, unset variables, or broken pipes.
+        set -euo pipefail
+
+        # Work with absolute paths where possible, so the rule is robust to
+        # Snakemake changing directories internally.
+        funannotate_dir=$(readlink -f {input.funannotate_dir})
+
+        # Create the InterProScan output directory before resolving its absolute
+        # path. This makes the rule safe on a completely fresh output directory.
+        iprscan_dir=$(dirname "{output.iprscan_out}")
+        mkdir -p "$iprscan_dir"
+        iprscan_dir=$(readlink -f "$iprscan_dir")
+        iprscan_xml="$iprscan_dir/$(basename "{output.iprscan_out}")"
+
+        # InterProScan works on predicted proteins. Funannotate normally writes
+        # them under predict_results, but update_results is also checked for
+        # compatibility with workflows that include a funannotate update step.
+        proteins=""
+        for results_dir in "$funannotate_dir/predict_results" "$funannotate_dir/update_results"; do
+            if [ -d "$results_dir" ]; then
+                proteins=$(find "$results_dir" -maxdepth 1 -type f -name "*.proteins.fa" -print -quit)
+                if [ -n "$proteins" ]; then
+                    break
+                fi
+            fi
+        done
+
+        # Stop here if gene prediction did not produce a protein FASTA. Running
+        # InterProScan without a real input would only create a misleading error.
+        if [ -z "$proteins" ]; then
+            echo "Could not find a *.proteins.fa file in $funannotate_dir/predict_results or update_results." > {log}
+            exit 1
+        fi
+
+        # Remove any previous XML before the run. A stale file must never be
+        # mistaken for a successful InterProScan result.
+        rm -f "$iprscan_xml"
+        echo "Running InterProScan directly on $proteins" > {log}
+
+        # Run InterProScan directly instead of the funannotate iprscan wrapper.
+        # This avoids wrapper-level XML assembly issues with newer InterProScan
+        # releases while still producing the XML expected by funannotate annotate.
+        "{params.iprscan}" \
+            -i "$proteins" \
+            -f XML \
+            -goterms \
+            -pa \
+            -cpu {resources.cpus} \
+            -o "$iprscan_xml" >> {log} 2>&1
+
+        # Validate the XML before handing it to downstream annotation. This
+        # catches empty, truncated, malformed, or wrong-type XML at the source.
+        python - "$iprscan_xml" >> {log} 2>&1 <<'PY'
+import sys
+import xml.etree.ElementTree as ET
+
+# The shell passes the InterProScan XML path as the first Python argument.
+path = sys.argv[1]
+try:
+    # Parse the XML and keep the root element for a type check.
+    root = ET.parse(path).getroot()
+except Exception as exc:
+    sys.stderr.write("InterProScan XML validation failed for %s: %s\\n" % (path, exc))
+    sys.exit(1)
+
+# XML namespaces can prefix the tag with a namespace block before protein-matches.
+# chr(125) is the closing curly brace; spelling it this way avoids confusing
+# Snakemake's own brace-based string formatting.
+tag = root.tag.split(chr(125))[-1]
+if tag != "protein-matches":
+    sys.stderr.write("InterProScan XML validation failed for %s: unexpected root tag '%s'\\n" % (path, root.tag))
+    sys.exit(1)
+PY
         """
 
 rule antismash_db:
@@ -936,6 +1193,7 @@ rule antismash_annotation:
             --output-basename {params.basename} \
             --databases {input.antismash_db} \
             --genefinding-tool {params.genefinding_tool} \
+            --cpus {resources.cpus} \
             {params.gbk_file} > {log} 2>&1
         """
 
@@ -967,6 +1225,7 @@ rule eggnog_annotation:
   shell:
     """
     mkdir -p {output.temp_dir} {output.eggnog_dir}
+    export GIT_CEILING_DIRECTORIES="$PWD"
 
     emapper.py \
         -i {params.protein_file} \
@@ -977,6 +1236,10 @@ rule eggnog_annotation:
         --output {wildcards.sample} \
         --temp_dir {output.temp_dir} \
         --override > {log} 2>&1
+
+    emapper_version=$(python -c 'import importlib.metadata as m; print(m.version("eggnog-mapper"))')
+    sed -i "s/^## emapper-v[0-9][^[:space:]]*/## emapper-${{emapper_version}}/" \
+        {output.eggnog_dir}/{wildcards.sample}.emapper.annotations
     """
 
 rule funannotate_annotation:
@@ -986,7 +1249,7 @@ rule funannotate_annotation:
         eggnog_dir = "04.annotation/{sample}/eggnog",
         antismash_dir = "04.annotation/{sample}/antismash"
     output:
-        annotate_complete = temp("04.annotation/{sample}/.annotation_complete.txt")
+        annotate_complete = "04.annotation/{sample}/.annotation_complete.txt"
     params:
         funannotate_db = FUNANNOTATEDB
     resources:
@@ -1000,33 +1263,52 @@ rule funannotate_annotation:
     priority: 2    
     shell:
         """
+        set -euo pipefail
+
         # Set funannotate db directory as environmental variable, again
         export FUNANNOTATE_DB="{params.funannotate_db}"
-        
+
+        funannotate_dir=$(readlink -f {input.funannotate_dir})
+        antismash_gbk=$(readlink -f {input.antismash_dir}/antismash.gbk)
+        iprscan_xml=$(readlink -f {input.iprscan_out})
+        eggnog_annotations=$(readlink -f {input.eggnog_dir}/{wildcards.sample}.emapper.annotations)
+        log_file=$(readlink -f {log})
+        complete_file=$(readlink -f {output.annotate_complete})
+        annotate_work="$funannotate_dir/annotate_work"
+
+        mkdir -p "$annotate_work"
+        cd "$annotate_work"
+
         funannotate annotate \
-            -i {input.funannotate_dir} \
-            --antismash {input.antismash_dir}/antismash.gbk \
-            --iprscan {input.iprscan_out} \
-            --eggnog {input.eggnog_dir}/{wildcards.sample}.emapper.annotations \
-            --cpus {resources.cpus} > {log} 2>&1
+            -i "$funannotate_dir" \
+            --antismash "$antismash_gbk" \
+            --iprscan "$iprscan_xml" \
+            --eggnog "$eggnog_annotations" \
+            --cpus {resources.cpus} > "$log_file" 2>&1
+
+        if [ -s genome.fixedproducts ]; then
+            mkdir -p "$funannotate_dir/annotate_misc"
+            mv genome.fixedproducts "$funannotate_dir/annotate_misc/genome.fixedproducts"
+        fi
 
         # Create a dummy file to execute the rule, since funannotate ignores the -o option
-        touch {output.annotate_complete} 
+        touch "$complete_file"
 
         # Cleanup process
-        rm -rf 04.annotation/{wildcards.sample}/genome.fixedproducts
-        rm -rf 04.annotation/{wildcards.sample}/*.log
+        rm -f "$funannotate_dir"/*.log
+        rm -f "$annotate_work"/funannotate-annotate.*.log
+        rmdir "$annotate_work" 2>/dev/null || true
         """
 
 rule cleanup:
     input:
         annotate_complete = "04.annotation/{sample}/.annotation_complete.txt",
     output:
-        cleanup_complete = temp("04.annotation/{sample}/.cleanup_complete.txt")
+        cleanup_complete = "04.annotation/{sample}/.cleanup_complete.txt"
     message:
         "--- Cleaning up the output dir. ---"
     log:
-        "logs/funannotate_annotation_{sample}.log"
+        "logs/cleanup_{sample}.log"
     priority: 1    
     shell:
         """
@@ -1034,9 +1316,9 @@ rule cleanup:
         if [ -f {input.annotate_complete} ]; then
 
             # Perform the cleanup
-            rm -rf clean_*
-            rm -rf *.log
-            rm -rf genome.fixedproducts
+            rm -rf 04.annotation/{wildcards.sample}/clean_*
+            rm -rf 04.annotation/{wildcards.sample}/*.log
+            rm -rf 04.annotation/{wildcards.sample}/genome.fixedproducts
 
             # Create a dummy file to execute the rule
             touch {output.cleanup_complete}

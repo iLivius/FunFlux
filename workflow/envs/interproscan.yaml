@@ -1,6 +1,7 @@
-name: eggnog-mapper
+name: interproscan
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - eggnog-mapper=2.1.13
+  - openjdk=11
+  - python=3.11

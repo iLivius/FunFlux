@@ -1,32 +1,24 @@
 # FunFlux
-Integrated workflow for fungal genome assembly and annotation.
+Integrated workflow for fungal short-read genome assembly and annotation.
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥9.14.6-brightgreen.svg)](https://snakemake.readthedocs.io/en/stable/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13612159.svg)](https://doi.org/10.5281/zenodo.13612159)
 
 ---
 ```bash
-__________             _______________              
+__________             _______________
 ___  ____/___  ___________  ____/__  /___  _____  __
 __  /_   _  / / /_  __ \_  /_   __  /_  / / /_  |/_/
-_  __/   / /_/ /_  / / /  __/   _  / / /_/ /__>  <  
+_  __/   / /_/ /_  / / /  __/   _  / / /_/ /__>  <
 /_/      \__,_/ /_/ /_//_/      /_/  \__,_/ /_/|_|
-              
-FunFlux v1.0.6
 
+FunFlux v1.1.0
 
-January 2026
+June 2026
 ```
 ---
 
-## Authors and Contributors
-[AIT Austrian Institute of Technology, Center for Health & Bioresources](https://www.ait.ac.at/en/research-topics/bioresources)
-
-- Livio Antonielli
-- Günter Brader
-- Stéphane Compant
-
 ## Synopsis
-`FunFlux` is a [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) workflow designed for the genome assembly and annotation of fungal short reads sequenced with Illumina technology. It also supports the analysis of pre-assembled contigs. The workflow includes features such as contig selection and decontamination, genome completeness assessment, ITS extraction with taxonomic assignment, and precise gene prediction and annotation.
+`FunFlux` is a [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) workflow designed for genome assembly and annotation of fungal short reads sequenced with Illumina technology. Pre-assembled fungal genomes can be analyzed with the bundled `Funnotator` flavour. The workflow includes read preprocessing, assembly, contig selection and decontamination, assembly quality control, genome completeness assessment, ITS extraction and taxonomic assignment, repeat masking, gene prediction, functional annotation, and summary reporting.
 
 ## Table of Contents
 - [Rationale](#rationale)
@@ -40,320 +32,340 @@ January 2026
 - [References](#references)
 
 ## Rationale
-The analysis of fungal whole-genome sequencing (WGS) data involves a complex series of bioinformatic steps that can be challenging to execute manually. This process is often time-consuming, prone to errors, and difficult to reproduce. `FunFlux` addresses these challenges by offering a comprehensive and automated [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) workflow specifically designed for fungal genomic data analysis.
+The analysis of fungal whole-genome sequencing (WGS) data involves a complex series of bioinformatic steps that can be challenging to execute manually. This process is time-consuming, prone to errors, and difficult to reproduce. `FunFlux` addresses these problems by providing an automated [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) workflow for fungal genome assembly and annotation.
 
-`FunFlux` is designed to streamline the annotation process with [funannotate](https://github.com/nextgenusfs/funannotate) in the absence of RNA sequencing evidence. It relies on both *ab initio* annotation and protein FASTA sequences from organisms of the same species or genus to enhance the accuracy of gene prediction and annotation.
-
-[⬆ Back to Table of Contents](#table-of-contents)
+`FunFlux` is designed to streamline annotation with [funannotate](https://github.com/nextgenusfs/funannotate) in the absence of RNA sequencing evidence. It relies on both *ab initio* annotation and protein FASTA sequences from organisms of the same species, genus, or another closely related taxon to improve gene prediction and annotation.
 
 ## Description
 Here's a breakdown of the `FunFlux` workflow:
 
 01. **Preprocessing:**
     * Raw reads are checked for Illumina phiX contamination using [bowtie2](https://github.com/BenLangmead/bowtie2).
-
     * Adapters are removed and reads are filtered using [fastp](https://github.com/OpenGene/fastp).
 
 02. **Assembly:**
     * Filtered reads are assembled into contigs with [SPAdes](https://github.com/ablab/spades).
 
 03. **QC, Decontamination, Completeness Assessment, and ITS extraction:**
-    * Contigs are filtered based on a minimum length of 500 bp and a coverage of 2x.
+    * Contigs are filtered based on minimum length and coverage.
     * Filtered reads are mapped back to contigs using [bowtie2](https://github.com/BenLangmead/bowtie2) and [samtools](https://github.com/samtools/samtools). The resulting BAM file is analyzed with [QualiMap](http://qualimap.conesalab.org/).
     * Local alignments of contigs are performed against the [NCBI core nt](https://ftp.ncbi.nlm.nih.gov/blast/db/) database using [BLAST+](https://blast.ncbi.nlm.nih.gov/doc/blast-help/).
-    * Contaminant contigs are checked with [BlobTools](https://github.com/DRL/blobtools). Unless otherwise specified (see [configuration](#configuration) section for more details), the output of this step will be parsed automatically to discard contaminants based on the relative taxonomic composition of the contigs.   
-    * Genome assembly quality is evaluated with [Quast](https://github.com/ablab/quast).
-    * Genome completeness is assessed with [BUSCO](https://busco.ezlab.org/) using taxon-specific markers.
+    * Contaminant contigs are checked with [BlobTools](https://github.com/DRL/blobtools). Contig selection is handled by a dedicated taxonomy selector script. The selector can keep all contigs, keep the most abundant assigned genus, include specified genera, exclude specified genera, and optionally discard `no-hit` contigs.
+    * Genome assembly quality is evaluated with [QUAST](https://github.com/ablab/quast).
+    * Genome completeness is assessed with [BUSCO](https://busco.ezlab.org/).
     * ITS markers are detected and extracted with [ITSx](https://microbiology.se/software/itsx/).
-    * ITS taxonomic assignment is performed with [SINTAX](https://www.drive5.com/sintax/) re-implemented in [VSEARCH](https://github.com/torognes/vsearch) using the [UNITE](https://unite.ut.ee/repository.php) database as reference. 
+    * ITS taxonomic assignment is performed with the [SINTAX](https://www.drive5.com/sintax/) classifier in [VSEARCH](https://github.com/torognes/vsearch) using the [UNITE](https://unite.ut.ee/repository.php) database.
 
 04. **Gene Prediction:**
 
-    `FunFlux` is optimized to leverage the [funannotate](https://github.com/nextgenusfs/funannotate) pipeline in cases where RNA sequencing data is not available. Instead, it utilizes external protein evidence along with robust *ab initio* prediction methods to produce accurate gene models for fungal genomes. Below is a step-by-step breakdown of the workflow:
+    `FunFlux` is optimized to leverage [funannotate](https://github.com/nextgenusfs/funannotate) when RNA sequencing data is not available. Instead, it uses external protein evidence and *ab initio* predictors to produce fungal gene models. The workflow splits the previous monolithic prediction step into:
 
-    - Preprocessing the genome assembly 
-        - N50 calculation and contig duplication checking: As part of the cleaning process, the N50 value is calculated, and contigs shorter than this value are checked for duplication. Only unique, non-redundant contigs are retained, ensuring that the assembly is as clean and representative as possible.
+    ```text
+    funannotate_preprocess -> repeat_masking -> funannotate_prediction
+    ```
 
-        - Sorting and renaming FASTA headers: The assembled contigs are sorted by length and headers are renamed to ensure compatibility with follow-up tools. 
-       
-        - Repeat masking: Before gene prediction, the genome assembly is softmasked using the [tantan](https://gitlab.com/mcfrith/tantan) software to obscure repetitive elements, which helps in preventing spurious gene predictions in these regions.
+    This split makes repeat masking replaceable without changing the downstream funannotate prediction and annotation logic.
 
-    - Incorporating protein evidence 
-        - Protein alignment: [DIAMOND](https://github.com/bbuchfink/diamond) is used to quickly search for homologies between the genome and provided protein sequences of closely related taxa, as well as the [UniProt](https://www.uniprot.org/) database. These matches are then refined with [Exonerate](https://www.ebi.ac.uk/about/vertebrate-genomics/software/exonerate), which aligns the protein sequences to the genome with high precision, providing evidence for gene structures.
+    - Preprocessing the genome assembly
+        - N50 calculation and contig duplication checking are performed by `funannotate clean`.
+        - Contigs are sorted and headers are renamed with `funannotate sort`.
+
+    - Repeat masking
+        - The default strategy is direct [tantan](https://gitlab.com/mcfrith/tantan) softmasking.
+        - The optional advanced strategy runs [RepeatModeler](https://github.com/Dfam-consortium/RepeatModeler) and [RepeatMasker](https://www.repeatmasker.org/) with the de novo repeat library produced by the former.
+
+    - Incorporating protein evidence
+        - [DIAMOND](https://github.com/bbuchfink/diamond) is used by `funannotate` to search for homology between the genome and provided protein sequences from related taxa, as well as the `UniProt` database bundled in the configured `funannotate` database snapshot. Matches are refined by [Exonerate](https://www.ebi.ac.uk/about/vertebrate-genomics/software/exonerate).
 
     - *Ab initio* gene prediction
-        - [GeneMark-ES](https://genemark.bme.gatech.edu/gmes_instructions.html): This tool performs self-training on the genome sequence to predict genes without the need for external training data, making it especially useful for identifying genes in regions lacking homology-based evidence.
+        - [GeneMark-ES](https://genemark.bme.gatech.edu/gmes_instructions.html) is made available to `funannotate` and contributes self-trained *ab initio* gene predictions from the genome sequence.
+        - [BUSCO](https://busco.ezlab.org/) conserved genes are passed to [Augustus](https://github.com/Gaius-Augustus/Augustus) to improve training.
+        - [SNAP](https://github.com/KorfLab/SNAP), [GlimmerHMM](https://ccb.jhu.edu/software/glimmerhmm/), and other `funannotate`-supported predictors contribute to consensus model building.
 
-    - Ortholog detection and model training
-        - [BUSCO](https://busco.ezlab.org/): Based on conserved orthologous genes, it provides high-quality evidence for training gene prediction tools. Conserved genes are passed to [Augustus](https://github.com/Gaius-Augustus/Augustus) to improve its predictive accuracy.
-
-        - [Augustus](https://github.com/Gaius-Augustus/Augustus) training: It works with the closest taxon model available, as well as the evidence from [BUSCO](https://busco.ezlab.org/), [DIAMOND](https://github.com/bbuchfink/diamond)/[Exonerate](https://www.ebi.ac.uk/about/vertebrate-genomics/software/exonerate), and the outputs from other *ab initio* predictors like [SNAP](https://github.com/KorfLab/SNAP) and [GlimmerHMM](https://ccb.jhu.edu/software/glimmerhmm/). This comprehensive training enables Augustus to generate highly accurate gene predictions.
-
-    - Combining predictions with [EVidenceModeler](https://github.com/EVidenceModeler/EVidenceModeler)
-        - [EVidenceModeler (EVM)](https://github.com/EVidenceModeler/EVidenceModeler): The predictions from various *ab initio* tools, such as [Augustus](https://github.com/Gaius-Augustus/Augustus), [SNAP](https://github.com/KorfLab/SNAP), [GlimmerHMM](https://ccb.jhu.edu/software/glimmerhmm/) are combined to generate consensus gene models.
-
-    - Refining steps
-        - Gene model filtering: The gene models generated by [EVM](https://github.com/EVidenceModeler/EVidenceModeler) are subjected to further filtering to remove short, low-confidence predictions, models spanning gaps, and potential transposable elements.
-
-        - tRNA prediction: tRNA genes are predicted using [tRNAscan-SE](https://github.com/UCSC-LoweLab/tRNAscan-SE), ensuring comprehensive annotation of both protein-coding and non-coding genes.
-
-        - NCBI submission preparation: Generation of an NCBI-compatible annotation table (.tbl format) and conversion to GenBank format using tbl2asn. The workflow also includes a validation step to parse NCBI error reports and alert users to any gene models that need manual correction.
+    - Combining and refining predictions
+        - [EVidenceModeler](https://github.com/EVidenceModeler/EVidenceModeler) combines evidence into final gene models.
+        - tRNA genes are predicted with [tRNAscan-SE](https://github.com/UCSC-LoweLab/tRNAscan-SE).
+        - NCBI-compatible annotation files are generated by `funannotate`.
 
 05. **Gene Annotation:**
 
-    A comprehensive gene annotation process assigns functional information to the identified genes. This process integrates multiple annotation tools and culminates in a final annotation round performed by [funannotate](https://github.com/nextgenusfs/funannotate). Below is an overview of the workflow:
+    Gene annotation integrates multiple tools and culminates in a final `funannotate annotate` step:
 
-    - [InterProScan](https://github.com/ebi-pf-team/interproscan) (v5.65-97.0): This tool is employed to assign protein domains and predict functional sites within the gene models. It integrates data from multiple databases such as `Pfam`, `SMART`, `PANTHER` and `PROSITE`, providing a rich set of functional annotations.
-
-    - [EggNOG-mapper](https://github.com/eggnogdb/eggnog-mapper) (v2.1.12): This software is used to predict orthology and functional annotations based on the `EggNOG` database (v5.0). It helps in assigning Gene Ontology (GO) terms, enzyme codes, and pathway annotations to the gene models, offering insights into the biological roles of the proteins.
-        
-    - [antiSMASH](https://github.com/antismash/antismash) (v8.0.4): For fungal genomes, secondary metabolite gene clusters related to antibiotics or toxins are of particular interest.
-
-    - HMMer for [PFAM](http://pfam.xfam.org/) database (v38.0)
-
-    - [DIAMOND](https://github.com/bbuchfink/diamond) for [UniProt](https://www.uniprot.org/) (v2025_04)
-
-    - [DIAMOND](https://github.com/bbuchfink/diamond) for [MEROPS](https://www.ebi.ac.uk/merops/) database (v12.0)
-
-    - CAZyme annotation with [dbCAN](https://bcb.unl.edu/dbCAN2/) (v14.0).
+    - [InterProScan](https://github.com/ebi-pf-team/interproscan) is expected as an external local installation.
+    - [EggNOG-mapper](https://github.com/eggnogdb/eggnog-mapper) is used for orthology and functional annotation.
+    - [antiSMASH](https://github.com/antismash/antismash) detects secondary metabolite biosynthetic gene clusters. The `antiSMASH` database directory is a temporary Snakemake output and should be removed after antiSMASH jobs complete.
+    - The configured funannotate database snapshot contains resources such as `UniProt`, `MEROPS`, `dbCAN`, `Pfam`, `GO`, `MIBiG`, `InterPro`, and `BUSCO` outgroups.
 
 06. **Report:**
-    * Results are parsed and aggregated to generate a report using [MultiQC](https://github.com/MultiQC/MultiQC).
+    * Results are parsed and aggregated with [MultiQC](https://github.com/MultiQC/MultiQC).
+
+07. **Funnotator flavour:**
+    * `Funnotator` is the annotation-only `FunFlux` flavour for pre-assembled fungal genome FASTA files. It skips Illumina preprocessing and `SPAdes` assembly, then applies the same fungal annotation logic where relevant.
 
 [⬆ Back to Table of Contents](#table-of-contents)
 
 ## Installation
-`FunFlux` automatically downloads most of dependencies and several databases. However, some external software and databases require manual download before running the workflow.
+`FunFlux` automatically downloads most Conda-managed dependencies and several workflow databases. Some external databases and licensed tools still require manual installation before running the workflow.
 
 1. **Download FunFlux:**
 
-    Download via command line as:
     ```bash
-    # Clone the directory
     git clone https://github.com/iLivius/FunFlux.git
     ```
 
 2. **Install Snakemake:**
 
-    `FunFlux` relies on [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) to manage the workflow execution. Find the official and complete set of instructions [here](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html). To install Snakemake as a Conda environment:
+    `FunFlux` relies on [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) to manage workflow execution.
+
     ```bash
-    # Install Snakemake in a new Conda environment
     conda create -c conda-forge -c bioconda -n snakemake snakemake
+    conda activate snakemake
     ```
 
-3. **Databases:**
+3. **Databases and external software:**
 
-    Some external databases need to be downloaded manually. If you have already installed these databases, you can skip this paragraph and proceed to the  [configuration](#configuration) section.
-    
-    Here are the required databases and software that need manual installation.
+    * `NCBI core nt` database:
 
-    * `NCBI core nt` database, adapted from [here](https://gist.github.com/ppflrs/336e49f8ae3843dc06cc3925940f3024):
         ```bash
-        # Create a list of all core nt links in the directory designated to host the database (recommended)
         rsync --list-only rsync://ftp.ncbi.nlm.nih.gov/blast/db/core_nt.*.gz | grep '.tar.gz' | awk '{print "ftp.ncbi.nlm.nih.gov/blast/db/" $NF}' > nt_links.list
-        
-        # Alternatively, create a list of nt links for bacteria only 
-        rsync --list-only rsync://ftp.ncbi.nlm.nih.gov/blast/db/nt_prok.*.gz | grep '.tar.gz' | awk '{print "ftp.ncbi.nlm.nih.gov/blast/db/" $NF}' > nt_prok_links.list
-       
-        # Download in parallel, without overdoing it
-        cat nt*.list | parallel -j4 'rsync -h --progress rsync://{} .'
-
-        # Decompress with multiple CPUs
+        cat nt_links.list | parallel -j4 'rsync -h --progress rsync://{} .'
         find . -name '*.gz' | parallel -j4 'echo {}; tar -zxf {}'
 
-        # Get NCBI taxdump
         wget -c 'ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz'
         tar -zxvf taxdump.tar.gz
 
-        # Get NCBI BLAST taxonomy
         wget 'ftp://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz'
         tar -zxvf taxdb.tar.gz
 
-        # Get NCBI accession2taxid file
-        wget -c 'ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz'
+        wget -c 'ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz'
         gunzip nucl_gb.accession2taxid.gz
         ```
-        *NOTE: **Skip the download if you provide assembled contigs as input.** The complete NCBI core nt database and taxonomy-related files will take more than 200 GB of hard drive space.*
+
+        *NOTE: the complete NCBI core nt database and taxonomy-related files require more than 200 GB of disk space. It is not needed when using Funnotator on already assembled FASTA files.*
 
     * `UNITE` database:
 
-        - Visit the [UNITE USEARCH/UTAX release for eukaryotes](https://doi.plutof.ut.ee/doi/10.15156/BIO/2959341).
-        - Download the `utax_reference_dataset_all_04.04.2024.fasta.gz` file and decompress it.
-        - Add the PATH to the FASTA file in the `config.yaml` file. See the [configuration](#configuration) section.
-   
-    * `eggNOG diamond` database:
-        ```bash
-       # Create a Conda environment with eggnog-mapper, first
-       conda create -n eggnog-mapper eggnog-mapper=2.1.12
+        Manual download is not required for the standard workflow. The config contains:
 
-       # Activate the environment
-       conda activate eggnog-mapper
-
-       # Create a directory where you want to install the diamond database for eggnog-mapper (example) 
-       mkdir /data/eggnog_db
-
-       # Finally, download the diamond db in the newly created directory 
-       download_eggnog_data.py --data_dir /data/eggnog_db -y
+        ```yaml
+        links:
+          unite_its_link: https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz
         ```
-        *NOTE: the eggNOG database requires ~50 GB of space.*
 
-    * Download and set up `Genemark-ES/ET`:
+        The workflow downloads and decompresses this file automatically into:
 
-        - Visit the `GeneMark` download page [here](http://topaz.gatech.edu/GeneMark/license_download.cgi).
+        ```text
+        03.post-processing/ITS_extraction/unite_its_sintax.fasta
+        ```
 
-        - Follow the instructions to download `GeneMark-ES/ET`.
+    * `eggNOG diamond` database:
 
-        - Change the shebang line in Perl scripts, as follows:
+        ```bash
+        conda create -n eggnog-mapper eggnog-mapper=2.1.13
+        conda activate eggnog-mapper
+        mkdir /data/eggnog_db
+        download_eggnog_data.py --data_dir /data/eggnog_db -y
+        ```
+
+        *NOTE: the eggNOG database requires roughly 50 GB of disk space.*
+
+    * Download and set up `GeneMark-ES/ET`:
+
+        - Visit the [GeneMark](http://topaz.gatech.edu/GeneMark/license_download.cgi) download page.
+        - Download `GeneMark-ES/ET`.
+        - Change Perl script shebangs if necessary:
+
             ```bash
-            # After downloading, navigate to the GeneMark directory (example):
-            cd /gmes_linux_64_4
-
-            # Change the shebang line in all Perl scripts to use /usr/bin/env perl:
+            cd /path/to/gmes_linux_64_4
             find . -type f -name "*.pl" -exec sed -i '1s|^#!/usr/bin/perl|#!/usr/bin/env perl|' {} +
-
-            # Test the software (optional and intended only as a sanity check):
             ./gmes_petap.pl
             ```
-            This command assumes that:        
-            - either GeneMark is executed within an **activated Conda environment** that provides the required Perl modules (e.g. an environment with `funannotate` installed), or
-           - the required Perl modules are installed system-wide.
-           
-           The list of required Perl modules is documented in the `INSTALL` file shipped with the GeneMark distribution.
 
     * Download and set up `InterProScan`:
+
+        The version tested was `v5.77-108.0`, which is not downloaded by the workflow. The official download instructions are available [here](https://interproscan-docs.readthedocs.io/en/v5/HowToDownload.html). Download the tested archive and checksum file:
+
         ```bash
-        # Download this version although probably also more recent ones should work: 
-        wget https://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/5.65-97.0/interproscan-5.65-97.0-64-bit.tar.gz
+        wget https://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/5.77-108.0/interproscan-5.77-108.0-64-bit.tar.gz
+        wget https://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/5.77-108.0/interproscan-5.77-108.0-64-bit.tar.gz.md5
+        md5sum -c interproscan-5.77-108.0-64-bit.tar.gz.md5
+        ```
 
-        # Exctract the tarball:
-        tar -pxvzf interproscan-5.65-97.0-64-bit.tar.gz
+        Then extract and initialize `InterProScan`:
 
-        # From inside the iprscan dir, index the hmm models:
+        ```bash
+        tar -pxvzf interproscan-5.77-108.0-64-bit.tar.gz
+        cd interproscan-5.77-108.0
         python3 setup.py -f interproscan.properties
-
-        # Check the shell script, inside the iprscan dir:
         ./interproscan.sh
         ```
+
+    * Repeat masking tools:
+
+        `tantan`, `RepeatModeler`, and `RepeatMasker` are installed through the workflow Conda environment. The advanced masking mode uses the custom RepeatModeler library with `RepeatMasker -lib`, so no separate curated RepeatMasker database is required for that mode.
+
 [⬆ Back to Table of Contents](#table-of-contents)
 
 ## Configuration
-Before running `FunFlux`, you must edit the `config.yaml` file with a text editor. The file is organized in different sections: `links`, `directories`, `files`, `resources` and `parameters`, respectively.
- 
+Before running `FunFlux`, edit `config/config.yaml`. The file is organized into `links`, `directories`, `files`, `resources`, and `parameters`.
+
 - `links`
 
-    This section should work fine as it is, therefore it is recommanded to change the `links` only if necessary or to update the database versions:
-
-    - [phix_link](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/819/615/GCF_000819615.1_ViralProj14015): Path to the PhiX genome reference used by Illumina for sequencing control.
-    - [funannotate_link](https://zenodo.org/records/18271295): Link to a frozen snapshot of the funannotate databases, generated using the `funannotate setup` utility on **December 15, 2025**. This archive is provided to ensure full reproducibility, avoiding recent unexpected upstream changes.
+    - [phix_link](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/819/615/GCF_000819615.1_ViralProj14015): PhiX genome reference used as Illumina sequencing control.
+    - [funannotate_link](https://zenodo.org/records/18271295/files/funannotate_db_1.8.15_2025-12-15.tar.gz?download=1): URL to a frozen funannotate database snapshot. This is a database archive, not the funannotate executable version.
+    - [unite_its_link](https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz): URL to the compressed UNITE SINTAX FASTA used for ITS classification.
 
 - `directories`
 
-    Update paths based on your file system: 
+    - **input_dir**: Directory containing paired-end FASTQ reads. Requirements:
+        1. Files can only have `fastq`, `fq`, `fastq.gz`, or `fq.gz` extensions.
+        2. All files in a run must use the same extension.
+        3. Sample names must not contain underscores or these characters: `_*#@%^/! ?&:;|<>`.
+        4. Use `_R1` and `_R2` to define paired-end reads, for example `strain-42_R1.fastq.gz` and `strain-42_R2.fastq.gz`.
 
-    - **input_dir**: Directory containing the paired-end reads of your sequenced strains, in FASTQ format. You can provide as many as you like but at the following conditions:
-        1. Files can only have the following extensions: `fastq`, `fq`, `fastq.gz`, or `fq.gz`.
-        2. You can provide multiple samples but the extension should be the same for all files. So, don't mix files with different extensions.
-        3. `No underscores` are allowed in sample names.
-        4. Use `_R1` and `_R2` to define PE reads of each sample. i.e. `strain-42_R1.fastq.gz`, `strain-42_R2.fastq.gz`.
+        For `Funnotator`, provide assembled FASTA files instead. FASTA files can use `fasta`, `fa`, or `fna` extensions and sample names must not contain underscores.
 
-        Alternatively, if you want to analyze already available contigs with `Funnotator`, you should provide FASTA files. Also in this case, you can provide as many genomes as you like but at the following conditions:
-        1. Files can only have the following extensions: `fasta`, `fa`, or `fna`.
-        2. You can provide multiple samples but the extension should be the same for all files. So, don't mix files with different extensions.
-        3. `No underscores` are allowed in sample names. See example: `sample-1.fasta`, `sample2.fasta`.
-                     
-    - **output_dir**: This directory will store all output files generated by `FunFlux`. Additionally, by default, `FunFlux` will install required software and databases here, within Conda environments. Reusing this output directory for subsequent runs avoids reinstalling everything from scratch.
-
-    - **blast_db**: Path to the whole `NCBI core nt`. See [installation](#installation). Not needed if you work with FASTA files of previously assembled contigs. 
-
-    - **eggnog_db**: Path to the diamond database for `eggNOG`. Download details in [installation](#installation).
-
-    - **genemark_dir**: Path to `gmes_linux_64_4` directory. To get and configure `GeneMark-ES/ET`, see the [installation](#installation), above.
-
-    - **funannotate_db**: Provide a path to automatically install the following databases:
-
-        ```
-        Funannotate Databases currently installed:
-
-        Database          Type        Version      Date         Num_Records  Md5checksum                     
-        merops            diamond     12.0         2017-10-04   5098         6cd3c3dd85650394ce4e3dacb591f2a5
-        uniprot           diamond     2025_04      2025-10-08   573661       8e4497ca94ff1006fea4712fa48d63a8
-        dbCAN             hmmer3      14.0         2025-08-26   699          fb112af319a5001fbf547eac29e7c3b5
-        pfam              hmmer3      38.0         2025-07      25545        116da50b8920336c502083b487029eaf
-        repeats           diamond     1.0          2025-12-15   11950        4e8cafc3eea47ec7ba505bb1e3465d21
-        go                text        2025-10-10   2025-10-10   48196        dc1177c6b92eea6ac7dd626c0e14f0cf
-        mibig             diamond     1.4          2025-12-15   31023        118f2c11edde36c81bdea030a0228492
-        interpro          xml         107.0        2025-10-16   49674        c193fb3ad06425719a19741a2fb926b2
-        busco_outgroups   outgroups   1.0          2025-12-15   8            6795b1d4545850a4226829c7ae8ef058
-        gene2product      text        1.97         2025-08-05   34471        06c7885e8db4bb3f7f83e59c1b707a54
-        ``` 
+    - **output_dir**: Directory where output files, `.snakemake` metadata, and Conda environments are stored. Reusing the same output directory avoids reinstalling environments.
+    - **blast_db**: Path to the NCBI core nt database and taxonomy files.
+    - **eggnog_db**: Path to the eggNOG-mapper database.
+    - **genemark_dir**: Path to the `gmes_linux_64_4` directory.
+    - **funannotate_db**: Path where the funannotate database snapshot is installed or already available.
 
 - `files`
 
-    - **its_db**: Path to the [UNITE USEARCH/UTAX release for eukaryotes](https://doi.plutof.ut.ee/doi/10.15156/BIO/2959341) decompressed FASTA. Find the download instructions in the [installation](#installation) paragraph.
-
-    - **annotation_params**: Path to a tab-delimited annotation parameter file, as displayed below. 
-    
-        An example is provided in the `config` directory as `annotation_parameters.tsv`:
+    - **annotation_params**: Path to a tab-delimited annotation parameter file. An example is provided in `config/annotation_parameters.tsv`.
 
         | #Sample        | Species                    | Proteins              | Model                |
         |----------------|----------------------------|-----------------------|----------------------|
         | ARSEF3097      | Beauveria bassiana         | /path/to/proteins.faa | fusarium_graminearum |
-        | 150-1          | Lecanicillium fungicola    | /path/to/proteins.faa | fusarium_graminearum |
-        | FJII-L10-SW-P1 | Parengyodontium torokii    | /path/to/proteins.faa | fusarium_graminearum |
-        | HWLR35         | Lecanicillium psalliotae   | /path/to/proteins.faa | fusarium_graminearum |
-        | JC-1038        | Gamszarea kalimantanensis  | /path/to/proteins.faa | fusarium_graminearum |
-        | MBC-099        | Lecanicillium aphanocladii | /path/to/proteins.faa | fusarium_graminearum |
-        | MBC-350        | Akanthomyces uredinophilus | /path/to/proteins.faa | fusarium_graminearum |
-        | MBC-401        | Cordyceps farinosa         | /path/to/proteins.faa | fusarium_graminearum |
-        | MBC-695        | Akanthomyces uredinophilus | /path/to/proteins.faa | fusarium_graminearum |
-        | MBC-701        | Akanthomyces dipterigenus  | /path/to/proteins.faa | fusarium_graminearum |
+        | strain-42      | Lecanicillium fungicola    | /path/to/proteins.faa | fusarium_graminearum |
 
-    - **iprscan**: Path to the [InterProScan](https://github.com/ebi-pf-team/interproscan) shell script. See the [installation](#installation) section for more details.
-  
+    - **iprscan**: Path to the InterProScan shell script.
+
 - `resources`
-    
-    In this section you can specify the hardware resources available to the workflow: 
 
-  - threads: max number of CPUs used by each rule
-  - ram_gb: max amount of RAM used by [SPAdes](https://github.com/ablab/spades).
+    - **threads**: Maximum CPUs passed to individual tools inside rules. Some tools are capped internally where higher values are not useful or can be unstable.
+    - **ram_gb**: Maximum RAM value used by memory-aware tools such as SPAdes and QualiMap.
+
+    `--cores` is Snakemake's scheduler limit. `resources: threads` controls tool-level thread arguments.
 
 - `parameters`
 
-    **Genus filtering**: `FunFlux` includes an optional parameter to specify the fungal `genus` of contigs you wish to retain in the final assembly. If left blank, `FunFlux` will automatically keep contigs associated with the most abundant taxon, based on relative composition determined through `BLAST` analysis. While this approach generally works well, it has limitations, such as reduced resolution at the species level due to reliance on the cumulative best scores of `BLAST` hits. Additionally, this method may be problematic if the contaminant organism belongs to the same genus as your target organism, or if you are working with co-cultured closely related species or strains. If the `genus` parameter introduces more issues than benefits, simply remove the `genus` option from the `config.yaml` file.
+    **Decontamination**
 
-    - **Using** the `genus` parameter: if a contaminant is ascertained to be more abundant than your target organism, you can re-run the workflow after reviewing the assembly [output](#output). Specify the `genus` of the desired fungal taxon you want to keep in during the re-run. 
-    
-    - **Disabling** the `genus` filtering: if either the automatic inference of contaminant contigs or the manual selection of the desired taxon are still not working for you, simply delete the `genus` option from the `parameters`. In this case, only contigs tagged as "no-hit" after `BLAST` search will be filtered out.
+    ```yaml
+    decontamination:
+      mode: off
+      discard_no_hit: true
+      include_genera:
+      include_genera_by_sample:
+      exclude_genera:
+      exclude_genera_file:
+      sample_overrides:
+    ```
+
+    Available modes:
+
+    - `off`: keep all contigs. `discard_no_hit` is ignored.
+    - `auto`: keep the most abundant assigned genus.
+    - `include`: keep only listed genera.
+    - `exclude`: remove listed genera.
+
+    `discard_no_hit: true` removes BLAST `no-hit` contigs only when the mode is `auto`, `include`, or `exclude`.
+    In `auto` and `include` modes, the selector can treat selected genus aliases and retained legacy prefixes as equivalent. This is mainly a safeguard against false contig removal when BLAST/BlobTools assigns related or recently reclassified genera inconsistently. Although FunFlux targets fungal genomes, bacterial genera may appear here because bacterial contamination can occur in fungal WGS assemblies. Alias-based decisions are recorded in `contig_taxonomy_decisions.tsv` with reasons such as `auto_genus_alias` or `included_genus_alias`. `exclude` mode remains exact. These aliases are heuristic safeguards, not a formal taxonomic reconciliation system.
+
+    Genera can be supplied directly:
+
+    ```yaml
+    exclude_genera: Acidovorax;Pseudomonas;Sphingomonas
+    ```
+
+    or through a one-genus-per-line file:
+
+    ```yaml
+    exclude_genera_file: /path/to/exclude_genera.txt
+    ```
+
+    Optional sample overrides use a tab-separated file:
+
+    ```text
+    sample<TAB>mode<TAB>include_genera<TAB>exclude_genera<TAB>discard_no_hit
+    strain-42<TAB>exclude<TAB><TAB><TAB>true
+    ```
+
+    Use real tab characters, not the literal string `<TAB>`. A sample-specific include or exclude list replaces the global list for that sample.
+
+    **ITS taxonomy**
+
+    ```yaml
+    its_taxonomy_cutoff: 0.8
+    ```
+
+    **Repeat masking**
+
+    ```yaml
+    masking_method: tantan
+    repeatmodeler_quick: true
+    repeatmodeler_ltrstruct: false
+    ```
+
+    To use the advanced RepeatModeler + RepeatMasker strategy, change only `masking_method`:
+
+    ```yaml
+    masking_method: repeatmodeler_repeatmasker
+    ```
+
+    Available masking methods:
+
+    - `tantan`: default lightweight softmasking.
+    - `repeatmodeler_repeatmasker`: runs `BuildDatabase -> RepeatModeler -> RepeatMasker -lib <RepeatModeler library> -xsmall`.
+
+    `repeatmodeler_quick: true` adds `RepeatModeler -quick`. `repeatmodeler_ltrstruct: true` adds `RepeatModeler -LTRStruct`.
 
 [⬆ Back to Table of Contents](#table-of-contents)
 
 ## Running FunFlux
-`FunFlux` can be executed as simply as a `Snakefile`. Please refer to the official [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/index.html) for more details.
+`FunFlux` can be executed as a Snakemake workflow.
+
 ```bash
-# First, activate the Snakemake Conda environment.
 conda activate snakemake
-
-# Navigate inside the FunFlux downloaded directory.
-
-# Customize the "config.yaml" configuration file in the "config" sub-directory
-
-# Launch the workflow
-snakemake --sdm conda --cores 12 --jobs 2
+snakemake --configfile config/config.yaml --sdm conda --cores 12 --jobs 2
 ```
 
-**IMPORTANT**: If you need to analyze previously assembled fungal genomes, provided as FASTA files, use `Funnotator`, instead:
-```bash
-# Activate the Snakemake Conda environment
-conda activate snakemake
+If you resume an interrupted run, keep using the same configuration file. When Snakemake reports incomplete output after a stopped job, rerun with `--rerun-incomplete`. If you intentionally updated workflow code but want to continue based only on file timestamps, add `--rerun-triggers mtime`.
 
-# Navigate inside the FunFlux directory and launch the workflow as follows:
-snakemake --snakefile workflow/Funnotator --sdm conda --cores 50 --jobs 2
+```bash
+snakemake --configfile config/config.yaml --unlock
+snakemake --configfile config/config.yaml --sdm conda --cores 12 --jobs 2 --rerun-triggers mtime --rerun-incomplete
 ```
+
+To analyze pre-assembled fungal genomes with `Funnotator`:
+
+```bash
+conda activate snakemake
+snakemake --snakefile workflow/Funnotator --configfile config/config.yaml --sdm conda --cores 24 --jobs 2
+```
+
+After a successful run, optional cleanup of bulky intermediate files can be inspected with:
+
+```bash
+workflow/scripts/clean_funflux_output.sh --target /path/to/output_dir
+```
+
+To actually remove the listed files:
+
+```bash
+workflow/scripts/clean_funflux_output.sh --run --target /path/to/output_dir
+```
+
+The cleanup script is dry-run by default and refuses targets that do not look like `FunFlux` or `Funnotator` output directories.
+
 [⬆ Back to Table of Contents](#table-of-contents)
 
 ## Output
-Here's a breakdown of the sub-directories created by `FunFlux` within the main output folder, along with explanations of their contents. Please notice that `Funnotator` will produce a similar, simplified output.
-```
+Here's a breakdown of the sub-directories created by `FunFlux` within the main output folder. `Funnotator` produces a similar but simplified annotation-only output.
+
+```text
 ├── 01.pre-processing
 ├── 02.assembly
 ├── 03.post-processing
@@ -361,115 +373,106 @@ Here's a breakdown of the sub-directories created by `FunFlux` within the main o
 ├── logs
 └── report
 ```
-- `01.pre-processing`: QC and statistics of raw reads and trimmed reads, produced by [fastp](https://github.com/OpenGene/fastp) (v1.0.1).
 
-- `02.assembly`: Content output by [SPAdes](https://github.com/ablab/spades) (v4.2.0). In addition to the raw contigs, you will also find the filtered contigs (>500bp and at least 2x) and the selected contigs, which are the contigs selected after BLAST search and decontamination (see `parameters` in the [configuration](#configuration) section above). The follow-up applications used during the worflow will either use selected contigs (i.e. for annotation purposes) or raw, filtered and selected contigs (i.e. to evaluate the genome completenness and contamination).
+- `01.pre-processing`: QC and statistics of raw and trimmed reads, produced by [fastp](https://github.com/OpenGene/fastp) v1.0.1.
 
-- `03.post-processing`: Contains the following sub-directories:
-    - **mapping_evaluation**: [QualiMap](http://qualimap.conesalab.org/) (v2.3) output based on filtered contigs.
-    - **contaminants**: Contig selection based on [BLAST+](https://blast.ncbi.nlm.nih.gov/doc/blast-help/) (v2.16.0) search and [BlobTools](https://github.com/DRL/blobtools) (1.1.1) analysis. Check the `composition` text file for a quick overview of the relative composition of your assembly.
-    - **assembly_evaluation**: [Quast](https://github.com/ablab/quast) (v5.3.0) output based on selected contigs.
-    - **completenness_evaluation**: [BUSCO](https://busco.ezlab.org/) (v5.5.0) output based on selected contigs.
-     - **ITS_extraction**: [ITSx](https://microbiology.se/software/itsx/) (v1.1.3) output based on raw contigs and classified using the [SINTAX](https://www.drive5.com/sintax/) algorithm re-implemented in [VSEARCH](https://github.com/torognes/vsearch) (v2.30.0). It is recommendable to use the latest [UNITE](https://unite.ut.ee/repository.php) database, as reference.
- 
-- `04.annotation`: Contains the following sub-directories:
-    - **iprscan**: Annotation output by [InterProScan](https://github.com/ebi-pf-team/interproscan) (v5.65-97.0), in XML format. 
-    - **eggnog**: Functional annotation produced by [eggNOG](https://github.com/eggnogdb) mapper (v2.1.12).
-    - **antismash**: Secondary metabolites inferred by [antiSMASH](https://github.com/antismash/antismash) (v8.0.4).
-    - **funannotate**: Prediction and annotation directories output by [funannotate](https://github.com/nextgenusfs/funannotate) (v1.8.15).
-        ```
+- `02.assembly`: Output from [SPAdes](https://github.com/ablab/spades) v4.2.0. This directory contains raw contigs, filtered contigs, and selected/decontaminated contigs.
+
+- `03.post-processing`: Contains:
+    - **mapping_evaluation**: [QualiMap](http://qualimap.conesalab.org/) v2.3 output.
+    - **contaminants**: BLAST+ v2.16.0 and BlobTools v1.1.1 decontamination output, including genus composition and `contig_taxonomy_decisions.tsv`.
+    - **assembly_evaluation**: [QUAST](https://github.com/ablab/quast) v5.3.0 output.
+    - **completeness_evaluation**: [BUSCO](https://busco.ezlab.org/) v6.0.0 output from `--auto-lineage-euk`.
+    - **ITS_extraction**: [ITSx](https://microbiology.se/software/itsx/) v1.1.3 output and [VSEARCH](https://github.com/torognes/vsearch) v2.30.0 SINTAX classification against the automatically downloaded UNITE reference.
+
+- `04.annotation`: Contains:
+    - **repeatmasking**: [RepeatModeler](https://github.com/Dfam-consortium/RepeatModeler) v2.0.8 and [RepeatMasker](https://www.repeatmasker.org/) v4.2.3 output, present inside each sample when `repeatmodeler_repeatmasker` is selected.
+    - **iprscan**: [InterProScan](https://github.com/ebi-pf-team/interproscan) v5.77-108.0 XML output.
+    - **eggnog**: [EggNOG-mapper](https://github.com/eggnogdb/eggnog-mapper) v2.1.13 annotation output.
+    - **antismash**: [antiSMASH](https://github.com/antismash/antismash) v8.0.4 secondary metabolite output.
+    - **funannotate**: Prediction and annotation directories from [funannotate](https://github.com/nextgenusfs/funannotate) v1.8.17.
+
+        ```text
         ├── annotate_misc
         ├── annotate_results
         ├── logfiles
         ├── predict_misc
         └── predict_results
         ```
-   
-- `report`: [MultiQC](https://github.com/MultiQC/MultiQC) (v1.33) is used to parse and aggregate the results of the following tools:
-    1. [fastp](https://github.com/OpenGene/fastp) (v1.0.1)
-    2. [QualiMap](http://qualimap.conesalab.org/) (v2.3)
-    3. [Quast](https://github.com/ablab/quast) (v5.3.0)
-    4. [BUSCO](https://busco.ezlab.org/) (v5.5.0)
+
+- `report`: [MultiQC](https://github.com/MultiQC/MultiQC) v1.33 report aggregating fastp, QualiMap, QUAST, BUSCO, and other supported outputs.
 
 [⬆ Back to Table of Contents](#table-of-contents)
 
 ## Acknowledgements
-This work was originally supported by the [BeXyl] project (https://cordis.europa.eu/project/id/101060593) (Beyond Xylella, Integrated Management Strategies for Mitigating *Xylella fastidiosa* impact in Europe), funded under the HORIZON-CL6-2021-FARM2FORK-01-04 programme (grant agreement No. 101060593).
+This work was originally supported by the [BeXyl project](https://cordis.europa.eu/project/id/101060593) (Beyond Xylella, Integrated Management Strategies for Mitigating *Xylella fastidiosa* impact in Europe), funded under the HORIZON-CL6-2021-FARM2FORK-01-04 programme (grant agreement No. 101060593).
 
 ## Citation
+If you use `FunFlux`, please cite:
+
 Antonielli, L., Brader, G., & Compant, S. (2024). FunFlux: Integrated workflow for fungal genome assembly and annotation. Zenodo. https://doi.org/10.5281/zenodo.13612159
 
 ## References
-01. Bankevich, A., Nurk, S., Antipov, D., Gurevich, A. A., Dvorkin, M., Kulikov, A. S., Lesin, V. M., Nikolenko, S. I., Pham, S., Prjibelski, A. D., Pyshkin, A. V., Sirotkin, A. V., Vyahhi, N., Tesler, G., Alekseyev, M. A., & Pevzner, P. A. (2012). SPAdes: A New Genome Assembly Algorithm and Its Applications to Single-Cell Sequencing. Journal of Computational Biology, 19(5), 455–477. https://doi.org/10.1089/cmb.2012.0021
+01. Bankevich, A., Nurk, S., Antipov, D., Gurevich, A. A., Dvorkin, M., Kulikov, A. S., Lesin, V. M., Nikolenko, S. I., Pham, S., Prjibelski, A. D., Pyshkin, A. V., Sirotkin, A. V., Vyahhi, N., Tesler, G., Alekseyev, M. A., & Pevzner, P. A. (2012). SPAdes: A New Genome Assembly Algorithm and Its Applications to Single-Cell Sequencing. Journal of Computational Biology, 19(5), 455-477. https://doi.org/10.1089/cmb.2012.0021
 
-02. Bengtsson-Palme, J., Ryberg, M., Hartmann, M., Branco, S., Wang, Z., Godhe, A., De Wit, P., Sánchez-García, M., Ebersberger, I., de Sousa, F., Amend, A., Jumpponen, A., Unterseher, M., Kristiansson, E., Abarenkov, K., Bertrand, Y. J. K., Sanli, K., Eriksson, K. M., Vik, U., … Nilsson, R. H. (2013). Improved software detection and extraction of ITS1 and ITS2 from ribosomal ITS sequences of fungi and other eukaryotes for analysis of environmental sequencing data. Methods in Ecology and Evolution, 4(10), 914–919. https://doi.org/10.1111/2041-210X.12073
+02. Bengtsson-Palme, J., Ryberg, M., Hartmann, M., Branco, S., Wang, Z., Godhe, A., De Wit, P., Sánchez-García, M., Ebersberger, I., de Sousa, F., Amend, A., Jumpponen, A., Unterseher, M., Kristiansson, E., Abarenkov, K., Bertrand, Y. J. K., Sanli, K., Eriksson, K. M., Vik, U., ... Nilsson, R. H. (2013). Improved software detection and extraction of ITS1 and ITS2 from ribosomal ITS sequences of fungi and other eukaryotes for analysis of environmental sequencing data. Methods in Ecology and Evolution, 4(10), 914-919. https://doi.org/10.1111/2041-210X.12073
 
-03. Blin, K., Shaw, S., Augustijn, H. E., Reitz, Z. L., Biermann, F., Alanjary, M., Fetter, A., Terlouw, B. R., Metcalf, W. W., Helfrich, E. J. N., van Wezel, G. P., Medema, M. H., & Weber, T. (2023). antiSMASH 7.0: New and improved predictions for detection, regulation, chemical structures and visualisation. Nucleic Acids Research, 51(W1), W46–W50. https://doi.org/10.1093/nar/gkad344
+03. Blin, K., et al. (2025). antiSMASH 8.0: extended gene cluster detection capabilities and analyses of chemistry, enzymology and regulation. Nucleic Acids Research, 53(W1), W32-W38. https://doi.org/10.1093/nar/gkaf334
 
-04. Blum, M., Chang, H.-Y., Chuguransky, S., Grego, T., Kandasaamy, S., Mitchell, A., Nuka, G., Paysan-Lafosse, T., Qureshi, M., Raj, S., Richardson, L., Salazar, G. A., Williams, L., Bork, P., Bridge, A., Gough, J., Haft, D. H., Letunic, I., Marchler-Bauer, A., … Finn, R. D. (2021). The InterPro protein families and domains database: 20 years on. Nucleic Acids Research, 49(D1), D344–D354. https://doi.org/10.1093/nar/gkaa977
+04. Blum, M., Chang, H.-Y., Chuguransky, S., Grego, T., Kandasaamy, S., Mitchell, A., Nuka, G., Paysan-Lafosse, T., Qureshi, M., Raj, S., Richardson, L., Salazar, G. A., Williams, L., Bork, P., Bridge, A., Gough, J., Haft, D. H., Letunic, I., Marchler-Bauer, A., ... Finn, R. D. (2021). The InterPro protein families and domains database: 20 years on. Nucleic Acids Research, 49(D1), D344-D354. https://doi.org/10.1093/nar/gkaa977
 
-05. Borodovsky, M., & Lomsadze, A. (2011). Eukaryotic Gene Prediction Using GeneMark.hmm-E and GeneMark-ES. Current Protocols in Bioinformatics / Editoral Board, Andreas D. Baxevanis ... [et Al.], CHAPTER, Unit-4.610. https://doi.org/10.1002/0471250953.bi0406s35
+05. Borodovsky, M., & Lomsadze, A. (2011). Eukaryotic Gene Prediction Using GeneMark.hmm-E and GeneMark-ES. Current Protocols in Bioinformatics, Unit 4.6. https://doi.org/10.1002/0471250953.bi0406s35
 
-06. Buchfink, B., Xie, C., & Huson, D. H. (2015). Fast and sensitive protein alignment using DIAMOND. Nature Methods, 12(1), 59–60. https://doi.org/10.1038/nmeth.3176
+06. Buchfink, B., Xie, C., & Huson, D. H. (2015). Fast and sensitive protein alignment using DIAMOND. Nature Methods, 12(1), 59-60. https://doi.org/10.1038/nmeth.3176
 
 07. Camacho, C., Coulouris, G., Avagyan, V., Ma, N., Papadopoulos, J., Bealer, K., & Madden, T. L. (2009). BLAST+: Architecture and applications. BMC Bioinformatics, 10, 421. https://doi.org/10.1186/1471-2105-10-421
 
-08. Cantalapiedra, C. P., Hernández-Plaza, A., Letunic, I., Bork, P., & Huerta-Cepas, J. (2021). eggNOG-mapper v2: Functional Annotation, Orthology Assignments, and Domain Prediction at the Metagenomic Scale. Molecular Biology and Evolution, 38(12), 5825–5829. https://doi.org/10.1093/molbev/msab293
+08. Cantalapiedra, C. P., Hernández-Plaza, A., Letunic, I., Bork, P., & Huerta-Cepas, J. (2021). eggNOG-mapper v2: Functional Annotation, Orthology Assignments, and Domain Prediction at the Metagenomic Scale. Molecular Biology and Evolution, 38(12), 5825-5829. https://doi.org/10.1093/molbev/msab293
 
-09. Challis, R., Richards, E., Rajan, J., Cochrane, G., & Blaxter, M. (2020). BlobToolKit – Interactive Quality Assessment of Genome Assemblies. G3 Genes|Genomes|Genetics, 10(4), 1361–1374. https://doi.org/10.1534/g3.119.400908
+09. Challis, R., Richards, E., Rajan, J., Cochrane, G., & Blaxter, M. (2020). BlobToolKit - Interactive Quality Assessment of Genome Assemblies. G3 Genes|Genomes|Genetics, 10(4), 1361-1374. https://doi.org/10.1534/g3.119.400908
 
-10. Chen, S., Zhou, Y., Chen, Y., & Gu, J. (2018). fastp: An ultra-fast all-in-one FASTQ preprocessor. Bioinformatics, 34(17), i884–i890. https://doi.org/10.1093/bioinformatics/bty560
+10. Chen, S., Zhou, Y., Chen, Y., & Gu, J. (2018). fastp: An ultra-fast all-in-one FASTQ preprocessor. Bioinformatics, 34(17), i884-i890. https://doi.org/10.1093/bioinformatics/bty560
 
-11. Edgar, R. C. (2016). SINTAX: A simple non-Bayesian taxonomy classifier for 16S and ITS sequences (p. 074161). bioRxiv. https://doi.org/10.1101/074161
+11. Edgar, R. C. (2016). SINTAX: A simple non-Bayesian taxonomy classifier for 16S and ITS sequences. bioRxiv. https://doi.org/10.1101/074161
 
-12. Ewels, P., Magnusson, M., Lundin, S., & Käller, M. (2016). MultiQC: Summarize analysis results for multiple tools and samples in a single report. Bioinformatics (Oxford, England), 32(19), 3047–3048. https://doi.org/10.1093/bioinformatics/btw354
+12. Ewels, P., Magnusson, M., Lundin, S., & Käller, M. (2016). MultiQC: Summarize analysis results for multiple tools and samples in a single report. Bioinformatics, 32(19), 3047-3048. https://doi.org/10.1093/bioinformatics/btw354
 
-13. Finn, R. D., Bateman, A., Clements, J., Coggill, P., Eberhardt, R. Y., Eddy, S. R., Heger, A., Hetherington, K., Holm, L., Mistry, J., Sonnhammer, E. L. L., Tate, J., & Punta, M. (2014). Pfam: The protein families database. Nucleic Acids Research, 42(Database issue), D222–D230. https://doi.org/10.1093/nar/gkt1223
+13. Flynn, J. M., Hubley, R., Goubert, C., Rosen, J., Clark, A. G., Feschotte, C., & Smit, A. F. (2020). RepeatModeler2 for automated genomic discovery of transposable element families. Proceedings of the National Academy of Sciences, 117(17), 9451-9457. https://doi.org/10.1073/pnas.1921046117
 
 14. Frith, M. C. (2011). A new repeat-masking method enables specific detection of homologous sequences. Nucleic Acids Research, 39(4), e23. https://doi.org/10.1093/nar/gkq1212
 
-15. Gurevich, A., Saveliev, V., Vyahhi, N., & Tesler, G. (2013). QUAST: Quality assessment tool for genome assemblies. Bioinformatics (Oxford, England), 29(8), 1072–1075. https://doi.org/10.1093/bioinformatics/btt086
+15. Gurevich, A., Saveliev, V., Vyahhi, N., & Tesler, G. (2013). QUAST: Quality assessment tool for genome assemblies. Bioinformatics, 29(8), 1072-1075. https://doi.org/10.1093/bioinformatics/btt086
 
 16. Haas, B. J., Salzberg, S. L., Zhu, W., Pertea, M., Allen, J. E., Orvis, J., White, O., Buell, C. R., & Wortman, J. R. (2008). Automated eukaryotic gene structure annotation using EVidenceModeler and the Program to Assemble Spliced Alignments. Genome Biology, 9(1), R7. https://doi.org/10.1186/gb-2008-9-1-r7
 
-17. Huerta-Cepas, J., Szklarczyk, D., Heller, D., Hernández-Plaza, A., Forslund, S. K., Cook, H., Mende, D. R., Letunic, I., Rattei, T., Jensen, L. J., von Mering, C., & Bork, P. (2019). eggNOG 5.0: A hierarchical, functionally and phylogenetically annotated orthology resource based on 5090 organisms and 2502 viruses. Nucleic Acids Research, 47(D1), D309–D314. https://doi.org/10.1093/nar/gky1085
+17. Huerta-Cepas, J., Szklarczyk, D., Heller, D., Hernández-Plaza, A., Forslund, S. K., Cook, H., Mende, D. R., Letunic, I., Rattei, T., Jensen, L. J., von Mering, C., & Bork, P. (2019). eggNOG 5.0. Nucleic Acids Research, 47(D1), D309-D314. https://doi.org/10.1093/nar/gky1085
 
 18. Jonathan M. Palmer, & Jason Stajich. (2020). Funannotate v1.8.1: Eukaryotic genome annotation [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.4054262
 
-19. Jones, P., Binns, D., Chang, H.-Y., Fraser, M., Li, W., McAnulla, C., McWilliam, H., Maslen, J., Mitchell, A., Nuka, G., Pesseat, S., Quinn, A. F., Sangrador-Vegas, A., Scheremetjew, M., Yong, S.-Y., Lopez, R., & Hunter, S. (2014). InterProScan 5: Genome-scale protein function classification. Bioinformatics, 30(9), 1236–1240. https://doi.org/10.1093/bioinformatics/btu031
+19. Jones, P., Binns, D., Chang, H.-Y., Fraser, M., Li, W., McAnulla, C., McWilliam, H., Maslen, J., Mitchell, A., Nuka, G., Pesseat, S., Quinn, A. F., Sangrador-Vegas, A., Scheremetjew, M., Yong, S.-Y., Lopez, R., & Hunter, S. (2014). InterProScan 5: Genome-scale protein function classification. Bioinformatics, 30(9), 1236-1240. https://doi.org/10.1093/bioinformatics/btu031
 
-20. KorfLab/SNAP. (2024). [C]. The Korf Lab. https://github.com/KorfLab/SNAP (Original work published 2017)
+20. Köster, J., & Rahmann, S. (2012). Snakemake - A scalable bioinformatics workflow engine. Bioinformatics, 28(19), 2520-2522. https://doi.org/10.1093/bioinformatics/bts480
 
-21. Köster, J., & Rahmann, S. (2012). Snakemake—A scalable bioinformatics workflow engine. Bioinformatics, 28(19), 2520–2522. https://doi.org/10.1093/bioinformatics/bts480
+21. Langmead, B., & Salzberg, S. L. (2012). Fast gapped-read alignment with Bowtie 2. Nature Methods, 9(4), 357-359. https://doi.org/10.1038/nmeth.1923
 
-22. Langmead, B., & Salzberg, S. L. (2012). Fast gapped-read alignment with Bowtie 2. Nature Methods, 9(4), Article 4. https://doi.org/10.1038/nmeth.1923
+22. Li, H., Handsaker, B., Wysoker, A., Fennell, T., Ruan, J., Homer, N., Marth, G., Abecasis, G., Durbin, R., & 1000 Genome Project Data Processing Subgroup. (2009). The Sequence Alignment/Map format and SAMtools. Bioinformatics, 25(16), 2078-2079. https://doi.org/10.1093/bioinformatics/btp352
 
-23. Letunic, I., Khedkar, S., & Bork, P. (2021). SMART: Recent updates, new developments and status in 2020. Nucleic Acids Research, 49(D1), D458–D460. https://doi.org/10.1093/nar/gkaa937
+23. Nilsson, R. H., Larsson, K.-H., Taylor, A. F. S., Bengtsson-Palme, J., Jeppesen, T. S., Schigel, D., Kennedy, P., Picard, K., Glöckner, F. O., Tedersoo, L., Saar, I., Kõljalg, U., & Abarenkov, K. (2019). The UNITE database for molecular identification of fungi: Handling dark taxa and parallel taxonomic classifications. Nucleic Acids Research, 47(D1), D259-D264. https://doi.org/10.1093/nar/gky1022
 
-24. Li, H., Handsaker, B., Wysoker, A., Fennell, T., Ruan, J., Homer, N., Marth, G., Abecasis, G., Durbin, R., & 1000 Genome Project Data Processing Subgroup. (2009). The Sequence Alignment/Map format and SAMtools. Bioinformatics, 25(16), 2078–2079. https://doi.org/10.1093/bioinformatics/btp352
+24. Abarenkov, K., et al. (2024). The UNITE database for molecular identification and taxonomic communication of fungi and other eukaryotes: sequences, taxa and classifications reconsidered. Nucleic Acids Research, 52(D1), D791-D797. https://doi.org/10.1093/nar/gkad1039
 
-25. Lowe, T. M., & Eddy, S. R. (1997). tRNAscan-SE: A program for improved detection of transfer RNA genes in genomic sequence. Nucleic Acids Research, 25(5), 955–964.
+25. Okonechnikov, K., Conesa, A., & García-Alcalde, F. (2016). Qualimap 2: Advanced multi-sample quality control for high-throughput sequencing data. Bioinformatics, 32(2), 292-294. https://doi.org/10.1093/bioinformatics/btv566
 
-26. Majoros, W. H., Pertea, M., & Salzberg, S. L. (2004). TigrScan and GlimmerHMM: Two open source ab initio eukaryotic gene-finders. Bioinformatics (Oxford, England), 20(16), 2878–2879. https://doi.org/10.1093/bioinformatics/bth315
+26. Rawlings, N. D., Waller, M., Barrett, A. J., & Bateman, A. (2014). MEROPS. Nucleic Acids Research, 42(D1), D503-D509. https://doi.org/10.1093/nar/gkt953
 
-27. Nilsson, R. H., Larsson, K.-H., Taylor, A. F. S., Bengtsson-Palme, J., Jeppesen, T. S., Schigel, D., Kennedy, P., Picard, K., Glöckner, F. O., Tedersoo, L., Saar, I., Kõljalg, U., & Abarenkov, K. (2019). The UNITE database for molecular identification of fungi: Handling dark taxa and parallel taxonomic classifications. Nucleic Acids Research, 47(D1), D259–D264. https://doi.org/10.1093/nar/gky1022
+27. Rognes, T., Flouri, T., Nichols, B., Quince, C., & Mahé, F. (2016). VSEARCH: A versatile open source tool for metagenomics. PeerJ, 4, e2584. https://doi.org/10.7717/peerj.2584
 
-28. Okonechnikov, K., Conesa, A., & García-Alcalde, F. (2016). Qualimap 2: Advanced multi-sample quality control for high-throughput sequencing data. Bioinformatics, 32(2), 292–294. https://doi.org/10.1093/bioinformatics/btv566
+28. Smit, A. F. A., Hubley, R., & Green, P. RepeatMasker Open-4.0. http://www.repeatmasker.org
 
-29. Rawlings, N. D., Waller, M., Barrett, A. J., & Bateman, A. (2014). MEROPS: The database of proteolytic enzymes, their substrates and inhibitors. Nucleic Acids Research, 42(D1), D503–D509. https://doi.org/10.1093/nar/gkt953
+29. Stanke, M., Keller, O., Gunduz, I., Hayes, A., Waack, S., & Morgenstern, B. (2006). AUGUSTUS. Nucleic Acids Research, 34(Web Server issue), W435-W439. https://doi.org/10.1093/nar/gkl200
 
-30. Rognes, T., Flouri, T., Nichols, B., Quince, C., & Mahé, F. (2016). VSEARCH: A versatile open source tool for metagenomics. PeerJ, 4, e2584. https://doi.org/10.7717/peerj.2584
+30. Tegenfeldt, F., Kuznetsov, D., Manni, M., Berkeley, M., Zdobnov, E. M., & Kriventseva, E. V. (2025). OrthoDB and BUSCO update: annotation of orthologs with wider sampling of genomes. Nucleic Acids Research, 53(D1), D516-D522. https://doi.org/10.1093/nar/gkae987
 
-31. Sigrist, C. J. A., de Castro, E., Cerutti, L., Cuche, B. A., Hulo, N., Bridge, A., Bougueleret, L., & Xenarios, I. (2013). New and continuing developments at PROSITE. Nucleic Acids Research, 41(Database issue), D344-347. https://doi.org/10.1093/nar/gks1067
+31. The UniProt Consortium. (2023). UniProt: The Universal Protein Knowledgebase in 2023. Nucleic Acids Research, 51(D1), D523-D531. https://doi.org/10.1093/nar/gkac1052
 
-32. Simão, F. A., Waterhouse, R. M., Ioannidis, P., Kriventseva, E. V., & Zdobnov, E. M. (2015). BUSCO: Assessing genome assembly and annotation completeness with single-copy orthologs. Bioinformatics, 31(19), 3210–3212. https://doi.org/10.1093/bioinformatics/btv351
-
-33. Slater, G. S. C., & Birney, E. (2005). Automated generation of heuristics for biological sequence comparison. BMC Bioinformatics, 6(1), 31. https://doi.org/10.1186/1471-2105-6-31
-
-34. Stanke, M., Keller, O., Gunduz, I., Hayes, A., Waack, S., & Morgenstern, B. (2006). AUGUSTUS: Ab initio prediction of alternative transcripts. Nucleic Acids Research, 34(Web Server issue), W435–W439. https://doi.org/10.1093/nar/gkl200
-
-35. The UniProt Consortium. (2023). UniProt: The Universal Protein Knowledgebase in 2023. Nucleic Acids Research, 51(D1), D523–D531. https://doi.org/10.1093/nar/gkac1052
-
-36. Thomas, P. D., Ebert, D., Muruganujan, A., Mushayahama, T., Albou, L.-P., & Mi, H. (2022). PANTHER: Making genome-scale phylogenetics accessible to all. Protein Science, 31(1), 8–22. https://doi.org/10.1002/pro.4218
-
-37. Zheng, J., Ge, Q., Yan, Y., Zhang, X., Huang, L., & Yin, Y. (2023). dbCAN3: Automated carbohydrate-active enzyme and substrate annotation. Nucleic Acids Research, 51(W1), W115–W121. https://doi.org/10.1093/nar/gkad328
+32. Zheng, J., Ge, Q., Yan, Y., Zhang, X., Huang, L., & Yin, Y. (2023). dbCAN3: Automated carbohydrate-active enzyme and substrate annotation. Nucleic Acids Research, 51(W1), W115-W121. https://doi.org/10.1093/nar/gkad328
