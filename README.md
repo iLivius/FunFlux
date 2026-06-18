@@ -34,7 +34,7 @@ June 2026
 ## Rationale
 The analysis of fungal whole-genome sequencing (WGS) data involves a complex series of bioinformatic steps that can be challenging to execute manually. This process is time-consuming, prone to errors, and difficult to reproduce. `FunFlux` addresses these problems by providing an automated [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) workflow for fungal genome assembly and annotation.
 
-`FunFlux` is designed to streamline annotation with [funannotate](https://github.com/nextgenusfs/funannotate) in the absence of RNA sequencing evidence. It relies on both *ab initio* annotation and protein FASTA sequences from organisms of the same species, genus, or another closely related taxon to improve gene prediction and annotation.
+`FunFlux` is designed to streamline the annotation process with [funannotate](https://github.com/nextgenusfs/funannotate) in the absence of RNA sequencing evidence. It relies on both *ab initio* annotation and protein FASTA sequences from organisms of the same species or genus to enhance the accuracy of gene prediction and annotation.
 
 ## Description
 Here's a breakdown of the `FunFlux` workflow:
