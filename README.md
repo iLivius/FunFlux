@@ -1,7 +1,8 @@
 # FunFlux
 Integrated workflow for fungal short-read genome assembly and annotation.
 
-[![Snakemake](https://img.shields.io/badge/snakemake-≥9.14.6-brightgreen.svg)](https://snakemake.readthedocs.io/en/stable/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13612159.svg)](https://doi.org/10.5281/zenodo.13612159)
+[![Snakemake](https://img.shields.io/badge/snakemake-≥9.14.6-brightgreen.svg)](https://snakemake.readthedocs.io/en/stable/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20749375.svg)](https://doi.org/10.5281/zenodo.20749375)
 
 ---
 ```bash
