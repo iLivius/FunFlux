@@ -128,17 +128,15 @@ Here's a breakdown of the `FunFlux` workflow:
     * `NCBI core nt` database:
 
         ```bash
-        rsync --list-only rsync://ftp.ncbi.nlm.nih.gov/blast/db/core_nt.*.gz | grep '.tar.gz' | awk '{print "ftp.ncbi.nlm.nih.gov/blast/db/" $NF}' > nt_links.list
-        cat nt_links.list | parallel -j4 'rsync -h --progress rsync://{} .'
-        find . -name '*.gz' | parallel -j4 'echo {}; tar -zxf {}'
+        # NCBI's own downloader. It ships with BLAST+, so it is already in the blast
+        # environment; --decompress unpacks each volume as it arrives, and every transfer
+        # is checked against the .md5 NCBI publishes beside it.
+        update_blastdb.pl --decompress --num_threads 4 core_nt      # or nt_prok
 
-        wget -c 'ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz'
-        tar -zxvf taxdump.tar.gz
-
-        wget 'ftp://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz'
-        tar -zxvf taxdb.tar.gz
-
-        wget -c 'ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz'
+        # taxonomy: BlobTools reads nodes.dmp and names.dmp from this same directory
+        wget -c 'https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz' && tar -zxf taxdump.tar.gz
+        wget -c 'https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz'       && tar -zxf taxdb.tar.gz
+        wget -c 'https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz'
         gunzip nucl_gb.accession2taxid.gz
         ```
 
