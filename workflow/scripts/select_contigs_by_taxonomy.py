@@ -309,6 +309,18 @@ def fasta_key(header):
     return header.split()[0]
 
 
+def read_contig_ids(path):
+    """Read an optional one-ID-per-line list of contigs that must be retained."""
+    if not path:
+        return set()
+    with open(path, "r", encoding="utf-8") as handle:
+        return {
+            line.strip()
+            for line in handle
+            if line.strip() and not line.lstrip().startswith("#")
+        }
+
+
 def is_no_hit(genus):
     """Treat BlobTools no-hit labels as unclassified contigs.
 
@@ -421,6 +433,10 @@ def main():
     parser.add_argument("--exclude-genera-file", nargs="?", const="", default="")
     parser.add_argument("--sample-overrides", nargs="?", const="", default="")
     parser.add_argument("--discard-no-hit", nargs="?", const="false", default="false")
+    # The mitochondrial screen supplies only confirmed organellar IDs here.
+    # They remain available for the later mitochondrial split even if BlobTools
+    # labels them as an unexpected genus or as no-hit.
+    parser.add_argument("--always-keep", nargs="?", const="", default="")
     parser.add_argument("--output-list", required=True)
     parser.add_argument("--output-fasta", required=True)
     parser.add_argument("--composition", required=True)
@@ -460,6 +476,7 @@ def main():
     # BlobTools, and the value is a tuple containing the original full FASTA
     # header and sequence. Keeping the full header avoids losing metadata.
     fasta_by_id = {fasta_key(header): (header, sequence) for header, sequence in fasta_records.items()}
+    protected = read_contig_ids(args.always_keep)
     total = sum(counts.values())
     auto_genus = choose_auto_genus(counts, discard_no_hit) if mode == "auto" else None
 
@@ -470,13 +487,26 @@ def main():
     with open(args.decisions, "w", encoding="utf-8") as decisions:
         decisions.write("contig\tassigned_genus\taction\treason\n")
         for contig, genus in records:
-            action, reason = decide(contig, genus, mode, include, exclude, discard_no_hit, auto_genus)
+            if contig in protected:
+                action, reason = "keep", "protected_confirmed_mitochondrial"
+            else:
+                action, reason = decide(contig, genus, mode, include, exclude, discard_no_hit, auto_genus)
             decisions.write(f"{contig}\t{genus}\t{action}\t{reason}\n")
 
             # A contig is added to the output only if it was marked keep, exists
             # in the FASTA, and has not already been added. The seen set prevents
             # duplicate FASTA records if the taxonomy table contains duplicates.
             if action == "keep" and contig in fasta_by_id and contig not in seen:
+                kept.append(contig)
+                seen.add(contig)
+
+        # A protected contig can be absent from the BlobTools table. Keep it
+        # anyway so mitochondrial preservation does not depend on taxonomy.
+        for contig in sorted(protected - seen):
+            if contig in fasta_by_id:
+                decisions.write(
+                    f"{contig}\tno-taxonomy\tkeep\tprotected_confirmed_mitochondrial\n"
+                )
                 kept.append(contig)
                 seen.add(contig)
 
@@ -505,6 +535,12 @@ def main():
         print(
             f"WARNING: {len(missing)} contigs from BlobTools table were not found in FASTA.",
             file=sys.stderr,
+        )
+    missing_protected = sorted(protected - set(fasta_by_id))
+    if missing_protected:
+        raise ValueError(
+            "Protected mitochondrial contig(s) were not found in FASTA: "
+            + ", ".join(missing_protected)
         )
     if not kept:
         # An empty selected assembly is almost always a configuration problem,

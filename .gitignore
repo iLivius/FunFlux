@@ -9,3 +9,6 @@ __pycache__/
 config/config_custom.yaml
 config/config_funflux.yaml
 configs/
+
+# Personal run configs with machine-specific paths and licence hashes stay out of the repository.
+config/config_SS71.yaml

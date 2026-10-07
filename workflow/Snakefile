@@ -34,7 +34,7 @@ INPUTDIR = config['directories']['input_dir']
 BLASTDB = config['directories']['blast_db']
 DMNDDB = config['directories']['eggnog_db']
 FUNANNOTATEDB = config['directories']['funannotate_db']
-GENEMARKDIR = config['directories']['genemark_dir']
+GENEMARKDIR = str(config['directories'].get('genemark_dir') or '').strip()
 IPRSCAN = config['files']['iprscan']
 ANNOTATION = config['files']['annotation_params']
 
@@ -45,11 +45,127 @@ RAM = config['resources']['ram_gb']
 WORKFLOW_DIR = workflow.basedir
 PARAMETERS = config.get('parameters', {}) or {}
 
+# GeneMark-ES/ET is an optional, separately licensed predictor.  It is used
+# only when an eligible user explicitly supplies its installation directory;
+# otherwise Funannotate is deliberately shielded from ambient GeneMark PATHs
+# and follows its supported no-GeneMark prediction branch.
+GENEMARK = PARAMETERS.get("genemark", {}) or {}
+if not isinstance(GENEMARK, dict):
+    raise ValueError("parameters.genemark must be a mapping")
+_genemark_allowed_keys = {"mode"}
+_unknown_genemark_keys = sorted(set(GENEMARK) - _genemark_allowed_keys)
+if _unknown_genemark_keys:
+    raise ValueError(
+        "Unsupported parameters.genemark key(s): "
+        + ", ".join(_unknown_genemark_keys)
+        + ". Supported keys: "
+        + ", ".join(sorted(_genemark_allowed_keys))
+    )
+_genemark_mode = str(GENEMARK.get("mode", "auto")).strip().lower()
+if _genemark_mode in {"off", "false", "0", "no", "none", "null"}:
+    GENEMARK_ENABLED = False
+elif _genemark_mode == "auto":
+    GENEMARK_ENABLED = bool(GENEMARKDIR)
+else:
+    raise ValueError("parameters.genemark.mode must be auto or off")
+if GENEMARK_ENABLED:
+    if not os.path.isabs(GENEMARKDIR):
+        raise ValueError("directories.genemark_dir must be an absolute path when GeneMark is enabled")
+    _genemark_executable = os.path.join(GENEMARKDIR, "gmes_petap.pl")
+    if not os.path.isfile(_genemark_executable) or not os.access(_genemark_executable, os.X_OK):
+        raise ValueError(
+            "directories.genemark_dir must contain an executable gmes_petap.pl when GeneMark is enabled"
+        )
+
+# SignalP 6 is proprietary DTU software. A licensed user obtains the official
+# archive manually, then this workflow installs that exact local archive into
+# a dedicated Conda environment. It never downloads SignalP or embeds a DTU
+# URL, and its native summary is passed explicitly to Funannotate.
+SIGNALP6_ARCHIVE = str(config.get("files", {}).get("signalp6_archive") or "").strip()
+SIGNALP6 = PARAMETERS.get("signalp6", {}) or {}
+if not isinstance(SIGNALP6, dict):
+    raise ValueError("parameters.signalp6 must be a mapping")
+_signalp6_allowed_keys = {
+    "mode",
+    "archive_sha256",
+    "torch_num_threads",
+    "batch_size",
+}
+_unknown_signalp6_keys = sorted(set(SIGNALP6) - _signalp6_allowed_keys)
+if _unknown_signalp6_keys:
+    raise ValueError(
+        "Unsupported parameters.signalp6 key(s): "
+        + ", ".join(_unknown_signalp6_keys)
+        + ". Supported keys: "
+        + ", ".join(sorted(_signalp6_allowed_keys))
+    )
+
+_signalp6_mode = str(SIGNALP6.get("mode", "off")).strip().lower()
+SIGNALP6_ARCHIVE_SHA256 = str(SIGNALP6.get("archive_sha256") or "").strip().lower()
+if _signalp6_mode in {"", "off", "false", "0", "no", "none", "null"}:
+    SIGNALP6_ENABLED = False
+    SIGNALP6_MODE = ""
+elif _signalp6_mode in {"fast", "slow", "slow-sequential"}:
+    SIGNALP6_ENABLED = True
+    SIGNALP6_MODE = _signalp6_mode
+else:
+    raise ValueError(
+        "parameters.signalp6.mode must be off, fast, slow, or slow-sequential"
+    )
+
+if SIGNALP6_ENABLED:
+    if not SIGNALP6_ARCHIVE:
+        raise ValueError(
+            "files.signalp6_archive is required when SignalP 6 is enabled"
+        )
+    if not os.path.isabs(SIGNALP6_ARCHIVE):
+        raise ValueError(
+            "files.signalp6_archive must be an absolute path to the official DTU archive"
+        )
+    if not os.path.isfile(SIGNALP6_ARCHIVE):
+        raise ValueError(
+            "files.signalp6_archive does not point to a readable regular file"
+        )
+
+try:
+    SIGNALP6_TORCH_NUM_THREADS = int(
+        SIGNALP6.get("torch_num_threads", min(CPUS, 8))
+    )
+    SIGNALP6_BATCH_SIZE = int(SIGNALP6.get("batch_size", 10))
+except (TypeError, ValueError) as error:
+    raise ValueError(
+        "parameters.signalp6.torch_num_threads and batch_size must be integers"
+    ) from error
+if SIGNALP6_TORCH_NUM_THREADS < 1 or SIGNALP6_BATCH_SIZE < 1:
+    raise ValueError(
+        "parameters.signalp6.torch_num_threads and batch_size must be greater than zero"
+    )
+
 # The UNITE database is workflow-local in the output tree so taxonomic ITS
 # classification does not depend on a manually prepared external file.
 UNITE_FASTA = "03.post-processing/ITS_extraction/unite_its_sintax.fasta"
 ITS_TAXONOMY_CUTOFF = float(PARAMETERS.get("its_taxonomy_cutoff", 0.8))
 MASKING_METHOD = str(PARAMETERS.get("masking_method", "tantan")).strip().lower()
+
+# Mitochondrial contigs are reported separately and, when confirmed by direct
+# organellar BLAST evidence, excluded from the nuclear QC and annotation branch.
+# Flye-specific evidence is used only by the long-read workflows.
+MITOCHONDRIA = PARAMETERS.get("mitochondria", {}) or {}
+if not isinstance(MITOCHONDRIA, dict):
+    raise ValueError("parameters.mitochondria must be a mapping")
+MITO_MODE = str(MITOCHONDRIA.get("mode", "separate_confirmed")).strip().lower()
+if MITO_MODE not in {"off", "report", "separate_confirmed"}:
+    raise ValueError(
+        "parameters.mitochondria.mode must be one of: "
+        "off, report, separate_confirmed"
+    )
+MITO_MIN_DIRECT_BLAST_QCOV = float(MITOCHONDRIA.get("min_direct_blast_qcov", 35))
+MITO_MIN_FLYE_COVERAGE_RATIO = float(
+    MITOCHONDRIA.get("min_flye_coverage_ratio", 3.0)
+)
+if MITO_MIN_DIRECT_BLAST_QCOV <= 0 or MITO_MIN_FLYE_COVERAGE_RATIO <= 0:
+    raise ValueError("Mitochondrial screening thresholds must be greater than zero")
+MITOCHONDRIA_SCRIPT = os.path.join(WORKFLOW_DIR, "scripts", "mitochondria.py")
 
 # Shared helper used after BlobTools. It reads contig taxonomy assignments and
 # decides which contigs are kept, discarded, or left untouched.
@@ -68,6 +184,121 @@ def _config_bool(value, default=False):
     if text in {"false", "0", "no", "off"}:
         return False
     raise ValueError(f"Invalid boolean config value: {value!r}")
+
+
+# Funannotate database archives can retain absolute paths from the computer
+# where their databases and trained AUGUSTUS models were created. Those paths
+# are invalid after the archive is downloaded elsewhere. Before any
+# Funannotate rule uses the database, rebase paths in both its database index
+# and trained-species metadata onto the database location in this config.
+def _rebase_funannotate_db_path(archived_path, database):
+    """Resolve an archived database path under the configured database root."""
+    from pathlib import Path
+
+    archived = Path(archived_path)
+    path_parts = archived.parts[1:] if archived.is_absolute() else archived.parts
+    if not path_parts:
+        raise ValueError(f"Invalid empty Funannotate database path: {archived_path}")
+
+    # Trained-species paths have a stable directory marker, so preserve the
+    # complete suffix rather than relying on a potentially non-unique basename.
+    if "trained_species" in path_parts:
+        repaired_path = database.joinpath(
+            *path_parts[path_parts.index("trained_species"):]
+        )
+        if repaired_path.exists():
+            return str(repaired_path)
+        raise ValueError(
+            "Trained-species asset is missing after extraction: "
+            f"{repaired_path}"
+        )
+
+    # Database-index entries normally point to files at the database root.
+    # Find the longest trailing portion of the archived path that exists here,
+    # without assuming the name of the machine or original database directory.
+    for start in range(len(path_parts)):
+        repaired_path = database.joinpath(*path_parts[start:])
+        if repaired_path.exists():
+            return str(repaired_path)
+
+    raise ValueError(
+        "Database asset is missing after extraction for archived path: "
+        f"{archived_path}"
+    )
+
+
+def normalize_funannotate_db_paths(database_root):
+    """Rebase database-index and trained-species paths onto the configured root."""
+    import json
+    from pathlib import Path
+
+    database = Path(database_root).resolve()
+    trained_species = database / "trained_species"
+    if not trained_species.is_dir():
+        raise ValueError(
+            f"Funannotate trained-species directory is missing: {trained_species}"
+        )
+
+    metadata_files = 0
+    paths_updated = 0
+    for metadata_path in sorted(trained_species.glob("*/info.json")):
+        metadata_files += 1
+        with metadata_path.open() as handle:
+            metadata = json.load(handle)
+
+        changed = False
+        for entries in metadata.values():
+            if not isinstance(entries, list):
+                continue
+            for entry in entries:
+                archived_path = entry.get("path") if isinstance(entry, dict) else None
+                if not archived_path:
+                    continue
+
+                repaired_path = _rebase_funannotate_db_path(
+                    archived_path, database
+                )
+                if entry["path"] != repaired_path:
+                    entry["path"] = repaired_path
+                    paths_updated += 1
+                    changed = True
+
+        if changed:
+            temporary = metadata_path.with_name(metadata_path.name + ".tmp")
+            with temporary.open("w") as handle:
+                json.dump(metadata, handle, indent=2)
+                handle.write("\n")
+            temporary.replace(metadata_path)
+
+    db_info_path = database / "funannotate-db-info.txt"
+    if not db_info_path.is_file():
+        raise ValueError(f"Funannotate database index is missing: {db_info_path}")
+
+    database_info_paths_updated = 0
+    normalized_lines = []
+    with db_info_path.open() as handle:
+        for line in handle:
+            fields = line.rstrip("\n").split("\t")
+            if len(fields) >= 3 and fields[2]:
+                repaired_path = _rebase_funannotate_db_path(fields[2], database)
+                if fields[2] != repaired_path:
+                    fields[2] = repaired_path
+                    database_info_paths_updated += 1
+                line = "\t".join(fields) + "\n"
+            normalized_lines.append(line)
+
+    if database_info_paths_updated:
+        temporary = db_info_path.with_name(db_info_path.name + ".tmp")
+        with temporary.open("w") as handle:
+            handle.writelines(normalized_lines)
+        temporary.replace(db_info_path)
+
+    return {
+        "metadata_files": metadata_files,
+        "metadata_paths_updated": paths_updated,
+        "database_info_paths_updated": database_info_paths_updated,
+    }
+
 
 # RepeatModeler options are parsed once here; the masking rule only consumes
 # normalized booleans.
@@ -257,11 +488,20 @@ EXTN = EXTENSIONS[0]
 R1 = '{sample}_R1.' + EXTN
 R2 = '{sample}_R2.' + EXTN
 
+# The full selected assembly remains available, while this nuclear-only copy is
+# the explicit input for downstream fungal QC and nuclear gene annotation.
+def nuclear_contigs(wildcards):
+    return f"03.post-processing/mitochondria/{wildcards.sample}/nuclear_for_annotation.fasta"
+
+
 rule all:
     input:
         fastp_json = expand("01.pre-processing/{sample}_fastp.json", sample=CHECK_SAMPLES),
         qualimap_dir = expand("03.post-processing/mapping_evaluation/{sample}", sample=CHECK_SAMPLES),
         contigs = expand("02.assembly/{sample}/contigs_sel.fasta", sample=CHECK_SAMPLES),
+        mitochondrial_screen = expand("03.post-processing/mitochondria/{sample}/mitochondrial_screen.tsv", sample=CHECK_SAMPLES),
+        nuclear_contigs = expand("03.post-processing/mitochondria/{sample}/nuclear_for_annotation.fasta", sample=CHECK_SAMPLES),
+        mitochondrial_contigs = expand("03.post-processing/mitochondria/{sample}/mitochondrial_contigs.fasta", sample=CHECK_SAMPLES),
         quast_dir = expand("03.post-processing/assembly_evaluation/{sample}", sample=CHECK_SAMPLES),
         busco_dir = expand("03.post-processing/completeness_evaluation/{sample}", sample=CHECK_SAMPLES),
         full = expand("03.post-processing/ITS_extraction/{sample}/{sample}.full.fasta", sample=CHECK_SAMPLES),
@@ -271,7 +511,7 @@ rule all:
         its1_tax = expand("03.post-processing/ITS_extraction/{sample}/{sample}_ITS1_taxonomy.txt", sample=CHECK_SAMPLES),
         its2_tax = expand("03.post-processing/ITS_extraction/{sample}/{sample}_ITS2_taxonomy.txt", sample=CHECK_SAMPLES),
         multiqc_dir = "report",
-        funannotate_db_info = os.path.join(FUNANNOTATEDB, "funannotate-db-info.txt"),
+        funannotate_db_metadata = "00.database/funannotate_db_paths.normalized.json",
         funannotate_dir = expand("04.annotation/{sample}/funannotate", sample=CHECK_SAMPLES),
         contigs_clean = expand("04.annotation/{sample}/contigs_clean.fasta", sample=CHECK_SAMPLES),
         contigs_sort = expand("04.annotation/{sample}/contigs_sort.fasta", sample=CHECK_SAMPLES),
@@ -478,9 +718,12 @@ rule map_contigs:
         r1 = "01.pre-processing/{sample}_trim_R1.fastq",
         r2 = "01.pre-processing/{sample}_trim_R2.fastq"
     output:
-        bam = temp("03.post-processing/{sample}/{sample}_map.bam"),
-        bai = temp("03.post-processing/{sample}/{sample}_map.bam.bai"),
-        csi = temp("03.post-processing/{sample}/{sample}_map.bam.csi")
+        # Both Qualimap and BlobTools consume this alignment, but BlobTools can
+        # only start after the much slower contig BLAST has finished. Keep the
+        # BAM and BAI as ordinary outputs: marking them temporary made a rerun
+        # vulnerable to their removal before the delayed BlobTools branch ran.
+        bam = "03.post-processing/{sample}/{sample}_map.bam",
+        bai = "03.post-processing/{sample}/{sample}_map.bam.bai"
     params:
         db = temp("03.post-processing/{sample}/contigs")
     resources:
@@ -505,7 +748,6 @@ rule map_contigs:
             -hbS - | \
         samtools sort \
             -@ {resources.cpus} \
-            --write-index \
             -o {output.bam} - >> {log} 2>&1
         samtools index \
             -b {output.bam} \
@@ -570,6 +812,36 @@ rule blast_contigs:
             -out {output.blast} > {log} 2>&1
         """
 
+rule screen_mitochondria:
+    input:
+        blast = "03.post-processing/contaminants/{sample}/blastout",
+        contigs = "02.assembly/{sample}/contigs_filt.fasta"
+    output:
+        report = "03.post-processing/mitochondria/{sample}/mitochondrial_screen.tsv",
+        confirmed_ids = "03.post-processing/mitochondria/{sample}/confirmed_mitochondrial.ids"
+    params:
+        script = MITOCHONDRIA_SCRIPT,
+        mode = MITO_MODE,
+        minimum_qcov = MITO_MIN_DIRECT_BLAST_QCOV,
+        minimum_coverage_ratio = MITO_MIN_FLYE_COVERAGE_RATIO
+    message:
+        "--- Mitochondria: Screen contigs using existing BLAST evidence. ---"
+    log:
+        "logs/screen_mitochondria_{sample}.log"
+    priority: 8
+    shell:
+        """
+        python {params.script:q} screen \
+            --blast {input.blast:q} \
+            --contigs {input.contigs:q} \
+            --report {output.report:q} \
+            --confirmed-ids {output.confirmed_ids:q} \
+            --mode {params.mode:q} \
+            --min-direct-blast-qcov {params.minimum_qcov:q} \
+            --min-flye-coverage-ratio {params.minimum_coverage_ratio:q} > {log} 2>&1
+        """
+
+
 rule blob_json:
     input:
         contigs = "02.assembly/{sample}/contigs_filt.fasta",
@@ -628,7 +900,8 @@ rule blob_table:
 rule select_contigs:
     input:
         bestscore = "03.post-processing/contaminants/{sample}/bestscore.blob.blobDB.table.txt",
-        contigs = "02.assembly/{sample}/contigs_filt.fasta"
+        contigs = "02.assembly/{sample}/contigs_filt.fasta",
+        confirmed_mitochondrial_ids = "03.post-processing/mitochondria/{sample}/confirmed_mitochondrial.ids"
     output:
         abund = "03.post-processing/contaminants/{sample}/{sample}_composition.txt",
         list = "03.post-processing/contaminants/{sample}/contigs.list",
@@ -649,6 +922,7 @@ rule select_contigs:
         python {params.selector:q} \
             --bestscore {input.bestscore:q} \
             --contigs {input.contigs:q} \
+            --always-keep {input.confirmed_mitochondrial_ids:q} \
             --sample {wildcards.sample:q} \
             --mode {params.mode:q} \
             --include-genera {params.include_genera:q} \
@@ -663,9 +937,33 @@ rule select_contigs:
             --decisions {output.decisions:q}
         """
 
+rule separate_mitochondria:
+    input:
+        contigs = "02.assembly/{sample}/contigs_sel.fasta",
+        confirmed_ids = "03.post-processing/mitochondria/{sample}/confirmed_mitochondrial.ids"
+    output:
+        nuclear = "03.post-processing/mitochondria/{sample}/nuclear_for_annotation.fasta",
+        mitochondrial = "03.post-processing/mitochondria/{sample}/mitochondrial_contigs.fasta"
+    params:
+        script = MITOCHONDRIA_SCRIPT
+    message:
+        "--- Mitochondria: Separate confirmed mitochondrial contigs. ---"
+    log:
+        "logs/separate_mitochondria_{sample}.log"
+    priority: 5
+    shell:
+        """
+        python {params.script:q} split \
+            --fasta {input.contigs:q} \
+            --confirmed-ids {input.confirmed_ids:q} \
+            --nuclear-fasta {output.nuclear:q} \
+            --mitochondrial-fasta {output.mitochondrial:q} > {log} 2>&1
+        """
+
+
 rule genome_assembly_evaluation:
     input:
-        contigs = "02.assembly/{sample}/contigs_sel.fasta"
+        contigs = nuclear_contigs
     output:
         quast_dir = directory("03.post-processing/assembly_evaluation/{sample}")
     resources:
@@ -689,7 +987,7 @@ rule genome_assembly_evaluation:
 
 rule completeness:
     input:
-        contigs = "02.assembly/{sample}/contigs_sel.fasta"
+        contigs = nuclear_contigs
     output:
         busco_dir = directory("03.post-processing/completeness_evaluation/{sample}"),
         busco_tmp = temp(directory("03.post-processing/completeness_evaluation/{sample}/busco_tmp"))
@@ -742,7 +1040,7 @@ rule download_unite_its_db:
 
 rule its_extraction:
     input:
-        contigs = "02.assembly/{sample}/contigs.fasta"
+        contigs = nuclear_contigs
     output:
         full = "03.post-processing/ITS_extraction/{sample}/{sample}.full.fasta",
         its1 = "03.post-processing/ITS_extraction/{sample}/{sample}.ITS1.fasta",
@@ -925,10 +1223,46 @@ rule funannotate_db:
         tar -xzf "{params.funannotate_tar}" --strip-components=1 -C "{params.funannotate_db}" >> {log} 2>&1
         """
 
+
+rule normalize_funannotate_db:
+    input:
+        db_info = os.path.join(FUNANNOTATEDB, "funannotate-db-info.txt")
+    output:
+        metadata = "00.database/funannotate_db_paths.normalized.json"
+    params:
+        funannotate_db = FUNANNOTATEDB
+    log:
+        "logs/funannotate_db_paths.normalized.log"
+    message:
+        "--- Funannotate: Normalize trained-species database paths. ---"
+    priority: 9
+    run:
+        import json
+
+        summary = normalize_funannotate_db_paths(params.funannotate_db)
+        summary["database"] = os.path.abspath(params.funannotate_db)
+
+        os.makedirs(os.path.dirname(output.metadata), exist_ok=True)
+        temporary = output.metadata + ".tmp"
+        with open(temporary, "w") as handle:
+            json.dump(summary, handle, indent=2)
+            handle.write("\n")
+        os.replace(temporary, output.metadata)
+
+        os.makedirs(os.path.dirname(log[0]), exist_ok=True)
+        with open(log[0], "w") as handle:
+            handle.write(
+                "[normalize_funannotate_db] normalized "
+                f"{summary['metadata_paths_updated']} trained-species path(s) "
+                f"across {summary['metadata_files']} metadata file(s), and "
+                f"{summary['database_info_paths_updated']} database-index path(s).\n"
+            )
+
+
 rule funannotate_preprocess:
     input:
-        contigs = "02.assembly/{sample}/contigs_sel.fasta",
-        db_info = os.path.join(FUNANNOTATEDB, "funannotate-db-info.txt")
+        contigs = nuclear_contigs,
+        db_metadata = "00.database/funannotate_db_paths.normalized.json"
     output:
         contigs_clean = "04.annotation/{sample}/contigs_clean.fasta",
         contigs_sort = "04.annotation/{sample}/contigs_sort.fasta"
@@ -1013,11 +1347,12 @@ rule repeat_masking:
 rule funannotate_prediction:
     input:
         contigs_mask = "04.annotation/{sample}/contigs_mask.fasta",
-        db_info = os.path.join(FUNANNOTATEDB, "funannotate-db-info.txt")
+        db_metadata = "00.database/funannotate_db_paths.normalized.json"
     output:
         funannotate_dir = directory("04.annotation/{sample}/funannotate")
     params:
         genemark_dir = GENEMARKDIR,
+        genemark_enabled = str(GENEMARK_ENABLED).lower(),
         funannotate_db = FUNANNOTATEDB,
         species = lambda wildcards: annotations[wildcards.sample]['species_name'],
         proteins = lambda wildcards: annotations[wildcards.sample]['protein_file'],
@@ -1034,7 +1369,13 @@ rule funannotate_prediction:
     shell:
         """
         export FUNANNOTATE_DB="{params.funannotate_db}"
-        export GENEMARK_PATH="{params.genemark_dir}"
+        # Prevent an unconfigured licensed GeneMark installation on the host
+        # from being found implicitly by Funannotate.
+        export PATH="$CONDA_PREFIX/bin:/usr/bin:/bin"
+        unset GENEMARK_PATH
+        if [ "{params.genemark_enabled}" = "true" ]; then
+            export GENEMARK_PATH="{params.genemark_dir}"
+        fi
 
         funannotate predict \
             -i {input.contigs_mask} \
@@ -1242,16 +1583,151 @@ rule eggnog_annotation:
         {output.eggnog_dir}/{wildcards.sample}.emapper.annotations
     """
 
+if SIGNALP6_ENABLED:
+    rule install_signalp6:
+        input:
+            archive = SIGNALP6_ARCHIVE
+        output:
+            manifest = "00.resources/signalp6/installation.json"
+        params:
+            mode = SIGNALP6_MODE,
+            archive_sha256 = SIGNALP6_ARCHIVE_SHA256
+        conda:
+            "envs/signalp6.yaml"
+        message:
+            "--- SignalP 6: Installing the configured official DTU archive. ---"
+        script:
+            "scripts/install_signalp6.py"
+
+    rule signalp6_annotation:
+        input:
+            funannotate_dir = "04.annotation/{sample}/funannotate",
+            installation = "00.resources/signalp6/installation.json"
+        output:
+            signalp_results = "04.annotation/{sample}/signalp6/prediction_results.txt"
+        params:
+            protein_file = lambda wildcards: os.path.join(
+                "04.annotation",
+                wildcards.sample,
+                "funannotate",
+                "predict_results",
+                f"{annotations[wildcards.sample]['species_name'].replace(' ', '_')}_{wildcards.sample}.proteins.fa"
+            ),
+            mode = SIGNALP6_MODE,
+            batch_size = SIGNALP6_BATCH_SIZE
+        threads:
+            SIGNALP6_TORCH_NUM_THREADS
+        conda:
+            "envs/signalp6.yaml"
+        message:
+            "--- SignalP 6: Secreted-protein prediction for Funannotate. ---"
+        log:
+            "logs/signalp6_annotation_{sample}.log"
+        priority: 3
+        shell:
+            """
+            set -euo pipefail
+
+            : > "{log}"
+            proteins=$(readlink -f "{params.protein_file}")
+            if [ ! -s "$proteins" ]; then
+                echo "Funannotate did not produce the expected non-empty protein FASTA: $proteins" >> "{log}"
+                exit 1
+            fi
+            output_dir=$(dirname "{output.signalp_results}")
+            output_dir=$(readlink -m "$output_dir")
+            parent_dir=$(dirname "$output_dir")
+            mkdir -p "$parent_dir"
+            temporary_dir=$(mktemp -d "$parent_dir/.signalp6-{wildcards.sample}.XXXXXX")
+            trap 'rm -rf -- "$temporary_dir"' EXIT
+            export MPLCONFIGDIR="$temporary_dir/.matplotlib"
+            mkdir -p "$MPLCONFIGDIR"
+
+            installation=$(readlink -f "{input.installation}")
+            model_dir=$(python -c 'import json, os, sys; manifest = os.path.abspath(sys.argv[1]); data = json.load(open(manifest)); print(os.path.abspath(os.path.join(os.path.dirname(manifest), data["model_dir"])))' "$installation")
+            if [ ! -d "$model_dir" ]; then
+                echo "SignalP installation manifest points to a missing model directory: $model_dir" >> "{log}"
+                exit 1
+            fi
+
+            # Funannotate protein headers contain a stable transcript ID followed
+            # by a description. SignalP preserves the whole header in column 1,
+            # whereas Funannotate maps only the transcript ID. Run SignalP on a
+            # temporary ID-only FASTA so its native table can be parsed exactly.
+            signalp_proteins="$temporary_dir/proteins.for_signalp.faa"
+            if ! awk '
+                /^>/ {{
+                    identifier = substr($0, 2)
+                    sub(/[[:space:]].*$/, "", identifier)
+                    if (identifier == "" || seen[identifier]++) exit 1
+                    print ">" identifier
+                    next
+                }}
+                {{ print }}
+            ' "$proteins" > "$signalp_proteins"; then
+                echo "Could not create a unique ID-only protein FASTA for SignalP." >> "{log}"
+                exit 1
+            fi
+            if [ ! -s "$signalp_proteins" ]; then
+                echo "The ID-only protein FASTA for SignalP is empty." >> "{log}"
+                exit 1
+            fi
+
+            echo "Running SignalP 6 from the dedicated workflow environment on ID-normalized Funannotate proteins" >> "{log}"
+            signalp6 \
+                --fastafile "$signalp_proteins" \
+                --organism eukarya \
+                --output_dir "$temporary_dir" \
+                --format none \
+                --mode "{params.mode}" \
+                --torch_num_threads {threads} \
+                --write_procs 1 \
+                --bsize {params.batch_size} \
+                --model_dir "$model_dir" >> "{log}" 2>&1
+
+            results="$temporary_dir/prediction_results.txt"
+            if [ ! -s "$results" ]; then
+                echo "SignalP 6 did not create a non-empty prediction_results.txt file." >> {log}
+                exit 1
+            fi
+            if ! grep -q '^# SignalP-6' "$results"; then
+                echo "SignalP output is not a SignalP 6 prediction summary." >> {log}
+                exit 1
+            fi
+            if ! awk -F '\t' '
+                /^#/ {{ next }}
+                NF < 5 {{ invalid = 1; next }}
+                {{ records += 1 }}
+                END {{ exit(invalid || records == 0) }}
+            ' "$results"; then
+                echo "SignalP 6 summary is empty or does not have the columns Funannotate parses." >> {log}
+                exit 1
+            fi
+
+            # Replace the whole rule-owned directory only after validation, so
+            # a failed rerun cannot leave partial SignalP files as valid output.
+            rm -rf -- "$output_dir"
+            mv "$temporary_dir" "$output_dir"
+            trap - EXIT
+            """
+
+
 rule funannotate_annotation:
     input:
         funannotate_dir = "04.annotation/{sample}/funannotate",
         iprscan_out = "04.annotation/{sample}/iprscan/interproscan_out.xml",
         eggnog_dir = "04.annotation/{sample}/eggnog",
-        antismash_dir = "04.annotation/{sample}/antismash"
+        antismash_dir = "04.annotation/{sample}/antismash",
+        signalp_results = lambda wildcards: (
+            "04.annotation/{sample}/signalp6/prediction_results.txt".format(
+                sample=wildcards.sample
+            ) if SIGNALP6_ENABLED else []
+        )
     output:
         annotate_complete = "04.annotation/{sample}/.annotation_complete.txt"
     params:
-        funannotate_db = FUNANNOTATEDB
+        funannotate_db = FUNANNOTATEDB,
+        signalp_enabled = str(SIGNALP6_ENABLED).lower()
     resources:
         cpus = min(CPUS, 24)
     conda:
@@ -1275,16 +1751,36 @@ rule funannotate_annotation:
         log_file=$(readlink -f {log})
         complete_file=$(readlink -f {output.annotate_complete})
         annotate_work="$funannotate_dir/annotate_work"
+        signalp_args=()
+
+        if [ "{params.signalp_enabled}" = "true" ]; then
+            signalp_results=$(readlink -f {input.signalp_results})
+            if [ ! -s "$signalp_results" ]; then
+                echo "Expected non-empty SignalP 6 results at $signalp_results" > "$log_file"
+                exit 1
+            fi
+            signalp_args=(--signalp "$signalp_results")
+        fi
 
         mkdir -p "$annotate_work"
         cd "$annotate_work"
+
+        # SignalP is supplied explicitly above. Restrict PATH so an ambient
+        # installation cannot make an off-config run perform hidden predictions.
+        export PATH="$CONDA_PREFIX/bin:/usr/bin:/bin"
 
         funannotate annotate \
             -i "$funannotate_dir" \
             --antismash "$antismash_gbk" \
             --iprscan "$iprscan_xml" \
             --eggnog "$eggnog_annotations" \
+            "${{signalp_args[@]}}" \
             --cpus {resources.cpus} > "$log_file" 2>&1
+
+        if [ "{params.signalp_enabled}" = "true" ] && [ ! -e "$funannotate_dir/annotate_misc/annotations.secretome.txt" ]; then
+            echo "Funannotate did not create annotations.secretome.txt from the supplied SignalP 6 results." >> "$log_file"
+            exit 1
+        fi
 
         if [ -s genome.fixedproducts ]; then
             mkdir -p "$funannotate_dir/annotate_misc"

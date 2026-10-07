@@ -1,0 +1,14 @@
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  # SignalP 6 is installed only from the user-provided official DTU archive
+  # by install_signalp6.py; do not substitute an unofficial Conda package.
+  - python=3.10
+  - pip
+  - numpy<2
+  - pytorch=1.13
+  # PyTorch 1.13 needs the pre-2024 MKL/OpenMP ABI (iJIT_NotifyEvent).
+  - mkl<2024
+  - matplotlib>3.3.2
+  - tqdm>4.46.1

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # clean_funflux_output.sh
 #
-# Remove bulky intermediate files from a completed FunFlux, FunFluxL, or
-# Funnotator output directory while keeping the final result files. The script
-# is dry-run by default and deletes only when called with --run.
+# Remove bulky intermediate files from a completed FunFlux, FunFluxL,
+# FunFluxL+, or Funnotator output directory while keeping final result files.
+# The script is dry-run by default and deletes only when called with --run.
 #
 # Usage:
 #   clean_funflux_output.sh [OUTPUT_DIR]
@@ -81,12 +81,16 @@ has_dirs() {
 }
 
 detect_workflow() {
-  if has_dirs 01.pre-processing 02.assembly 03.post-processing 04.annotation logs report; then
+  if has_dirs 01.read_processing 02.short-read_assembly 03.read_selection 04.long-read_assembly 05.assembly_curation 06.polishing 07.genome_qc 08.annotation logs 09.report; then
+    echo "FunFluxL+"
+  elif has_dirs 01.pre-processing 02.short-read-assembly 02.assembly 03.short-read-selection 03.post-processing 04.annotation logs report; then
+    echo "FunFluxL+_legacy"
+  elif has_dirs 01.pre-processing 02.assembly 03.post-processing 04.annotation logs report; then
     echo "FunFlux/FunFluxL"
   elif has_dirs 01.pre-processing 02.annotation logs report; then
     echo "Funnotator"
   else
-    die "Target does not look like a supported FunFlux/FunFluxL/Funnotator output directory."
+    die "Target does not look like a supported FunFlux/FunFluxL/FunFluxL+/Funnotator output directory."
   fi
 }
 
@@ -94,7 +98,37 @@ WORKFLOW="$(detect_workflow)"
 TARGETS=()
 
 case "$WORKFLOW" in
-  FunFlux/FunFluxL)
+  FunFluxL+)
+    TARGETS+=(
+      # Filtered long reads and SPAdes guide-assembly intermediates
+      "01.read_processing/long/*/filtered.fastq"
+      "02.short-read_assembly/*/spades/K*"
+      "02.short-read_assembly/*/spades/misc"
+      "02.short-read_assembly/*/spades/pipeline_state"
+      "02.short-read_assembly/*/spades/tmp"
+
+      # Assembler-specific intermediates. Keep the standardized primary FASTA,
+      # GFA, and provenance files; only disposable Flye work directories and
+      # Hifiasm overlap/error-correction caches are selected here.
+      "04.long-read_assembly/*/flye/00-assembly"
+      "04.long-read_assembly/*/flye/10-consensus"
+      "04.long-read_assembly/*/flye/20-repeat"
+      "04.long-read_assembly/*/flye/30-contigger"
+      "04.long-read_assembly/*/flye/40-polishing"
+      "04.long-read_assembly/*/hifiasm/*.bin"
+
+      # BUSCO and annotation intermediates
+      "07.genome_qc/completeness_evaluation/*/tmp"
+      "07.genome_qc/completeness_evaluation/*/busco_tmp"
+      "08.annotation/*/funannotate/predict_misc"
+      "08.annotation/*/funannotate/predict_results"
+      "08.annotation/*/funannotate/annotate_misc"
+      "08.annotation/antismash_db"
+      "08.annotation/*/iprscan"
+      "08.annotation/*/repeatmasking"
+    )
+    ;;
+  FunFluxL+_legacy|FunFlux/FunFluxL)
     TARGETS+=(
       # FunFluxL filtered reads
       "01.pre-processing/*.fastq"
@@ -108,12 +142,22 @@ case "$WORKFLOW" in
       "02.assembly/*/pipeline_state"
       "02.assembly/*/tmp"
 
+      # FunFluxL+ SPAdes guide-assembly intermediates
+      "02.short-read-assembly/*/spades/K*"
+      "02.short-read-assembly/*/spades/misc"
+      "02.short-read-assembly/*/spades/pipeline_state"
+      "02.short-read-assembly/*/spades/tmp"
+
       # Flye intermediates
       "02.assembly/*/00-assembly"
       "02.assembly/*/10-consensus"
       "02.assembly/*/20-repeat"
       "02.assembly/*/30-contigger"
       "02.assembly/*/40-polishing"
+
+      # Hifiasm cache files can be large and are rebuilt automatically from the
+      # retained primary GFA plus the original reads when the rule is rerun.
+      "02.assembly/*/hifiasm/*.bin"
 
       # BUSCO temporary directories
       "03.post-processing/completeness_evaluation/*/tmp"

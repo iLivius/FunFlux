@@ -51,6 +51,7 @@ Here's a breakdown of the `FunFlux` workflow:
     * Filtered reads are mapped back to contigs using [bowtie2](https://github.com/BenLangmead/bowtie2) and [samtools](https://github.com/samtools/samtools). The resulting BAM file is analyzed with [QualiMap](http://qualimap.conesalab.org/).
     * Local alignments of contigs are performed against the [NCBI core nt](https://ftp.ncbi.nlm.nih.gov/blast/db/) database using [BLAST+](https://blast.ncbi.nlm.nih.gov/doc/blast-help/).
     * Contaminant contigs are checked with [BlobTools](https://github.com/DRL/blobtools). Contig selection is handled by a dedicated taxonomy selector script. The selector can keep all contigs, keep the most abundant assigned genus, include specified genera, exclude specified genera, and optionally discard `no-hit` contigs.
+    * A conservative mitochondrial screen reuses the contig BLAST results. In this short-read workflow, a confirmed call requires direct mitochondrial BLAST evidence; no circularity or long-read coverage is available as supporting evidence.
     * Genome assembly quality is evaluated with [QUAST](https://github.com/ablab/quast).
     * Genome completeness is assessed with [BUSCO](https://busco.ezlab.org/).
     * ITS markers are detected and extracted with [ITSx](https://microbiology.se/software/itsx/).
@@ -78,7 +79,7 @@ Here's a breakdown of the `FunFlux` workflow:
         - [DIAMOND](https://github.com/bbuchfink/diamond) is used by `funannotate` to search for homology between the genome and provided protein sequences from related taxa, as well as the `UniProt` database bundled in the configured `funannotate` database snapshot. Matches are refined by [Exonerate](https://www.ebi.ac.uk/about/vertebrate-genomics/software/exonerate).
 
     - *Ab initio* gene prediction
-        - [GeneMark-ES](https://genemark.bme.gatech.edu/gmes_instructions.html) is made available to `funannotate` and contributes self-trained *ab initio* gene predictions from the genome sequence.
+        - Optional [GeneMark-ES](https://genemark.bme.gatech.edu/gmes_instructions.html) contributes self-trained *ab initio* predictions only when a licensed local installation is explicitly configured.
         - [BUSCO](https://busco.ezlab.org/) conserved genes are passed to [Augustus](https://github.com/Gaius-Augustus/Augustus) to improve training.
         - [SNAP](https://github.com/KorfLab/SNAP), [GlimmerHMM](https://ccb.jhu.edu/software/glimmerhmm/), and other `funannotate`-supported predictors contribute to consensus model building.
 
@@ -94,6 +95,7 @@ Here's a breakdown of the `FunFlux` workflow:
     - [InterProScan](https://github.com/ebi-pf-team/interproscan) is expected as an external local installation.
     - [EggNOG-mapper](https://github.com/eggnogdb/eggnog-mapper) is used for orthology and functional annotation.
     - [antiSMASH](https://github.com/antismash/antismash) detects secondary metabolite biosynthetic gene clusters. The `antiSMASH` database directory is a temporary Snakemake output and should be removed after antiSMASH jobs complete.
+    - Optional [SignalP 6](https://services.healthtech.dtu.dk/services/SignalP-6.0/) predicts classical secretory signal peptides from Funannotate proteins. Its native summary is explicitly passed to `funannotate annotate`, which embeds the resulting `SECRETED:SignalP(...)` annotations in the final files.
     - The configured funannotate database snapshot contains resources such as `UniProt`, `MEROPS`, `dbCAN`, `Pfam`, `GO`, `MIBiG`, `InterPro`, and `BUSCO` outgroups.
 
 06. **Report:**
@@ -169,9 +171,9 @@ Here's a breakdown of the `FunFlux` workflow:
 
         *NOTE: the eggNOG database requires roughly 50 GB of disk space.*
 
-    * Download and set up `GeneMark-ES/ET`:
+    * `GeneMark-ES/ET` (optional licensed dependency):
 
-        - Visit the [GeneMark](http://topaz.gatech.edu/GeneMark/license_download.cgi) download page.
+        - Visit the [GeneMark](http://topaz.gatech.edu/GeneMark/license_download.cgi) download page only when the intended use is permitted by its licence; otherwise leave `directories.genemark_dir: null`.
         - Download `GeneMark-ES/ET`.
         - Change Perl script shebangs if necessary:
 
@@ -204,6 +206,14 @@ Here's a breakdown of the `FunFlux` workflow:
 
         `tantan`, `RepeatModeler`, and `RepeatMasker` are installed through the workflow Conda environment. The advanced masking mode uses the custom RepeatModeler library with `RepeatMasker -lib`, so no separate curated RepeatMasker database is required for that mode.
 
+    * SignalP 6 (optional):
+
+        SignalP is licensed DTU software. Obtain the official archive manually from [DTU](https://services.healthtech.dtu.dk/services/SignalP-6.0/) after accepting the applicable licence; do not commit, upload, or redistribute that archive or its model weights with this workflow. The workflow does not know a DTU download URL and cannot acquire the archive itself.
+
+        Put the archive in a location readable by the compute jobs, set its absolute path under `files.signalp6_archive`, and enable the matching model mode (`fast`, `slow`, or `slow-sequential`). At the first enabled run, Snakemake creates a dedicated Python 3.10 Conda environment with the compatible runtime stack, installs the Python package from that exact local archive, and retains the extracted model under `00.resources/signalp6/`. It never uses an ambient `signalp6` executable. The initial bootstrap needs access only to the configured Conda channels (or their locally configured caches).
+
+        A Fast archive, such as `signalp-6.0i.fast.tar.gz`, must be used with `mode: fast`; requesting a model that the archive lacks stops with a clear error. If SignalP remains `off`, no archive is opened, no environment is built, and Funannotate runs without SignalP data.
+
 [⬆ Back to Table of Contents](#table-of-contents)
 
 ## Configuration
@@ -228,8 +238,15 @@ Before running `FunFlux`, edit `config/config.yaml`. The file is organized into 
     - **output_dir**: Directory where output files, `.snakemake` metadata, and Conda environments are stored. Reusing the same output directory avoids reinstalling environments.
     - **blast_db**: Path to the NCBI core nt database and taxonomy files.
     - **eggnog_db**: Path to the eggNOG-mapper database.
-    - **genemark_dir**: Path to the `gmes_linux_64_4` directory.
+    - **genemark_dir**: Optional path to the licensed `gmes_linux_64_4` directory. Leave null to skip GeneMark.
     - **funannotate_db**: Path where the funannotate database snapshot is installed or already available.
+
+        The downloaded archive may retain absolute paths from the machine where
+        it was created. FunFlux automatically rewrites the database index and
+        trained-species metadata to this configured directory after extraction,
+        before Funannotate is allowed to run. The audit record is written to
+        `00.database/funannotate_db_paths.normalized.json`; this portability
+        repair changes path references only, never reference sequences or models.
 
 - `files`
 
@@ -294,6 +311,43 @@ Before running `FunFlux`, edit `config/config.yaml`. The file is organized into 
     ```
 
     Use real tab characters, not the literal string `<TAB>`. A sample-specific include or exclude list replaces the global list for that sample.
+
+    **Mitochondrial screening**
+
+    ```yaml
+    mitochondria:
+      mode: separate_confirmed
+      min_direct_blast_qcov: 35
+      min_flye_coverage_ratio: 3.0
+    ```
+
+    `mode: off` disables calls, `report` writes the screen while leaving the
+    downstream assembly unchanged, and `separate_confirmed` removes only
+    confirmed mitochondrial contigs from the nuclear QC and annotation branch.
+    In FunFlux, `min_direct_blast_qcov` is the decisive threshold because the
+    short-read assembly does not provide Flye evidence. The
+    `min_flye_coverage_ratio` field is retained for configuration compatibility
+    with the long-read workflows and is not used here.
+
+    **SignalP 6 secretome prediction**
+
+    ```yaml
+    files:
+      signalp6_archive: /absolute/path/signalp-6.0i.fast.tar.gz
+
+    parameters:
+      genemark:
+        mode: auto
+      signalp6:
+        mode: fast
+        archive_sha256: null
+        torch_num_threads: 8
+        batch_size: 10
+    ```
+
+    `genemark.mode: auto` uses `directories.genemark_dir` only when it is set; `off` prevents GeneMark even if a host installation exists. `signalp6.mode: off` is the safe default; use `fast`, `slow`, or `slow-sequential` only with the corresponding official archive. `archive_sha256` is optional but recommended for a reproducible integrity check: set it to the 64-character value printed by `sha256sum /absolute/path/signalp-6.0i.fast.tar.gz`.
+
+    The installer records only the archive file name, checksum, selected mode, package version, and a relative model path in `00.resources/signalp6/installation.json`; it does not record a personal archive path. Before prediction, the workflow makes a temporary copy of Funannotate proteins whose headers contain only the stable transcript ID; this prevents descriptions after the ID from becoming unmatchable SignalP identifiers. The prediction rule validates the resulting native `prediction_results.txt` and supplies that exact file to `funannotate annotate --signalp`. Funannotate then writes `annotations.secretome.txt` and embeds `SECRETED:SignalP(...)` information in the final annotation.
 
     **ITS taxonomy**
 
@@ -366,6 +420,7 @@ The cleanup script is dry-run by default and refuses targets that do not look li
 Here's a breakdown of the sub-directories created by `FunFlux` within the main output folder. `Funnotator` produces a similar but simplified annotation-only output.
 
 ```text
+├── 00.database
 ├── 01.pre-processing
 ├── 02.assembly
 ├── 03.post-processing
@@ -374,6 +429,8 @@ Here's a breakdown of the sub-directories created by `FunFlux` within the main o
 └── report
 ```
 
+- `00.database`: Downloaded reference resources and portability metadata, including `funannotate_db_paths.normalized.json` after Funannotate database extraction.
+
 - `01.pre-processing`: QC and statistics of raw and trimmed reads, produced by [fastp](https://github.com/OpenGene/fastp) v1.0.1.
 
 - `02.assembly`: Output from [SPAdes](https://github.com/ablab/spades) v4.2.0. This directory contains raw contigs, filtered contigs, and selected/decontaminated contigs.
@@ -381,6 +438,7 @@ Here's a breakdown of the sub-directories created by `FunFlux` within the main o
 - `03.post-processing`: Contains:
     - **mapping_evaluation**: [QualiMap](http://qualimap.conesalab.org/) v2.3 output.
     - **contaminants**: BLAST+ v2.16.0 and BlobTools v1.1.1 decontamination output, including genus composition and `contig_taxonomy_decisions.tsv`.
+    - **mitochondria**: Mitochondrial BLAST screen, confirmed identifier list, and nuclear/mitochondrial FASTA files. In `report` or `off` mode, the mitochondrial FASTA is empty and the nuclear FASTA remains the complete assembly.
     - **assembly_evaluation**: [QUAST](https://github.com/ablab/quast) v5.3.0 output.
     - **completeness_evaluation**: [BUSCO](https://busco.ezlab.org/) v6.0.0 output from `--auto-lineage-euk`.
     - **ITS_extraction**: [ITSx](https://microbiology.se/software/itsx/) v1.1.3 output and [VSEARCH](https://github.com/torognes/vsearch) v2.30.0 SINTAX classification against the automatically downloaded UNITE reference.
@@ -390,6 +448,7 @@ Here's a breakdown of the sub-directories created by `FunFlux` within the main o
     - **iprscan**: [InterProScan](https://github.com/ebi-pf-team/interproscan) v5.77-108.0 XML output.
     - **eggnog**: [EggNOG-mapper](https://github.com/eggnogdb/eggnog-mapper) v2.1.13 annotation output.
     - **antismash**: [antiSMASH](https://github.com/antismash/antismash) v8.0.4 secondary metabolite output.
+    - **signalp6**: optional native SignalP 6 summary and supporting outputs, when enabled.
     - **funannotate**: Prediction and annotation directories from [funannotate](https://github.com/nextgenusfs/funannotate) v1.8.17.
 
         ```text
@@ -476,3 +535,5 @@ Antonielli, L., Brader, G., & Compant, S. (2024). FunFlux: Integrated workflow f
 31. The UniProt Consortium. (2023). UniProt: The Universal Protein Knowledgebase in 2023. Nucleic Acids Research, 51(D1), D523-D531. https://doi.org/10.1093/nar/gkac1052
 
 32. Zheng, J., Ge, Q., Yan, Y., Zhang, X., Huang, L., & Yin, Y. (2023). dbCAN3: Automated carbohydrate-active enzyme and substrate annotation. Nucleic Acids Research, 51(W1), W115-W121. https://doi.org/10.1093/nar/gkad328
+
+33. Teufel, F., Almagro Armenteros, J. J., Johansen, A. R., Gíslason, M. H., Pihl, S. I., Tsirigos, K. D., Winther, O., Brunak, S., von Heijne, G., & Nielsen, H. (2022). SignalP 6.0 predicts all five types of signal peptides using protein language models. Nature Biotechnology, 40, 1023-1025. https://doi.org/10.1038/s41587-021-01156-3

@@ -7,11 +7,12 @@ directories:
   input_dir: /path/to/input_dir
   blast_db: /path/to/NCBI_nt_core_db
   eggnog_db: /path/to/eggnog_db
-  genemark_dir: /path/to/gmes_linux_64_4
+  genemark_dir: null # Optional licensed GeneMark-ES/ET directory containing gmes_petap.pl; null skips GeneMark.
   funannotate_db: /path/to/funannotate_db
 files:
   annotation_params: /path/to/annotation_parameters.tsv
   iprscan: /path/to/interproscan-5.77-108.0/interproscan.sh
+  signalp6_archive: null # Optional absolute path to the official DTU SignalP 6 archive obtained by the licensed user.
 resources:
   threads: 24
   ram_gb: 128
@@ -24,6 +25,17 @@ parameters:
     exclude_genera:
     exclude_genera_file:
     sample_overrides:
+  mitochondria:
+    mode: separate_confirmed # Options: off, report, separate_confirmed
+    min_direct_blast_qcov: 35
+    min_flye_coverage_ratio: 3.0 # Used by Flye-based workflows only
+  genemark:
+    mode: auto # Options: auto (use directories.genemark_dir only when supplied), off (always skip).
+  signalp6:
+    mode: off # Options: off, fast, slow, slow-sequential. The archive must contain the requested model.
+    archive_sha256: null # Optional SHA-256 check for files.signalp6_archive; use sha256sum to obtain it.
+    torch_num_threads: 8 # CPU threads used by SignalP's PyTorch model.
+    batch_size: 10 # SignalP prediction batch size; increase only after checking available memory.
   its_taxonomy_cutoff: 0.8
   masking_method: tantan
   repeatmodeler_quick: true
