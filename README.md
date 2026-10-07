@@ -1,7 +1,8 @@
 # FunFlux
 Integrated workflow for fungal short-read genome assembly and annotation.
 
-[![Snakemake](https://img.shields.io/badge/snakemake-≥9.14.6-brightgreen.svg)](https://snakemake.readthedocs.io/en/stable/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13612159.svg)](https://doi.org/10.5281/zenodo.13612159)
+[![Snakemake](https://img.shields.io/badge/snakemake-≥9.14.6-brightgreen.svg)](https://snakemake.readthedocs.io/en/stable/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20749375.svg)](https://doi.org/10.5281/zenodo.20749375)
 
 ---
 ```bash
@@ -34,7 +35,7 @@ June 2026
 ## Rationale
 The analysis of fungal whole-genome sequencing (WGS) data involves a complex series of bioinformatic steps that can be challenging to execute manually. This process is time-consuming, prone to errors, and difficult to reproduce. `FunFlux` addresses these problems by providing an automated [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) workflow for fungal genome assembly and annotation.
 
-`FunFlux` is designed to streamline annotation with [funannotate](https://github.com/nextgenusfs/funannotate) in the absence of RNA sequencing evidence. It relies on both *ab initio* annotation and protein FASTA sequences from organisms of the same species, genus, or another closely related taxon to improve gene prediction and annotation.
+`FunFlux` is designed to streamline the annotation process with [funannotate](https://github.com/nextgenusfs/funannotate) in the absence of RNA sequencing evidence. It relies on both *ab initio* annotation and protein FASTA sequences from organisms of the same species or genus to enhance the accuracy of gene prediction and annotation.
 
 ## Description
 Here's a breakdown of the `FunFlux` workflow:
@@ -129,17 +130,15 @@ Here's a breakdown of the `FunFlux` workflow:
     * `NCBI core nt` database:
 
         ```bash
-        rsync --list-only rsync://ftp.ncbi.nlm.nih.gov/blast/db/core_nt.*.gz | grep '.tar.gz' | awk '{print "ftp.ncbi.nlm.nih.gov/blast/db/" $NF}' > nt_links.list
-        cat nt_links.list | parallel -j4 'rsync -h --progress rsync://{} .'
-        find . -name '*.gz' | parallel -j4 'echo {}; tar -zxf {}'
+        # NCBI's own downloader. It ships with BLAST+, so it is already in the blast
+        # environment; --decompress unpacks each volume as it arrives, and every transfer
+        # is checked against the .md5 NCBI publishes beside it.
+        update_blastdb.pl --decompress --num_threads 4 core_nt      # or nt_prok
 
-        wget -c 'ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz'
-        tar -zxvf taxdump.tar.gz
-
-        wget 'ftp://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz'
-        tar -zxvf taxdb.tar.gz
-
-        wget -c 'ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz'
+        # taxonomy: BlobTools reads nodes.dmp and names.dmp from this same directory
+        wget -c 'https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz' && tar -zxf taxdump.tar.gz
+        wget -c 'https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz'       && tar -zxf taxdb.tar.gz
+        wget -c 'https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz'
         gunzip nucl_gb.accession2taxid.gz
         ```
 
