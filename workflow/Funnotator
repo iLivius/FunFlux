@@ -128,7 +128,7 @@ if len(SAMPLES) == 0:
 else:
     for sample in sorted(SAMPLES):
         if any(char in sample for char in not_allowed_chars):
-            sys.stderr.write(f"Sample name '{sample}' contains not allowed characters.\n")
+            sys.stderr.write(f"Sample name '{sample}' contains one of these not allowed characters: \"_*#@%^/! ?&:;|<>\"\n"))
             sys.exit(1)
         print(f"Sample {sample} in process...")
 
