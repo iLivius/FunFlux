@@ -1,0 +1,2751 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/analysis/mitochondria/">
+      
+      
+        <link rel="prev" href="../decontamination/">
+      
+      
+        <link rel="next" href="../assembly-qc/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Mitochondria - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mitochondria" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Mitochondria
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/external-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/from-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/longread/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#where-it-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where it runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Classification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blast-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLAST evidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#without-assembler-evidence-contigs-illumina" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Without assembler evidence (contigs, illumina)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-assembler-evidence-longread-hybrid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With assembler evidence (longread, hybrid)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-screen-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The screen table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The split
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concatemers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concatemers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-no-mitochondrion-is-confirmed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When no mitochondrion is confirmed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output files
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../assembly-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contig-summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gene-prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#where-it-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where it runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Classification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blast-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLAST evidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#without-assembler-evidence-contigs-illumina" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Without assembler evidence (contigs, illumina)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-assembler-evidence-longread-hybrid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With assembler evidence (longread, hybrid)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-screen-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The screen table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The split
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concatemers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concatemers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-no-mitochondrion-is-confirmed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When no mitochondrion is confirmed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output files
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/analysis/mitochondria.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="mitochondria">Mitochondria<a class="headerlink" href="#mitochondria" title="Permanent link">¶</a></h1>
+<p>A fungal mitochondrial genome, usually some tens of kb and present in many copies per cell,
+assembles as one more contig. This page describes how FunFlux recognises that contig, sets it
+apart from the nuclear genome and reports each call. Read it to interpret
+<code>mitochondria/mitochondrial_screen.tsv</code> or to find out why no mitochondrion was split off.</p>
+<p>With the default <code>parameters.mitochondria.mode: separate_confirmed</code>, FunFlux finds the
+mitochondrial contig with BLAST, protects it from removal by the contig selector and writes it to
+<code>contigs_mitochondrial.fasta</code>. QUAST, BUSCO, the ITS search and funannotate then read only the
+nuclear genome, <code>contigs_final.fasta</code>.</p>
+<p>The mitochondrion is kept apart because of the genetic code. The mitochondria of most fungi use
+genetic code 4, in which UGA codes for tryptophan. The mitochondria of <em>Saccharomyces cerevisiae</em>
+and related yeasts use code 3, which changes AUA and CUN too. The nuclear gene predictor reads UGA
+as a stop codon and calls false genes on a mitochondrial contig.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>the screen</strong></td>
+<td>the contamination and mitochondrion screen of the draft: BLAST against NCBI core_nt, BlobTools, the mitochondrion screen and the contig selector</td>
+</tr>
+<tr>
+<td><strong>mitochondrion screen</strong></td>
+<td>rule <code>screen_mitochondria</code>, part of the screen: it confirms mitochondrial contigs from BLAST hits to mitochondrial genomes and, in the long-read modes, the assembler evidence</td>
+</tr>
+<tr>
+<td><strong>draft assembly (the draft)</strong></td>
+<td>the assembly the screen examines, before any contig is removed: <code>contigs_filt.fasta</code> in <code>illumina</code> mode and in <code>contigs</code> mode with the screen, <code>assembly.fasta</code> in <code>longread</code> and <code>hybrid</code></td>
+</tr>
+<tr>
+<td><strong>contig selector</strong></td>
+<td>rule <code>select_contigs</code>, the last step of the screen: it keeps or removes each contig by genus, as <code>parameters.decontamination</code> says; the default, <code>off</code>, keeps every contig</td>
+</tr>
+<tr>
+<td><strong>genus filter</strong></td>
+<td>the setting <code>parameters.decontamination.mode: include</code> or <code>exclude</code>, under which the contig selector keeps or removes contigs by the genus BlobTools gave them</td>
+</tr>
+<tr>
+<td><strong>direct hit</strong></td>
+<td>a BLAST hit to a database sequence whose title says it is a mitochondrial genome; only such hits count as BLAST evidence for the mitochondrion</td>
+</tr>
+<tr>
+<td><strong>qcovs</strong></td>
+<td>the BLAST query coverage per subject: the percentage of a contig covered by all kept alignments to one database sequence</td>
+</tr>
+<tr>
+<td><strong>coverage ratio</strong></td>
+<td>a contig's depth as the assembler reported it, divided by the median depth of all contigs</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="where-it-runs">Where it runs<a class="headerlink" href="#where-it-runs" title="Permanent link">¶</a></h2>
+<p>The mitochondrion screen is one step of the contamination and mitochondrion screen, called the
+screen on this page. It runs wherever the screen runs, as listed under
+<a href="../decontamination/#when-the-screen-runs">When the screen runs</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Mitochondrion screen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>illumina</code>, <code>longread</code>, <code>hybrid</code></td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>hybrid</code>, Illumina guide assembly</td>
+<td>its own mitochondrion screen, rule <code>screen_guide_mitochondria</code>, which decides from BLAST alone (<a href="../../modes/hybrid/">Hybrid</a>)</td>
+</tr>
+<tr>
+<td><code>contigs</code> with <code>parameters.contigs.screen: true</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>contigs</code> without the screen</td>
+<td>none: nothing is split off, a mitochondrial genome in the input FASTA is annotated as nuclear, and the dry run prints a NOTE saying so</td>
+</tr>
+</tbody>
+</table>
+<p>The mitochondrion screen decides on the draft, before the contig selector runs, so that a genus
+filter cannot remove the mitochondrion before it is set apart. The split comes last, after
+polishing. The steps, in order:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Rule</th>
+<th>Reads</th>
+<th>Writes, in <code>02.assembly/{sample}/</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>blast_contigs</code></td>
+<td>the draft contigs</td>
+<td><code>contaminants/blastout</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>screen_mitochondria</code></td>
+<td><code>blastout</code>, the draft contigs; in <code>longread</code> and <code>hybrid</code> also <code>assembly_evidence.tsv</code>, from <code>assembly_evidence</code> (<a href="#with-assembler-evidence-longread-hybrid">below</a>)</td>
+<td><code>mitochondria/mitochondrial_screen.tsv</code>, <code>mitochondria/confirmed_mitochondrial.ids</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>select_contigs</code></td>
+<td>the confirmed IDs, among others</td>
+<td><code>contaminants/contigs_decontam.fasta</code>, with the confirmed contigs kept whatever their genus</td>
+</tr>
+<tr>
+<td>4</td>
+<td>polishing (long-read modes, where it runs), then <code>finalize_assembly</code></td>
+<td>the kept contigs</td>
+<td><code>contigs_all.fasta</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>separate_mitochondria</code></td>
+<td><code>contigs_all.fasta</code>, the confirmed IDs</td>
+<td><code>contigs_final.fasta</code>, <code>contigs_mitochondrial.fasta</code></td>
+</tr>
+</tbody>
+</table>
+<p>In the long-read modes, <code>longread</code> and <code>hybrid</code>, Medaka (ONT samples, unless
+<code>medaka_model: false</code>) and Polypolish (<code>hybrid</code>) polish the kept contigs before
+<code>finalize_assembly</code>. PacBio HiFi samples in <code>longread</code> are not polished.</p>
+<h2 id="classification">Classification<a class="headerlink" href="#classification" title="Permanent link">¶</a></h2>
+<p>The mitochondrion screen gives every contig of the draft a class and a reason. BLAST is the
+evidence in every mode, and the long-read modes add the assembler's evidence.</p>
+<h3 id="blast-evidence">BLAST evidence<a class="headerlink" href="#blast-evidence" title="Permanent link">¶</a></h3>
+<p>The mitochondrion screen reads <code>contaminants/blastout</code>, the BLAST table of the screen described
+under <a href="../decontamination/#blast-against-core_nt">BLAST against core_nt</a>, and uses only direct
+organelle hits. In BLAST's terms, each database sequence that a contig matches is a subject. A
+direct hit is a hit whose subject title says that the subject is a mitochondrial genome. The title
+must contain one of these phrases, in upper or lower case:</p>
+<ul>
+<li><code>mitochondrion, complete genome</code></li>
+<li><code>mitochondrion, complete sequence</code></li>
+<li><code>mitochondrion, partial genome</code></li>
+<li><code>mitochondrion, partial sequence</code></li>
+<li><code>mitochondrial DNA</code></li>
+<li><code>mitochondrial genome</code></li>
+</ul>
+<p>A nuclear gene described as, for example, <code>mitochondrial ribosomal protein L5 mRNA</code> does not count.</p>
+<p>For each contig, the mitochondrion screen takes the direct hit with the highest <code>qcovs</code>, the
+percentage of the contig covered by all kept alignments to that subject.
+<code>parameters.blast_max_hsps</code> sets how many alignments per subject BLAST keeps. With 1, BLAST keeps
+only the single best local alignment per database sequence. A complete mitochondrial genome that
+aligns in several blocks can then look only half covered, and a mitogenome rearranged relative to
+its closest reference can fall below the threshold. In a run with the screen and with
+<code>parameters.mitochondria.mode</code> other than <code>off</code>, the dry run prints a NOTE when <code>blast_max_hsps</code>
+is below 5.</p>
+<h3 id="without-assembler-evidence-contigs-illumina">Without assembler evidence (contigs, illumina)<a class="headerlink" href="#without-assembler-evidence-contigs-illumina" title="Permanent link">¶</a></h3>
+<p>In <code>contigs</code> and <code>illumina</code> mode, and on the <code>hybrid</code> guide, BLAST is the only evidence, so a
+direct hit covering at least 35 % of the contig confirms it.</p>
+<table>
+<thead>
+<tr>
+<th>Best direct hit</th>
+<th>Class</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qcovs</code> ≥ <code>min_direct_blast_qcov</code> (35)</td>
+<td><code>confirmed_mitochondrial</code></td>
+<td><code>strong_direct_blast</code></td>
+</tr>
+<tr>
+<td><code>qcovs</code> below 35</td>
+<td><code>mitochondrial_candidate</code></td>
+<td><code>weak_direct_blast</code></td>
+</tr>
+<tr>
+<td>none</td>
+<td><code>not_mitochondrial</code></td>
+<td><code>no_mitochondrial_evidence</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>very_strong_qcov</code> and <code>min_assembler_coverage_ratio</code> change nothing in these modes, and the
+coverage that SPAdes writes into its contig names is not used.</p>
+<h3 id="with-assembler-evidence-longread-hybrid">With assembler evidence (longread, hybrid)<a class="headerlink" href="#with-assembler-evidence-longread-hybrid" title="Permanent link">¶</a></h3>
+<p>In the long-read modes, rule <code>assembly_evidence</code>, a short step right after the assembly, writes
+<code>assembly_evidence.tsv</code> beside the assembly. It holds the read depth and the circularity of each
+contig as the assembler reported them.</p>
+<table>
+<thead>
+<tr>
+<th>Assembler</th>
+<th>Depth</th>
+<th>Circularity</th>
+<th>Also reports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hifiasm</td>
+<td><code>rd:i</code> tag of the primary contig graph</td>
+<td>the contig name ends with <code>c</code> (<code>ptg000001c</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td>Flye</td>
+<td><code>assembly_info.txt</code></td>
+<td><code>assembly_info.txt</code></td>
+<td>repeat status, alternative-haplotype group</td>
+</tr>
+</tbody>
+</table>
+<p>The coverage ratio of a contig is its depth divided by the median depth of all contigs. A clean
+circle is circular, not a repeat and in no alternative group. In these modes a direct hit of at
+least 35 % needs the support of a high depth or a clean circle, unless it covers 70 % or more. The
+tests run in this order:</p>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Class</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qcovs</code> ≥ 35 and coverage ratio ≥ <code>min_assembler_coverage_ratio</code> (3.0)</td>
+<td><code>confirmed_mitochondrial</code></td>
+<td><code>direct_blast_plus_high_coverage</code></td>
+</tr>
+<tr>
+<td><code>qcovs</code> ≥ 35 and a clean circle</td>
+<td><code>confirmed_mitochondrial</code></td>
+<td><code>direct_blast_plus_clean_circularity</code></td>
+</tr>
+<tr>
+<td><code>qcovs</code> ≥ <code>very_strong_qcov</code> (70)</td>
+<td><code>confirmed_mitochondrial</code></td>
+<td><code>very_strong_direct_blast</code></td>
+</tr>
+<tr>
+<td>any other direct hit</td>
+<td><code>mitochondrial_candidate</code></td>
+<td><code>direct_blast_without_support</code></td>
+</tr>
+<tr>
+<td>no direct hit, circular and coverage ratio ≥ 3.0</td>
+<td><code>mitochondrial_candidate</code></td>
+<td><code>circular_and_high_coverage_without_blast</code></td>
+</tr>
+<tr>
+<td>no direct hit, circular</td>
+<td><code>circular_unclassified</code></td>
+<td><code>circularity_only</code></td>
+</tr>
+<tr>
+<td>no direct hit, coverage ratio ≥ 3.0</td>
+<td><code>high_coverage_unclassified</code></td>
+<td><code>coverage_only</code></td>
+</tr>
+<tr>
+<td>none of the above</td>
+<td><code>not_mitochondrial</code></td>
+<td><code>no_mitochondrial_evidence</code></td>
+</tr>
+</tbody>
+</table>
+<p>Circularity or depth alone never confirms a contig. Only <code>confirmed_mitochondrial</code> contigs are
+protected and split off, and the other classes change nothing in the assembly.</p>
+<h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">¶</a></h2>
+<p>The mitochondrion screen has four settings, under <code>parameters.mitochondria</code>. Two act wherever the
+screen runs, and two only where the assembler reports depth and circularity.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">mitochondria</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">separate_confirmed</span><span class="w">          </span><span class="c1"># off | report | separate_confirmed</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">min_direct_blast_qcov</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">35</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nt">min_assembler_coverage_ratio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.0</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nt">very_strong_qcov</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed</th>
+<th>Used in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td><code>separate_confirmed</code></td>
+<td><code>off</code>, <code>report</code>, <code>separate_confirmed</code></td>
+<td>every mode with the screen</td>
+</tr>
+<tr>
+<td><code>min_direct_blast_qcov</code></td>
+<td>35</td>
+<td>number &gt; 0 and ≤ 100</td>
+<td>every mode with the screen</td>
+</tr>
+<tr>
+<td><code>min_assembler_coverage_ratio</code></td>
+<td>3.0</td>
+<td>number &gt; 0</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+</tr>
+<tr>
+<td><code>very_strong_qcov</code></td>
+<td>70</td>
+<td>number &gt; 0 and ≤ 100</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+</tr>
+</tbody>
+</table>
+<p>With the screen on, the dry run prints the settings in use:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Mitochondrion screen: separate_confirmed (direct BLAST coverage &gt;= 35%, assembler coverage ratio &gt;= 3, near-complete hit &gt;= 70%).
+</code></pre></div>
+<h2 id="modes">Modes<a class="headerlink" href="#modes" title="Permanent link">¶</a></h2>
+<p><code>parameters.mitochondria.mode</code> decides what FunFlux does with the findings of the mitochondrion
+screen.</p>
+<table>
+<thead>
+<tr>
+<th><code>mode</code></th>
+<th>Screen table</th>
+<th><code>confirmed_mitochondrial.ids</code></th>
+<th>Protected from the contig selector</th>
+<th><code>contigs_mitochondrial.fasta</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>off</code></td>
+<td>every row <code>not_screened</code>, reason <code>screening_disabled</code></td>
+<td>empty</td>
+<td>no</td>
+<td>empty file</td>
+</tr>
+<tr>
+<td><code>report</code></td>
+<td>classes and reasons</td>
+<td>empty</td>
+<td>no</td>
+<td>empty file</td>
+</tr>
+<tr>
+<td><code>separate_confirmed</code> (default)</td>
+<td>classes and reasons</td>
+<td>the confirmed contigs</td>
+<td>yes</td>
+<td>the confirmed contigs</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Only <code>separate_confirmed</code> protects the mitochondrion and sets it apart</p>
+<p><code>report</code> shows the calls without changing the assembly. With <code>off</code> and <code>report</code>,
+<code>contigs_final.fasta</code> holds every contig, a mitochondrion included, and it goes through gene
+prediction. <code>report</code> also leaves the mitochondrion exposed to <code>include</code>, <code>exclude</code> and
+<code>discard_no_hit</code>.</p>
+</div>
+<p><code>screen_mitochondria</code> and <code>separate_mitochondria</code> run with every setting of <code>mitochondria.mode</code>, so
+a finished sample has the same set of files. <code>mitochondria.mode: off</code> does not switch BLAST off,
+because the rest of the screen still needs it.</p>
+<p>The log of <code>screen_mitochondria</code> counts confirmed and selected contigs:
+<code>Mitochondrial screen: N confirmed call(s); M selected for separation (mode=...).</code></p>
+<h2 id="the-screen-table">The screen table<a class="headerlink" href="#the-screen-table" title="Permanent link">¶</a></h2>
+<p><code>mitochondria/mitochondrial_screen.tsv</code> has one row per draft contig, in FASTA order.
+<code>classification</code> and <code>reason</code> give the call, and the other columns are the evidence behind it.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contig</code></td>
+<td>contig name, the first word of the FASTA header</td>
+</tr>
+<tr>
+<td><code>length</code></td>
+<td>contig length (bp)</td>
+</tr>
+<tr>
+<td><code>classification</code></td>
+<td>the class, see the tables above</td>
+</tr>
+<tr>
+<td><code>reason</code></td>
+<td>the test that decided</td>
+</tr>
+<tr>
+<td><code>best_mito_qcovs</code></td>
+<td><code>qcovs</code> of the best direct hit (%); empty without a direct hit</td>
+</tr>
+<tr>
+<td><code>direct_mito_hits</code></td>
+<td>number of BLAST alignments to mitochondrial-genome subjects</td>
+</tr>
+<tr>
+<td><code>best_mito_title</code></td>
+<td>subject title of the best direct hit</td>
+</tr>
+<tr>
+<td><code>assembler_source</code></td>
+<td><code>hifiasm</code> or <code>flye</code></td>
+</tr>
+<tr>
+<td><code>assembler_circular</code></td>
+<td><code>Y</code> or <code>N</code></td>
+</tr>
+<tr>
+<td><code>assembler_coverage</code></td>
+<td>read depth reported by the assembler</td>
+</tr>
+<tr>
+<td><code>assembler_coverage_ratio</code></td>
+<td>depth divided by the median depth of all contigs</td>
+</tr>
+<tr>
+<td><code>assembler_repeat</code></td>
+<td><code>Y</code> or <code>N</code> (Flye)</td>
+</tr>
+<tr>
+<td><code>assembler_alt_group</code></td>
+<td>alternative-haplotype group (Flye); <code>*</code> for none</td>
+</tr>
+<tr>
+<td><code>best_mito_slen</code></td>
+<td>length of the best hit's subject, the reference mitochondrial genome (bp)</td>
+</tr>
+<tr>
+<td><code>length_ratio</code></td>
+<td><code>length</code> / <code>best_mito_slen</code>, two decimals</td>
+</tr>
+<tr>
+<td><code>concatemer_flag</code></td>
+<td><code>Y</code> when <code>length_ratio</code> is above 1.5 and the contig is not recorded as circular, otherwise <code>N</code>; information only</td>
+</tr>
+</tbody>
+</table>
+<p>The six <code>assembler_*</code> columns are empty in <code>contigs</code> and <code>illumina</code> mode.</p>
+<h2 id="the-split">The split<a class="headerlink" href="#the-split" title="Permanent link">¶</a></h2>
+<p><code>separate_mitochondria</code> reads <code>contigs_all.fasta</code> and the confirmed IDs and writes each contig to
+one of two files. Order and headers are kept, and sequences are written 80 bases per line.</p>
+<table>
+<thead>
+<tr>
+<th>File, in <code>02.assembly/{sample}/</code></th>
+<th>Content</th>
+<th>Read by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contigs_all.fasta</code></td>
+<td>the decontaminated assembly (polished, where polishing runs), mitochondrion included</td>
+<td><code>separate_mitochondria</code></td>
+</tr>
+<tr>
+<td><code>contigs_final.fasta</code></td>
+<td>the nuclear genome</td>
+<td>QUAST, BUSCO, ITS extraction, funannotate; the AMR screen when it is on</td>
+</tr>
+<tr>
+<td><code>contigs_mitochondrial.fasta</code></td>
+<td>the confirmed mitochondrial contigs; an empty file when there are none</td>
+<td>the AMR screen when it is on, for cytochrome b (<a href="../amr/#two-runs">Two runs</a>); the contig summary, for the contig names</td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="../contig-summary/">contig summary</a> reads the draft and the annotated genome,
+<code>04.annotation/{sample}/contigs_sort.fasta</code>, instead of <code>contigs_final.fasta</code>.</p>
+<p>The IDs are contig names, the first word of the FASTA header, so every step between the
+mitochondrion screen and the split must keep them. <code>separate_mitochondria</code> stops before writing
+anything in two cases:</p>
+<table>
+<thead>
+<tr>
+<th>The rule stops when</th>
+<th>Message</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a confirmed ID is missing from <code>contigs_all.fasta</code></td>
+<td><code>ERROR: Confirmed mitochondrial contig(s) are absent from final assembly: ...</code></td>
+</tr>
+<tr>
+<td>no nuclear contig would remain</td>
+<td><code>ERROR: Mitochondrial split would leave an empty nuclear assembly.</code></td>
+</tr>
+</tbody>
+</table>
+<p>Otherwise the log ends with <code>Mitochondrial split: X mitochondrial and Y nuclear contig(s).</code></p>
+<p>FunFlux does not annotate the mitochondrial genome.</p>
+<h2 id="concatemers">Concatemers<a class="headerlink" href="#concatemers" title="Permanent link">¶</a></h2>
+<p>An assembler can join two copies of the mitochondrial genome end to end. Such a contig matches
+the reference over its whole length and is confirmed. The screen table shows it:</p>
+<table>
+<thead>
+<tr>
+<th><code>length_ratio</code></th>
+<th>Reading</th>
+<th><code>concatemer_flag</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>about 1</td>
+<td>one copy</td>
+<td><code>N</code></td>
+</tr>
+<tr>
+<td>about 2</td>
+<td>two copies joined end to end</td>
+<td><code>Y</code> (above 1.5)</td>
+</tr>
+<tr>
+<td>above 1.5, and the assembler reported the contig as circular</td>
+<td>a closed circle longer than the reference: a larger genome, or two copies that the assembler joined into one circle (hifiasm did so with the HiFi reads of the <a href="../../about/validation/#hifi-assembly">validation page</a>: 49,194 bp against 24,712 bp)</td>
+<td><code>N</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>Y</code> marks a likely double copy, but only on a confirmed row. The reason is that the flag is
+computed for every contig with a direct hit, and a long nuclear contig with a short
+mitochondrion-like stretch also has a high ratio. In <code>contigs</code> and <code>illumina</code> mode circularity is
+unknown, and the flag depends on the ratio alone.</p>
+<div class="admonition warning">
+<p class="admonition-title">FunFlux does not trim a concatemer to one copy</p>
+<p>The flag changes nothing: the contig is split off as it is.</p>
+</div>
+<h2 id="when-no-mitochondrion-is-confirmed">When no mitochondrion is confirmed<a class="headerlink" href="#when-no-mitochondrion-is-confirmed" title="Permanent link">¶</a></h2>
+<p><code>contigs_mitochondrial.fasta</code> is then empty, and a mitochondrion that was assembled stays in
+<code>contigs_final.fasta</code> and is annotated as nuclear. The screen table shows why:</p>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Meaning</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a <code>mitochondrial_candidate</code> row with reason <code>weak_direct_blast</code></td>
+<td>a direct hit covers less than <code>min_direct_blast_qcov</code> of the contig</td>
+<td>if the length (usually some tens of kb) and the title fit, set <code>min_direct_blast_qcov</code> to the row's <code>best_mito_qcovs</code> or lower and run again</td>
+</tr>
+<tr>
+<td>no row with a direct hit</td>
+<td>core_nt holds no mitochondrial genome close enough</td>
+<td>nothing to set in <code>contigs</code> and <code>illumina</code> mode; in the long-read modes depth and circularity can only give a candidate or <code>..._unclassified</code> row</td>
+</tr>
+<tr>
+<td><code>blast_max_hsps</code> below 5</td>
+<td><code>qcovs</code> counts only the alignments BLAST kept per subject, with 1 the best one alone</td>
+<td>set <code>blast_max_hsps: 5</code></td>
+</tr>
+</tbody>
+</table>
+<p>A weak hit or a low <code>blast_max_hsps</code> can be fixed with a setting, but a missing reference genome
+cannot. A changed threshold re-runs the mitochondrion screen and every step after it, as described
+under <a href="../decontamination/#changing-the-policy-after-a-run">Changing the policy after a run</a>.</p>
+<h2 id="output-files">Output files<a class="headerlink" href="#output-files" title="Permanent link">¶</a></h2>
+<p>Each sample keeps these files after the run:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Kept</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>02.assembly/{sample}/mitochondria/mitochondrial_screen.tsv</code></td>
+<td>yes</td>
+<td>one row per draft contig</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/mitochondria/confirmed_mitochondrial.ids</code></td>
+<td>yes</td>
+<td>confirmed contig names, one per line; empty unless <code>separate_confirmed</code></td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/contigs_all.fasta</code></td>
+<td>yes</td>
+<td>assembly with the mitochondrion</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/contigs_final.fasta</code></td>
+<td>yes</td>
+<td>nuclear genome</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/contigs_mitochondrial.fasta</code></td>
+<td>yes</td>
+<td>mitochondrial contigs</td>
+</tr>
+<tr>
+<td><code>logs/screen_mitochondria_{sample}.log</code>, <code>logs/separate_mitochondria_{sample}.log</code></td>
+<td>yes</td>
+<td>counts and errors</td>
+</tr>
+</tbody>
+</table>
+<p>Without the screen (<code>contigs</code> mode by default), only <code>contigs_final.fasta</code> exists of these. The
+full output tree is on <a href="../../reference/output/">Output files</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

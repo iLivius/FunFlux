@@ -1,0 +1,3910 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/analysis/contig-summary/">
+      
+      
+        <link rel="prev" href="../assembly-qc/">
+      
+      
+        <link rel="next" href="../its-taxonomy/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Contig summary - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#contig-summary" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Contig summary
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/external-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/from-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/longread/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mitochondria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../assembly-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#what-the-contigs-of-a-fungal-assembly-are" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the contigs of a fungal assembly are
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-verdict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The verdict
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The verdict">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#median-depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The median depth
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-the-table-is-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the table is made
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How the table is made">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where-it-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where it runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-the-evidence-comes-from" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where the evidence comes from
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telomeres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telomeres
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Telomeres">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#telomere-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the unit is chosen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#which-fungi-carry-which-repeat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which fungi carry which repeat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-the-motif" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting the unit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telomere-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The three telomere files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telomere-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The log line and the NOTE
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#genes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Genes: the join to the scaffold names
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worked-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A worked example: Botrytis cinerea B05.10
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiqc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In the MultiQC report
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#re-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Re-runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output files
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gene-prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#what-the-contigs-of-a-fungal-assembly-are" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the contigs of a fungal assembly are
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-verdict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The verdict
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The verdict">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#median-depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The median depth
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-the-table-is-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the table is made
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How the table is made">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where-it-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where it runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-the-evidence-comes-from" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where the evidence comes from
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telomeres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telomeres
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Telomeres">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#telomere-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the unit is chosen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#which-fungi-carry-which-repeat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which fungi carry which repeat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-the-motif" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting the unit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telomere-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The three telomere files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telomere-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The log line and the NOTE
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#genes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Genes: the join to the scaffold names
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worked-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A worked example: Botrytis cinerea B05.10
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiqc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In the MultiQC report
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#re-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Re-runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output files
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/analysis/contig-summary.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="contig-summary">Contig summary<a class="headerlink" href="#contig-summary" title="Permanent link">¶</a></h1>
+<p>A fungal assembly is a list of contigs, and the list alone does not say what each contig is.
+For every sample, FunFlux writes one table that does:
+<code>02.assembly/{sample}/eval/contig_summary.tsv</code>. It has one row per contig of the draft assembly,
+with the evidence the run produced about that contig and a verdict with its reasons. The table
+also appears in the MultiQC report. Read this page to interpret the verdicts, to see how the
+telomere repeat unit is chosen, and to set the unit yourself when the data cannot choose it.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>draft assembly (the draft)</strong></td>
+<td>the assembly before the screen removes any contig, such as <code>contigs_filt.fasta</code> or <code>assembly.fasta</code>; the contig summary describes it</td>
+</tr>
+<tr>
+<td><strong>the screen</strong></td>
+<td>the contamination and mitochondrion screen of the draft: BLAST against core_nt, BlobTools, the mitochondrion screen and the contig selector; in <code>contigs</code> mode only with <code>parameters.contigs.screen: true</code></td>
+</tr>
+<tr>
+<td><strong>verdict</strong></td>
+<td>the label the contig summary gives each draft contig, one of ten such as <code>chromosome</code>, <code>chromosome_arm</code>, <code>rDNA_array</code> or <code>mitochondrion</code>, with its reasons</td>
+</tr>
+<tr>
+<td><strong>telomere repeat unit (telomere unit)</strong></td>
+<td>the short sequence repeated in tandem at chromosome ends, <code>TTAGGG</code> in most filamentous fungi; FunFlux chooses it from each assembly unless <code>parameters.contig_summary.telomere_motif</code> names one</td>
+</tr>
+<tr>
+<td><strong>telomere array</strong></td>
+<td>tandem copies of the telomere repeat unit at a contig end; by default a telomere needs 5 or more copies within 25,000 bp of the end</td>
+</tr>
+<tr>
+<td><strong>canonical form</strong></td>
+<td>the spelling tidk gives a repeat unit: the alphabetically first of its rotations and those of its reverse complement, so <code>TTAGGG</code> is written <code>AACCCT</code></td>
+</tr>
+<tr>
+<td><strong>rDNA unit</strong></td>
+<td>one copy of the repeat SSU-ITS1-5.8S-ITS2-LSU; FunFlux counts one per 5.8S gene found, that is, one per ITS window</td>
+</tr>
+<tr>
+<td><strong>BUSCO marker</strong></td>
+<td>a BUSCO gene found complete on a contig (<code>Complete</code> or <code>Duplicated</code>); the contig summary counts them per contig as evidence of nuclear sequence</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="what-the-contigs-of-a-fungal-assembly-are">What the contigs of a fungal assembly are<a class="headerlink" href="#what-the-contigs-of-a-fungal-assembly-are" title="Permanent link">¶</a></h2>
+<p>A long-read assembly of a filamentous fungus holds a few kinds of contig side by side, and a
+short-read assembly adds two more kinds, by the hundred. Each kind has its own signature in the
+evidence FunFlux already produces, as the table below shows. Telomeres, the first piece of
+evidence, are tandem arrays of a short repeat unit that cap every chromosome end. The unit is
+<code>TTAGGG</code> in most filamentous fungi. The left end of a chromosome reads <code>CCCTAA</code> on the forward
+strand, and the right end reads <code>TTAGGG</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Kind of contig</th>
+<th>Telomere arrays</th>
+<th>Read depth</th>
+<th>Genes and BUSCO markers</th>
+<th>Other signs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>whole chromosome</strong>, telomere to telomere</td>
+<td>at both ends</td>
+<td>the depth of the bulk of the genome</td>
+<td>along its whole length</td>
+<td>size says nothing: an accessory chromosome or a minichromosome of 200 to 300 kb is a chromosome like a 4-Mb one</td>
+</tr>
+<tr>
+<td><strong>chromosome arm</strong></td>
+<td>at one end only; the other end is where the assembler stopped, usually at a repeat it could not resolve: the rDNA array, a centromere</td>
+<td>as a chromosome</td>
+<td>as a chromosome</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>mitochondrion</strong>, a small genome (82 kb in <em>Botrytis cinerea</em> B05.10, the <a href="#worked-example">worked example</a>) present in many copies per cell</td>
+<td></td>
+<td>several times the nuclear depth</td>
+<td></td>
+<td>a long-read assembler usually closes it into a circle and flags it as circular</td>
+</tr>
+<tr>
+<td><strong>piece of the rDNA array</strong></td>
+<td>can carry one at one end, when the array sits at a chromosome end</td>
+<td>says little: the reads of all the copies are shared out over however many pieces the assembler made of the array</td>
+<td>no BUSCO marker; few or no protein-coding genes</td>
+<td>several 5.8S genes in a row (the ITS windows of the taxonomy step, one per rDNA unit)</td>
+</tr>
+<tr>
+<td><strong>alternative copy of a region, or noise</strong>: a second haplotype assembled on its own, a stretch assembled twice, or a leftover of the assembly graph</td>
+<td></td>
+<td>well below the genome's, because the reads of the region were split between two copies, or were few</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>contaminant</strong>: a contig from another organism</td>
+<td></td>
+<td>its own, not the genome's</td>
+<td></td>
+<td>its own GC content; the screen labelled it with a genus from its BLAST hits and removed it</td>
+</tr>
+<tr>
+<td><strong>collapsed repeat</strong> (short-read assemblies)</td>
+<td></td>
+<td>well above the genome's: the reads of all the copies pile up on it</td>
+<td>no BUSCO marker, at most a gene call or two (predictors call open reading frames inside transposons)</td>
+<td>several genome copies of a transposon, a satellite or another repeat family, assembled into one contig because short reads cannot tell the copies apart</td>
+</tr>
+<tr>
+<td><strong>short piece of the nuclear genome</strong> (short-read assemblies)</td>
+<td></td>
+<td>the depth of the genome</td>
+<td>none, because it is too short to carry a gene</td>
+<td>hundreds to a few thousand bases; nuclear sequence all the same, left over where the assembly broke</td>
+</tr>
+</tbody>
+</table>
+<p>An empty cell means that the evidence is not part of that kind's signature. Taken together, the
+columns sort the contigs. Telomeres tell a chromosome from an arm. Depth sets the mitochondrion,
+collapsed repeats and alternative copies apart from the nuclear genome. Genes and BUSCO markers
+tell nuclear sequence from rDNA and debris. A few points the table cannot hold:</p>
+<ul>
+<li>With the default settings, the mitochondrion screen confirms the mitochondrion from a BLAST hit
+  to a mitochondrial genome that covers at least 35 % of the contig. In <code>contigs</code> and <code>illumina</code>
+  mode, and on the Illumina guide assembly of <code>hybrid</code> mode, that hit is enough. On the long-read
+  assembly of <code>longread</code> and <code>hybrid</code> mode, the hit must also be backed by the assembler's
+  evidence, unless it covers 70 % or more. That support is an assembler depth of at least 3 times
+  the median of all contigs, or a clean circle: a contig recorded as circular, not a repeat and in
+  no alternative group. By default, the confirmed mitochondrion is then split off before the
+  annotation. See <a href="../mitochondria/#classification">Mitochondria</a>.</li>
+<li>The ribosomal RNA genes sit in tens to hundreds of tandem copies of one unit,
+  SSU-ITS1-5.8S-ITS2-LSU, that no assembler resolves whole.</li>
+<li>A long-read assembler resolves most repeats in place, so a long-read assembly has few collapsed
+  repeats.</li>
+</ul>
+<p>The contig summary gathers the evidence behind these signatures into one row per contig, and says
+for each contig how it was weighed. The telomere arrays are found with tidk, in the sequence
+itself. The other evidence is the read depth, the assembler's depth and circularity flag, the rDNA
+units, the BUSCO markers, the predicted genes, and the calls of the contamination and mitochondrion
+screen.</p>
+<h2 id="the-table">The table<a class="headerlink" href="#the-table" title="Permanent link">¶</a></h2>
+<p><code>02.assembly/{sample}/eval/contig_summary.tsv</code> has one row per contig of the draft assembly. Its
+<code>verdict</code> and <code>reason</code> columns give the answer, <code>annotated_as</code> gives the contig's name in the
+annotation, and the other columns hold the evidence:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Content</th>
+<th><code>NA</code> when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contig</code></td>
+<td>the name in the draft assembly: the first word of the FASTA header, as the screen tables use it</td>
+<td>never</td>
+</tr>
+<tr>
+<td><code>length</code></td>
+<td>bp</td>
+<td>never</td>
+</tr>
+<tr>
+<td><code>gc</code></td>
+<td>GC fraction, 3 decimals</td>
+<td>never</td>
+</tr>
+<tr>
+<td><code>depth</code></td>
+<td>read depth from the BlobTools table (<code>bam0</code>), 2 decimals</td>
+<td><code>contigs</code> mode; a contig without a row in the table</td>
+</tr>
+<tr>
+<td><code>depth_x_median</code></td>
+<td><code>depth</code> divided by the median depth of the nuclear genome, 2 decimals (<a href="#median-depth">the median</a>)</td>
+<td><code>depth</code> is <code>NA</code></td>
+</tr>
+<tr>
+<td><code>assembler_depth</code></td>
+<td>the assembler's own depth, 1 decimal</td>
+<td><code>illumina</code> and <code>contigs</code> mode; an empty cell in <code>assembly_evidence.tsv</code></td>
+</tr>
+<tr>
+<td><code>circular</code></td>
+<td><code>Y</code> or <code>N</code>, the assembler's flag</td>
+<td><code>illumina</code> and <code>contigs</code> mode</td>
+</tr>
+<tr>
+<td><code>telomere_start</code>, <code>telomere_end</code></td>
+<td>copies of the telomere unit in the array at that end: the array length tidk measured, divided by the unit length and rounded; only an array that points the way a telomere points counts (<a href="#telomeres">Telomeres</a>)</td>
+<td>never (<code>0</code> when none)</td>
+</tr>
+<tr>
+<td><code>telomere_end_offset_start</code>, <code>telomere_end_offset_end</code></td>
+<td>distance (bp) from the contig end to the array</td>
+<td>no telomere array at that end</td>
+</tr>
+<tr>
+<td><code>telomere_unit</code></td>
+<td>the telomere repeat unit of the assembly in tidk's canonical form (<code>AACCCT</code> for <code>TTAGGG</code>), the same on every row of a sample; <code>none</code> when no unit was found</td>
+<td>never</td>
+</tr>
+<tr>
+<td><code>rdna_units</code></td>
+<td>ITS windows on the contig, that is, 5.8S genes found</td>
+<td>never (<code>0</code> when none)</td>
+</tr>
+<tr>
+<td><code>busco_markers</code></td>
+<td>complete BUSCO markers on the contig (status <code>Complete</code> or <code>Duplicated</code>; a duplicated marker counts where each copy lies)</td>
+<td>never (<code>0</code> when none)</td>
+</tr>
+<tr>
+<td><code>genes</code></td>
+<td>mRNA features of the annotation on the scaffold the contig became</td>
+<td>the contig has no scaffold in <code>contigs_sort.fasta</code>: dropped by <code>funannotate clean</code>, split off as the mitochondrion, or removed by the screen</td>
+</tr>
+<tr>
+<td><code>genus</code></td>
+<td><code>assigned_genus</code> of <code>contig_taxonomy_decisions.tsv</code></td>
+<td>no screen</td>
+</tr>
+<tr>
+<td><code>screen</code></td>
+<td><code>kept (&lt;reason&gt;)</code>, <code>removed (&lt;reason&gt;)</code> or <code>mitochondrion (&lt;reason&gt;)</code>, with the reason of the contig selector or, for a mitochondrion, of the mitochondrion screen; a <code>mitochondrial_candidate</code>, <code>circular_unclassified</code> or <code>high_coverage_unclassified</code> class of the mitochondrion screen is appended after <code>;</code></td>
+<td>no screen</td>
+</tr>
+<tr>
+<td><code>annotated_as</code></td>
+<td><code>scaffold_N</code>, the name of the contig in every annotation file; or <code>dropped by funannotate clean</code>, <code>not annotated (mitochondrion)</code>, <code>not annotated (removed by the screen)</code></td>
+<td>never</td>
+</tr>
+<tr>
+<td><code>verdict</code></td>
+<td>one of the ten verdicts (<a href="#the-verdict">The verdict</a>): <code>mitochondrion</code>, <code>contaminant</code>, <code>rDNA_array</code>, <code>chromosome</code>, <code>chromosome_arm</code>, <code>low_depth</code>, <code>repeat</code>, <code>nuclear_contig</code>, <code>nuclear_fragment</code>, <code>unclassified</code></td>
+<td>never</td>
+</tr>
+<tr>
+<td><code>reason</code></td>
+<td>the evidence behind the verdict, in words, for example <code>telomere repeats at both ends (17 and 19 copies); depth 1.00x the median; 543 genes, 131 BUSCO markers</code></td>
+<td>never</td>
+</tr>
+</tbody>
+</table>
+<p>The table describes the draft assembly, which is <code>contigs_final.fasta</code> only in <code>contigs</code> mode
+without the screen. Which file is the draft depends on the mode:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>The draft</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>illumina</code>; <code>contigs</code> with the screen</td>
+<td><code>contigs_filt.fasta</code></td>
+</tr>
+<tr>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td><code>assembly.fasta</code></td>
+</tr>
+<tr>
+<td><code>contigs</code> without the screen</td>
+<td><code>contigs_final.fasta</code></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">The contigs the screen removed and the mitochondrion have a row too</p>
+<p>Because the table describes the draft, the contigs the screen removed and the mitochondrion
+get a row too, and nothing disappears silently. Evidence a mode cannot produce is <code>NA</code>, and
+the verdict rests on the rest.</p>
+</div>
+<h2 id="the-verdict">The verdict<a class="headerlink" href="#the-verdict" title="Permanent link">¶</a></h2>
+<p>Ten verdict rules give each contig its verdict. They are tried in the order of the table below, and
+the first that applies decides. Evidence a mode cannot produce is unknown (<code>NA</code> in the table) and
+is not tested, so "depth within 0.5 to 1.5 times the median when known" passes when the depth is
+unknown. A telomere is a contig end where tidk found an array of the telomere unit of at least
+<code>min_telomere_copies</code> copies, pointing the way a telomere points.</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Verdict</th>
+<th>The contig has</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>mitochondrion</code></td>
+<td>the class <code>confirmed_mitochondrial</code> from the mitochondrion screen, or a place in <code>contigs_mitochondrial.fasta</code></td>
+<td>the mitochondrial genome</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>contaminant</code></td>
+<td>the action <code>remove</code> from the screen; the reason names the genus</td>
+<td>a contig of another organism</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>rDNA_array</code></td>
+<td>at least <code>parameters.contig_summary.min_rdna_units</code> rDNA units (3 by default), and fewer predicted genes than rDNA units, or no gene count</td>
+<td>a piece of the rDNA array</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>chromosome</code></td>
+<td>telomere repeats at both ends; depth within 0.5 to 1.5 times the median when known; at least one gene when known</td>
+<td>a whole chromosome; size plays no part, so a small accessory chromosome qualifies</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>chromosome_arm</code></td>
+<td>telomere repeats at one end; the rest as in rule 4</td>
+<td>a chromosome arm</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>low_depth</code></td>
+<td>depth below 0.5 times the median</td>
+<td>an alternative copy of a region (a second haplotype, a stretch assembled twice) or noise</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>repeat</code></td>
+<td>no BUSCO marker; at most two predicted genes; depth above 1.5 times the median (when the depth is unknown this rule does not fire)</td>
+<td>a collapsed repeat: several genome copies of a transposon, a satellite or another repeat family assembled into one contig, so the reads of all the copies pile up on it</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>nuclear_contig</code></td>
+<td>at least one gene or BUSCO marker; depth within 0.5 to 1.5 times the median when known; no telomere repeat</td>
+<td>a fragment of a chromosome</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>nuclear_fragment</code></td>
+<td>no gene and no BUSCO marker; no telomere repeat; depth within 0.5 to 1.5 times the median, or unknown</td>
+<td>a piece of the nuclear genome too short to carry a gene; a short-read assembly ends in many of them</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>unclassified</code></td>
+<td>anything else</td>
+<td>the reason says what was and was not seen</td>
+</tr>
+</tbody>
+</table>
+<p>The screen decides first, then the rDNA count, then the telomeres, and depth and genes sort out
+the rest. Two verdict rules allow a gene call where none is expected. In verdict rule 3, a pure
+rDNA array holds no protein-coding gene, but the gene predictor now and then calls a gene inside
+an rDNA unit. A contig with more rDNA units than genes is still mostly rDNA. In verdict rule 7, a
+gene call or two is allowed because gene predictors call open reading frames inside transposons.</p>
+<p>"No BUSCO marker" (verdict rule 7) and "no gene and no BUSCO marker" (verdict rule 9) apply only
+when at least one of the two counts is known, and then every known count they name must be <code>0</code>.
+In a run both are always counted, because BUSCO and
+funannotate run in every mode. Only a contig without a scaffold in <code>contigs_sort.fasta</code> lacks its
+gene count.</p>
+<p>The <code>reason</code> column spells out the evidence each verdict rule used, with the numbers, so a verdict
+can be checked against the columns.</p>
+<h3 id="median-depth">The median depth<a class="headerlink" href="#median-depth" title="Permanent link">¶</a></h3>
+<p>The median depth is what <code>depth_x_median</code> and the verdict rules compare each contig with. It is
+weighted by length, so a 4-Mb chromosome counts a hundred times as much as a 40-kb piece. It is
+taken over the contigs of at least 100 kb, or over all contigs when none is that long, and it
+leaves out the mitochondrion and the contigs the screen removed. Short debris, the deep
+mitochondrion and a contaminant genome at its own depth therefore cannot pull the median away from
+the depth of the bulk of the genome.</p>
+<h2 id="how-the-table-is-made">How the table is made<a class="headerlink" href="#how-the-table-is-made" title="Permanent link">¶</a></h2>
+<h3 id="where-it-runs">Where it runs<a class="headerlink" href="#where-it-runs" title="Permanent link">¶</a></h3>
+<p>Three steps make the table, in every mode. The telomere unit is chosen as soon as the draft
+exists, and the table itself waits for the annotation:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Runs</th>
+<th>Does</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>telomere_db</code></td>
+<td>once per output folder</td>
+<td>downloads the tidk telomere repeat database and checks its SHA-256 (<a href="../../getting-started/databases/#telomere-db">Reference databases</a>)</td>
+<td><code>00.resources/telomeres/telo_database_v2.tsv</code>, <code>PROVENANCE.txt</code></td>
+</tr>
+<tr>
+<td><code>telomere_units</code></td>
+<td>once per sample, as soon as the draft exists</td>
+<td>runs tidk on the draft and chooses the telomere repeat unit of the assembly (<a href="#telomeres">Telomeres</a>); its own conda environment (tidk 0.3.0 with Python 3.12); seconds to a minute</td>
+<td><code>eval/telomere_candidates.tsv</code>, <code>telomere_unit.txt</code>, <code>telomere_ends.tsv</code></td>
+</tr>
+<tr>
+<td><code>contig_summary</code></td>
+<td>once per sample, after the annotation; one of the last jobs of a sample</td>
+<td>gathers the evidence into the table</td>
+<td><code>eval/contig_summary.tsv</code>, <code>contig_summary_mqc.tsv</code></td>
+</tr>
+</tbody>
+</table>
+<p>The MultiQC report reads the <code>_mqc</code> copy of the table, and no other step reads it.</p>
+<h3 id="where-the-evidence-comes-from">Where the evidence comes from<a class="headerlink" href="#where-the-evidence-comes-from" title="Permanent link">¶</a></h3>
+<p>Telomeres, rDNA units, BUSCO markers and genes are known in every mode. The read depth is known
+only in the read-based modes, the assembler's depth and circularity only in the long-read modes,
+and the calls of the screen only where the screen runs. Each piece of evidence is read from these
+files:</p>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>What it says</th>
+<th>Taken from</th>
+<th>Modes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>telomere arrays at the contig ends</td>
+<td>at both ends: a whole chromosome; at one end: a chromosome arm</td>
+<td><code>eval/telomere_unit.txt</code> and <code>eval/telomere_ends.tsv</code>: tidk on the draft sequence itself (<a href="#telomeres">Telomeres</a>)</td>
+<td>all</td>
+</tr>
+<tr>
+<td>read depth</td>
+<td>the nuclear contigs share one depth; the mitochondrion is several times deeper; an alternative copy of a region, or noise, is much shallower</td>
+<td><code>contaminants/bestscore.blob.blobDB.table.txt</code>, column <code>bam0</code>: the sample's reads on the draft (<a href="../decontamination/#coverage-track">Coverage track</a>)</td>
+<td><code>illumina</code>, <code>longread</code>, <code>hybrid</code></td>
+</tr>
+<tr>
+<td>assembler depth and circularity</td>
+<td>a circular contig at a high depth is the usual shape of a mitochondrion</td>
+<td><code>assembly_evidence.tsv</code>, columns <code>coverage</code> and <code>circular</code></td>
+<td><code>longread</code>, <code>hybrid</code></td>
+</tr>
+<tr>
+<td>rDNA units</td>
+<td>a contig made of rDNA units is a piece of the rDNA array, not a chromosome</td>
+<td><code>03.taxonomy/{sample}/its_windows.tsv</code>, one row per 5.8S gene found (<a href="../its-taxonomy/#step-1-one-window-per-rdna-copy">ITS taxonomy</a>)</td>
+<td>all</td>
+</tr>
+<tr>
+<td>BUSCO markers</td>
+<td>genuine nuclear sequence, as against rDNA and debris</td>
+<td><code>eval/busco/run_&lt;lineage&gt;/full_table.tsv</code> of the specific lineage, the markers with status <code>Complete</code> or <code>Duplicated</code> (<a href="../assembly-qc/#busco">BUSCO</a>)</td>
+<td>all</td>
+</tr>
+<tr>
+<td>predicted genes</td>
+<td>the same</td>
+<td>the mRNA features of <code>04.annotation/{sample}/funannotate/annotate_results/&lt;Genus_species&gt;_{sample}.gff3</code>, joined to the draft contig through <code>04.annotation/{sample}/contigs_sort.fasta</code> (<a href="#genes">the join</a>)</td>
+<td>all</td>
+</tr>
+<tr>
+<td>the screen</td>
+<td>removed as a contaminant, with its genus; confirmed mitochondrial</td>
+<td><code>contaminants/contig_taxonomy_decisions.tsv</code>, <code>mitochondria/mitochondrial_screen.tsv</code>, <code>contigs_mitochondrial.fasta</code></td>
+<td>screen</td>
+</tr>
+</tbody>
+</table>
+<p>Paths without a stage prefix are under <code>02.assembly/{sample}/</code>. In <code>hybrid</code> mode the screen files
+are those of the long-read draft, not of the Illumina guide.</p>
+<p>In <code>contigs</code> mode the screen maps the contigs to themselves, so the depth in the BlobTools table
+reflects contig length and nothing else (<a href="../decontamination/#coverage-track">Coverage track</a>). The
+contig summary therefore does not read it there, and the depth columns are <code>NA</code> in <code>contigs</code> mode,
+with or without the screen.</p>
+<h3 id="telomeres">Telomeres<a class="headerlink" href="#telomeres" title="Permanent link">¶</a></h3>
+<p>The telomere repeat unit differs between fungal groups
+(<a href="#which-fungi-carry-which-repeat">the table below</a>), so FunFlux does not assume one. It chooses
+the unit from the assembly itself and says whether the unit it found is a known telomere repeat.
+Rule <code>telomere_units</code> runs tidk (Brown et al. 2025) on the draft assembly, and tidk does the heavy
+work. FunFlux uses two of its commands:</p>
+<table>
+<thead>
+<tr>
+<th>tidk command</th>
+<th>What it does</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tidk explore</code></td>
+<td>lists every tandem repeat unit of a sequence set with its copy number</td>
+<td>collecting the candidate units (step 2 below)</td>
+</tr>
+<tr>
+<td><code>tidk ends</code></td>
+<td>takes one unit and reports, for both ends of every contig, whether an array of that unit sits there, how long it is, how far from the contig end, and which way it points</td>
+<td>scoring each candidate (step 4) and the telomere columns of the table</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">tidk measures the arrays, and FunFlux chooses the unit</p>
+<p>Neither command chooses the telomere unit of a genome. Most units <code>tidk explore</code> lists are
+microsatellites, and <code>tidk ends</code> needs the unit as input. The choice is FunFlux's, made from
+how each candidate unit behaves at the contig ends, and checked against the telomere repeat
+database that comes with tidk and against the literature.</p>
+</div>
+<p>tidk writes every unit in a canonical form, the alphabetically smallest of all rotations of the
+unit and of its reverse complement, so <code>TTAGGG</code>, <code>GGGTTA</code> and <code>CCCTAA</code> are all <code>AACCCT</code>. The
+<code>telomere_unit</code> column, the three telomere files and the log use that form, and the table of
+database units under <a href="#which-fungi-carry-which-repeat">Which fungi carry which repeat</a> gives the
+published spelling next to it.</p>
+<h4 id="telomere-unit">How the unit is chosen<a class="headerlink" href="#telomere-unit" title="Permanent link">¶</a></h4>
+<ol>
+<li>
+<p><strong>The contig ends.</strong> FunFlux writes a FASTA of terminal windows. Of every contig longer than
+   two windows (<code>parameters.contig_summary.telomere_window</code>, 25,000 bp by default), it takes the
+   first and the last window, as <code>&lt;contig&gt;__start</code> and <code>&lt;contig&gt;__end</code>. A contig of at most two
+   windows goes in whole. The window is wide because the array is not always the last thing in a
+   contig. When the assembler ran past the telomere, the array sits some kilobases inside the
+   contig end, and a window that stops short of it misses the telomere altogether.</p>
+</li>
+<li>
+<p><strong>The units found there.</strong> <code>tidk explore</code> lists every unit of 5 to 30 bp that forms a tandem
+   run of at least <code>min_telomere_copies</code> copies in the windows, with its copy number
+   (<code>copies_at_ends</code>). It runs once more on the whole draft (<code>copies_genome_wide</code>). A telomere
+   unit has nearly all its copies at the ends, while a satellite has most of them inside the
+   contigs. Both numbers go into the candidates table, but neither enters the score, because a
+   microsatellite can have nearly as many copies at the contig ends as the telomere unit. The copy
+   number also does not say which way its arrays point.</p>
+</li>
+<li>
+<p><strong>The candidates.</strong> They are the units found at the ends, every unit the database lists with
+   <code>strong</code> or <code>weak</code> support, every unit of the literature table and, when
+   <code>parameters.contig_summary.telomere_motif</code> names one, that unit. All are written in canonical
+   form and merged. Three filters drop what cannot be a telomere repeat, and the configured unit
+   is exempt from them:</p>
+<table>
+<thead>
+<tr>
+<th>Filter</th>
+<th>Drops, for example</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 to 30 bp long</td>
+<td><code>ACAT</code>, <code>AAAT</code></td>
+<td>no telomere repeat shorter than 5 bp is known, and 4-bp units are low-complexity sequence that forms arrays everywhere: <code>AAAT</code> alone gives 192 "telomere" ends on the Illumina (SPAdes) assembly of <em>Botrytis cinerea</em> B05.10</td>
+</tr>
+<tr>
+<td>not a repeat of a shorter unit</td>
+<td><code>ACACAC</code> (<code>AC</code> three times), <code>TTAGGGTTAGGG</code></td>
+<td>the same array would be counted twice under two names</td>
+</tr>
+<tr>
+<td>the two strands differ: the unit holds more G than C, or more C than G</td>
+<td><code>AAAT</code>, <code>AGAGCC</code></td>
+<td>every telomerase-made repeat has a G-rich strand, and the orientation test of step 4 needs the two strands to be told apart</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>The score.</strong> For every candidate, <code>tidk ends</code> runs on the whole draft. It searches the
+   window at each contig end and accepts an array no further from the end than the window
+   (<code>-w</code> and <code>--max-offset</code>, both <code>telomere_window</code>). An array must be at least
+   <code>min_telomere_copies</code> copies long (<code>--min-length</code>, that is 30 bp for a 6-bp unit), and tidk's
+   default mode tolerates sequencing errors inside the array. Each contig end gets a status:</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>present</code></td>
+<td>an array pointing the way a telomere points: the C-rich strand at a contig start, the G-rich strand at a contig end</td>
+</tr>
+<tr>
+<td><code>wrong_strand</code></td>
+<td>an array pointing the other way</td>
+</tr>
+<tr>
+<td><code>not_terminal</code></td>
+<td>an array further from the end than the window</td>
+</tr>
+<tr>
+<td><code>absent</code></td>
+<td>no array</td>
+</tr>
+<tr>
+<td><code>other_end</code></td>
+<td>FunFlux's addition: on a contig shorter than two windows, one array is seen from both ends, once as <code>present</code> at its own end and once as <code>wrong_strand</code> from the other end; when the two rows describe the same stretch of the contig (their coordinates overlap), the row with the larger offset is relabelled and does not count</td>
+</tr>
+</tbody>
+</table>
+<p>Per unit, <code>telomere_ends</code> is the number of <code>present</code> rows, <code>opposite_ends</code> the number of
+<code>wrong_strand</code> rows, <code>score</code> their difference, and <code>t2t_contigs</code> the contigs with <code>present</code>
+at both ends. The reasoning is that a telomere repeat points one way at every chromosome end,
+with its G-rich strand towards the end. A satellite that happens to sit at contig ends points
+either way with equal chance, so however often it occurs, its score stays near zero.</p>
+</li>
+<li>
+<p><strong>The choice.</strong> A unit is eligible with at least 2 telomere ends and more than twice as many
+   telomere ends as opposite ends. The eligible units are ranked by score, then known units
+   (literature or database) before unknown ones, then the shorter unit, then alphabetically. The
+   first is the telomere unit of the assembly. When none is eligible, the unit is <code>none</code>, every
+   telomere column reads <code>0</code>, and a chromosome comes out as <code>nuclear_contig</code>. The log then names
+   the best candidate and its counts.</p>
+</li>
+</ol>
+<h4 id="which-fungi-carry-which-repeat">Which fungi carry which repeat<a class="headerlink" href="#which-fungi-carry-which-repeat" title="Permanent link">¶</a></h4>
+<p><code>TTAGGG</code>, the vertebrate telomere repeat, is the unit of most filamentous Ascomycota (the
+Pezizomycotina), of most Basidiomycota and of the Mucoromycota. The departures are single species
+or small groups, and the budding yeasts, the fission yeasts and the Microstromatales have no single
+unit. The full references are on <a href="../../about/citation/#references">Citation and references</a>. The
+table lists the known departures and the groups that no single unit describes:</p>
+<table>
+<thead>
+<tr>
+<th>Fungi</th>
+<th>Telomere repeat</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>most Pezizomycotina (filamentous Ascomycota), most Basidiomycota, Mucoromycota; among them <em>Botrytis cinerea</em> and <em>Aspergillus fumigatus</em></td>
+<td><code>TTAGGG</code></td>
+<td>Lue 2021; Sun et al. 2023; Levis et al. 1997; Bowyer et al. 2022</td>
+</tr>
+<tr>
+<td>the <em>Aspergillus flavus</em> group</td>
+<td><code>TTAGGGTCAACA</code></td>
+<td>Sun et al. 2023</td>
+</tr>
+<tr>
+<td><em>Peltaster fructicola</em></td>
+<td><code>TAGGG</code></td>
+<td>Sun et al. 2023</td>
+</tr>
+<tr>
+<td><em>Drechmeria coniospora</em></td>
+<td><code>CCGTTGCTGTTG</code></td>
+<td>Sun et al. 2023</td>
+</tr>
+<tr>
+<td><em>Penicillium polonicum</em></td>
+<td><code>TTTAGGG</code></td>
+<td>Sun et al. 2023</td>
+</tr>
+<tr>
+<td>a few Basidiomycota: <em>Malassezia</em>, <em>Hericium</em></td>
+<td><code>TTAGGA</code> (<em>Malassezia furfur</em>), <code>TTAGTG</code> (<em>Malassezia restricta</em>, <em>M. globosa</em>), <code>TTGGA</code> (<em>Hericium erinaceus</em>)</td>
+<td>Sun et al. 2023</td>
+</tr>
+<tr>
+<td><em>Cryptococcus neoformans</em></td>
+<td><code>TTA(G)4-6</code>: <code>TTA</code> followed by four to six <code>G</code>, a unit of varying length</td>
+<td>Edman 1992</td>
+</tr>
+<tr>
+<td>budding yeasts (Saccharomycotina): <em>Candida albicans</em> (23 bp), <em>Kluyveromyces lactis</em> (25 bp) and most others</td>
+<td>long and often irregular units of 8 to 25 bp; no single unit</td>
+<td>McEachern and Blackburn 1994; Červenák et al. 2021; Lue 2021</td>
+</tr>
+<tr>
+<td><em>Yarrowia lipolytica</em></td>
+<td><code>TTAGTCAGGG</code>, a regular unit among the budding yeasts</td>
+<td>Lue 2021; Červenák et al. 2021</td>
+</tr>
+<tr>
+<td>fission yeasts (<em>Schizosaccharomyces</em>)</td>
+<td>degenerate <code>GGTTAC</code>-type repeats; no single unit</td>
+<td>Sepsiova et al. 2016</td>
+</tr>
+<tr>
+<td>Microstromatales yeasts</td>
+<td>no telomerase; a different tandem array at every chromosome end</td>
+<td>Brejová et al. 2026</td>
+</tr>
+</tbody>
+</table>
+<p>Every exact unit of this table is a candidate in every run. When the data choose one of them, the
+candidates table marks it <code>in_literature</code>. The telomere repeat database of tidk
+(<a href="../../getting-started/databases/#telomere-db">Reference databases</a>) adds the units reported with
+<code>strong</code> or <code>weak</code> support in its 2,990 rows of all kingdoms, 256 distinct units. A unit the data
+choose is marked <code>in_database</code>, with the number of species per kingdom that carry it. The 126
+fungal rows of the database name these units with <code>strong</code> or <code>weak</code> support:</p>
+<table>
+<thead>
+<tr>
+<th>Unit, canonical form</th>
+<th>Fungal species in the database</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AACCCT</code> (<code>TTAGGG</code>)</td>
+<td>20</td>
+</tr>
+<tr>
+<td><code>AAACCCT</code> (<code>TTTAGGG</code>)</td>
+<td>18</td>
+</tr>
+<tr>
+<td><code>AACCT</code> (<code>TTAGG</code>)</td>
+<td>9</td>
+</tr>
+<tr>
+<td><code>AACCTAACT</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>AAAAAACCCT</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>AAAACCCT</code>, <code>AACCCCT</code>, <code>AACACT</code>, <code>AACCC</code>, <code>AACCCTAT</code>, <code>AAAT</code></td>
+<td>1 each</td>
+</tr>
+</tbody>
+</table>
+<p><code>TTAGGG</code> and <code>TTTAGGG</code> account for most fungal species in the database. <code>AAAT</code> is 4 bp long and
+has no G-rich strand, so it fails two of the three filters and is never scored. For a species in
+none of these lists, TeloBase (Lyčka et al. 2024) and the Telomerase Database (Podlevsky et al.
+2008) list the known telomere repeats.</p>
+<h4 id="setting-the-motif">Setting the unit<a class="headerlink" href="#setting-the-motif" title="Permanent link">¶</a></h4>
+<p><code>parameters.contig_summary.telomere_motif</code> sets the telomere unit by hand. A configured unit is
+always used, and the data's own choice is still reported next to it.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">contig_summary</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">telomere_motif</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span><span class="w">             </span><span class="c1"># or a unit, such as TTAGGGTCAACA for the Aspergillus flavus group</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th><code>telomere_motif</code></th>
+<th>Unit used</th>
+<th>The three filters</th>
+<th>Marked <code>chosen</code> in the candidates table</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auto</code> (default)</td>
+<td>the unit chosen from the data, as described above</td>
+<td>applied</td>
+<td>the data's choice</td>
+</tr>
+<tr>
+<td>a unit: letters A, C, G and T only, 4 to 30 long, upper or lower case</td>
+<td>the unit as given, whatever its score: it is written to <code>telomere_unit.txt</code> and used for the telomere columns</td>
+<td>skipped</td>
+<td>the given unit</td>
+</tr>
+</tbody>
+</table>
+<p>Either strand and any rotation work, because <code>tidk ends</code> gives the same result for <code>TTAGGG</code>,
+<code>CCCTAA</code> and <code>GGGTTA</code>. The ranking still runs, and a NOTE says when the data favour another unit or
+give the configured one no support (<a href="#telomere-note">the NOTE</a>). Set a unit when the data cannot
+decide, for example in a fragmented assembly with few chromosome ends. A changed value of this key
+re-runs <code>telomere_units</code>, <code>contig_summary</code> and MultiQC.</p>
+<div class="admonition warning">
+<p class="admonition-title">Setting one <code>telomere_motif</code> key does not set the other</p>
+<p>hifiasm has a key of the same name, which is separate:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Read by</th>
+<th>The unit is written</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>parameters.contig_summary.telomere_motif</code></td>
+<td>the contig summary</td>
+<td>on either strand, in any rotation</td>
+</tr>
+<tr>
+<td><code>parameters.longread.hifiasm.telomere_motif</code> or <code>parameters.hybrid.hifiasm.telomere_motif</code> (<code>--telo-m</code>)</td>
+<td>the assembler, hifiasm</td>
+<td>as it reads at the 5' end of a chromosome: <code>CCCTAA</code> for <code>TTAGGG</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="telomere-files">The three telomere files<a class="headerlink" href="#telomere-files" title="Permanent link">¶</a></h4>
+<p>Rule <code>telomere_units</code> writes three files to <code>02.assembly/{sample}/eval/</code>. They hold the numbers
+behind the choice of the unit, and the arrays of that unit at every contig end.</p>
+<p><code>telomere_candidates.tsv</code> has one row per unit that was found at the contig ends or formed at
+least one array when it was scored. A known unit that formed none is counted in the log only. The
+rows are sorted by <code>score</code>, then <code>telomere_ends</code>, both descending, then <code>unit</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unit</code></td>
+<td>the unit in canonical form</td>
+</tr>
+<tr>
+<td><code>unit_length</code></td>
+<td>bp</td>
+</tr>
+<tr>
+<td><code>copies_at_ends</code></td>
+<td>copies <code>tidk explore</code> counted in the terminal windows; <code>0</code> for a known unit that was not found there</td>
+</tr>
+<tr>
+<td><code>copies_genome_wide</code></td>
+<td>copies <code>tidk explore</code> counted on the whole draft</td>
+</tr>
+<tr>
+<td><code>telomere_ends</code></td>
+<td>contig ends with an array pointing the way a telomere points (<code>present</code>)</td>
+</tr>
+<tr>
+<td><code>opposite_ends</code></td>
+<td>contig ends with an array pointing the other way (<code>wrong_strand</code>)</td>
+</tr>
+<tr>
+<td><code>score</code></td>
+<td><code>telomere_ends</code> minus <code>opposite_ends</code></td>
+</tr>
+<tr>
+<td><code>t2t_contigs</code></td>
+<td>contigs with a <code>present</code> array at both ends</td>
+</tr>
+<tr>
+<td><code>in_literature</code></td>
+<td>the fungal groups or species of the literature table that carry the unit, with the published spelling and the references; <code>-</code> when none</td>
+</tr>
+<tr>
+<td><code>in_database</code></td>
+<td>species per kingdom with <code>strong</code> or <code>weak</code> support in the tidk database, for example <code>Fungi 20; Metazoa 420; Viridiplantae 11; (no kingdom) 2</code> (the few rows without a kingdom are counted as <code>(no kingdom)</code>); <code>-</code> when none</td>
+</tr>
+<tr>
+<td><code>chosen</code></td>
+<td><code>yes</code> for the telomere unit of the assembly, <code>no</code> otherwise</td>
+</tr>
+</tbody>
+</table>
+<p><code>telomere_unit.txt</code> holds one line, the unit in canonical form or <code>none</code>.</p>
+<p><code>telomere_ends.tsv</code> is the per-end table of the chosen unit after the same-array rule, the
+relabelling to <code>other_end</code> in <a href="#telomere-unit">step 4</a>. It has tidk's ten columns and values, and
+holds the header line alone when the unit is <code>none</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>the contig</td>
+</tr>
+<tr>
+<td><code>sequence_length</code></td>
+<td>its length in bp</td>
+</tr>
+<tr>
+<td><code>side</code></td>
+<td><code>start</code> or <code>end</code></td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td><code>present</code>, <code>wrong_strand</code>, <code>not_terminal</code>, <code>absent</code> or <code>other_end</code> (<a href="#telomere-unit">step 4</a>)</td>
+</tr>
+<tr>
+<td><code>telomere_start</code>, <code>telomere_end</code></td>
+<td>the array's coordinates on the contig, 0-based; <code>NA</code> when absent</td>
+</tr>
+<tr>
+<td><code>telomere_length</code></td>
+<td>the array's length in bp</td>
+</tr>
+<tr>
+<td><code>offset</code></td>
+<td>distance from the contig end to the array, bp</td>
+</tr>
+<tr>
+<td><code>strand</code></td>
+<td><code>C-rich</code> or <code>G-rich</code>; a telomere is C-rich at a contig start and G-rich at a contig end</td>
+</tr>
+<tr>
+<td><code>window_limited</code></td>
+<td>tidk's flag: <code>true</code> when the array reaches the edge of the window tidk searched, so it may continue beyond it</td>
+</tr>
+</tbody>
+</table>
+<p>The contig summary reads the rows of this table by their status, and only <code>present</code> rows are
+telomeres:</p>
+<table>
+<thead>
+<tr>
+<th><code>status</code></th>
+<th>In the contig summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>present</code></td>
+<td>a telomere: the copies in <code>telomere_start</code> and <code>telomere_end</code> are <code>telomere_length</code> divided by the unit length, rounded, and the two offset columns are tidk's <code>offset</code>. An array more than 1,000 bp inside the contig is also named in the <code>reason</code> column, for example <code>(the start array is 2814 bp from the end)</code>; the verdict does not change</td>
+</tr>
+<tr>
+<td><code>wrong_strand</code></td>
+<td>not a telomere; the reason names it (<code>array in the opposite orientation at the end</code>)</td>
+</tr>
+<tr>
+<td><code>other_end</code>, <code>not_terminal</code></td>
+<td>nothing</td>
+</tr>
+</tbody>
+</table>
+<p>An array more than 1,000 bp inside is named because a telomere is the very end of a chromosome, so
+sequence beyond the array is a misjoin or an interstitial telomeric repeat.</p>
+<div class="admonition warning">
+<p class="admonition-title">An array further inside than the window is not seen at all</p>
+<p>A wider <code>telomere_window</code> finds it, and the <a href="#worked-example">worked example</a> shows an array
+that a narrow window would miss.</p>
+</div>
+<h4 id="telomere-note">The log line and the NOTE<a class="headerlink" href="#telomere-note" title="Permanent link">¶</a></h4>
+<p>The log <code>logs/telomere_units_{sample}.log</code> holds one line that sums up the choice, followed by the
+NOTE when there is one, and the rule copies that line to the Snakemake console:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[FunFlux] telomere_units &lt;sample&gt;: telomere repeat unit AACCCT (TTAGGG read on the other strand): 34 contig ends, 15 contigs with a telomere at both ends; known from the literature (filamentous Ascomycota, most Basidiomycota, Mucoromycota; Botrytis cinerea) and from 20 fungal species in the database
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Text</th>
+<th>Appears when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the part in parentheses after the unit</td>
+<td>the published spelling differs from the canonical form; for a configured unit it says <code>set by telomere_motif</code></td>
+</tr>
+<tr>
+<td>the same line, reading <code>... no telomere repeat identified (best candidate &lt;UNIT&gt;: &lt;n&gt; ends in the telomere orientation, &lt;m&gt; opposite)</code></td>
+<td>no candidate is eligible</td>
+</tr>
+<tr>
+<td>a second line, <code>[FunFlux] NOTE telomere_units &lt;sample&gt;: ...</code>, also copied to the console</td>
+<td>the chosen unit is unknown to both the literature table and the database, so it may be a telomere repeat nobody has reported or a satellite that happens to point one way; or a configured <code>parameters.contig_summary.telomere_motif</code> is not the data's first choice, because another unit scores higher or the configured one has no support</td>
+</tr>
+</tbody>
+</table>
+<p>A NOTE is a reason to open the candidates table, which shows the numbers behind either case.</p>
+<h3 id="genes">Genes: the join to the scaffold names<a class="headerlink" href="#genes" title="Permanent link">¶</a></h3>
+<p><code>genes</code> is the one column that cannot be joined to the draft by name, because <code>funannotate sort</code>
+renames the contigs <code>scaffold_1</code>, <code>scaffold_2</code>, ... longest first
+(<a href="../repeat-masking/#funannotate-sort">funannotate sort</a>). The script therefore joins the GFF3 to
+the draft by sequence:</p>
+<table>
+<thead>
+<tr>
+<th>Draft contig</th>
+<th>Matched to its scaffold by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>unchanged since the draft</td>
+<td>the identical sequence: a draft contig and a scaffold with the identical sequence are the same contig</td>
+</tr>
+<tr>
+<td>polished after the draft (Medaka for ONT samples, Polypolish in <code>hybrid</code> mode), so it differs from its scaffold by a base here and there</td>
+<td>five 300-bp probes taken from inside the contig, searched in the scaffolds whose length is within 5 % of its own</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>annotated_as</code> column gives the result of this join. It links the two sets of contig names,
+which none of the other result files does.</p>
+<h2 id="worked-example">A worked example: <em>Botrytis cinerea</em> B05.10<a class="headerlink" href="#worked-example" title="Permanent link">¶</a></h2>
+<p>The public benchmark genome, <em>Botrytis cinerea</em> B05.10 (RefSeq assembly GCF_000143535.2), shows
+how the table reads on a real assembly. It has 18 chromosomes: 16 core chromosomes of 2.0 to
+4.1 Mb and two minichromosomes of 247 and 209 kb. Its mitochondrial genome is 82 kb, and the
+reference assembly carries telomere repeats at 27 of its 36 chromosome ends.</p>
+<p>A <code>longread</code> run of public ONT reads of the strain (about 136x), assembled with hifiasm, gave 33
+contigs: 32 in the nuclear genome and the mitochondrion.
+<a href="../../about/validation/">Validation on public genomes</a> describes the runs. The telomere unit
+chosen from the data is <code>AACCCT</code>, that is <code>TTAGGG</code>, with arrays of 102 to 126 bp (17 to 21
+copies) at 34 of the 66 contig ends. Every one of these arrays points the way a telomere points,
+with the C-rich strand at every contig start and the G-rich strand at every contig end, so there
+is no opposite end. Of the 33 contigs, 15 have an array at both ends. With the default settings
+and a median depth of 24.5, the table calls the 33 contigs:</p>
+<table>
+<thead>
+<tr>
+<th>Verdict</th>
+<th>Contigs</th>
+<th>What they are</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>chromosome</code></td>
+<td>15</td>
+<td>13 of the 16 core chromosomes, and the two minichromosomes</td>
+</tr>
+<tr>
+<td><code>chromosome_arm</code></td>
+<td>3</td>
+<td>the other 3 core chromosomes, each with one end without a telomere array</td>
+</tr>
+<tr>
+<td><code>rDNA_array</code></td>
+<td>13</td>
+<td>pieces of the rDNA array</td>
+</tr>
+<tr>
+<td><code>mitochondrion</code></td>
+<td>1</td>
+<td>the mitochondrial genome</td>
+</tr>
+<tr>
+<td><code>low_depth</code></td>
+<td>1</td>
+<td>an alternative copy of a region, or noise</td>
+</tr>
+</tbody>
+</table>
+<p>The 18 chromosomes of the reference come out as 18 contigs, 15 of them with telomere arrays at both
+ends. The other 15 contigs are rDNA pieces, the mitochondrion and one low-depth contig. A few rows,
+with the columns that decided:</p>
+<table>
+<thead>
+<tr>
+<th><code>contig</code></th>
+<th><code>length</code></th>
+<th><code>depth_x_median</code></th>
+<th><code>telomere_start</code></th>
+<th><code>telomere_end</code></th>
+<th><code>rdna_units</code></th>
+<th><code>busco_markers</code></th>
+<th><code>genes</code></th>
+<th><code>annotated_as</code></th>
+<th><code>verdict</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ptg000005l</code></td>
+<td>4,109,401</td>
+<td>1.00</td>
+<td>18</td>
+<td>17</td>
+<td>0</td>
+<td>287</td>
+<td>1,127</td>
+<td><code>scaffold_1</code></td>
+<td><code>chromosome</code></td>
+</tr>
+<tr>
+<td><code>ptg000007l</code></td>
+<td>3,044,302</td>
+<td>1.00</td>
+<td>18</td>
+<td>0</td>
+<td>0</td>
+<td>193</td>
+<td>869</td>
+<td><code>scaffold_4</code></td>
+<td><code>chromosome_arm</code></td>
+</tr>
+<tr>
+<td><code>ptg000014l</code></td>
+<td>2,512,653</td>
+<td>0.99</td>
+<td>18</td>
+<td>0</td>
+<td>6</td>
+<td>184</td>
+<td>701</td>
+<td><code>scaffold_9</code></td>
+<td><code>chromosome_arm</code></td>
+</tr>
+<tr>
+<td><code>ptg000022l</code></td>
+<td>208,977</td>
+<td>0.79</td>
+<td>18</td>
+<td>17</td>
+<td>0</td>
+<td>0</td>
+<td>21</td>
+<td><code>scaffold_18</code></td>
+<td><code>chromosome</code></td>
+</tr>
+<tr>
+<td><code>ptg000004l</code></td>
+<td>282,192</td>
+<td>0.77</td>
+<td>17</td>
+<td>17</td>
+<td>0</td>
+<td>0</td>
+<td>22</td>
+<td><code>scaffold_17</code></td>
+<td><code>chromosome</code></td>
+</tr>
+<tr>
+<td><code>ptg000030l</code></td>
+<td>175,720</td>
+<td>1.15</td>
+<td>18</td>
+<td>0</td>
+<td>20</td>
+<td>0</td>
+<td>1</td>
+<td><code>scaffold_19</code></td>
+<td><code>rDNA_array</code></td>
+</tr>
+<tr>
+<td><code>ptg000011l</code></td>
+<td>58,954</td>
+<td>0.16</td>
+<td>0</td>
+<td>0</td>
+<td>6</td>
+<td>0</td>
+<td>0</td>
+<td><code>scaffold_25</code></td>
+<td><code>rDNA_array</code></td>
+</tr>
+<tr>
+<td><code>ptg000015l</code></td>
+<td>61,330</td>
+<td>0.27</td>
+<td>0</td>
+<td>0</td>
+<td>6</td>
+<td>0</td>
+<td><code>NA</code></td>
+<td><code>dropped by funannotate clean</code></td>
+<td><code>rDNA_array</code></td>
+</tr>
+<tr>
+<td><code>ptg000028c</code></td>
+<td>82,351</td>
+<td>7.37</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td><code>NA</code></td>
+<td><code>not annotated (mitochondrion)</code></td>
+<td><code>mitochondrion</code></td>
+</tr>
+<tr>
+<td><code>ptg000029l</code></td>
+<td>42,998</td>
+<td>0.07</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>5</td>
+<td><code>scaffold_27</code></td>
+<td><code>low_depth</code></td>
+</tr>
+</tbody>
+</table>
+<p>What the rows show:</p>
+<ul>
+<li><strong>The core chromosomes.</strong> The 16 contigs of 2.0 to 4.1 Mb are the 16 core chromosomes. Of
+  these, 13 are <code>chromosome</code> and 3 are <code>chromosome_arm</code>, each with one end without a telomere
+  array. <code>ptg000014l</code> carries 6 rDNA units and 701 genes, so verdict rule 3 does not apply and it
+  stays a chromosome arm. The start array of <code>ptg000007l</code> begins 2,814 bp inside the contig, and
+  its reason says so:
+  <code>telomere repeats at the start only (18 copies) (the start array is 2814 bp from the end)</code>.
+  Three chromosomes have one array more than 1,000 bp inside the contig end, named in their
+  reasons the same way: 1,134 bp in <code>ptg000002l</code>, 3,660 bp in <code>ptg000009l</code> and 12,300 bp in
+  <code>ptg000017l</code>.</li>
+<li><strong>The minichromosomes.</strong> The two contigs of 200 to 300 kb are the two minichromosomes,
+  <code>chromosome</code> whatever their size. <code>ptg000022l</code> (209 kb) has its arrays right at the contig ends
+  and 21 genes. <code>ptg000004l</code> (282 kb) has arrays of 17 copies that lie 19,746 and 15,234 bp inside
+  the contig ends. The contig therefore carries about 35 kb beyond its telomeres, and the
+  reference chromosome is 247 kb. Its reason names both offsets:
+  <code>telomere repeats at both ends (17 and 17 copies) (the start array is 19746 bp from the end; the end array is 15234 bp from the end); depth 0.77x the median; 22 genes, 0 BUSCO markers</code>.
+  With a window of 3,000 bp, neither array would be seen and the contig would read
+  <code>nuclear_contig</code>, which is why the default window is 25 kb. The depths of the two
+  minichromosomes, 0.79 and 0.77 times the median, are within the normal range.</li>
+<li><strong>The rDNA pieces.</strong> <code>ptg000030l</code> is a 176-kb rDNA array with a telomere at its start (18
+  copies), 20 rDNA units and one predicted gene, a gene call inside an rDNA unit. With fewer genes
+  than rDNA units, it is an <code>rDNA_array</code> by verdict rule 3, with the telomere named in the reason.
+  The 13 <code>rDNA_array</code> contigs are 36 to 176 kb of rDNA units at 0.16 to 1.15 times the median:
+  the array is assembled in pieces and partly collapsed. Two of them, <code>ptg000015l</code> and
+  <code>ptg000024l</code>, were dropped by <code>funannotate clean</code> as duplicates, so their <code>genes</code> cell is <code>NA</code>
+  and <code>annotated_as</code> says so. The <code>genus</code> cell of the rDNA pieces names another genus than
+  <em>Botrytis</em>, because a BLAST genus label is only as good as the closest sequence in the database
+  (<a href="../decontamination/#why-there-is-no-auto-mode">Decontamination</a>). The rDNA unit holds lone
+  copies of <code>TTAGGG</code> and <code>CCCTAA</code>, but a telomere call needs an array of at least 5 copies, so
+  none of the other rDNA pieces gets a telomere.</li>
+<li><strong>The mitochondrion.</strong> <code>ptg000028c</code> is confirmed by the mitochondrion screen. It is circular, at
+  7.4 times the median depth, and not annotated.</li>
+<li><strong>The low-depth contig.</strong> <code>ptg000029l</code>, 43 kb at 0.07 times the median with 5 genes, is
+  <code>low_depth</code>, an alternative copy of a region or noise.</li>
+</ul>
+<p>The candidates table shows how the unit was chosen. <code>telomere_candidates.tsv</code> has 20 rows, and
+these are the three units with the most copies at the contig ends:</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Copies at the contig ends</th>
+<th>Ends in the telomere orientation</th>
+<th>Opposite ends</th>
+<th>Score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AACCCT</code></td>
+<td>657</td>
+<td>34</td>
+<td>0</td>
+<td>34</td>
+</tr>
+<tr>
+<td><code>ACCTCC</code></td>
+<td>164</td>
+<td>0</td>
+<td>3</td>
+<td>-3</td>
+</tr>
+<tr>
+<td><code>AGATGG</code></td>
+<td>152</td>
+<td>0</td>
+<td>4</td>
+<td>-4</td>
+</tr>
+</tbody>
+</table>
+<p>Only the telomere unit has arrays that point the telomere way. The two microsatellites that follow
+it have three and four arrays at contig ends, all pointing the wrong way for a telomere. <code>AACCCT</code>
+has 657 copies at the contig ends and 661 in the whole assembly, so nearly every copy sits at an
+end, while <code>AGATGG</code> has 405 in the whole assembly. Seven units have a single end in the telomere
+orientation and are not eligible. The table marks <code>AACCCT</code> known from the literature and from 20
+fungal species in the database. The log of <code>telomere_units</code> ends with the summary line quoted
+<a href="#telomere-note">above</a> and has no NOTE.</p>
+<p>A short-read assembly of the same strain chooses the same unit from thinner evidence. It was made
+with SPAdes from public Illumina reads and has 413 contigs, 4 of them mitochondrial:</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Copies at the contig ends</th>
+<th>Ends in the telomere orientation</th>
+<th>Opposite ends</th>
+<th>Score</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AACCCT</code></td>
+<td>227</td>
+<td>13</td>
+<td>1</td>
+<td>12</td>
+<td>chosen; no contig with an array at both ends</td>
+</tr>
+<tr>
+<td><code>AAGAG</code></td>
+<td>33</td>
+<td>13</td>
+<td>5</td>
+<td>8</td>
+<td>eligible, ranks second</td>
+</tr>
+<tr>
+<td><code>AGAGGG</code></td>
+<td>115</td>
+<td>12</td>
+<td>6</td>
+<td>6</td>
+<td>not eligible: 12 is not more than twice 6</td>
+</tr>
+<tr>
+<td><code>AAAGAG</code></td>
+<td>179</td>
+<td>5</td>
+<td>5</td>
+<td>0</td>
+<td>arrays point either way</td>
+</tr>
+<tr>
+<td><code>AAGGAG</code></td>
+<td>171</td>
+<td>6</td>
+<td>7</td>
+<td>-1</td>
+<td>arrays point either way</td>
+</tr>
+</tbody>
+</table>
+<p>Here the copy number cannot choose the unit, but the orientation still can. The microsatellites
+<code>AAAGAG</code> and <code>AAGGAG</code> have nearly as many copies at the contig ends as <code>AACCCT</code>, but their arrays
+point either way, so they score 0 and -1. <code>tidk ends</code> first reports 7 opposite ends for <code>AACCCT</code>.
+Six of them are the same array seen from the other end of a short contig of 1.4 to 12 kb, which
+the same-array rule relabels <code>other_end</code>. The seventh is a 30-bp run 12.4 kb inside a long contig.</p>
+<p>The gene count is FunFlux's own prediction. Where a published annotation exists, as here, its gene
+count is an independent check of the run as a whole. The table itself reads no reference.</p>
+<h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">¶</a></h2>
+<p>The contig summary has five settings in <code>parameters.contig_summary</code>, and the address of the
+telomere database in <code>links</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">contig_summary</span><span class="p">:</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">telomere_motif</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">telomere_db_sha256</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1d4f5c8c2cce6a76aaa8de01602317a8e0b8d0401711b96f3c7a826c385da699</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">telomere_window</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25000</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">min_telomere_copies</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">min_rdna_units</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="nt">links</span><span class="p">:</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="nt">telomere_db_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://raw.githubusercontent.com/tolkit/a-telomeric-repeat-database/73c635c7b80e5ab369b4c7ec67d23db32dcaa1b8/data/telo_database_v2.tsv</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>telomere_motif</code></td>
+<td><code>auto</code></td>
+<td><code>auto</code> (any case), or letters A, C, G and T, 4 to 30 long; lower case is upper-cased</td>
+<td><code>auto</code>: the unit is chosen from the data. A unit: used as given, the data's choice reported next to it (<a href="#setting-the-motif">Setting the unit</a>).</td>
+</tr>
+<tr>
+<td><code>telomere_db_sha256</code></td>
+<td>the checksum of the database file at the template address</td>
+<td>64 hexadecimal characters</td>
+<td>The SHA-256 the downloaded database must have. Change it together with <code>links.telomere_db_link</code>.</td>
+</tr>
+<tr>
+<td><code>telomere_window</code></td>
+<td>25000</td>
+<td>an integer from 500 to 100000</td>
+<td>The terminal window: the bases at each contig end in which the candidate units are collected, and how far from the end <code>tidk ends</code> accepts an array. The array can sit some kb inside a contig end when the assembler ran past the telomere, so the window must cover that; the offset columns show where each array lies.</td>
+</tr>
+<tr>
+<td><code>min_telomere_copies</code></td>
+<td>5</td>
+<td>an integer ≥ 2</td>
+<td>Copies of the unit an array needs: <code>tidk ends</code> requires this many unit lengths (30 bp for a 6-bp unit), and <code>tidk explore</code> lists a unit only when it forms a tandem run of this many copies.</td>
+</tr>
+<tr>
+<td><code>min_rdna_units</code></td>
+<td>3</td>
+<td>an integer ≥ 1</td>
+<td>rDNA units (ITS windows) from which a contig can be an <code>rDNA_array</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>The five values are checked before any job starts, like the other blocks
+(<a href="../../reference/configuration/#contig_summary">Configuration</a>). A value outside the range stops
+the run with a <code>[FunFlux] parameters.contig_summary.&lt;key&gt;: ...</code> message. Every dry run prints the
+settings in one line:
+<code>Contig summary: telomere motif auto (the repeat unit is chosen from the data), a telomere from 5 tandem copies within 25000 bp of a contig end, an rDNA array from 3 rDNA unit(s).</code>
+A changed value re-runs the steps that use it (<a href="#re-runs">Re-runs</a>).</p>
+<h2 id="multiqc">In the MultiQC report<a class="headerlink" href="#multiqc" title="Permanent link">¶</a></h2>
+<p>For the report, <code>02.assembly/{sample}/eval/contig_summary_mqc.tsv</code> holds the same table prepared
+for MultiQC, with the rows named <code>{sample}: {contig}</code> and a description that names the telomere
+unit of the sample. MultiQC shows the tables of all samples of the run as one table in the section
+<strong>Contig summary</strong> of <code>06.report/multiqc_report.html</code>. It writes the numbers to
+<code>06.report/multiqc_data/multiqc_contig_summary.txt</code>. The table has all 20 columns, <code>telomere_unit</code>
+among them, so samples of different species keep their units apart. The column settings of the
+table show or hide columns.</p>
+<div class="admonition note">
+<p class="admonition-title">Above 500 rows, MultiQC shows a violin plot instead of the table</p>
+<p>MultiQC shows a table with more than 500 rows (its <code>max_table_rows</code> setting) as a violin plot
+instead, so for a batch of fragmented assemblies read <code>contig_summary.tsv</code> itself.</p>
+</div>
+<h2 id="re-runs">Re-runs<a class="headerlink" href="#re-runs" title="Permanent link">¶</a></h2>
+<p>Each change in the left column re-runs the contig summary steps on the right:</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Re-runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a new draft</td>
+<td><code>telomere_units</code> and <code>contig_summary</code></td>
+</tr>
+<tr>
+<td>a new database file</td>
+<td><code>telomere_units</code></td>
+</tr>
+<tr>
+<td><code>parameters.contig_summary.telomere_motif</code>, <code>telomere_window</code> or <code>min_telomere_copies</code></td>
+<td><code>telomere_units</code> and <code>contig_summary</code></td>
+</tr>
+<tr>
+<td><code>links.telomere_db_link</code> or <code>telomere_db_sha256</code></td>
+<td><code>telomere_db</code>, then <code>telomere_units</code> of every sample and the steps after it</td>
+</tr>
+<tr>
+<td>a new telomere unit or ends table</td>
+<td><code>contig_summary</code></td>
+</tr>
+<tr>
+<td><code>min_rdna_units</code></td>
+<td><code>contig_summary</code></td>
+</tr>
+<tr>
+<td>a new screen result, a new <code>busco.lineage</code> (the BUSCO markers are counted per contig), new ITS windows or a new annotation</td>
+<td><code>contig_summary</code></td>
+</tr>
+</tbody>
+</table>
+<p>A re-run of these steps costs seconds to a minute and never touches the annotation. MultiQC
+follows each of them.</p>
+<h2 id="limits">Limits<a class="headerlink" href="#limits" title="Permanent link">¶</a></h2>
+<p>Some genomes, assemblies and settings leave a piece of evidence missing or unreliable. The table
+lists these situations and what the contig summary does in each:</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>What the table does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>telomeres that vary from copy to copy: <em>Saccharomyces</em>, <em>Schizosaccharomyces</em>, <em>Cryptococcus</em></td>
+<td>only exact units are found, and no tandem run of one unit exists: <code>tidk explore</code> lists no unit, <code>tidk ends</code> finds no array, and the unit comes out as <code>none</code> even when the irregular repeat is written into <code>parameters.contig_summary.telomere_motif</code></td>
+</tr>
+<tr>
+<td>telomere repeats that differ between chromosome ends: the Microstromatales yeasts</td>
+<td>no single unit covers more than a few of them</td>
+</tr>
+<tr>
+<td>a unit that no paper and no database names</td>
+<td>it is still found when it forms an array of at least <code>min_telomere_copies</code> copies within the window at the contig ends, because every tandem unit of the contig ends is a candidate; the NOTE then says that the unit is unknown</td>
+</tr>
+<tr>
+<td>a genuine telomere unit that fails one of the three filters</td>
+<td>it would be missed; none is known, and <code>parameters.contig_summary.telomere_motif</code> bypasses the filters</td>
+</tr>
+<tr>
+<td>an assembly with few chromosome ends, such as a fragmented short-read assembly</td>
+<td>few votes: a unit needs at least 2 telomere ends and more than twice as many telomere ends as opposite ends; when it falls short no unit is chosen, so set <code>parameters.contig_summary.telomere_motif</code> when the repeat is known</td>
+</tr>
+<tr>
+<td>an array further inside a contig than <code>telomere_window</code></td>
+<td>it is not seen; the <a href="#worked-example">worked example</a> shows the trade-off of a wider window</td>
+</tr>
+<tr>
+<td>an array of the chosen unit pointing the other way at a contig end (<code>wrong_strand</code>)</td>
+<td>not a telomere call; the reason names it, and the verdict rests on the rest</td>
+</tr>
+<tr>
+<td>a contig that ends at a centromere</td>
+<td>centromeres are not detected: it is a <code>chromosome_arm</code> like any other</td>
+</tr>
+<tr>
+<td><code>contigs</code> mode, where depth is unknown (it is known only in the read-based modes)</td>
+<td>verdict rules 6 and 7 never apply; a mitochondrion that the screen did not confirm, or a contig at twice the depth of the genome, is judged on the other evidence alone: a gene-less contig at twice the depth is then a <code>nuclear_fragment</code>, not a <code>repeat</code></td>
+</tr>
+<tr>
+<td><code>parameters.mitochondria.mode: off</code>, read-based modes</td>
+<td>the screen confirms nothing, and the mitochondrion is judged on the rest of its evidence: its depth, several times the median, keeps it out of every verdict but <code>repeat</code> (when no gene was predicted on it) or <code>unclassified</code></td>
+</tr>
+<tr>
+<td><code>parameters.mitochondria.mode: off</code>, <code>contigs</code> mode</td>
+<td>without a depth, the mitochondrion is a <code>nuclear_contig</code> when genes were predicted on it</td>
+</tr>
+<tr>
+<td><code>parameters.mitochondria.mode: report</code></td>
+<td>the confirmed contig stays in the nuclear genome and is annotated; the table still calls it <code>mitochondrion</code> (verdict rule 1, from the screen's class), and its <code>annotated_as</code> cell names the <code>scaffold_N</code> under which funannotate annotated it, with its <code>genes</code> cell filled (<a href="../mitochondria/#modes">Mitochondria</a>)</td>
+</tr>
+<tr>
+<td>a fungus whose 5.8S matches none of ITSx's profiles</td>
+<td><code>rdna_units</code> counts the 5.8S genes that nhmmer found with ITSx's profiles (<a href="../its-taxonomy/#why-the-genome-is-cut-into-windows">Why the genome is cut into windows</a>), so it is <code>0</code> on every contig, and the rDNA pieces are judged on depth and genes alone: <code>low_depth</code>, <code>repeat</code>, <code>nuclear_fragment</code>, <code>nuclear_contig</code> or <code>unclassified</code></td>
+</tr>
+<tr>
+<td>the gene count</td>
+<td>it is the run's own gene prediction, counted per scaffold: evidence that a contig is nuclear sequence, not a measure of annotation quality</td>
+</tr>
+<tr>
+<td>a polished contig (Medaka in <code>longread</code> and <code>hybrid</code> mode, Polypolish in <code>hybrid</code> mode)</td>
+<td>its join to its <code>scaffold_N</code> rests on five 300-bp probes and a length within 5 %; <code>dropped by funannotate clean</code> on a contig that is in <code>contigs_sort.fasta</code> means the join failed, and the <code>genes</code> cell of that contig is then <code>NA</code></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Where evidence is missing or unreliable, the verdict rests on the evidence that remains</p>
+<p>For the fungi of the first two rows, the table still gives the depth, rDNA, BUSCO and gene
+evidence, and the verdicts <code>chromosome</code> and <code>chromosome_arm</code> do not occur. The <code>annotated_as</code>
+column shows whether each contig found its scaffold.</p>
+</div>
+<h2 id="output-files">Output files<a class="headerlink" href="#output-files" title="Permanent link">¶</a></h2>
+<p>Every file is kept, and <code>contig_summary.tsv</code> is the one to read:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>00.resources/telomeres/telo_database_v2.tsv</code></td>
+<td>the telomere repeat database of tidk, downloaded once per output folder</td>
+</tr>
+<tr>
+<td><code>00.resources/telomeres/PROVENANCE.txt</code></td>
+<td>source URL, download date, checksum and row count of the database</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/eval/telomere_candidates.tsv</code></td>
+<td>every candidate telomere unit with its counts (<a href="#telomere-files">The three telomere files</a>)</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/eval/telomere_unit.txt</code></td>
+<td>the telomere unit of the assembly, or <code>none</code></td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/eval/telomere_ends.tsv</code></td>
+<td>the arrays of that unit at every contig end</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/eval/contig_summary.tsv</code></td>
+<td>the table, one row per contig of the draft</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/eval/contig_summary_mqc.tsv</code></td>
+<td>the same table for MultiQC</td>
+</tr>
+<tr>
+<td><code>logs/telomere_db.log</code></td>
+<td>the database download</td>
+</tr>
+<tr>
+<td><code>logs/telomere_units_{sample}.log</code></td>
+<td>the count line of the script, the one-line summary and the NOTE when there is one; tidk's own messages only when tidk fails</td>
+</tr>
+<tr>
+<td><code>logs/contig_summary_{sample}.log</code></td>
+<td>the one-line summary</td>
+</tr>
+</tbody>
+</table>
+<p>Each step writes its files only when every input was read without error. The job stops on a
+missing file, a malformed database, a tidk failure, a table without an expected column, a depth
+that is not a number or a FASTA with two records of the same name. It reports the cause as one line
+in the log, <code>[FunFlux] telomere_units: error: ...</code> or <code>contig_summary.py: error: ...</code>, which for a
+tidk failure includes tidk's own message.</p>
+<p>The full output tree is on <a href="../../reference/output/">Output files</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

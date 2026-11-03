@@ -1,0 +1,2779 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/analysis/gene-prediction/">
+      
+      
+        <link rel="prev" href="../repeat-masking/">
+      
+      
+        <link rel="next" href="../functional-annotation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Gene prediction - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#gene-prediction" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Gene prediction
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/external-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/from-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/longread/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mitochondria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../assembly-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contig-summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The command
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-funannotate-predict-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What funannotate predict does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-annotation-parameter-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The annotation parameter table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#augustus-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The AUGUSTUS model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#genemark-es-and-the-licence-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeneMark-ES and the licence check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiberius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tiberius
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-to-run-variation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run-to-run variation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outputs
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The command
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-funannotate-predict-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What funannotate predict does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-annotation-parameter-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The annotation parameter table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#augustus-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The AUGUSTUS model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#genemark-es-and-the-licence-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeneMark-ES and the licence check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tiberius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tiberius
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-to-run-variation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run-to-run variation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outputs
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/analysis/gene-prediction.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="gene-prediction">Gene prediction<a class="headerlink" href="#gene-prediction" title="Permanent link">¶</a></h1>
+<p>FunFlux predicts the protein-coding and tRNA genes of each sample with funannotate predict 1.8.17,
+on the soft-masked genome from <a href="../repeat-masking/">repeat masking</a>. Tiberius, a gene finder that is
+not trained on your genome, runs first and adds its gene models to the evidence. Two checks run
+before the prediction, so that a wrong AUGUSTUS model or an expired GeneMark-ES key stops the run
+early instead of hours into it. Read this page to choose the AUGUSTUS model of each sample, to
+decide whether GeneMark-ES and Tiberius run, and to interpret the gene models and their files.</p>
+<pre class="mermaid"><code>---
+config:
+  themeVariables:
+    fontSize: 14px
+  flowchart:
+    nodeSpacing: 35
+    rankSpacing: 35
+---
+flowchart TD
+    MASK([contigs_mask.fasta&lt;br/&gt;repeats in lowercase]) -.-&gt;|"only with GeneMark-ES on"| GM[GeneMark-ES licence check&lt;br/&gt;genemark_check]
+    MASK --&gt; TIB[Tiberius&lt;br/&gt;on by default]
+    TIB --&gt; TGFF([tiberius.evm.gff3])
+    TAB([annotation table&lt;br/&gt;species, proteins,&lt;br/&gt;AUGUSTUS model]) --&gt; AUG[AUGUSTUS model check&lt;br/&gt;augustus_model_check&lt;br/&gt;named model in the database?]
+    GM -.-&gt; FP[funannotate predict]
+    TGFF --&gt; FP
+    MASK --&gt; FP
+    AUG --&gt; FP
+    TAB --&gt; FP
+    FP --&gt; OUT([funannotate/predict_results/&lt;br/&gt;gene models, proteins,&lt;br/&gt;GenBank file])
+    OUT --&gt; FA[functional annotation]</code></pre>
+<p>One rule, <code>funannotate_prediction</code>, makes the gene models with funannotate predict. The other rules
+prepare its evidence or check its settings:</p>
+<table>
+<thead>
+<tr>
+<th>Rule, as the console and the log files name it</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>augustus_model_check</code></td>
+<td>checks the AUGUSTUS model of column 4 of the annotation parameter table, <code>files.annotation_params</code> (<a href="#augustus-model">The AUGUSTUS model</a>)</td>
+</tr>
+<tr>
+<td><code>genemark_check</code></td>
+<td>runs GeneMark-ES on a slice of the genome to catch an expired licence key (<a href="#genemark-es-and-the-licence-check">GeneMark-ES and the licence check</a>)</td>
+</tr>
+<tr>
+<td><code>tiberius_model</code>, <code>tiberius_prediction</code>, <code>tiberius_gff3</code></td>
+<td>download the Tiberius model, predict genes, convert them for funannotate (<a href="#tiberius">Tiberius</a>)</td>
+</tr>
+<tr>
+<td><code>funannotate_prediction</code></td>
+<td>runs funannotate predict on <code>04.annotation/{sample}/contigs_mask.fasta</code>, one sample at a time, with all <code>resources.threads</code></td>
+</tr>
+</tbody>
+</table>
+<p>The output folder of funannotate predict, <code>04.annotation/{sample}/funannotate/</code>, feeds every step
+of the <a href="../functional-annotation/">functional annotation</a>.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>soft-masking</strong></td>
+<td>writing repeats in lower case, so that gene finders can treat them differently without losing the sequence</td>
+</tr>
+<tr>
+<td><strong>annotation parameter table</strong></td>
+<td>the tab-separated file named by <code>files.annotation_params</code>, one row per sample: name, species, a protein FASTA of related fungi and, optionally, an AUGUSTUS model</td>
+</tr>
+<tr>
+<td><strong>funannotate database</strong></td>
+<td>the frozen snapshot of funannotate's data, such as Swiss-Prot, Pfam, the BUSCO set and stored AUGUSTUS models, downloaded once from Zenodo into <code>directories.funannotate_db</code></td>
+</tr>
+<tr>
+<td><strong>stored AUGUSTUS model</strong></td>
+<td>the AUGUSTUS parameters trained earlier for one species, kept in <code>trained_species/</code> of the funannotate database; named in column 4, they are used as they are</td>
+</tr>
+<tr>
+<td><strong>BUSCO set</strong></td>
+<td>the BUSCO genes funannotate looks for to train SNAP, GlimmerHMM and, without a stored AUGUSTUS model, AUGUSTUS: <code>dikarya</code> (<code>dikarya_odb9</code>) unless <code>parameters.prediction.busco_db</code> names another</td>
+</tr>
+<tr>
+<td><strong>EVidenceModeler</strong></td>
+<td>the program inside <code>funannotate predict</code> that builds one consensus gene per locus from the gene finders and protein alignments, weighting each source's votes</td>
+</tr>
+<tr>
+<td><strong>ab initio</strong></td>
+<td>said of a gene finder that predicts genes from the DNA sequence with a trained model, such as AUGUSTUS or SNAP; EVidenceModeler counts Tiberius apart</td>
+</tr>
+<tr>
+<td><strong>licence key</strong></td>
+<td>the file <code>~/.gm_key</code> that GeneMark-ES needs; it expires one year after download, and an expired key stops the run at <code>genemark_check</code>, before gene prediction</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">¶</a></h2>
+<p>funannotate predict builds the gene models from the evidence below. The annotation table chooses
+the proteins and the AUGUSTUS model of each sample, and the configuration chooses the rest for
+every sample.</p>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Where it comes from</th>
+<th>Set by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the genome, repeats in lowercase, contigs named <code>scaffold_N</code></td>
+<td><a href="../repeat-masking/">repeat masking</a></td>
+<td><code>parameters.masking_method</code></td>
+</tr>
+<tr>
+<td>proteins of related fungi</td>
+<td>column 3 of the annotation table</td>
+<td><code>files.annotation_params</code></td>
+</tr>
+<tr>
+<td>UniProtKB/Swiss-Prot 2026_03 (<code>uniprot_sprot.fasta</code>, 575,748 proteins)</td>
+<td>the funannotate database</td>
+<td><code>directories.funannotate_db</code></td>
+</tr>
+<tr>
+<td>a stored AUGUSTUS model, if any (see <a href="#augustus-model">The AUGUSTUS model</a>)</td>
+<td>column 4 of the annotation table: one of the models the funannotate database holds; empty or <code>-</code> trains AUGUSTUS on this genome</td>
+<td><code>files.annotation_params</code>, <code>parameters.prediction.augustus_optimize</code></td>
+</tr>
+<tr>
+<td>a BUSCO set, to find conserved genes on which SNAP and GlimmerHMM (and AUGUSTUS, when column 4 is empty) are trained</td>
+<td>the funannotate database: <code>dikarya</code> (BUSCO <code>dikarya_odb9</code>, 1,312 genes) is the only set it comes with</td>
+<td><code>parameters.prediction.busco_db</code></td>
+</tr>
+<tr>
+<td>GeneMark-ES, optional and licensed</td>
+<td>the user's installation</td>
+<td><code>directories.genemark_dir</code>, <code>parameters.genemark.mode</code></td>
+</tr>
+<tr>
+<td>Tiberius's gene models, on by default</td>
+<td><a href="#tiberius">Tiberius</a></td>
+<td><code>parameters.tiberius.mode</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>dikarya</code>, the only BUSCO set the funannotate database comes with, suits fungi of the Dikarya. For
+a fungus outside the Dikarya, add another BUSCO set, such as <code>fungi</code>, to the funannotate database
+first and set <code>prediction.busco_db</code> to its name. When the database is on disk and the named set is
+not in it, the run stops before any job starts, with
+<code>[FunFlux] parameters.prediction.busco_db: '&lt;name&gt;' is not in the funannotate database at '&lt;db&gt;'. Add it with FunFlux's funannotate conda environment activated ('Other BUSCO sets for gene prediction' in the documentation shows how to find it): funannotate setup -i busco -b &lt;name&gt; -d &lt;db&gt; -w</code>.
+<a href="../../getting-started/databases/#busco-sets">Other BUSCO sets for gene prediction</a> shows how to find
+and activate that environment.</p>
+<h2 id="the-command">The command<a class="headerlink" href="#the-command" title="Permanent link">¶</a></h2>
+<p>Rule <code>funannotate_prediction</code> runs this command for each sample, shown here with a stored AUGUSTUS
+model in column 4 and Tiberius on:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>funannotate<span class="w"> </span>predict<span class="w"> </span>-i<span class="w"> </span>contigs_mask.fasta<span class="w"> </span>-o<span class="w"> </span><span class="m">04</span>.annotation/<span class="o">{</span>sample<span class="o">}</span>/funannotate<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>-s<span class="w"> </span><span class="s2">"&lt;species&gt;"</span><span class="w"> </span>--name<span class="w"> </span><span class="o">{</span>sample<span class="o">}</span><span class="w"> </span>--strain<span class="w"> </span><span class="o">{</span>sample<span class="o">}</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>--augustus_species<span class="w"> </span>&lt;augustus_species&gt;<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>--other_gff<span class="w"> </span><span class="m">04</span>.annotation/<span class="o">{</span>sample<span class="o">}</span>/tiberius/tiberius.evm.gff3:1<span class="w"> </span>--busco_db<span class="w"> </span>dikarya<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span>--protein_evidence<span class="w"> </span>&lt;proteins&gt;<span class="w"> </span>/path/to/funannotate_db/uniprot_sprot.fasta<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span>--cpus<span class="w"> </span><span class="o">{</span>threads<span class="o">}</span>
+</code></pre></div>
+<p>The annotation table and the Tiberius setting change the command. Column 4 decides whether a
+stored AUGUSTUS model is used or AUGUSTUS is trained on the genome, and <code>tiberius.mode</code> decides
+whether Tiberius's gene models are part of the evidence:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Effect on the command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>column 4 of the annotation table names a stored AUGUSTUS model</td>
+<td><code>--augustus_species &lt;augustus_species&gt;</code>, as above</td>
+</tr>
+<tr>
+<td>column 4 empty</td>
+<td><code>--augustus_species</code> is left out; <code>--optimize_augustus</code> takes its place when <code>parameters.prediction.augustus_optimize</code> is true</td>
+</tr>
+<tr>
+<td><code>parameters.tiberius.mode: on</code> (the default)</td>
+<td><code>--other_gff &lt;file&gt;:1</code> hands funannotate Tiberius's gene models with weight 1</td>
+</tr>
+<tr>
+<td><code>parameters.tiberius.mode: off</code></td>
+<td><code>--other_gff</code> is left out</td>
+</tr>
+</tbody>
+</table>
+<p>Before the command, the rule sets <code>FUNANNOTATE_DB</code>, cuts <code>PATH</code> down to the funannotate
+environment plus <code>/usr/bin:/bin</code>, and clears <code>GENEMARK_PATH</code> unless GeneMark-ES is enabled. A
+GeneMark-ES installed elsewhere on the computer is therefore never used by accident.</p>
+<h2 id="what-funannotate-predict-does">What funannotate predict does<a class="headerlink" href="#what-funannotate-predict-does" title="Permanent link">¶</a></h2>
+<p>funannotate predict turns the evidence into gene models in the following steps:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Tools</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>align the protein evidence to the genome</td>
+<td>DIAMOND 2.2.4, then Exonerate 2.4.0</td>
+</tr>
+<tr>
+<td>self-train on the genome and predict (when enabled)</td>
+<td>GeneMark-ES</td>
+</tr>
+<tr>
+<td>find conserved genes for training</td>
+<td>BUSCO, with <code>prediction.busco_db</code></td>
+</tr>
+<tr>
+<td>predict with the stored AUGUSTUS model of column 4, or, with column 4 empty, train on the BUSCO models first</td>
+<td>AUGUSTUS 3.5.0</td>
+</tr>
+<tr>
+<td>train on the BUSCO models and predict</td>
+<td>SNAP 2017_03_01, GlimmerHMM 3.0.4</td>
+</tr>
+<tr>
+<td>combine into one consensus</td>
+<td>EVidenceModeler 1.1.1</td>
+</tr>
+<tr>
+<td>drop models shorter than 50 amino acids or spanning a gap; the repeat filter drops models that lie for at least 90 % in a masked (lowercase) repeat or whose protein matches a transposable element</td>
+<td>funannotate</td>
+</tr>
+<tr>
+<td>find tRNA genes</td>
+<td>tRNAscan-SE 2.0.13</td>
+</tr>
+</tbody>
+</table>
+<p>EVidenceModeler builds one consensus gene per locus from all of this. Every source votes for the
+exons, introns and gene ends it predicts or supports, each vote multiplied by the weight of the
+source, and the gene structure with the highest total wins. A weight is a relative trust, so only
+the ratios between weights matter. funannotate writes the sources, with the kind and the weight it
+gives each, to <code>predict_misc/weights.evm.txt</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Source in EVidenceModeler</th>
+<th>Evidence</th>
+<th>Kind</th>
+<th>Weight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Augustus</code></td>
+<td>AUGUSTUS models</td>
+<td>ab initio (<code>ABINITIO_PREDICTION</code>)</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>HiQ</code></td>
+<td>AUGUSTUS models with more than 90 % of their exons supported by the protein alignments; they count here instead of under <code>Augustus</code></td>
+<td>other (<code>OTHER_PREDICTION</code>)</td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>snap</code>, <code>GlimmerHMM</code></td>
+<td>SNAP and GlimmerHMM models</td>
+<td>ab initio (<code>ABINITIO_PREDICTION</code>)</td>
+<td>1 each</td>
+</tr>
+<tr>
+<td><code>GeneMark</code></td>
+<td>GeneMark-ES models, when GeneMark-ES is on</td>
+<td>ab initio (<code>ABINITIO_PREDICTION</code>)</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>other_pred1</code></td>
+<td>Tiberius models, when Tiberius is on (fixed in FunFlux)</td>
+<td>other (<code>OTHER_PREDICTION</code>)</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>exonerate</code></td>
+<td>the protein alignments</td>
+<td>protein (<code>PROTEIN</code>)</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>AUGUSTUS models that the proteins support therefore count double, and every other source counts
+once. The ab initio sources also score the stretches between genes. <code>HiQ</code> and <code>other_pred1</code> count
+only for the exons and introns they predict, not for the stretches between genes.</p>
+<p>The log lists where the training of each predictor came from:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>augustus     pretrained
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>genemark     selftraining
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>glimmerhmm   busco
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>snap         busco
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Word in the log</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pretrained</code></td>
+<td>column 4 named a stored AUGUSTUS model of the database, which AUGUSTUS uses as it is</td>
+</tr>
+<tr>
+<td><code>busco</code></td>
+<td>trained on this genome's BUSCO models: SNAP and GlimmerHMM always, AUGUSTUS when column 4 is empty</td>
+</tr>
+<tr>
+<td><code>selftraining</code></td>
+<td>GeneMark-ES trained itself on the genome</td>
+</tr>
+</tbody>
+</table>
+<p>A name that is not in the database would also make funannotate train AUGUSTUS, without a word.
+FunFlux stops on such a name instead, as <a href="#augustus-model">The AUGUSTUS model</a> explains.</p>
+<p>The GFF3 numbers genes and tRNA genes together, so its gene count is the protein-coding genes plus
+the tRNA genes.</p>
+<h2 id="the-annotation-parameter-table">The annotation parameter table<a class="headerlink" href="#the-annotation-parameter-table" title="Permanent link">¶</a></h2>
+<p>The <a href="../../reference/configuration/#annotation-parameter-table">annotation parameter table</a> and the
+sample name fill in the parts of the command that differ between samples:</p>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>Option of <code>funannotate predict</code></th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>column 2</td>
+<td><code>-s</code></td>
+<td>the species</td>
+</tr>
+<tr>
+<td>column 3</td>
+<td><code>--protein_evidence</code></td>
+<td>the protein evidence, beside Swiss-Prot</td>
+</tr>
+<tr>
+<td>column 4, if it names a model</td>
+<td><code>--augustus_species</code></td>
+<td>the stored AUGUSTUS model</td>
+</tr>
+<tr>
+<td>the sample name</td>
+<td><code>--name</code></td>
+<td>the locus-tag prefix: genes are numbered <code>SAMPLE1_000001</code>, <code>SAMPLE1_000002</code>, ..., their transcripts <code>SAMPLE1_000001-T1</code></td>
+</tr>
+<tr>
+<td>the sample name</td>
+<td><code>--strain</code></td>
+<td>adds the sample name to the file stem</td>
+</tr>
+</tbody>
+</table>
+<p>The funannotate database comes with 166 stored AUGUSTUS models, and
+<code>ls /path/to/funannotate_db/trained_species/</code> lists them. Fungal models among them include
+<code>aspergillus_fumigatus</code>, <code>aspergillus_nidulans</code>, <code>botrytis_cinerea</code>, <code>fusarium</code>,
+<code>fusarium_graminearum</code>, <code>magnaporthe_grisea</code> and <code>neurospora_crassa</code>.</p>
+<p>NCBI accepts a locus-tag prefix of 3 to 12 letters or digits that starts with a letter, and
+FunFlux prints a NOTE for a sample name that does not fit. Such a sample runs, but its gene IDs
+cannot be submitted to GenBank as they are.</p>
+<h2 id="augustus-model">The AUGUSTUS model<a class="headerlink" href="#augustus-model" title="Permanent link">¶</a></h2>
+<p>Column 4 of the annotation table decides which parameters AUGUSTUS runs with. The choice matters
+because AUGUSTUS models with strong evidence (more than 90 % of their exons supported) carry
+weight 2 in EVidenceModeler. That is the highest weight of any gene finder here, and every other
+model counts 1.</p>
+<table>
+<thead>
+<tr>
+<th>Column 4</th>
+<th>What AUGUSTUS does</th>
+<th>The log says</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>empty, <code>-</code>, or no fourth column (the default)</td>
+<td>is trained on this genome's BUSCO models with <code>etraining</code>, AUGUSTUS's training program (a few seconds)</td>
+<td><code>augustus busco</code></td>
+</tr>
+<tr>
+<td>a stored AUGUSTUS model, such as <code>fusarium_graminearum</code></td>
+<td>uses that species' parameters from <code>&lt;funannotate_db&gt;/trained_species/</code> as they are; it is not trained on this genome</td>
+<td><code>augustus pretrained</code></td>
+</tr>
+<tr>
+<td>empty, with <code>prediction.augustus_optimize: true</code></td>
+<td>the same, then <code>optimize_augustus.pl</code> tunes the model's meta-parameters by 8-fold cross-validation, and AUGUSTUS is trained again (details below)</td>
+<td><code>augustus busco</code></td>
+</tr>
+</tbody>
+</table>
+<p>The default, an empty column 4, trains AUGUSTUS on the genome itself and needs no choice. Name a
+stored AUGUSTUS model instead when you know one that suits the genome, typically one of the same
+species or genus, or when the genome yields too few BUSCO models for training (below). The choice
+changes a large share of the final gene models, so FunFlux records it for every sample.</p>
+<div class="admonition warning">
+<p class="admonition-title">Training AUGUSTUS on fewer than 200 BUSCO models stops the prediction late</p>
+<p>Training needs at least 200 BUSCO models (funannotate's <code>--min_training_models</code>, which FunFlux
+does not change). With fewer, funannotate stops after the protein alignment and the BUSCO
+search, well into the prediction, with
+<code>Not enough gene models &lt;N&gt; to train Augustus (200 required), exiting</code>. The <code>dikarya</code> set has
+1,312 BUSCO genes, but a fragmented assembly, or a fungus outside the Dikarya with the <code>fungi</code>
+set (290 genes), can give fewer than 200. Name a stored AUGUSTUS model for such a genome.</p>
+</div>
+<p>With <code>prediction.augustus_optimize: true</code>, <code>optimize_augustus.pl</code> tunes the model's
+meta-parameters, the settings the quick training keeps fixed, such as the width of the windows
+around splice sites in which AUGUSTUS learns sequence patterns. It tunes them by 8-fold
+cross-validation. The test genes, the tenth of the BUSCO models funannotate sets aside for
+testing, are cut into 8 parts, and each part is predicted by a model trained without it. AUGUSTUS
+is then trained again. This takes about a quarter of an hour for a 40 Mb genome and uses at
+most 8 CPUs.</p>
+<p>With column 4 empty, funannotate first looks for a stored AUGUSTUS model under the name it gives a
+newly trained one, <code>&lt;genus&gt;_&lt;species&gt;_&lt;sample&gt;</code> in lower case (<code>beauveria_bassiana_arsef3097</code>).
+Such a model exists only if someone added an earlier result to the database with
+<code>funannotate species</code>, as funannotate's last message suggests. If it exists, funannotate uses it
+as it is instead of training, and FunFlux says so in a NOTE and in the record described below.</p>
+<p>Rule <code>augustus_model_check</code> runs right after the funannotate database is ready, long before the
+gene prediction. It stops the run on a name the database does not hold and gives the closest names
+it does hold, also in <code>logs/augustus_model_check_{sample}.log</code>. It writes the choice to
+<code>04.annotation/{sample}/augustus_model.txt</code>, which the gene prediction copies to the top of its
+log. When the database is already on disk, the same check runs before any job starts, so a dry
+run shows the error too. Every dry run prints one line with the choice for each sample, for
+example:</p>
+<table>
+<thead>
+<tr>
+<th>Column 4</th>
+<th>Dry-run line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>empty</td>
+<td><code>AUGUSTUS: ARSEF3097 is trained on its BUSCO genes.</code></td>
+</tr>
+<tr>
+<td>a stored AUGUSTUS model</td>
+<td><code>AUGUSTUS: ARSEF3097 uses the stored model fusarium_graminearum.</code></td>
+</tr>
+<tr>
+<td>either, before the database is downloaded</td>
+<td>the line ends in <code>(checked once the database is unpacked)</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="genemark-es-and-the-licence-check">GeneMark-ES and the licence check<a class="headerlink" href="#genemark-es-and-the-licence-check" title="Permanent link">¶</a></h2>
+<p>GeneMark-ES is optional and needs a licence. Two configuration keys decide whether it runs:</p>
+<table>
+<thead>
+<tr>
+<th><code>directories.genemark_dir</code></th>
+<th><code>parameters.genemark.mode</code></th>
+<th>GeneMark-ES</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>names an installation (the folder with <code>gmes_petap.pl</code>)</td>
+<td><code>auto</code>, the default; a <code>mode</code> left empty (<code>mode:</code> or <code>mode: ""</code>) also means <code>auto</code>, as for the other mode keys</td>
+<td>used</td>
+</tr>
+<tr>
+<td>empty</td>
+<td>any</td>
+<td>not used</td>
+</tr>
+<tr>
+<td>any</td>
+<td><code>off</code></td>
+<td>not used</td>
+</tr>
+</tbody>
+</table>
+<p>When it is not used, funannotate runs without it, and the dry run prints
+<code>GeneMark-ES: off (funannotate runs its no-GeneMark branch).</code> FunFlux v2 was tested with
+GeneMark-ES, and with <code>mode: off</code> on one public genome
+(<a href="../../about/validation/#gene-finders">Validation on public genomes</a>). See
+<a href="../../getting-started/external-tools/">Licensed and external tools</a> for the installation and the
+key.</p>
+<p>The licence key, <code>~/.gm_key</code> of the user who runs Snakemake, expires one year after download, and
+the date of the key file does not tell when. <code>gmes_petap.pl</code> only checks that the file exists, so
+an expired key would show only when funannotate predict reaches GeneMark-ES, well into the run,
+with <code>Your license period has ended</code>. With GeneMark-ES on, rule <code>genemark_check</code> therefore runs
+GeneMark-ES on the first 200,000 bytes of <code>contigs_mask.fasta</code> before the prediction. This check
+takes about a minute. It stops the run when the licence or the installation fails, and writes its
+result to <code>04.annotation/{sample}/genemark_check.txt</code>. The command, its outcomes and its messages
+are on
+<a href="../../getting-started/external-tools/#the-licence-check-before-gene-prediction">The licence check before gene prediction</a>.</p>
+<h2 id="tiberius">Tiberius<a class="headerlink" href="#tiberius" title="Permanent link">¶</a></h2>
+<p>Tiberius (<a href="../../about/citation/">Gabriel et al. 2024</a>) finds genes with a deep neural network
+joined to a hidden Markov model. A hidden Markov model is the kind of model AUGUSTUS and
+GeneMark-ES use for the order of exons, introns and the DNA between genes. Unlike them, Tiberius
+is not trained on your genome. It uses
+one model, <code>fungi</code>, that its authors trained on many fungal genomes. It needs no licence and no
+evidence, and it runs whether or not GeneMark-ES does. With both on, both count in
+EVidenceModeler.</p>
+<p>Tiberius is on by default and needs no setting. Three configuration keys control it:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>parameters.tiberius.mode</code></td>
+<td><code>on</code></td>
+<td><code>off</code> leaves Tiberius out; the <code>funannotate predict</code> command is then the one without <code>--other_gff</code></td>
+</tr>
+<tr>
+<td><code>links.tiberius_model_link</code></td>
+<td>the <code>fungi</code> model on the Tiberius authors' server</td>
+<td>where the model is downloaded from; required while Tiberius is on</td>
+</tr>
+<tr>
+<td><code>parameters.tiberius.model_sha256</code></td>
+<td>the checksum of the model file of 8 February 2026</td>
+<td>the SHA-256 the downloaded file must have</td>
+</tr>
+</tbody>
+</table>
+<p>Tiberius runs in three rules, from the download of its model to the file funannotate reads:</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Runs</th>
+<th>What it does</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tiberius_model</code></td>
+<td>once per output folder</td>
+<td>downloads the model archive (about 30 MB), checks its SHA-256 checksum and unpacks it</td>
+<td><code>00.resources/tiberius/model/</code></td>
+</tr>
+<tr>
+<td><code>tiberius_prediction</code></td>
+<td>per sample</td>
+<td>runs Tiberius 1.1.8 (bioconda; its own conda environment with the CPU build of TensorFlow 2.17) on <code>contigs_mask.fasta</code>, so that the scaffold names are the ones funannotate predict uses</td>
+<td><code>04.annotation/{sample}/tiberius/tiberius.gtf</code></td>
+</tr>
+<tr>
+<td><code>tiberius_gff3</code></td>
+<td>per sample</td>
+<td>converts that GTF with EVidenceModeler's own converter (<code>augustus_GTF_to_EVM_GFF3.pl</code>) into the file <code>funannotate predict</code> gets with <code>--other_gff</code></td>
+<td><code>04.annotation/{sample}/tiberius/tiberius.evm.gff3</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>fungi</code> model was trained without repeat masking, the kind of model the Tiberius authors
+recommend as the safer default, so Tiberius runs with <code>--no_softmasking</code>. Tiberius therefore reads
+lowercase and uppercase letters alike, and <code>contigs_mask.fasta</code> gives it the same input as the
+unmasked genome. After EVidenceModeler, funannotate's repeat filter removes the gene models that
+fall in repeats, whatever gene finder they came from
+(<a href="#what-funannotate-predict-does">What funannotate predict does</a>). Tiberius also gets
+<code>--seq_len 100080</code>, the model's own length for the pieces the genome is cut into, which Tiberius
+1.1.8 does not take from the model.</p>
+<p>The model's address carries no version number, so the authors can replace the file at the same
+address. A file that does not match the checksum stops the run with a message instead of quietly
+changing the gene models. To accept a new model, check it, compute its checksum with
+<code>sha256sum &lt;archive&gt;</code> and put that into <code>parameters.tiberius.model_sha256</code>, as described under
+<a href="../../getting-started/databases/#tiberius-model">Tiberius model</a>.</p>
+<p>For a fungal genome of about 40 Mb, Tiberius needs:</p>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Need</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>memory</td>
+<td>about 16 GB. On a single computer Snakemake does not reserve this memory, so switch Tiberius off on a computer with less free memory. On a cluster the job asks for <code>resources.ram_gb</code>, which must then be at least 16 GB</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>all of <code>resources.threads</code>; roughly half an hour on 24 to 32 threads</td>
+</tr>
+<tr>
+<td>graphics card</td>
+<td>not used: Tiberius runs on the CPU</td>
+</tr>
+</tbody>
+</table>
+<p>The weight of Tiberius in EVidenceModeler is fixed at 1, the weight of the other gene finders, and
+other values have not been tested.</p>
+<p>The logs are <code>logs/tiberius_model.log</code>, <code>logs/tiberius_prediction_{sample}.log</code> and
+<code>logs/tiberius_gff3_{sample}.log</code>.</p>
+<h2 id="run-time">Run time<a class="headerlink" href="#run-time" title="Permanent link">¶</a></h2>
+<p>For each sample, the two prediction steps run one after the other:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Run time for a fungal genome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tiberius, before funannotate predict</td>
+<td>about half an hour for a 40 Mb genome</td>
+</tr>
+<tr>
+<td>funannotate predict</td>
+<td>usually an hour or more</td>
+</tr>
+</tbody>
+</table>
+<h2 id="run-to-run-variation">Run-to-run variation<a class="headerlink" href="#run-to-run-variation" title="Permanent link">¶</a></h2>
+<p>funannotate predict does not give the same gene models twice from the same masked genome and
+settings. The differences are small, but they change the gene counts and the counts of the
+functional annotation. <a href="../../methods/run-to-run-differences/">Run-to-run differences</a> explains
+which steps differ, and why.</p>
+<div class="admonition note">
+<p class="admonition-title">Compare two runs by coordinates, not by gene IDs</p>
+<p>Gene IDs are numbered along the scaffolds, so one model gained or lost renumbers every gene
+after it. Match the gene models of two runs by scaffold, strand and CDS intervals instead.</p>
+</div>
+<h2 id="outputs">Outputs<a class="headerlink" href="#outputs" title="Permanent link">¶</a></h2>
+<p>funannotate predict writes its results into <code>04.annotation/{sample}/funannotate/</code>. In the paths
+below, <code>&lt;stem&gt;</code> is <code>&lt;Genus_species&gt;_{sample}</code>, for example <code>Fusarium_graminearum_SAMPLE1</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Path in <code>funannotate/</code></th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>predict_results/&lt;stem&gt;.gff3</code></td>
+<td>gene models: genes, mRNAs, exons, CDS, tRNAs</td>
+</tr>
+<tr>
+<td><code>predict_results/&lt;stem&gt;.gbk</code></td>
+<td>the genome with the gene models, GenBank format; the input of antiSMASH</td>
+</tr>
+<tr>
+<td><code>predict_results/&lt;stem&gt;.proteins.fa</code></td>
+<td>the predicted proteins; the input of InterProScan, eggNOG-mapper and SignalP 6</td>
+</tr>
+<tr>
+<td><code>predict_results/&lt;stem&gt;.cds-transcripts.fa</code>, <code>.mrna-transcripts.fa</code></td>
+<td>coding sequences, transcripts</td>
+</tr>
+<tr>
+<td><code>predict_results/&lt;stem&gt;.scaffolds.fa</code>, <code>.tbl</code>, <code>.stats.json</code></td>
+<td>the genome, the feature table, counts</td>
+</tr>
+<tr>
+<td><code>predict_results/&lt;stem&gt;.discrepency.report.txt</code>, <code>.error.summary.txt</code>, <code>.validation.txt</code></td>
+<td>the checks of tbl2asn 25.7</td>
+</tr>
+<tr>
+<td><code>predict_results/&lt;model&gt;.parameters.json</code></td>
+<td>the AUGUSTUS parameters used: named after the stored AUGUSTUS model, or <code>&lt;genus&gt;_&lt;species&gt;_&lt;sample&gt;</code> in lower case for a model trained on this genome (<code>beauveria_bassiana_arsef3097.parameters.json</code>)</td>
+</tr>
+<tr>
+<td><code>predict_misc/</code></td>
+<td>working files: alignments, the models of each predictor, EVidenceModeler</td>
+</tr>
+<tr>
+<td><code>logfiles/</code></td>
+<td>funannotate's own logs, <code>funannotate-predict.log</code> among them</td>
+</tr>
+</tbody>
+</table>
+<p>With Tiberius on, <code>04.annotation/{sample}/tiberius/</code> holds <code>tiberius.gtf</code>, Tiberius's gene
+models, and <code>tiberius.evm.gff3</code>, the same models as funannotate hands them to EVidenceModeler.</p>
+<p>The <a href="../functional-annotation/">functional annotation</a> adds <code>annotate_results/</code> and
+<code>annotate_misc/</code> to the same folder, and <code>annotate_results/</code> holds the final files.</p>
+<p>The rule log is <code>logs/funannotate_prediction_{sample}.log</code>. Like every log, it holds the latest
+attempt only.</p>
+<div class="admonition warning">
+<p class="admonition-title">Re-running the prediction deletes the annotation</p>
+<p>Snakemake treats <code>funannotate/</code> as one output and deletes it before <code>funannotate_prediction</code>
+runs again. <code>funannotate/</code> holds both the prediction and the final annotation. Whenever the
+prediction runs again, for example after a change in the annotation table, the annotation is
+therefore deleted and every annotation step runs again, with slightly different gene models.
+Copy <code>annotate_results/</code> elsewhere first if you need to keep it.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

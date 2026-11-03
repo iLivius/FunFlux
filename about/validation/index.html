@@ -1,0 +1,3431 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/about/validation/">
+      
+      
+        <link rel="prev" href="../../troubleshooting/">
+      
+      
+        <link rel="next" href="../rationale/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Validation on public genomes - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#validation-on-public-genomes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Validation on public genomes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/external-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/from-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/longread/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/mitochondria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/assembly-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/contig-summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/gene-prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this page is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data and settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assembly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assembly per mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Assembly per mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#medaka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medaka on the 42x run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gene-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gene models per mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gene-finders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repeated runs and the gene finders
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pacbio-hifi-reads-cordyceps-cateniannulata-gxu-8616" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PacBio HiFi reads: Cordyceps cateniannulata GXU-8616
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PacBio HiFi reads: Cordyceps cateniannulata GXU-8616">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hifi-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data and settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hifi-assembly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assembly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hifi-genes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Genes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hifi-other" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AMR screen and ITS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hifi-reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        To repeat the HiFi runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to reproduce
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this page is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data and settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assembly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assembly per mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Assembly per mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#medaka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medaka on the 42x run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gene-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gene models per mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gene-finders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repeated runs and the gene finders
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pacbio-hifi-reads-cordyceps-cateniannulata-gxu-8616" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PacBio HiFi reads: Cordyceps cateniannulata GXU-8616
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PacBio HiFi reads: Cordyceps cateniannulata GXU-8616">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hifi-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data and settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hifi-assembly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assembly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hifi-genes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Genes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hifi-other" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AMR screen and ITS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hifi-reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        To repeat the HiFi runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to reproduce
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/about/validation.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="validation-on-public-genomes">Validation on public genomes<a class="headerlink" href="#validation-on-public-genomes" title="Permanent link">¶</a></h1>
+<p>This page shows what FunFlux 2.0.0 produced on two public genomes, and how to repeat the runs.
+Read it to see, on real data, what each read-based mode delivers and how much the gene-finder
+settings change the annotation.</p>
+<p><em>Botrytis cinerea</em> strain B05.10 was run from ONT and Illumina reads in the three read-based modes,
+<code>illumina</code>, <code>longread</code> and <code>hybrid</code>. Five comparison runs then annotated the genome of its <code>hybrid</code>
+run again in <code>contigs</code> mode. <em>Cordyceps cateniannulata</em> strain GXU-8616 was run from PacBio HiFi
+reads, alone and with MGISEQ short reads
+(<a href="#pacbio-hifi-reads-cordyceps-cateniannulata-gxu-8616">PacBio HiFi reads</a>). Flye has run in
+<code>longread</code> mode on both genomes but not in <code>hybrid</code> mode, where every run used hifiasm, the
+default assembler. The results are measurements on these two genomes, so read the limitations
+below before the numbers.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Tiberius</strong></td>
+<td>a deep-learning gene finder with a <code>fungi</code> model its authors trained on many fungal genomes; on by default, it adds its gene models to funannotate's evidence</td>
+</tr>
+<tr>
+<td><strong>annotation parameter table</strong></td>
+<td>the tab-separated file named by <code>files.annotation_params</code>, one row per sample: name, species, a protein FASTA of related fungi and, optionally, an AUGUSTUS model</td>
+</tr>
+<tr>
+<td><strong>protein evidence</strong></td>
+<td>proteins aligned to the genome to support the gene models: the FASTA in column 3 of the annotation table, plus UniProt Swiss-Prot, always added</td>
+</tr>
+<tr>
+<td><strong>stored AUGUSTUS model</strong></td>
+<td>the AUGUSTUS parameters trained earlier for one species, kept in <code>trained_species/</code> of the funannotate database; named in column 4, they are used as they are</td>
+</tr>
+<tr>
+<td><strong>telomere array</strong></td>
+<td>tandem copies of the telomere repeat unit at a contig end; by default 5 or more copies within 25,000 bp of the end make a telomere</td>
+</tr>
+<tr>
+<td><strong>contig summary</strong></td>
+<td>the table <code>02.assembly/{sample}/eval/contig_summary.tsv</code>: one row per contig of the draft, with its evidence (telomeres, depth, rDNA units, genes) and a verdict such as <code>chromosome</code> or <code>rDNA_array</code></td>
+</tr>
+<tr>
+<td><strong>concatemer</strong></td>
+<td>a contig of two or more copies of the mitochondrial genome joined end to end; flagged (<code>concatemer_flag</code> Y) unless the assembler reports it circular, never trimmed</td>
+</tr>
+<tr>
+<td><strong>MGISEQ</strong></td>
+<td>a short-read sequencer from MGI Tech (DNBSEQ technology) that produces paired reads like Illumina's; FunFlux ran such reads as Illumina pairs</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">The numbers record what FunFlux does on a well-studied genome, not its accuracy on a new one</p>
+<ul>
+<li><strong>One genome</strong> for ONT and Illumina reads (n = 1). Nothing here shows how FunFlux does with
+  ONT or Illumina reads of other fungi. The HiFi runs, on another genome, have their own
+  limitations (<a href="#pacbio-hifi-reads-cordyceps-cateniannulata-gxu-8616">below</a>).</li>
+<li><strong>Tiberius</strong> has seen genes of this species. <em>B. cinerea</em> is one of the species the Tiberius
+  <code>fungi</code> model was trained on (<a href="../citation/#validation-references">its training list</a>). What
+  Tiberius adds here may be more than it adds on a species it has not seen.</li>
+<li><strong>A stored AUGUSTUS model</strong> for <em>B. cinerea</em>, <code>botrytis_cinerea</code>, is in the funannotate
+  database. Only one comparison run used it. Every other run trained AUGUSTUS on the genome's
+  own BUSCO genes.</li>
+<li><strong>The protein evidence</strong> given to funannotate was the reference annotation's own 13,703
+  proteins, beside UniProt Swiss-Prot, which FunFlux always adds and which holds 194 reviewed
+  B05.10 proteins. It pulls the gene models towards the reference. The agreement with the
+  reference is therefore an upper bound, not what a new species gets with proteins of related
+  fungi. Every run had the same evidence, so the runs stay comparable with each other.</li>
+<li><strong>The reference annotation</strong> is not a perfect answer key. NCBI lists it as submitted by
+  Syngenta Biotechnology, Inc. and carried into RefSeq on 2018-04-17 by its annotation
+  propagation pipeline. The RefSeq records are marked provisional (not yet given final NCBI
+  review). The genome paper, whose authors include Syngenta staff, predicted the genes, used
+  RNA-seq of more than 20 samples to check and improve them, and curated chromosome 1 by hand
+  (<a href="../citation/#validation-references">van Kan et al. 2017</a>). A FunFlux gene that differs from
+  the reference is not necessarily wrong.</li>
+<li><strong>Run times</strong> come from one shared server, with other runs going on at the same time, so they
+  are indicative only.</li>
+</ul>
+</div>
+<h2 id="scope">What this page is<a class="headerlink" href="#scope" title="Permanent link">¶</a></h2>
+<p>The page is a record of what FunFlux 2.0.0 produced in these runs, with their settings. It checks
+that each mode gives a sensible genome and gene set, and it measures how much two annotations of
+the same genome, with the same gene-finder settings, differ. It is not a benchmark, because it has
+one genome per read type and one replicate. Nor is it a comparison with other tools or pipelines,
+or a measure of accuracy on a species the gene finders have not seen.</p>
+<p>B05.10 was chosen because it has a gapless genome, a gene set and public reads of the strain
+itself. The assembly, the genes, the mitochondrion and the β-tubulin change can therefore be set
+against published records:</p>
+<ul>
+<li><strong>A gapless reference genome</strong>, which its authors call near-finished: 18 chromosomes in 18
+  sequences without gaps, 42.6 Mb.</li>
+<li><strong>A reference annotation</strong> of 11,698 protein-coding genes.</li>
+<li><strong>Public reads of the strain</strong>: ONT reads from the reference's own sample record, and Illumina
+  pairs of a lab stock.</li>
+<li><strong>Features to check</strong>: telomeres at both ends of 10 of the 18 reference chromosomes
+  (<a href="../citation/#validation-references">van Kan et al. 2017</a>), and the β-tubulin change E198A, which
+  the reference protein carries too (<a href="../../analysis/amr/#worked-example">AMR worked example</a>).</li>
+</ul>
+<h2 id="data">Data and settings<a class="headerlink" href="#data" title="Permanent link">¶</a></h2>
+<p>The B05.10 runs used the public reference of the strain and two public read sets. Depth is the
+number of bases divided by the reference length.</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Accession</th>
+<th>Details</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reference genome and annotation</td>
+<td>GCF_000143535.2 (assembly ASM14353v4)</td>
+<td>18 chromosomes, 42,630,066 bp, PacBio reads assembled in 2015; 11,698 protein-coding genes with 13,703 mRNAs and proteins (RefSeq, 2018)</td>
+<td>its proteins: column 3 of the <a href="../../reference/configuration/#annotation-parameter-table">annotation parameter table</a> in every run; its genome and genes: the comparisons on this page</td>
+</tr>
+<tr>
+<td>ONT reads</td>
+<td>SRR40741277</td>
+<td>PromethION, 315,306 reads, 5.79 Gb (about 136x); BioSample SAMN02953628, the reference's own</td>
+<td><code>longread</code> 136x (hifiasm and Flye), <code>hybrid</code></td>
+</tr>
+<tr>
+<td>ONT subsample</td>
+<td>the first 95,000 reads of SRR40741277</td>
+<td>1.78 Gb (about 42x)</td>
+<td><code>longread</code> 42x + Medaka</td>
+</tr>
+<tr>
+<td>Illumina reads</td>
+<td>SRR10692911</td>
+<td>HiSeq 2000, 11,963,877 pairs, reads of up to 150 bp, 3.35 Gb (about 79x); BioSample SAMN13563037, a stock named B05.10-1</td>
+<td><code>illumina</code>, <code>hybrid</code></td>
+</tr>
+</tbody>
+</table>
+<p>The ONT reads come from the same sample record as the reference. The Illumina reads come from
+another lab's stock of the strain, so a few real differences between the two stocks are possible.</p>
+<p>The public ONT file names no basecaller model, so Medaka cannot work its model out: with <code>auto</code>, it
+reads the model from the read headers (<a href="../../methods/medaka-model/">The Medaka model</a>). The two
+136x runs and the <code>hybrid</code> run therefore skip Medaka. The 42x run names a model,
+<code>r1041_e82_400bps_sup_v5.2.0</code>, which is a guess, because the flow cell and the basecaller are not
+known.</p>
+<p>In the next table, the five mode runs are those in <code>illumina</code>, <code>longread</code> and <code>hybrid</code> mode, and
+the five comparison runs are the annotations in <code>contigs</code> mode. The table lists the settings that
+differ from the configuration template, apart from paths: the input and output folders, the
+databases, the annotation table, InterProScan and the SignalP 6 archive. Keys missing from the run
+configurations took their defaults.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Template default</th>
+<th>The five mode runs</th>
+<th>The five comparison runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td><code>illumina</code></td>
+<td><code>longread</code> (three times), <code>illumina</code>, <code>hybrid</code></td>
+<td><code>contigs</code>, on the <code>hybrid</code> run's <code>contigs_final.fasta</code></td>
+</tr>
+<tr>
+<td><code>assembler</code> (under <code>longread</code> or <code>hybrid</code>)</td>
+<td><code>hifiasm</code></td>
+<td><code>hifiasm</code>; <code>flye</code> in one 136x run</td>
+<td>not used</td>
+</tr>
+<tr>
+<td><code>medaka_model</code> (under <code>longread</code> or <code>hybrid</code>)</td>
+<td><code>auto</code></td>
+<td><code>false</code> (the two 136x runs and <code>hybrid</code>); <code>r1041_e82_400bps_sup_v5.2.0</code> (42x)</td>
+<td>not used</td>
+</tr>
+<tr>
+<td><code>short_read_guidance</code> (under <code>hybrid</code>)</td>
+<td><code>false</code></td>
+<td><code>true</code> in the <code>hybrid</code> run: Filtlong guided by the Illumina reads, with <code>filtlong_split: 1000</code></td>
+<td>not used</td>
+</tr>
+<tr>
+<td><code>resources.threads</code></td>
+<td>24</td>
+<td>16 to 32 (the run-time table below)</td>
+<td>20</td>
+</tr>
+<tr>
+<td><code>resources.ram_gb</code></td>
+<td>128</td>
+<td>256</td>
+<td>256</td>
+</tr>
+<tr>
+<td><code>directories.genemark_dir</code></td>
+<td>empty: no GeneMark-ES</td>
+<td>a GeneMark-ES installation, so GeneMark-ES on</td>
+<td>the same, but <code>genemark.mode: off</code> in two runs</td>
+</tr>
+<tr>
+<td><code>parameters.tiberius.mode</code></td>
+<td><code>on</code></td>
+<td><code>on</code></td>
+<td><code>on</code>, but <code>off</code> in two runs</td>
+</tr>
+<tr>
+<td><code>parameters.signalp6.mode</code></td>
+<td><code>off</code></td>
+<td><code>fast</code></td>
+<td><code>fast</code></td>
+</tr>
+<tr>
+<td><code>parameters.amr.chroquetas</code></td>
+<td><code>off</code></td>
+<td><code>on</code></td>
+<td><code>off</code></td>
+</tr>
+<tr>
+<td>Annotation table, column 3 (proteins)</td>
+<td>proteins of related fungi</td>
+<td>the reference's own proteins</td>
+<td>the same</td>
+</tr>
+<tr>
+<td>Annotation table, column 4 (AUGUSTUS model)</td>
+<td><code>-</code>: trained on the genome</td>
+<td><code>-</code></td>
+<td><code>-</code>, but <code>botrytis_cinerea</code> in one run</td>
+</tr>
+</tbody>
+</table>
+<p>One of these changes shapes every gene result of the B05.10 runs: column 3 of the annotation table
+gave the reference's own proteins as evidence (see the limitations above). The other changes
+concern the mode, the assembler, the Medaka model, the Filtlong guidance of the <code>hybrid</code> run, and
+the CPU and memory. Three optional tools were also switched on: GeneMark-ES, SignalP 6 and the AMR
+screen. The five comparison runs, in addition, each changed one gene-finder setting, or two (the
+run with neither GeneMark-ES nor Tiberius), or none (the replicate).</p>
+<h2 id="assembly">Assembly per mode<a class="headerlink" href="#assembly" title="Permanent link">¶</a></h2>
+<p>The first table sets the genome of each mode run against the 18 chromosomes of the reference.
+Every run with long reads used hifiasm, the default assembler, except the one marked Flye, which ran
+Flye 2.9.6 with <code>--nano-hq</code>, as <code>flye_input_mode: auto</code> chose.</p>
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th>Contigs</th>
+<th>Total length (Mb)</th>
+<th>N50 (Mb)</th>
+<th>Chromosomes in one contig (of 18)</th>
+<th>Share of each chromosome covered (%)</th>
+<th>Contigs with telomeres at both ends</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reference (GCF_000143535.2)</td>
+<td>18</td>
+<td>42.63</td>
+<td>2.62</td>
+<td>18</td>
+<td>–</td>
+<td>10 (<a href="../citation/#validation-references">van Kan et al. 2017</a>)</td>
+</tr>
+<tr>
+<td><code>longread</code>, ONT 136x</td>
+<td>32</td>
+<td>44.04</td>
+<td>2.58</td>
+<td>18</td>
+<td>99.8 to 100</td>
+<td>15</td>
+</tr>
+<tr>
+<td><code>longread</code>, ONT 136x, Flye</td>
+<td>25</td>
+<td>42.95</td>
+<td>2.58</td>
+<td>16</td>
+<td>99.8 to 100</td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>longread</code>, ONT 42x + Medaka</td>
+<td>18</td>
+<td>42.97</td>
+<td>2.63</td>
+<td>18</td>
+<td>99.8 to 100</td>
+<td>14</td>
+</tr>
+<tr>
+<td><code>illumina</code>, Illumina 79x</td>
+<td>409</td>
+<td>42.23</td>
+<td>0.31</td>
+<td>0</td>
+<td>96.0 to 99.8</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>hybrid</code>, ONT 136x + Illumina 79x</td>
+<td>33</td>
+<td>44.05</td>
+<td>2.63</td>
+<td>18</td>
+<td>99.8 to 100</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+<p>On B05.10, the three hifiasm runs with long reads put each of the 18 chromosomes into one contig
+and cover almost all of each. Flye, on the same 136x reads, is as contiguous (N50 2.58 Mb), but
+puts 16 chromosomes into one contig and ends fewer contigs in a telomere array. The Illumina-only
+run gives 409 contigs, no chromosome in one piece, and leaves up to 4 % of a chromosome uncovered.</p>
+<ul>
+<li><strong>Contigs and length</strong> are those of <code>contigs_final.fasta</code>, the nuclear genome, from QUAST. The
+  hifiasm 136x and <code>hybrid</code> assemblies are 1.4 Mb longer than the reference. Most of the extra
+  length is in 13 contigs that the contig summary calls <code>rDNA_array</code> (0.98 Mb in the hifiasm 136x
+  run, 0.78 Mb in the <code>hybrid</code> run), which are pieces of the rDNA array. The 42x and Flye runs
+  have no such contigs.</li>
+<li><strong>The Flye run</strong> has chromosomes 1 and 13 in two pieces each (2.72 and 1.39 Mb; 1.95 and 0.31
+  Mb). Its genome is 0.32 Mb longer than the reference.</li>
+<li><strong>Telomeres</strong> come from FunFlux's <a href="../../analysis/contig-summary/">contig summary</a>: arrays of the
+  repeat unit it chose, <code>AACCCT</code>, at both contig ends. <code>AACCCT</code> is tidk's canonical form of
+  <code>TTAGGG</code>, the same repeat read on the other strand. The hifiasm long-read runs have 14 or 15
+  such contigs, and in each, 3 or 4 more chromosomes lack an array at one end. In the Flye run, 23
+  contig ends carry an array, against 32 to 34 in the hifiasm long-read runs. The reference's 10
+  comes from its paper, not from FunFlux's search, so it is not the same measure.</li>
+<li><strong>Filtlong guidance</strong> was on in the <code>hybrid</code> run. The unguided <code>longread</code> 136x run, on the same
+  ONT reads, has 32 contigs against 33, and all 18 chromosomes in one contig in both. That is one
+  reason the guidance is off by default (<a href="../../methods/filtlong-guidance/">Filtlong guidance</a>).</li>
+</ul>
+<p>The second table gives the differences of each assembly from the reference, and the run time.</p>
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th>Substitutions per Mb</th>
+<th>Small indels per Mb</th>
+<th>Run time (h)</th>
+<th>Cores</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>longread</code>, ONT 136x</td>
+<td>38.9</td>
+<td>36.2</td>
+<td>8.9</td>
+<td>28</td>
+</tr>
+<tr>
+<td><code>longread</code>, ONT 136x, Flye</td>
+<td>35.8</td>
+<td>33.4</td>
+<td>8.4</td>
+<td>20</td>
+</tr>
+<tr>
+<td><code>longread</code>, ONT 42x + Medaka</td>
+<td>37.9</td>
+<td>30.9</td>
+<td>9.2</td>
+<td>16</td>
+</tr>
+<tr>
+<td><code>illumina</code>, Illumina 79x</td>
+<td>14.8</td>
+<td>12.2</td>
+<td>7.9</td>
+<td>24</td>
+</tr>
+<tr>
+<td><code>hybrid</code>, ONT 136x + Illumina 79x</td>
+<td>32.0</td>
+<td>23.5</td>
+<td>11.5</td>
+<td>32</td>
+</tr>
+</tbody>
+</table>
+<p>Every assembly differs from the reference by 15 to 39 substitutions and 12 to 36 small indels per
+Mb. In the long-read assemblies most substitutions sit in a few regions, and in every run most
+small indels sit in runs of identical bases. Each run took 8 to 12 hours.</p>
+<ul>
+<li><strong>Substitutions</strong> are not spread out. In each long-read assembly more than 90 % of them fall in
+  ten windows of 10 kb of the reference. They mark a few regions where the assembly and the
+  reference disagree, not errors along the whole genome.</li>
+<li><strong>Small indels</strong>, of 1 to 10 bp, are spread out. In every run three quarters or more of them
+  (77 to 86 %) sit in a run of at least 3 identical bases of the reference. The <code>hybrid</code> assembly,
+  corrected with the Illumina reads by Polypolish, has about a third fewer than the hifiasm 136x
+  assembly without Medaka. The 42x run with Medaka also differs from the hifiasm 136x run in
+  depth, so it does not measure Medaka alone, while <a href="#medaka">Medaka on the 42x run</a> does. The
+  Illumina contigs differ least, but they cover less of each chromosome.</li>
+<li><strong>Not an error rate.</strong> Some of these differences may be errors of the reference itself or real
+  differences between lab stocks. The counts compare the runs with each other.</li>
+<li><strong>Run time</strong> is that of the main Snakemake run, from its log. In the four runs without Flye, the
+  ITS classification, the contig summary and the AMR screen were run afterwards on the finished
+  output. They took under a minute each, so the times above leave out at most a few minutes.</li>
+</ul>
+<p>To count the chromosomes and the differences, each <code>contigs_final.fasta</code> was aligned to the
+reference with minimap2 2.31 (<code>-x asm5 -c --cs</code>). A contig is placed on the chromosome that most of
+its bases align to, and a chromosome counts as one contig when the largest contig placed on it is
+at least 97 % of its length. The share of each chromosome covered counts alignments with a mapping
+quality of at least 5. Differences are counted in the alignments with a mapping quality of at
+least 30, per Mb of aligned contig.</p>
+<h3 id="medaka">Medaka on the 42x run<a class="headerlink" href="#medaka" title="Permanent link">¶</a></h3>
+<p>The 42x run keeps both the assembly that Medaka polished (<code>contaminants/contigs_decontam.fasta</code>)
+and Medaka's result (<code>medaka/consensus.fasta</code>). Medaka can therefore be measured alone, on the same
+reads and the same assembly, before and after. QUAST 5.3.0 compared both with the reference, and
+BUSCO 6.0.0 scored both, and the reference, with <code>ascomycota_odb12</code>.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Before Medaka</th>
+<th>After Medaka</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Indels</td>
+<td>1,879</td>
+<td>1,590</td>
+<td>–</td>
+</tr>
+<tr>
+<td>of them up to 5 bp</td>
+<td>1,717</td>
+<td>1,458</td>
+<td>–</td>
+</tr>
+<tr>
+<td>of them longer</td>
+<td>162</td>
+<td>132</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Mismatches</td>
+<td>1,684</td>
+<td>1,698</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Contigs, misassemblies, genome fraction</td>
+<td>19, 30, 99.98 %</td>
+<td>the same</td>
+<td>–</td>
+</tr>
+<tr>
+<td>BUSCO complete (of 2,826)</td>
+<td>99.2 %</td>
+<td>99.2 %</td>
+<td>99.3 %</td>
+</tr>
+<tr>
+<td>BUSCO genes with internal stop codons</td>
+<td>483</td>
+<td>479</td>
+<td>482</td>
+</tr>
+</tbody>
+</table>
+<p>Medaka removed 289 indels, 15 %, most of them 5 bp or shorter, and added 14 mismatches. The
+number of contigs and of misassemblies, the genome fraction and the BUSCO completeness did not
+change. The BUSCO genes with internal stop codons went from 483 to 479, but Medaka's gain is too
+small to show in the genes. The reference itself has as many such genes (482), so that count
+measures BUSCO's alignments, not the assembly. Medaka took 15 minutes on 12 threads.</p>
+<ul>
+<li><strong>The model</strong>, <code>r1041_e82_400bps_sup_v5.2.0</code>, is a guess, because the public reads carry no
+  basecaller tag in their headers. The reads look like R10.4.1 reads called with a "sup" model
+  (median identity to the reference 98.97 %, median read quality Q20.5, on 20,000 reads), so the
+  guess is plausible.</li>
+<li><strong>These counts</strong> are QUAST's, over all aligned bases. The table of differences under
+  <a href="#assembly">Assembly per mode</a> counts differently (minimap2, mapping quality of at least 30,
+  indels of 1 to 10 bp), so the two tables cannot be compared number for number.</li>
+</ul>
+<h2 id="gene-models">Gene models per mode<a class="headerlink" href="#gene-models" title="Permanent link">¶</a></h2>
+<p>The gene models of each mode run were set against the reference annotation, to see how much the
+assembly changes the genes.</p>
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th>Protein-coding genes</th>
+<th>BUSCO complete (of 1,312)</th>
+<th>Reference genes found</th>
+<th>FunFlux genes that match</th>
+<th>Matching genes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reference (RefSeq)</td>
+<td>11,698</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>longread</code>, ONT 136x</td>
+<td>11,802</td>
+<td>1,301 (99.2 %)</td>
+<td>90.4 %</td>
+<td>89.7 %</td>
+<td>10,591</td>
+</tr>
+<tr>
+<td><code>longread</code>, ONT 136x, Flye</td>
+<td>11,760</td>
+<td>1,302 (99.2 %)</td>
+<td>90.2 %</td>
+<td>89.8 %</td>
+<td>10,560</td>
+</tr>
+<tr>
+<td><code>longread</code>, ONT 42x + Medaka</td>
+<td>11,778</td>
+<td>1,301 (99.2 %)</td>
+<td>90.1 %</td>
+<td>89.6 %</td>
+<td>10,554</td>
+</tr>
+<tr>
+<td><code>illumina</code>, Illumina 79x</td>
+<td>11,704</td>
+<td>1,302 (99.2 %)</td>
+<td>90.4 %</td>
+<td>90.5 %</td>
+<td>10,590</td>
+</tr>
+<tr>
+<td><code>hybrid</code>, ONT 136x + Illumina 79x</td>
+<td>11,830</td>
+<td>1,301 (99.2 %)</td>
+<td>90.7 %</td>
+<td>89.8 %</td>
+<td>10,623</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">On B05.10, the assembly mode and the assembler made little difference to the genes</p>
+<p>The runs predict 11,704 to 11,830 protein-coding genes, and 10,554 to 10,623 of them match a
+reference gene: a spread of 69, under 1 % of the genes.</p>
+</div>
+<ul>
+<li><strong>BUSCO complete</strong> is the number of BUSCO <code>dikarya_odb9</code> genes found complete among the
+  predicted proteins, as funannotate annotate reports it. The five runs differ by at most one
+  BUSCO gene.</li>
+<li><strong>Reference genes found</strong> is the share of the reference's gene loci with a matching FunFlux gene
+  (gffcompare's locus sensitivity). <strong>FunFlux genes that match</strong> is the share of FunFlux genes with
+  a matching reference gene (locus precision). Both are about 90 % in every run.</li>
+<li><strong>A match</strong> means that the coding part of the FunFlux gene has the same introns as a reference
+  transcript, while its start and stop may differ. A gene without introns matches when the two
+  overlap almost completely.</li>
+<li><strong>tRNA genes</strong>, 211 in every run, are left out of all counts.</li>
+</ul>
+<p>To compare the genes, Liftoff 1.6.3 carried the reference genes onto the genome FunFlux annotated:
+all 11,698 of them, but 11,697 onto the Illumina assembly. Then gffcompare 0.12.10 compared the
+coding parts of the two gene sets
+(<a href="../citation/#validation-references">Shumate &amp; Salzberg 2021; Pertea &amp; Pertea 2020</a>). These tools
+were used for this page only and are not part of FunFlux.</p>
+<h2 id="gene-finders">Repeated runs and the gene finders<a class="headerlink" href="#gene-finders" title="Permanent link">¶</a></h2>
+<p>To tell run-to-run noise from the effect of each gene finder, one genome was annotated six times:
+the <code>hybrid</code> run, and five <code>contigs</code>-mode runs on its <code>contigs_final.fasta</code>. The five ran at the
+same time, each with 20 CPU threads instead of the <code>hybrid</code> run's 32. All six annotated the same
+masked genome, byte for byte. The default run used Tiberius, GeneMark-ES and AUGUSTUS trained on
+the genome.</p>
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th>What changed, besides the mode and the threads</th>
+<th>Protein-coding genes</th>
+<th>Genes identical to the default run</th>
+<th>Matching genes</th>
+<th>Matching genes, difference from the default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default (the <code>hybrid</code> run)</td>
+<td>–</td>
+<td>11,830</td>
+<td>–</td>
+<td>10,623</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Replicate</td>
+<td>nothing</td>
+<td>11,825</td>
+<td>11,718</td>
+<td>10,619</td>
+<td>−4</td>
+</tr>
+<tr>
+<td>No GeneMark-ES</td>
+<td><code>genemark.mode: off</code></td>
+<td>11,834</td>
+<td>11,253</td>
+<td>10,590</td>
+<td>−33</td>
+</tr>
+<tr>
+<td>No Tiberius</td>
+<td><code>tiberius.mode: off</code></td>
+<td>11,729</td>
+<td>10,494</td>
+<td>10,257</td>
+<td>−366</td>
+</tr>
+<tr>
+<td>Neither</td>
+<td>both off; AUGUSTUS, SNAP and GlimmerHMM remain</td>
+<td>11,503</td>
+<td>9,528</td>
+<td>9,630</td>
+<td>−993</td>
+</tr>
+<tr>
+<td>Stored AUGUSTUS model</td>
+<td>annotation table, column 4: <code>botrytis_cinerea</code></td>
+<td>11,934</td>
+<td>11,277</td>
+<td>10,694</td>
+<td>+71</td>
+</tr>
+</tbody>
+</table>
+<p>In these runs, two annotations of the same genome with the same gene-finder settings differ at
+about 1 % of the genes, but by only 4 matching genes. Differences of a few hundred genes are
+therefore unlikely to be noise. Tiberius matters most: without it about 3 % of the matching genes
+are lost, and about 9 % without both Tiberius and GeneMark-ES. GeneMark-ES on its own makes a small
+difference (33 genes), which one replicate cannot separate from noise. The stored <em>B. cinerea</em>
+AUGUSTUS model adds 71. Read these numbers with the head start described in the note below.</p>
+<ul>
+<li><strong>The replicate.</strong> 112 of the 11,830 genes of the default run differ in the replicate. The
+  matches lost (38) and gained (34) almost cancel, hence the difference of 4.</li>
+<li><strong>Noise.</strong> One replicate is one measurement of the run-to-run noise, not its range, and it holds
+  any effect of the thread count as well.</li>
+<li><strong>The stored AUGUSTUS model</strong> is AUGUSTUS's model for <em>B. cinerea</em> itself.</li>
+<li><strong>Identical</strong> means the same coding intervals: every exon, the start and the stop.
+  <a href="../../methods/run-to-run-differences/">Run-to-run differences</a> explains which steps differ
+  between runs with the same input and settings, and why.</li>
+<li><strong>Run time.</strong> Each comparison run took 7.6 to 9.5 h.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Tiberius and the stored AUGUSTUS model had a head start on this species</p>
+<p>Tiberius was trained on <em>B. cinerea</em> among many other fungi, and the stored AUGUSTUS model is a
+<em>B. cinerea</em> model. Both may therefore add more here than on a species they have not seen.
+Every run also had the reference's own proteins as evidence, which brings all runs closer to
+the reference and may hide part of what the gene finders add. These runs are consistent with
+Tiberius being on by default and GeneMark-ES being optional
+(<a href="../../analysis/gene-prediction/#tiberius">Gene prediction</a>), but they do not measure what
+Tiberius adds on a new species.</p>
+</div>
+<h2 id="other-results">Other results<a class="headerlink" href="#other-results" title="Permanent link">¶</a></h2>
+<p>The ITS taxonomy and the AMR screen gave the same result in all five mode runs, so in these runs
+they depend neither on the mode nor on the assembler:</p>
+<ul>
+<li><strong>ITS taxonomy.</strong> The main ITS2 sequence gives the genus <em>Botrytis</em> (confidence 0.99) and the
+  species <em>B. caroliniana</em> (0.83), not the strain's species. The main ITS1 sequence stops at the
+  family Sclerotiniaceae (0.93). See <a href="../../analysis/its-taxonomy/">ITS taxonomy</a>.</li>
+<li><strong>AMR screen.</strong> It finds β-tubulin E198A, with the verdict <code>resistance</code> (carbendazim,
+  iprodione). Bos1 and OS1 are wild type, and cytochrome b is not evaluated. See the
+  <a href="../../analysis/amr/#worked-example">worked example</a> of the AMR page.</li>
+</ul>
+<p>The mitochondrion was found in every run (<a href="../../analysis/mitochondria/">Mitochondria</a>). The next
+table gives it per run, with the verdicts of the contig summary
+(<a href="../../analysis/contig-summary/#worked-example">worked example</a>).</p>
+<table>
+<thead>
+<tr>
+<th>Per run</th>
+<th><code>longread</code> 136x</th>
+<th><code>longread</code> 136x, Flye</th>
+<th><code>longread</code> 42x + Medaka</th>
+<th><code>illumina</code></th>
+<th><code>hybrid</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mitochondrial contigs, in <code>contigs_mitochondrial.fasta</code> (bp)</td>
+<td>82,351, circular</td>
+<td>82,338, circular</td>
+<td>116,252: a full copy with 34 kb repeated at its ends</td>
+<td>82,466, plus three pieces of 572 to 1,139</td>
+<td>175,274: about two copies, flagged as a concatemer</td>
+</tr>
+<tr>
+<td>Contig summary: <code>chromosome</code></td>
+<td>15</td>
+<td>6</td>
+<td>14</td>
+<td>0</td>
+<td>14</td>
+</tr>
+<tr>
+<td><code>chromosome_arm</code></td>
+<td>3</td>
+<td>11</td>
+<td>4</td>
+<td>10</td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>rDNA_array</code></td>
+<td>13</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>13</td>
+</tr>
+<tr>
+<td><code>nuclear_contig</code></td>
+<td>0</td>
+<td>6</td>
+<td>0</td>
+<td>260</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>nuclear_fragment</code></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>31</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>repeat</code></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>73</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>low_depth</code></td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>34</td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>unclassified</code></td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>mitochondrion</code></td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>4</td>
+<td>1</td>
+</tr>
+<tr>
+<td>All contigs</td>
+<td>33</td>
+<td>26</td>
+<td>19</td>
+<td>413</td>
+<td>34</td>
+</tr>
+</tbody>
+</table>
+<p>Only the two 136x <code>longread</code> runs give the mitochondrion as one circular contig of about the
+published length: 82,351 and 82,338 bp, against the published 82,212 bp (KC832409). A later
+<code>hybrid</code> run on the same reads, with the guidance off (the default) and with Medaka, gave the same
+circular contig as the <code>longread</code> 136x run, 82,351 bp in the draft and 82,375 bp after polishing:
+without the guidance, Filtlong passed hifiasm the same ONT reads. The concatemer of the <code>hybrid</code>
+run in the table therefore came from the guided reads, not from <code>hybrid</code> mode.</p>
+<p>In the contig summary, every hifiasm run with long reads has 18 contigs that are <code>chromosome</code> or
+<code>chromosome_arm</code>, one per chromosome. The Flye run has 17 such contigs, some of them small pieces,
+and six <code>nuclear_contig</code>s with no telomere array: five of 2.0 to 3.0 Mb and one of 7.6 kb. The
+Illumina contigs are mostly <code>nuclear_contig</code>, with no telomere at both ends.</p>
+<p>The contig summary describes the draft assembly, before the mitochondrion is split off and before
+polishing. Each run therefore counts its mitochondrial contigs (one, or four in <code>illumina</code>) on top
+of the nuclear contigs of the assembly table. The contig summary also lists the 42x and <code>hybrid</code>
+mitochondria at their draft lengths, 116,228 and 174,832 bp.</p>
+<h2 id="pacbio-hifi-reads-cordyceps-cateniannulata-gxu-8616">PacBio HiFi reads: <em>Cordyceps cateniannulata</em> GXU-8616<a class="headerlink" href="#pacbio-hifi-reads-cordyceps-cateniannulata-gxu-8616" title="Permanent link">¶</a></h2>
+<p>Three runs used PacBio HiFi reads of one strain of an insect-pathogenic fungus (family
+Cordycipitaceae). Two ran in <code>longread</code> mode, one with hifiasm, the default assembler, and one
+with Flye. The third ran in <code>hybrid</code> mode, which adds MGISEQ short reads of the same strain. On
+this genome the runs show that the HiFi path works from reads to annotation, and how close its
+genome comes to a chromosome-scale reference.</p>
+<div class="admonition warning">
+<p class="admonition-title">The HiFi runs do not measure the accuracy of the genes</p>
+<ul>
+<li><strong>One genome</strong> (n = 1). Nothing here shows how FunFlux does on HiFi reads of other fungi.</li>
+<li><strong>The reference</strong> comes from the same sample. It was assembled from HiFi reads with hifiasm
+  0.19.8, polished with short reads and joined into 7 chromosomes with Hi-C data
+  (<a href="../citation/#validation-references">Liu et al. 2026</a>). The sample's only HiFi run in the
+  archive is the one used here. The reference is chromosome-scale with the help of Hi-C, while
+  reads alone may not give every chromosome in one piece. Agreement with it, above all for the
+  hifiasm runs, is expected and is not an independent check.</li>
+<li><strong>No gene comparison.</strong> The reference's gene annotation (10,743 protein-coding genes at NCBI)
+  was not compared with FunFlux's genes. The gene table gives counts and BUSCO only.</li>
+<li><strong>Tiberius</strong> has seen no genes of this genus, only genes of the same family. No <em>Cordyceps</em>
+  species is among the training species of the Tiberius <code>fungi</code> model, but two species of the
+  same family, <em>Akanthomyces muscarius</em> and <em>Beauveria bassiana</em>, are
+  (<a href="../citation/#validation-references">its training list</a>).</li>
+<li><strong>The protein evidence</strong> comes from another species, <em>Cordyceps militaris</em> CM01, as for a
+  new genome. The B05.10 runs had the reference's own proteins, which pull the genes towards
+  the reference.</li>
+<li><strong>Run times</strong> come from one shared server, with other runs going on at the same time, so they
+  are indicative only.</li>
+</ul>
+</div>
+<h3 id="hifi-data">Data and settings<a class="headerlink" href="#hifi-data" title="Permanent link">¶</a></h3>
+<p>The reads and the reference come from one sample record. Depth is again the number of bases
+divided by the reference length.</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Accession</th>
+<th>Details</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reference genome</td>
+<td>GCA_056505955.1 (assembly ASM5650595v1)</td>
+<td>7 chromosomes, 32,707,717 bp, no gaps; BioSample SAMN48746374</td>
+<td>the comparisons below</td>
+</tr>
+<tr>
+<td>PacBio HiFi reads</td>
+<td>SRR34289959</td>
+<td>PacBio Revio, 147,159 reads, 2.77 Gb (about 85x), mean length 18.8 kb; the same BioSample</td>
+<td>all three runs</td>
+</tr>
+<tr>
+<td>MGISEQ short reads</td>
+<td>SRR34289958</td>
+<td>MGISEQ-2000RS, 16,427,628 pairs of 2 x 150 bp, 4.93 Gb (about 151x); the same BioSample</td>
+<td><code>hybrid</code></td>
+</tr>
+<tr>
+<td>Protein evidence</td>
+<td>GCF_000225605.1</td>
+<td><em>Cordyceps militaris</em> CM01, 9,651 proteins (RefSeq)</td>
+<td>column 3 of the annotation table, all three runs</td>
+</tr>
+</tbody>
+</table>
+<p>The MGISEQ short reads are DNBSEQ pairs, and <code>hybrid</code> mode reads them as it reads Illumina pairs.
+In every run Filtlong kept 124,832 HiFi reads, 2.49 Gb, which is 90 % of the bases
+(<a href="../../modes/longread/#read-filter">Read filter</a>).</p>
+<p>The next table gives the settings of the three HiFi runs.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th><code>longread</code>, hifiasm</th>
+<th><code>longread</code>, Flye</th>
+<th><code>hybrid</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td><code>longread</code></td>
+<td><code>longread</code></td>
+<td><code>hybrid</code></td>
+</tr>
+<tr>
+<td><code>assembler</code> (under <code>longread</code> or <code>hybrid</code>)</td>
+<td><code>hifiasm</code> (the default)</td>
+<td><code>flye</code>, which runs with <code>--pacbio-hifi</code></td>
+<td><code>hifiasm</code> (the default), then Polypolish with the short reads</td>
+</tr>
+<tr>
+<td><code>resources.threads</code></td>
+<td>24</td>
+<td>20</td>
+<td>24</td>
+</tr>
+<tr>
+<td>Annotation table, column 3 (proteins)</td>
+<td>the <em>C. militaris</em> proteins</td>
+<td>the same</td>
+<td>the same</td>
+</tr>
+</tbody>
+</table>
+<p>Everything else is set as in the B05.10 mode runs (<a href="#data">settings table</a>): 256 GB of memory,
+GeneMark-ES and SignalP 6 <code>fast</code> on, the AMR screen on, and AUGUSTUS trained on the genome. HiFi
+reads get no Medaka.</p>
+<h3 id="hifi-assembly">Assembly<a class="headerlink" href="#hifi-assembly" title="Permanent link">¶</a></h3>
+<p>The table sets each HiFi assembly against the 7 chromosomes of the reference, with the run time of
+each run.</p>
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th>Contigs</th>
+<th>Total length (Mb)</th>
+<th>N50 (Mb)</th>
+<th>Reference chromosomes in one contig (of 7)</th>
+<th>Contigs with telomeres at both ends</th>
+<th>Run time (h)</th>
+<th>Cores</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reference (GCA_056505955.1)</td>
+<td>7</td>
+<td>32.71</td>
+<td>4.79</td>
+<td>7</td>
+<td>7</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>longread</code>, hifiasm</td>
+<td>18</td>
+<td>34.58</td>
+<td>4.79</td>
+<td>6</td>
+<td>7</td>
+<td>6.6</td>
+<td>24</td>
+</tr>
+<tr>
+<td><code>longread</code>, Flye</td>
+<td>12</td>
+<td>34.01</td>
+<td>4.79</td>
+<td>6</td>
+<td>6</td>
+<td>7.3, in two attempts</td>
+<td>20</td>
+</tr>
+<tr>
+<td><code>hybrid</code>, hifiasm + Polypolish</td>
+<td>18</td>
+<td>34.58</td>
+<td>4.79</td>
+<td>6</td>
+<td>7</td>
+<td>7.8</td>
+<td>24</td>
+</tr>
+</tbody>
+</table>
+<p>On this genome, both assemblers give six of the seven reference chromosomes as one contig each,
+with a telomere array at both ends, and cover all of every reference chromosome. The seventh breaks
+in two at its rDNA array. Both assemblies also hold about 1.3 Mb that the reference lacks.</p>
+<ul>
+<li><strong>Chromosome 7</strong> (3.58 Mb) comes as a piece of 3.10 Mb and one of 0.52 Mb, or 3.07 and 0.51 Mb
+  with Flye. Each piece ends in a telomere array. The break lies in the tandem copies of the rDNA
+  unit, the repeat that holds the ITS.</li>
+<li><strong>The extra 1.3 Mb.</strong> hifiasm gives it as one contig of 1,329,053 bp with a telomere array at
+  both ends, the seventh <code>chromosome</code> in the next table. Flye gives it as four contigs, 1.30 Mb
+  together. Only 4 % of it aligns to the reference, in short pieces. Its read depth is close to
+  that of the chromosomes (1.14 times the median), and FunFlux predicts 275 genes on it. The
+  contamination and mitochondrion screen places it in <em>Cordyceps</em> from its BLAST hits. Whether it
+  is a small chromosome that the reference lacks was not checked further.</li>
+<li><strong>Other contigs.</strong> hifiasm adds 7 small contigs of rDNA units (<code>rDNA_array</code>, 0.34 Mb together)
+  and 2 contigs with almost no read depth (<code>low_depth</code>, 0.17 Mb) that do not align to the
+  reference. Flye has neither, and its genome is 0.57 Mb smaller.</li>
+<li><strong><code>hybrid</code>.</strong> Its draft assembly is the hifiasm run's, byte for byte, because both runs filter
+  and assemble the same HiFi reads. Polypolish then changed 38 positions with the short reads.</li>
+<li><strong>Run time</strong> is that of the main Snakemake run, from its log. The Flye run stopped once in
+  InterProScan, with an error that did not come back when the run was started again by hand. Its
+  time is the sum of both attempts, 3.7 and 3.6 h. The run was made without the second attempt
+  that FunFlux makes by itself after a failed InterProScan job
+  (<a href="../../reference/running/#run-time">Running FunFlux</a>).</li>
+</ul>
+<p>The assemblies were checked as for B05.10, with minimap2 2.31 (<code>-x asm5</code>), and a chromosome counts
+as one contig when the largest contig placed on it is at least 97 % of its length. The reference's
+telomeres were counted with FunFlux's own telomere search, run on the reference, which found
+<code>AACCCT</code> arrays at both ends of all 7 chromosomes.</p>
+<p>The next table gives the contig summary verdicts of each run and its mitochondrial contig.</p>
+<table>
+<thead>
+<tr>
+<th>Per run</th>
+<th><code>longread</code>, hifiasm</th>
+<th><code>longread</code>, Flye</th>
+<th><code>hybrid</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Contig summary: <code>chromosome</code></td>
+<td>7</td>
+<td>6</td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>chromosome_arm</code></td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>rDNA_array</code></td>
+<td>7</td>
+<td>0</td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>nuclear_contig</code></td>
+<td>0</td>
+<td>3</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>low_depth</code></td>
+<td>2</td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>unclassified</code></td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>mitochondrion</code></td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>All contigs</td>
+<td>19</td>
+<td>13</td>
+<td>19</td>
+</tr>
+<tr>
+<td>Mitochondrial contig, in <code>contigs_mitochondrial.fasta</code> (bp)</td>
+<td>49,194, circular: about two copies of the genome end to end</td>
+<td>24,597, circular: one copy</td>
+<td>as the hifiasm run</td>
+</tr>
+</tbody>
+</table>
+<p>With hifiasm, all 14 ends of the reference chromosomes and both ends of the extra contig carry a
+telomere array. With Flye, the 14 reference ends do too, but the extra 1.3 Mb has an array at one
+end only and comes as three <code>nuclear_contig</code>s and one <code>chromosome_arm</code>. Flye's 0.51-Mb piece of
+chromosome 7 is <code>unclassified</code>, because its read depth, 1.74 times the median, is above the 1.5
+limit.</p>
+<div class="admonition warning">
+<p class="admonition-title">A circular mitochondrial contig of two copies is not flagged as a concatemer</p>
+<p>The mitochondrion published for this strain is 24,712 bp
+(<a href="../citation/#validation-references">Liu et al. 2026</a>). Flye gives one copy. hifiasm marks its
+49,194-bp contig as circular, so the concatemer flag stays <code>N</code> although the contig holds about
+two copies. FunFlux sets the flag to <code>Y</code> only when <code>length_ratio</code> is above 1.5 and the
+assembler did not record the contig as circular. <code>length_ratio</code> is the contig length divided by
+the length of the mitochondrial genome it best matches in BLAST
+(<a href="../../analysis/mitochondria/#concatemers">Concatemers</a>).</p>
+</div>
+<h3 id="hifi-genes">Genes<a class="headerlink" href="#hifi-genes" title="Permanent link">¶</a></h3>
+<p>The table gives the gene count of each HiFi run and two BUSCO scores, one of the genome and one of
+the gene models.</p>
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th>Protein-coding genes</th>
+<th>BUSCO of the genome: complete, <code>cordycipitaceae_odb12</code> (of 4,122)</th>
+<th>BUSCO of the gene models: complete, <code>dikarya_odb9</code> (of 1,312)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reference (GCA_056505955.1)</td>
+<td>10,743</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>longread</code>, hifiasm</td>
+<td>10,924</td>
+<td>4,112 (99.8 %)</td>
+<td>1,299 (99.0 %)</td>
+</tr>
+<tr>
+<td><code>longread</code>, Flye</td>
+<td>10,919</td>
+<td>4,112 (99.8 %)</td>
+<td>1,300 (99.1 %)</td>
+</tr>
+<tr>
+<td><code>hybrid</code></td>
+<td>10,921</td>
+<td>4,112 (99.8 %)</td>
+<td>1,298 (98.9 %)</td>
+</tr>
+</tbody>
+</table>
+<p>The three runs agree, differing by at most 5 genes and 2 BUSCO genes. In each run 273 to 275 genes
+lie on the 1.3 Mb that the reference lacks, so the counts cannot be set against the reference's
+10,743 one to one.</p>
+<ul>
+<li><strong>BUSCO of the genome</strong> comes from the <a href="../../analysis/assembly-qc/#busco">assembly QC</a> on
+  <code>contigs_final.fasta</code>. BUSCO chose <code>cordycipitaceae_odb12</code> itself (<code>busco.lineage: auto</code>).</li>
+<li><strong>BUSCO of the gene models</strong> comes from funannotate annotate, with <code>dikarya_odb9</code>, as in the
+  B05.10 gene table. The two columns use different gene sets and cannot be compared with each
+  other.</li>
+<li><strong><code>hybrid</code> and hifiasm</strong> annotated nearly the same genome, 38 positions apart, and differ by 3
+  genes. That is about as much as the B05.10 default run and its replicate, which differ by 5
+  genes (<a href="#gene-finders">Repeated runs</a>).</li>
+<li><strong>tRNA genes</strong>, 105 to 107 per run, are left out.</li>
+</ul>
+<h3 id="hifi-other">AMR screen and ITS<a class="headerlink" href="#hifi-other" title="Permanent link">¶</a></h3>
+<p>The AMR screen and the ITS classification gave the same result in all three runs.</p>
+<div class="admonition note">
+<p class="admonition-title">A species outside the AMR database is reported, not failed, and the run goes on</p>
+<p><em>Cordyceps cateniannulata</em> is not among the 57 species of the ChroQueTas database, so the three
+runs report it as not screened. <code>amr_summary.tsv</code> has one row with status <code>not screened</code>, and a
+NOTE in the log gives the reason. The database holds no <em>Cordyceps</em>, and its only species of
+the same family is <em>Beauveria bassiana</em> (<a href="../../analysis/amr/#species">The species</a>).</p>
+</div>
+<p>The ITS taxonomy is the same in all three runs. The main ITS2 sequence (158 bp) gives the strain's
+own species, <em>C. cateniannulata</em> (confidence 0.96, and 0.97 for the genus <em>Cordyceps</em>). The main
+ITS1 sequence (182 bp) stops at the phylum Ascomycota (class 0.60, below the cutoff of 0.8). The
+main ITS sequences themselves are the same in all three runs. The hifiasm assemblies hold 43
+copies of the main ITS1 and 44 of the main ITS2, the Flye assembly 4 of each. See
+<a href="../../analysis/its-taxonomy/">ITS taxonomy</a>.</p>
+<h3 id="hifi-reproduce">To repeat the HiFi runs<a class="headerlink" href="#hifi-reproduce" title="Permanent link">¶</a></h3>
+<p>The HiFi runs can be repeated from public data. First download the reads, the protein evidence and
+the reference genome:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># the reads (ENA); ENA names the HiFi file _subreads, but it holds HiFi reads</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>wget<span class="w"> </span>ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR342/059/SRR34289959/SRR34289959_subreads.fastq.gz<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">     </span>ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR342/058/SRR34289958/SRR34289958_1.fastq.gz<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">     </span>ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR342/058/SRR34289958/SRR34289958_2.fastq.gz
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># the protein evidence and the reference genome (NCBI Datasets)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>GCF_000225605.1.zip<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="s2">"https://api.ncbi.nlm.nih.gov/datasets/v2/genome/accession/GCF_000225605.1/download?include_annotation_type=PROT_FASTA"</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>GCA_056505955.1.zip<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span><span class="s2">"https://api.ncbi.nlm.nih.gov/datasets/v2/genome/accession/GCA_056505955.1/download?include_annotation_type=GENOME_FASTA"</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># unpack both into ncbi_dataset/data/&lt;accession&gt;/ (protein.faa; the genome FASTA);</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1"># -o because both zip files hold files of the same name, such as README.md</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>unzip<span class="w"> </span>-o<span class="w"> </span>GCF_000225605.1.zip
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>unzip<span class="w"> </span>-o<span class="w"> </span>GCA_056505955.1.zip
+</code></pre></div>
+<p>Name the reads <code>GXU8616_pacbio.fastq.gz</code>, <code>GXU8616_R1.fastq.gz</code> and <code>GXU8616_R2.fastq.gz</code>. The
+sample name, <code>GXU8616</code>, is the strain name without the hyphen. The <code>longread</code> runs had a folder
+with the <code>_pacbio</code> file only.
+Write the annotation table with the <em>C. militaris</em> proteins in column 3:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>#sample species proteins    augustus_species
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>GXU8616 Cordyceps cateniannulata    /path/to/ncbi_dataset/data/GCF_000225605.1/protein.faa  -
+</code></pre></div>
+<p>Then use the settings above, and run as in <a href="#reproduce">How to reproduce</a>, step 5.</p>
+<h2 id="reproduce">How to reproduce<a class="headerlink" href="#reproduce" title="Permanent link">¶</a></h2>
+<p>The B05.10 runs can be repeated from public data in five steps.</p>
+<ol>
+<li>
+<p>Download the data:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># the reference: genome, annotation and proteins (NCBI Datasets)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>GCF_000143535.2.zip<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="s2">"https://api.ncbi.nlm.nih.gov/datasets/v2/genome/accession/GCF_000143535.2/download?include_annotation_type=GENOME_FASTA&amp;include_annotation_type=GENOME_GFF&amp;include_annotation_type=PROT_FASTA"</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>unzip<span class="w"> </span>GCF_000143535.2.zip<span class="w">   </span><span class="c1"># ncbi_dataset/data/GCF_000143535.2/: the genome FASTA, genomic.gff, protein.faa</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1"># the ONT reads (sra-tools)</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>fasterq-dump<span class="w"> </span>SRR40741277<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>gzip<span class="w"> </span>SRR40741277.fastq
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1"># the Illumina pairs (ENA)</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>wget<span class="w"> </span>ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR106/011/SRR10692911/SRR10692911_1.fastq.gz<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">     </span>ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR106/011/SRR10692911/SRR10692911_2.fastq.gz
+</code></pre></div>
+</li>
+<li>
+<p>Name the reads <code>B0510_ont.fastq.gz</code>, <code>B0510_R1.fastq.gz</code> and <code>B0510_R2.fastq.gz</code>, as the modes
+   expect (<a href="../../getting-started/choosing-a-mode/">Choosing a mode</a>). Symbolic links are fine. For
+   the 42x run, take the first 95,000 ONT reads, 4 lines each, as sample <code>B0510m</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>zcat<span class="w"> </span>SRR40741277.fastq.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">380000</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gzip<span class="w"> </span>&gt;<span class="w"> </span>B0510m_ont.fastq.gz
+</code></pre></div>
+</li>
+<li>
+<p>Write the <a href="../../reference/configuration/#annotation-parameter-table">annotation table</a>,
+   tab-separated, with the reference proteins in column 3. Add a line for <code>B0510m</code> for the 42x run,
+   and write <code>botrytis_cinerea</code> in column 4 for the run with the stored AUGUSTUS model:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>#sample species proteins    augustus_species
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>B0510   Botrytis cinerea    /path/to/ncbi_dataset/data/GCF_000143535.2/protein.faa  -
+</code></pre></div>
+</li>
+<li>
+<p>Copy the configuration template and set the mode, the input folder, the databases and the
+   settings in the <a href="#data">settings table</a>. For the comparison runs, use <code>contigs</code> mode with the
+   <code>hybrid</code> run's <code>02.assembly/B0510/contigs_final.fasta</code>, named <code>B0510.fasta</code>.</p>
+</li>
+<li>
+<p>Run each configuration, with <code>--cores</code> equal to its <code>resources.threads</code>
+   (<a href="../../reference/running/">Running FunFlux</a>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--cores<span class="w"> </span><span class="m">32</span><span class="w"> </span>--configfile<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+</li>
+</ol>
+<p>To compare a B05.10 run with the reference, Liftoff carries the reference genes onto the genome
+FunFlux annotated, <code>04.annotation/{sample}/contigs_sort.fasta</code>. Then gffcompare compares the coding
+parts of the lifted reference genes with FunFlux's protein-coding genes. The commands are in the
+box below.</p>
+<details class="note">
+<summary>The comparison commands are not part of FunFlux</summary>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">REF</span><span class="o">=</span>ncbi_dataset/data/GCF_000143535.2
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1"># 1. carry the reference genes onto the annotated genome (its contigs are named scaffold_N)</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>liftoff<span class="w"> </span>-g<span class="w"> </span><span class="nv">$REF</span>/genomic.gff<span class="w"> </span>-o<span class="w"> </span>lifted_reference.gff3<span class="w"> </span>-u<span class="w"> </span>unmapped_reference_genes.txt<span class="w"> </span>-p<span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span>-dir<span class="w"> </span>liftoff_tmp<span class="w"> </span>-polish<span class="w"> </span><span class="m">04</span>.annotation/B0510/contigs_sort.fasta<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="nv">$REF</span>/GCF_000143535.2_ASM14353v4_genomic.fna
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="c1"># 2. rebuild the lifted reference transcripts from their coding parts only (CDS lines become</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1">#    exons), because FunFlux's genes have no untranslated regions</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>awk<span class="w"> </span>-F<span class="s1">'\t'</span><span class="w"> </span><span class="s1">'BEGIN{OFS="\t"} /^#/ {print; next} $3=="exon" {next} $3=="CDS" {$3="exon"; print; next} {print}'</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">  </span>lifted_reference.gff3_polished<span class="w"> </span><span class="p">|</span><span class="w"> </span>gffread<span class="w"> </span>-T<span class="w"> </span>-o<span class="w"> </span>lifted_reference_cds.gtf<span class="w"> </span>-
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="c1"># 3. FunFlux's protein-coding genes (-C leaves out the tRNA genes, which have no CDS)</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>gffread<span class="w"> </span>-T<span class="w"> </span>-C<span class="w"> </span>-o<span class="w"> </span>funflux_coding.gtf<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">  </span><span class="m">04</span>.annotation/B0510/funannotate/annotate_results/Botrytis_cinerea_B0510.gff3
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="c1"># 4. compare: gffcmp_cds.stats holds the sensitivity, the precision and the matching counts</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>gffcompare<span class="w"> </span>-r<span class="w"> </span>lifted_reference_cds.gtf<span class="w"> </span>-o<span class="w"> </span>gffcmp_cds<span class="w"> </span>funflux_coding.gtf
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="c1"># the chromosome check: align the nuclear genome to the reference</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>minimap2<span class="w"> </span>-x<span class="w"> </span>asm5<span class="w"> </span>-c<span class="w"> </span>--cs<span class="w"> </span>-t<span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="nv">$REF</span>/GCF_000143535.2_ASM14353v4_genomic.fna<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">  </span><span class="m">02</span>.assembly/B0510/contigs_final.fasta<span class="w"> </span>&gt;<span class="w"> </span>contigs_vs_reference.paf
+</code></pre></div>
+<p>All of these tools come from bioconda: Liftoff 1.6.3 (its own alignments made with minimap2
+2.24), gffread 0.12.9, gffcompare 0.12.10, and minimap2 2.31 for the chromosome check.</p>
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

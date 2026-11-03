@@ -1,0 +1,2958 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/getting-started/installation/">
+      
+      
+        <link rel="prev" href="../choosing-a-mode/">
+      
+      
+        <link rel="next" href="../databases/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Installation - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#installation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Installation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#system-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="System requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disk
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network access
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Network access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behind a proxy that re-signs HTTPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get-funflux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get FunFlux
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-launcher-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The launcher environment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The launcher environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#host-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commands outside the conda environments
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sdm-conda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        --sdm conda: one pinned environment per tool
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="--sdm conda: one pinned environment per tool">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-in-advance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building the environments in advance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conda-prefix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharing environments: --conda-prefix
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../from-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/longread/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/mitochondria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/assembly-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/contig-summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/gene-prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#system-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System requirements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="System requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disk
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network access
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Network access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behind a proxy that re-signs HTTPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#get-funflux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get FunFlux
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-launcher-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The launcher environment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The launcher environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#host-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commands outside the conda environments
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sdm-conda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        --sdm conda: one pinned environment per tool
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="--sdm conda: one pinned environment per tool">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-in-advance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building the environments in advance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conda-prefix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharing environments: --conda-prefix
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/getting-started/installation.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">¶</a></h1>
+<p>This page lists what FunFlux needs on the computer and how to install it before the first run.
+You install conda, Snakemake, InterProScan and one or two databases yourself. Snakemake installs
+every other tool, each in its own conda environment, and the workflow downloads the other
+databases.</p>
+<p>The installation takes six steps, in this order:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>What you do</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Clone FunFlux</td>
+<td><a href="#get-funflux">Get FunFlux</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Install conda, then Snakemake in the launcher environment</td>
+<td><a href="#the-launcher-environment">The launcher environment</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Check the commands FunFlux takes from the machine</td>
+<td><a href="#host-commands">Commands outside the conda environments</a></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Download the eggNOG-mapper data and, for the contamination and mitochondrion screen, NCBI <code>core_nt</code></td>
+<td><a href="../databases/">Reference databases</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Install InterProScan and, optionally, GeneMark-ES and SignalP 6</td>
+<td><a href="../external-tools/">Licensed and external tools</a></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Optionally, build the tool environments before the first run, and on a cluster also fetch the downloads</td>
+<td><a href="#build-in-advance">Building the environments in advance</a>, <a href="../../reference/running/#on-a-cluster">On a cluster</a></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>launcher environment</strong></td>
+<td>the conda environment you create by hand for Snakemake itself; activate it before every run, and install no analysis tool into it</td>
+</tr>
+<tr>
+<td><strong>launch folder</strong></td>
+<td>the folder Snakemake is started from, normally the FunFlux repository; relative paths are read from it, and <code>.snakemake/</code> is created there</td>
+</tr>
+<tr>
+<td><strong>rule</strong></td>
+<td>one step of the workflow as Snakemake defines it, such as <code>select_contigs</code>; the console and the log files in <code>logs/</code> use its name</td>
+</tr>
+<tr>
+<td><strong>job</strong></td>
+<td>one run of a rule, for one sample or once for the whole run; the dry run lists the jobs it plans</td>
+</tr>
+<tr>
+<td><strong>heavy step</strong></td>
+<td>on a cluster, a step that asks the scheduler for both <code>ram_gb</code> and <code>runtime_hours</code>, such as the assemblers, BLAST and InterProScan</td>
+</tr>
+<tr>
+<td><strong>pin file</strong></td>
+<td>the file <code>&lt;name&gt;.linux-64.pin.txt</code> beside each environment file: the exact package builds FunFlux v2 was tested with, installed without solving dependencies</td>
+</tr>
+<tr>
+<td><strong>the screen</strong></td>
+<td>the contamination and mitochondrion screen of the draft: BLAST against <code>core_nt</code>, BlobTools, the mitochondrion screen and the contig selector; in <code>contigs</code> mode only with <code>parameters.contigs.screen: true</code></td>
+</tr>
+<tr>
+<td><strong>AMR screen</strong></td>
+<td>the optional step, off by default (<code>parameters.amr.chroquetas</code>), in which ChroQueTas looks in each genome for the changes FungAMR lists for the species; results in <code>05.amr/</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="system-requirements">System requirements<a class="headerlink" href="#system-requirements" title="Permanent link">¶</a></h2>
+<p>Check that the computer meets these requirements before you install FunFlux:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operating system</td>
+<td>Linux on x86-64. The environment pin files are for <code>linux-64</code>, and GeneMark-ES and InterProScan are distributed as 64-bit Linux builds.</td>
+</tr>
+<tr>
+<td>conda</td>
+<td>24.7.1 or newer. Snakemake 9.14.6 stops with an error on older versions.</td>
+</tr>
+<tr>
+<td>Snakemake</td>
+<td>9.14.6 or a later 9.x release. FunFlux v2 was developed and tested with 9.14.6 and stops at start-up on an older version. Version 10 or later has not been tested.</td>
+</tr>
+<tr>
+<td>Commands</td>
+<td><code>bash</code> and the GNU base commands (<code>sha256sum</code>, <code>md5sum</code> and the rest of coreutils, <code>find</code>, <code>grep</code>, <code>sed</code>, <code>awk</code>) on the machine's own <code>PATH</code>, outside conda. With the AMR screen on, also a <code>grep</code> that knows <code>-P</code> (GNU grep). No <code>python</code>, <code>perl</code>, <code>curl</code>, <code>tar</code> or <code>gzip</code> is needed. See <a href="#host-commands">Commands outside the conda environments</a>.</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>the number in <code>resources.threads</code> (template: 24), given again as <code>--cores</code></td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>about 16 GB for Tiberius, on by default, and more than 14 GB for SignalP 6 in <code>slow</code> mode. See <a href="#memory">Memory</a>.</td>
+</tr>
+<tr>
+<td>Disk</td>
+<td>about 380 GB of databases. The conda environments take 20 to 25 GB for a <code>contigs</code> run, 25 GB with the screen and SignalP 6, and the read-based modes add 4 to 9 environments, not measured. The output takes in the order of 10 GB per sample in <code>contigs</code> mode, plus the reads and assembly files of the read-based modes. See <a href="#disk">Disk</a>.</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>conda packages and several database downloads, on the computer that runs Snakemake; inside the jobs, only BUSCO with the automatic lineage. See <a href="#network">Network access</a>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="memory">Memory<a class="headerlink" href="#memory" title="Permanent link">¶</a></h3>
+<p>With the default settings, plan for at least 16 GB of free memory, because of Tiberius. The table
+gives what is known of the memory each step needs.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tiberius, on by default</td>
+<td>about 16 GB for a fungal genome of about 40 Mb; switch it off (<code>parameters.tiberius.mode: off</code>) on a computer with less free memory</td>
+</tr>
+<tr>
+<td>SignalP 6 in <code>slow</code> mode</td>
+<td>more than 14 GB (<a href="../external-tools/#signalp-6">SignalP 6</a>)</td>
+</tr>
+<tr>
+<td>SPAdes (<code>illumina</code>, <code>hybrid</code>)</td>
+<td><code>resources.ram_gb</code> (template: 128), given to SPAdes as its memory limit (<code>-m</code>)</td>
+</tr>
+<tr>
+<td>Qualimap (<code>illumina</code>, <code>longread</code>, <code>hybrid</code>)</td>
+<td><code>resources.ram_gb</code>, capped at 64 GB, as its Java heap</td>
+</tr>
+<tr>
+<td>The other steps</td>
+<td>not measured</td>
+</tr>
+</tbody>
+</table>
+<p>On a single computer, <code>resources.ram_gb</code> limits only SPAdes and Qualimap. Snakemake itself starts
+jobs by thread count alone and does not limit memory, unless <code>--resources mem_gb=N</code> is passed to
+cap how many SPAdes jobs run at once, or <code>java_mem=N</code> for Qualimap. See
+<a href="../../reference/running/#cpu-cores-and-threads">CPU cores and threads</a>. On a cluster, <code>ram_gb</code> is
+also the memory every heavy step asks the scheduler for, as described under
+<a href="../../reference/running/#cluster-resources">How the settings reach Slurm</a>.</p>
+<h3 id="run-time">Run time<a class="headerlink" href="#run-time" title="Permanent link">¶</a></h3>
+<p>One fungal genome in <code>contigs</code> mode takes several hours, and InterProScan alone usually takes a
+few hours for a fungal proteome. Each rule declares its threads, and Snakemake runs jobs side by
+side as long as their threads fit into <code>--cores</code>. The steps that take longest are listed on
+<a href="../../reference/running/#run-time">Run time</a>, and the threads each step asks for on
+<a href="../../reference/running/#cpu-cores-and-threads">CPU cores and threads</a>.</p>
+<h3 id="disk">Disk<a class="headerlink" href="#disk" title="Permanent link">¶</a></h3>
+<p>Disk space goes to three parts: the databases, the conda environments and the output of each
+sample. NCBI <code>core_nt</code> takes 264 GB of the about 380 GB of databases, and only the screen reads
+it.</p>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>Size</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NCBI <code>core_nt</code>, build of 11 July 2026; its taxonomy files add 0.8 GB</td>
+<td>264 GB</td>
+<td><code>directories.blast_db</code>; only for the screen</td>
+</tr>
+<tr>
+<td>InterProScan 5.78-109.0, installed</td>
+<td>50 GB</td>
+<td><code>files.iprscan</code></td>
+</tr>
+<tr>
+<td>eggNOG 5.0.2 data</td>
+<td>48 GB</td>
+<td><code>directories.eggnog_db</code></td>
+</tr>
+<tr>
+<td>antiSMASH 8.0.4 databases</td>
+<td>9.4 GB</td>
+<td><code>00.resources/</code> of every output folder, or once in <code>directories.antismash_db</code></td>
+</tr>
+<tr>
+<td>funannotate database, unpacked, archive included</td>
+<td>8.1 GB</td>
+<td><code>directories.funannotate_db</code></td>
+</tr>
+<tr>
+<td>conda environments: the 18 of a <code>contigs</code> run with the screen, Tiberius and SignalP 6</td>
+<td>about 25 GB; the <code>download</code> environment among them takes 120 MB</td>
+<td><code>.snakemake/conda/</code>, or the folder given to <code>--conda-prefix</code></td>
+</tr>
+<tr>
+<td>conda environments added by the read-based modes: 4 in <code>illumina</code>, 4 or 5 in <code>longread</code>, 8 or 9 in <code>hybrid</code>, listed under <a href="#sdm-conda"><code>--sdm conda</code></a></td>
+<td>not measured</td>
+<td>the same folder</td>
+</tr>
+<tr>
+<td>conda environment of the AMR screen (<code>chroquetas</code>), when it is on</td>
+<td>about 2 GB</td>
+<td>the same folder</td>
+</tr>
+<tr>
+<td>output of one sample, <code>contigs</code> mode</td>
+<td>in the order of 10 GB</td>
+<td><code>directories.output_dir</code></td>
+</tr>
+<tr>
+<td>output of one sample, read-based modes: the kept reads (<code>01.reads/</code>), the assembler's working folder, the read-mapping BAM, the polishing files</td>
+<td>whole sample: 13 GB in <code>illumina</code>, 20 to 31 GB in <code>longread</code> and 39 GB in <code>hybrid</code> on the 42.6 Mb genome of <em>Botrytis cinerea</em> B05.10; 16 to 17 GB in <code>longread</code> and 29 GB in <code>hybrid</code> on the 32.7 Mb genome of <em>Cordyceps cateniannulata</em> GXU-8616, with PacBio HiFi reads</td>
+<td><code>directories.output_dir</code></td>
+</tr>
+</tbody>
+</table>
+<p>In the output of the read-based modes, the filtered long reads are kept uncompressed, and so are
+the selected Illumina pairs of <code>hybrid</code>.</p>
+<p>Sizes are as <code>du -h</code> prints them, in powers of 1024. The environments were measured with the
+prefix on another file system than conda's package cache. On the same file system, conda
+hard-links files from its package cache, and the environments add less to the disk.</p>
+<p>Each measured run is listed under <a href="../../reference/output/#disk-use-per-run">Disk use per run</a>, and
+<a href="../../reference/output/#disk-use">Disk use</a> shows where the space of the output folder goes.</p>
+<h3 id="network">Network access<a class="headerlink" href="#network" title="Permanent link">¶</a></h3>
+<p>Most downloads happen on the computer that runs Snakemake. The download steps are local rules, so
+they run on that computer and never on a compute node of a cluster. Snakemake builds the conda
+environments there too. Only three things reach the network from inside a job: BUSCO with the
+automatic lineage, and two lookups that the results do not need.</p>
+<table>
+<thead>
+<tr>
+<th>Host</th>
+<th>What</th>
+<th>When</th>
+<th>Runs on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>conda.anaconda.org</code></td>
+<td>the packages listed in the pin files</td>
+<td>building an environment</td>
+<td>the computer that runs Snakemake</td>
+</tr>
+<tr>
+<td><code>zenodo.org</code></td>
+<td>the funannotate database and its checksum file</td>
+<td>while <code>directories.funannotate_db</code> does not hold it (<code>funannotate_db</code>)</td>
+<td>the computer that runs Snakemake</td>
+</tr>
+<tr>
+<td><code>s3.hpc.ut.ee</code></td>
+<td>UNITE</td>
+<td>first run in an output folder, unless <code>directories.unite_db</code> is set (<code>unite_db</code>)</td>
+<td>the computer that runs Snakemake</td>
+</tr>
+<tr>
+<td><code>dl.secondarymetabolites.org</code>, <code>ftp.ebi.ac.uk</code></td>
+<td>antiSMASH databases</td>
+<td>first run in an output folder, unless <code>directories.antismash_db</code> is set (<code>antismash_db</code>)</td>
+<td>the computer that runs Snakemake</td>
+</tr>
+<tr>
+<td><code>bioinf.uni-greifswald.de</code></td>
+<td>the Tiberius <code>fungi</code> model</td>
+<td>first run in an output folder, unless <code>parameters.tiberius.mode</code> is <code>off</code> (<code>tiberius_model</code>)</td>
+<td>the computer that runs Snakemake</td>
+</tr>
+<tr>
+<td><code>raw.githubusercontent.com</code></td>
+<td>the telomere repeat database of tidk; ChroQueTas and its FungAMR database</td>
+<td>first run in an output folder (<code>telomere_db</code>; with the AMR screen on also <code>chroquetas_db</code>)</td>
+<td>the computer that runs Snakemake</td>
+</tr>
+<tr>
+<td><code>ftp.ncbi.nlm.nih.gov</code></td>
+<td>PhiX genome</td>
+<td>first run in an output folder, <code>illumina</code> and <code>hybrid</code> (<code>download_phix</code>)</td>
+<td>the computer that runs Snakemake</td>
+</tr>
+<tr>
+<td>chosen by Medaka (GitHub)</td>
+<td>model weights</td>
+<td>the model check of an ONT sample with Medaka, the first time a model is used (<code>check_medaka_model</code>), before the assembly</td>
+<td>the computer that runs Snakemake</td>
+</tr>
+<tr>
+<td><code>busco-data.ezlab.org</code></td>
+<td>BUSCO lineage datasets</td>
+<td>with a named lineage, once per output folder (<code>busco_data</code>)</td>
+<td>the computer that runs Snakemake</td>
+</tr>
+<tr>
+<td><code>busco-data.ezlab.org</code></td>
+<td>BUSCO lineage datasets</td>
+<td>with <code>parameters.busco.lineage: auto</code>, the default: every BUSCO job (<code>completeness</code>)</td>
+<td>the job</td>
+</tr>
+<tr>
+<td><code>www.ebi.ac.uk</code></td>
+<td>InterProScan's lookup service, a shortcut: without it, InterProScan computes every match itself (<a href="../../analysis/functional-annotation/#interproscan">Functional annotation</a>)</td>
+<td>every InterProScan job</td>
+<td>the job</td>
+</tr>
+<tr>
+<td><code>api.multiqc.info</code></td>
+<td>MultiQC's check for a newer version</td>
+<td>the report (<code>multiqc</code>)</td>
+<td>the job</td>
+</tr>
+</tbody>
+</table>
+<p>FunFlux runs BUSCO 6.0.0 with <code>--opt-out-run-stats</code>. Without it, BUSCO ends each job by looking up
+the country of the machine's IP address online and sending usage statistics. See
+<a href="../../analysis/assembly-qc/#busco">Assembly QC</a>.</p>
+<p>When the jobs have no internet, BUSCO, InterProScan and MultiQC behave as follows.</p>
+<ul>
+<li><strong>BUSCO</strong>, with <code>lineage: auto</code>, cannot download its lineage data, and the BUSCO job fails. Name
+  a lineage instead, as described under
+  <a href="../../reference/running/#cluster-busco">BUSCO on compute nodes without internet</a>.</li>
+<li><strong>InterProScan</strong> prints
+  <code>Pre-calculated match lookup service failed - analysis proceeding to run locally</code> and computes
+  every match itself. The matches are the same, and the run is longer
+  (<a href="../../analysis/functional-annotation/#interproscan">Functional annotation</a>).</li>
+<li><strong>MultiQC</strong> gives up its version check after about 2 seconds, and the report is the same.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Compute nodes without internet need a named BUSCO lineage</p>
+<p>On a single computer with internet, nothing needs preparing. On a cluster whose compute nodes
+have no internet, name a BUSCO lineage. The rest is fetched on the login node.</p>
+</div>
+<p>Snakemake itself may have to run on a computer without internet, for example when the whole run
+goes inside one batch job on a compute node. In that case, fetch everything first on a computer
+with internet, with <code>snakemake download_all</code>, as described under
+<a href="../../reference/running/#cluster-preparation">Preparation, on a computer with internet</a>.</p>
+<h4 id="proxy">Behind a proxy that re-signs HTTPS<a class="headerlink" href="#proxy" title="Permanent link">¶</a></h4>
+<p>FunFlux's downloads trust only the list of certificate authorities inside their conda
+environments, not the computer's own. Behind an institute proxy or mirror that re-signs HTTPS with
+an in-house certificate, they therefore fail with <code>SSL certificate problem</code> or
+<code>CERTIFICATE_VERIFY_FAILED</code>.</p>
+<p><code>curl</code>, in the six download steps that use it, and Medaka read <code>CURL_CA_BUNDLE</code>, while BUSCO and
+antiSMASH read <code>SSL_CERT_FILE</code>. Point both variables at the computer's list before you start
+Snakemake:</p>
+<table>
+<thead>
+<tr>
+<th>System</th>
+<th>Commands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Debian, Ubuntu</td>
+<td><code>export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt</code></td>
+</tr>
+<tr>
+<td>Red Hat Enterprise Linux and its rebuilds (Rocky, Alma)</td>
+<td><code>export CURL_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt SSL_CERT_FILE=/etc/pki/tls/certs/ca-bundle.crt</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="get-funflux">Get FunFlux<a class="headerlink" href="#get-funflux" title="Permanent link">¶</a></h2>
+<p>The FunFlux repository holds the workflow, the configuration template and the environment files.
+Clone it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/iLivius/FunFlux.git
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>FunFlux
+</code></pre></div>
+<p>The clone holds, among other files:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>config/config.yaml</code></td>
+<td>the commented configuration template; copy it, for example to <code>config/config_custom.yaml</code>, which git ignores</td>
+</tr>
+<tr>
+<td><code>config/annotation_parameters.tsv</code></td>
+<td>an example annotation parameter table, the table <code>files.annotation_params</code> names</td>
+</tr>
+<tr>
+<td><code>workflow/envs/</code></td>
+<td><code>&lt;name&gt;.yaml</code>, one conda environment per tool, each with its pin file <code>&lt;name&gt;.linux-64.pin.txt</code> (see <a href="#sdm-conda"><code>--sdm conda</code></a>)</td>
+</tr>
+</tbody>
+</table>
+<p>Start Snakemake from this folder, the launch folder. Snakemake finds <code>workflow/Snakefile</code> there
+and keeps its run records in <code>.snakemake/</code>, which git ignores. The conda environments go there
+too, unless <code>--conda-prefix</code> names another folder.</p>
+<h2 id="the-launcher-environment">The launcher environment<a class="headerlink" href="#the-launcher-environment" title="Permanent link">¶</a></h2>
+<p>Snakemake runs in a conda environment of its own, the launcher environment. Create it and check
+the version:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>conda<span class="w"> </span>create<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span>-n<span class="w"> </span>snakemake<span class="w"> </span><span class="s2">"snakemake&gt;=9.14.6,&lt;10"</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>conda<span class="w"> </span>activate<span class="w"> </span>snakemake
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>snakemake<span class="w"> </span>--version
+</code></pre></div>
+<p>The launcher environment holds Snakemake and its Python, which reads the configuration and runs
+FunFlux's checks before any job starts. Activate it before every run. Install no analysis tool
+into it, because each tool runs in its own environment and every FunFlux script runs with the
+pinned Python of its rule's environment.</p>
+<p>Snakemake prints a warning unless conda uses strict channel priority, set with
+<code>conda config --set channel_priority strict</code>. To let Snakemake send the steps to a Slurm cluster,
+add <code>snakemake-executor-plugin-slurm</code> to this environment, as described under
+<a href="../../reference/running/#cluster-run-a">Run A: Snakemake sends each step to Slurm</a>.</p>
+<p>FunFlux sets <code>PYTHONNOUSERSITE=1</code> for every job, so packages installed with <code>pip install --user</code>
+cannot be used instead of the packages of a rule environment.</p>
+<h3 id="host-commands">Commands outside the conda environments<a class="headerlink" href="#host-commands" title="Permanent link">¶</a></h3>
+<p>A few commands come from the computer itself, not from a conda environment, and FunFlux does not
+install them. Two kinds of rule take commands from outside a tool environment:</p>
+<ul>
+<li><strong>Rules without a conda environment</strong> run standard shell commands only, and take them from the
+  launcher environment and the machine. They are the contig filter (<code>filter_contigs</code>),
+  <code>finalize_assembly</code>, the links to local databases (<code>unite_db_local</code>, <code>antismash_db_local</code>) and
+  <code>cleanup</code>.</li>
+<li><strong>Rules with a conda environment</strong> take their commands from the environment, and from the
+  machine for every command the environment lacks. Most environments lack the standard commands
+  of the shell lines around the tool, such as <code>awk</code>, <code>grep</code>, <code>sed</code>, <code>find</code>, <code>mkdir</code> and <code>rm</code>. The
+  download steps take <code>sha256sum</code> and <code>md5sum</code> from the machine.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Every command in the next table must be installed on the machine itself, outside conda</p>
+<p>When Snakemake activates a rule's environment, conda, with its default settings, takes the
+launcher environment off the <code>PATH</code>. The rules that run in a conda environment therefore find
+these commands only on the machine's own <code>PATH</code>.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bash</code></td>
+<td>every rule: Snakemake runs the shell lines of each rule with bash</td>
+</tr>
+<tr>
+<td><code>sha256sum</code>, <code>md5sum</code></td>
+<td>checking the downloads: the funannotate database, the Tiberius model, the telomere repeat database and ChroQueTas (<code>sha256sum</code>), UNITE (<code>md5sum</code>)</td>
+</tr>
+<tr>
+<td><code>awk</code>, <code>grep</code>, <code>sed</code>, <code>find</code>, and basic commands such as <code>head</code>, <code>cat</code>, <code>cp</code>, <code>ln</code>, <code>mkdir</code>, <code>rm</code></td>
+<td>the contig filter, copies, links to local databases, and the shell lines around the tool in most rules (<code>awk</code> and <code>grep</code> in <code>its_windows</code> and <code>signalp6_annotation</code>, <code>grep</code> in <code>genemark_check</code>, <code>sed</code> in <code>eggnog_annotation</code>, <code>find</code> in <code>completeness</code> and <code>iprscan_annotation</code>; in the read-based modes <code>awk</code> turns hifiasm's graph into FASTA and cuts the Polypolish headers, <code>grep</code> counts the SPAdes contigs the filter kept, <code>cat</code> reads the Medaka model file)</td>
+</tr>
+<tr>
+<td><code>grep</code> with <code>-P</code> (GNU grep), <code>sed</code>, and basic commands such as <code>cut</code>, <code>paste</code>, <code>tr</code></td>
+<td>ChroQueTas (rule <code>amr_chroquetas</code>, AMR screen on), a bash script that runs inside the chroquetas environment; the environment holds the tools it calls, not these commands</td>
+</tr>
+</tbody>
+</table>
+<p>These commands come from conda instead, so the machine does not need them:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Comes from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>python</code></td>
+<td>the pinned Python of each rule's environment (<a href="../../architecture/#which-python-runs-the-helper-scripts">Which Python runs the helper scripts</a>)</td>
+</tr>
+<tr>
+<td><code>curl</code>, <code>tar</code>, <code>gzip</code></td>
+<td>the <code>download</code> environment of the six download steps that use them (<code>download_phix</code>, <code>funannotate_db</code>, <code>unite_db</code>, <code>telomere_db</code>, <code>tiberius_model</code>, <code>chroquetas_db</code>)</td>
+</tr>
+<tr>
+<td><code>perl</code></td>
+<td>the <code>interproscan</code> environment, for InterProScan's SUPERFAMILY analysis and PROSITE patterns; the <code>funannotate</code> environment for GeneMark-ES, once its scripts start the first <code>perl</code> on the <code>PATH</code> (<a href="../external-tools/#genemark-es">GeneMark-ES</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>Check the machine's commands with no conda environment active:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>conda<span class="w"> </span>deactivate<span class="w">     </span><span class="c1"># repeat until no environment is active, base included</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">command</span><span class="w"> </span>-v<span class="w"> </span>bash<span class="w"> </span>sha256sum<span class="w"> </span>md5sum<span class="w"> </span>awk<span class="w"> </span>grep<span class="w"> </span>sed<span class="w"> </span>find
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nb">command</span><span class="w"> </span>-v<span class="w"> </span>cut<span class="w"> </span>paste<span class="w"> </span>tr<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>ok<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-P<span class="w"> </span><span class="s1">'o\w'</span><span class="w">   </span><span class="c1"># AMR screen on: the last line reads ok</span>
+</code></pre></div>
+<p>Install a missing command with the system package manager. Installing it into the launcher
+environment does not reach the rules that run in a conda environment. FunFlux has been tested on
+x86-64 Linux only.</p>
+<h2 id="sdm-conda"><code>--sdm conda</code>: one pinned environment per tool<a class="headerlink" href="#sdm-conda" title="Permanent link">¶</a></h2>
+<p>Every tool has its own environment file in <code>workflow/envs/</code>. With <code>--sdm conda</code>
+(short for <code>--software-deployment-method conda</code>), Snakemake builds the environments of the planned
+jobs before the first job starts and reuses them in later runs. A dry run lists the missing ones
+as <code>Conda environment workflow/envs/&lt;name&gt;.yaml will be created.</code></p>
+<p>Beside each <code>&lt;name&gt;.yaml</code> is its pin file, <code>&lt;name&gt;.linux-64.pin.txt</code>: the exact package builds of
+an environment FunFlux v2 was tested with, as written by <code>conda list --explicit</code>.</p>
+<p>What Snakemake installs depends on whether it can use the pin file:</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>What Snakemake installs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The pin file exists</td>
+<td>that list, without solving dependencies; it logs <code>Using pinnings from &lt;path&gt;/&lt;name&gt;.linux-64.pin.txt.</code></td>
+</tr>
+<tr>
+<td>Installing the pin file fails</td>
+<td>it prints a warning and solves <code>&lt;name&gt;.yaml</code> instead</td>
+</tr>
+<tr>
+<td>A platform other than <code>linux-64</code></td>
+<td>there is no pin file, and Snakemake always solves the yaml</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Only the pin file reproduces the tested builds</p>
+<p>The yaml fixes the versions of the main tools and of Python, but few of their dependencies.
+When Snakemake solves it, the versions and builds of everything else can differ from the
+pinned ones. That includes tools in the table below, such as AUGUSTUS, DIAMOND and HMMER, and
+the OpenJDK and PyTorch patch releases.</p>
+</div>
+<p>The table lists each environment, the tools in it and the runs that build it.</p>
+<table>
+<thead>
+<tr>
+<th>Environment</th>
+<th>Tools, versions from the pin file</th>
+<th>Built when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>funannotate</code></td>
+<td>funannotate 1.8.17 with AUGUSTUS 3.5.0, SNAP 2017_03_01, GlimmerHMM 3.0.4, EVidenceModeler 1.1.1, DIAMOND 2.2.4, tRNAscan-SE 2.0.13, Perl 5.32.1</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>interproscan</code></td>
+<td>OpenJDK 11.0.30, Python 3.11.15 and Perl 5.32.1, the Java, Python and Perl your InterProScan runs with</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>eggnog-mapper</code></td>
+<td>eggNOG-mapper 2.1.13, DIAMOND 2.0.15</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>antismash</code></td>
+<td>antiSMASH 8.0.4</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>busco</code></td>
+<td>BUSCO 6.0.0</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>quast</code></td>
+<td>QUAST 5.3.0</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>itsx</code></td>
+<td>ITSx 1.1.3, HMMER 3.4, Python 3.12.13</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>vsearch</code></td>
+<td>VSEARCH 2.30.0, Python 3.12.15</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>tidk</code></td>
+<td>tidk 0.3.0, Python 3.12</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>download</code></td>
+<td>curl 8.22.0, tar 1.35, gzip 1.14, for the download steps; 120 MB</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>python</code></td>
+<td>Python 3.12.15 and nothing else, for the FunFlux scripts whose rule has no tool environment: the contig selector, the mitochondrion screen and split, the assembler's evidence table, the repair of the funannotate database paths, the AUGUSTUS model check</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>repeatmasking</code></td>
+<td>tantan 51, RepeatModeler 2.0.8, RepeatMasker 4.2.3</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>multiqc</code></td>
+<td>MultiQC 1.33</td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>blast</code></td>
+<td>BLAST+ 2.16.0</td>
+<td>the screen</td>
+</tr>
+<tr>
+<td><code>blobtools</code></td>
+<td>BlobTools 1.1.1</td>
+<td>the screen</td>
+</tr>
+<tr>
+<td><code>minimap</code></td>
+<td>minimap2 2.30, samtools 1.21</td>
+<td>the screen in <code>contigs</code>, <code>longread</code> and <code>hybrid</code> mode (<code>illumina</code> maps with bowtie2)</td>
+</tr>
+<tr>
+<td><code>signalp6</code></td>
+<td>Python 3.10, PyTorch 1.13.1 (CPU); SignalP 6 itself comes from your archive</td>
+<td><code>parameters.signalp6.mode</code> not <code>off</code></td>
+</tr>
+<tr>
+<td><code>tiberius</code></td>
+<td>Tiberius 1.1.8, TensorFlow 2.17.0 (CPU build), Python 3.12.15; about 2 GB</td>
+<td><code>parameters.tiberius.mode</code> <code>on</code>, the default</td>
+</tr>
+<tr>
+<td><code>bowtie</code></td>
+<td>bowtie2 2.5.4, samtools 1.21, Python 3.14.6</td>
+<td><code>illumina</code>, <code>hybrid</code> (PhiX removal, read mapping, read selection)</td>
+</tr>
+<tr>
+<td><code>fastp</code></td>
+<td>fastp 1.0.1</td>
+<td><code>illumina</code>, <code>hybrid</code></td>
+</tr>
+<tr>
+<td><code>spades</code></td>
+<td>SPAdes 4.2.0, Python 3.14.6</td>
+<td><code>illumina</code>, <code>hybrid</code></td>
+</tr>
+<tr>
+<td><code>qualimap</code></td>
+<td>Qualimap 2.3, OpenJDK 25.0.2, Python 3.14.6</td>
+<td><code>illumina</code>, <code>longread</code>, <code>hybrid</code></td>
+</tr>
+<tr>
+<td><code>filtlong</code></td>
+<td>Filtlong 0.3.1</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+</tr>
+<tr>
+<td><code>nanoplot</code></td>
+<td>NanoPlot 1.46.2, Python 3.13.14</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+</tr>
+<tr>
+<td><code>hifiasm</code></td>
+<td>hifiasm 0.25.0</td>
+<td><code>longread</code>, <code>hybrid</code> with <code>assembler: hifiasm</code>, the default</td>
+</tr>
+<tr>
+<td><code>flye</code></td>
+<td>Flye 2.9.6, Python 3.13.16</td>
+<td><code>longread</code>, <code>hybrid</code> with <code>assembler: flye</code></td>
+</tr>
+<tr>
+<td><code>medaka</code></td>
+<td>Medaka 2.2.2, Python 3.12.13 (with its own minimap2 2.31 and samtools 1.23.1)</td>
+<td><code>longread</code>, <code>hybrid</code>: ONT samples with Medaka (the model check and the polishing)</td>
+</tr>
+<tr>
+<td><code>polypolish</code></td>
+<td>Polypolish 0.6.1, BWA 0.7.19</td>
+<td><code>hybrid</code></td>
+</tr>
+<tr>
+<td><code>chroquetas</code></td>
+<td>miniprot 0.14, BLAST+ 2.16.0, MAFFT 7.525, SeqKit 2.1.0, EMBOSS 6.6.0 (the versions the ChroQueTas authors pin in their own conda package), Python 3.12.15; ChroQueTas itself is downloaded by rule <code>chroquetas_db</code>; about 2 GB</td>
+<td><code>parameters.amr.chroquetas: on</code></td>
+</tr>
+</tbody>
+</table>
+<p>By default every mode builds the same 14 environments, the <code>always</code> rows and tiberius, most of
+them for the steps after the assembly. The screen and the read-based front ends add theirs to
+these 14, up to 26 in <code>hybrid</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Added</th>
+<th>Environments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contigs</code> with the screen</td>
+<td>blast, blobtools, minimap</td>
+<td>17</td>
+</tr>
+<tr>
+<td><code>illumina</code></td>
+<td>blast, blobtools, bowtie, fastp, spades, qualimap</td>
+<td>20</td>
+</tr>
+<tr>
+<td><code>longread</code></td>
+<td>blast, blobtools, minimap, filtlong, nanoplot, qualimap, hifiasm or flye; medaka for ONT samples with Medaka</td>
+<td>21 or 22</td>
+</tr>
+<tr>
+<td><code>hybrid</code></td>
+<td>the <code>longread</code> set plus bowtie, fastp, spades, polypolish</td>
+<td>25 or 26</td>
+</tr>
+</tbody>
+</table>
+<p>In every mode, SignalP 6 adds signalp6 and the AMR screen adds chroquetas, while switching
+Tiberius off removes tiberius.</p>
+<h3 id="build-in-advance">Building the environments in advance<a class="headerlink" href="#build-in-advance" title="Permanent link">¶</a></h3>
+<p>The environments can be built before the first run, with one command:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--conda-create-envs-only<span class="w"> </span>--configfile<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+<p>This builds every environment the configured run needs and exits without starting a job.
+Snakemake plans the run to find them, so the configuration must pass FunFlux's checks (mode, input
+folder, annotation table). With <code>--list-conda-envs</code> in place of <code>--conda-create-envs-only</code>,
+Snakemake prints each environment file with the folder it is built in.</p>
+<p>Next, run <code>snakemake download_all</code> to fetch, in the same way, every file the run downloads:
+databases, models, a named BUSCO lineage and the Medaka weights. It is needed only when Snakemake
+itself will run without internet, as in a batch job on a compute node. See
+<a href="../../reference/running/#cluster-preparation">Preparation, on a computer with internet</a>.</p>
+<h2 id="conda-prefix">Sharing environments: <code>--conda-prefix</code><a class="headerlink" href="#conda-prefix" title="Permanent link">¶</a></h2>
+<p>Without <code>--conda-prefix</code>, the environments are built in <code>.snakemake/conda/</code> of the launch folder,
+so all runs started from one clone share them. <code>--conda-prefix</code> puts them in a folder of your
+choice, which several clones, users or projects can share:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--conda-prefix<span class="w"> </span>/path/to/funflux_envs<span class="w"> </span>--cores<span class="w"> </span><span class="m">24</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span>--configfile<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+<p><code>export SNAKEMAKE_CONDA_PREFIX=/path/to/funflux_envs</code> before the command has the same effect.</p>
+<ul>
+<li><strong>Each environment</strong> is a folder named <code>&lt;hash&gt;_</code>, a code Snakemake computes from the yaml file,
+  the pin file and the path of the prefix. A FunFlux update that changes a yaml or pin file builds
+  a new folder beside the old one.</li>
+<li><strong>Moving or renaming the prefix</strong> rebuilds every environment, because conda environments
+  contain absolute paths. In an output folder made from the same launch folder, Snakemake then
+  re-runs every finished step that has an environment, and the steps after it, as described under
+  <a href="../../reference/running/#conda-environments">Conda environments</a>. Choose the prefix once.</li>
+<li><strong>Old folders</strong> stay until you delete them. To see which ones are in use, run
+  <code>--list-conda-envs</code> with the same <code>--conda-prefix</code> and configuration. A configuration without
+  the screen or SignalP 6 lists fewer. A <code>&lt;hash&gt;_</code> folder, with its <code>&lt;hash&gt;_.*</code> files, can be
+  deleted when no configuration or clone using the prefix lists it. In a shared prefix, collect
+  the lists of all configurations first. Do not use <code>--conda-cleanup-envs</code> for this, because in
+  Snakemake 9.14.6 it deletes the environments of the current workflow.</li>
+<li><strong>With the screen or SignalP 6</strong>, the prefix must be writable by whoever runs FunFlux. BlobTools
+  writes its taxonomy index (<code>nodesDB.txt</code>) into its environment, and <code>install_signalp6</code> installs
+  SignalP 6 into the <code>signalp6</code> environment.</li>
+<li><strong>A rebuilt <code>signalp6</code> environment</strong> no longer contains SignalP 6. The next run stops in
+  <code>signalp6_annotation</code> and asks you to delete <code>00.resources/signalp6/installation.json</code>. See
+  <a href="../../troubleshooting/#signalp-6">Troubleshooting</a>.</li>
+<li><strong>With SignalP 6 on</strong>, everyone who uses the prefix also uses the SignalP 6 installed in it,
+  which is licensed to the person who installed it.</li>
+<li><strong>On a cluster</strong>, the prefix must be on storage the compute nodes see, under the same path. See
+  <a href="../../reference/running/#cluster-storage">Shared storage</a>.</li>
+</ul>
+<p>Continue with <a href="../databases/">Reference databases</a> and
+<a href="../external-tools/">Licensed and external tools</a>, then <a href="../quick-start/">Quick start</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

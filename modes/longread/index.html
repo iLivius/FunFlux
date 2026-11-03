@@ -1,0 +1,2882 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/modes/longread/">
+      
+      
+        <link rel="prev" href="../illumina/">
+      
+      
+        <link rel="next" href="../hybrid/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Long reads (ONT and PacBio HiFi) - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#long-reads-ont-and-pacbio-hifi" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Long reads (ONT and PacBio HiFi)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/external-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/from-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked="">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#one-technology-per-sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One technology per sample
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#read-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read filter
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#read-qc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read QC
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#medaka-model-checked-before-assembly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medaka model, checked before assembly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assembly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assembly
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Assembly">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hifiasm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hifiasm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flye" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flye
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hifiasm-or-flye" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hifiasm or Flye
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coverage-track-screen-and-polishing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage track, screen and polishing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tested-so-far" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tested so far
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/mitochondria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/assembly-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/contig-summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/gene-prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#one-technology-per-sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One technology per sample
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#read-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read filter
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#read-qc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read QC
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#medaka-model-checked-before-assembly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medaka model, checked before assembly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assembly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assembly
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Assembly">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hifiasm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hifiasm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flye" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flye
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hifiasm-or-flye" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hifiasm or Flye
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coverage-track-screen-and-polishing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage track, screen and polishing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tested-so-far" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tested so far
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/modes/longread.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="long-reads-ont-and-pacbio-hifi">Long reads (ONT and PacBio HiFi)<a class="headerlink" href="#long-reads-ont-and-pacbio-hifi" title="Permanent link">¶</a></h1>
+<p>Use <code>mode: longread</code> for Oxford Nanopore (ONT) or PacBio HiFi reads. FunFlux assembles the reads
+with hifiasm (the default) or Flye, runs the contamination and mitochondrion screen on the
+assembly, and polishes ONT assemblies with Medaka. This mode replaces FunFluxL 0.1. Which
+assembler to choose is discussed under <a href="#hifiasm-or-flye">hifiasm or Flye</a>.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>HiFi</strong></td>
+<td>PacBio's accurate long reads, each the consensus of several passes over one molecule (CCS)</td>
+</tr>
+<tr>
+<td><strong>coverage track</strong></td>
+<td>the filtered reads aligned back to <code>assembly.fasta</code>, kept as <code>contaminants/{sample}_map.bam</code>; BlobTools takes each contig's coverage from it and Qualimap its report</td>
+</tr>
+<tr>
+<td><strong>assembler evidence</strong></td>
+<td>what hifiasm or Flye report for each contig, above all read depth and circularity, written to <code>assembly_evidence.tsv</code> for the mitochondrion screen</td>
+</tr>
+<tr>
+<td><strong>basecaller tag</strong></td>
+<td>the <code>basecall_model_version_id=</code> field in ONT read headers, which names the basecaller model; with <code>medaka_model: auto</code>, Medaka reads it from the first 100 reads</td>
+</tr>
+<tr>
+<td><strong>purge level</strong></td>
+<td>how strongly hifiasm removes haplotigs from its primary contigs (<code>-l</code>, 0 to 3), set by <code>hifiasm.purge_dups</code>; <code>auto</code> passes nothing and keeps hifiasm's default</td>
+</tr>
+<tr>
+<td><strong>rDNA array</strong></td>
+<td>the tandem copies of the rDNA unit, SSU-ITS1-5.8S-ITS2-LSU; a contig with 3 or more units (by default) and fewer genes than units gets the verdict <code>rDNA_array</code></td>
+</tr>
+<tr>
+<td><strong>telomere array</strong></td>
+<td>tandem copies of the telomere repeat unit at a contig end; by default 5 or more copies within 25,000 bp of the end make a telomere</td>
+</tr>
+<tr>
+<td><strong>contig selector</strong></td>
+<td>rule <code>select_contigs</code>, the last step of the screen: it keeps or removes each contig by genus, as <code>parameters.decontamination</code> says; the default, <code>off</code>, keeps every contig</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="input">Input<a class="headerlink" href="#input" title="Permanent link">¶</a></h2>
+<p>FunFlux finds the long reads of each sample by their file name, in one folder:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Folder</td>
+<td><code>input.longread_dir</code></td>
+</tr>
+<tr>
+<td>ONT reads</td>
+<td><code>{sample}_ont.&lt;ext&gt;</code></td>
+</tr>
+<tr>
+<td>PacBio HiFi (CCS) reads</td>
+<td><code>{sample}_pacbio.&lt;ext&gt;</code></td>
+</tr>
+<tr>
+<td><code>&lt;ext&gt;</code></td>
+<td><code>fastq</code>, <code>fq</code>, <code>fastq.gz</code> or <code>fq.gz</code>, the same for every sample of the batch</td>
+</tr>
+</tbody>
+</table>
+<p>FunFlux takes one file per sample. An ONT run usually delivers many files per barcode folder, so
+join them first. Gzip files can be joined with <code>cat</code>, for example
+<code>cat fastq_pass/barcode01/*.fastq.gz &gt; reads/SAM1_ont.fastq.gz</code>.</p>
+<p>One batch may mix ONT and PacBio HiFi samples. A sample with both an <code>_ont</code> and a <code>_pacbio</code> file
+stops the run before any job starts:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>[FunFlux] sample 'SAM1' has both _ont and _pacbio files in /path/to/reads. Provide one long-read technology per sample.
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">PacBio reads must be HiFi, and nothing checks the read type</p>
+<p>Every PacBio step assumes HiFi (CCS) reads, and no tool in the chain is set up for continuous
+long reads (CLR). Nothing checks the read type, so a <code>_pacbio</code> file of CLR reads is assembled
+as if it held HiFi reads. The dry run prints a NOTE naming the <code>_pacbio</code> samples.</p>
+</div>
+<h2 id="one-technology-per-sample">One technology per sample<a class="headerlink" href="#one-technology-per-sample" title="Permanent link">¶</a></h2>
+<p>The file-name suffix tells FunFlux the technology of each sample, in <code>longread</code> and in <code>hybrid</code>
+mode, and sets the following per sample. The assembler (<code>parameters.&lt;mode&gt;.assembler</code>) is one for
+the whole run, and everything else is the same for both technologies.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>ONT (<code>_ont</code>)</th>
+<th>PacBio HiFi (<code>_pacbio</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hifiasm</td>
+<td><code>--ont</code></td>
+<td>no flag: hifiasm's HiFi mode</td>
+</tr>
+<tr>
+<td>Flye</td>
+<td><code>--nano-hq</code>, or <code>--nano-raw</code> (see <a href="#flye">Flye</a>)</td>
+<td><code>--pacbio-hifi</code></td>
+</tr>
+<tr>
+<td>minimap2 preset for the coverage track</td>
+<td><code>map-ont</code></td>
+<td><code>map-hifi</code></td>
+</tr>
+<tr>
+<td>Medaka</td>
+<td>yes, unless <code>medaka_model: false</code></td>
+<td>never</td>
+</tr>
+<tr>
+<td>Filtlong guided by the Illumina pairs (<code>hybrid</code> only)</td>
+<td>only with <code>short_read_guidance: true</code></td>
+<td>never</td>
+</tr>
+</tbody>
+</table>
+<p>PacBio HiFi samples therefore get neither Medaka nor the Filtlong guidance. In <code>hybrid</code> mode,
+Polypolish corrects the assemblies of both technologies with the Illumina pairs, as described on
+<a href="../hybrid/">Hybrid</a>.</p>
+<p>The dry run prints the decision for each sample. In <code>hybrid</code> mode the line also says
+<code>Filtlong guided by the Illumina reads</code> or <code>Filtlong not guided</code>. For a <code>longread</code> batch with one
+sample of each technology, the output reads:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Long-read assembler: hifiasm.
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Sample SAM1 will be processed.
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Sample SAM2 will be processed.
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>[FunFlux] SAM1: ont reads -&gt; hifiasm --ont, minimap2 map-ont, Medaka.
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>[FunFlux] SAM2: pacbio reads -&gt; hifiasm, minimap2 map-hifi, no Medaka.
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>[FunFlux] NOTE: samples with a _pacbio file are assumed to hold PacBio HiFi (CCS) reads: SAM2. Continuous long reads (CLR) are not supported by this workflow.
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>Medaka model will be worked out from the FASTQ headers (checked before assembly).
+</code></pre></div>
+<h2 id="flow">Flow<a class="headerlink" href="#flow" title="Permanent link">¶</a></h2>
+<pre class="mermaid"><code>---
+config:
+  themeVariables:
+    fontSize: 14px
+  flowchart:
+    nodeSpacing: 35
+    rankSpacing: 35
+---
+flowchart TD
+    LR([ONT or PacBio HiFi reads]) --&gt; FL[Filtlong]
+    LR --&gt;|ONT reads, Medaka on| MC[Medaka model check&lt;br/&gt;check_medaka_model]
+    FL --&gt; ASM[hifiasm or Flye]
+    MC --&gt; ASM
+    ASM --&gt; LS[screen of assembly.fasta&lt;br/&gt;BLAST, BlobTools, mitochondrion with assembler evidence]
+    LS --&gt;|PacBio HiFi, or Medaka off| OUT([contigs_all.fasta, then contigs_final.fasta&lt;br/&gt;and contigs_mitochondrial.fasta])
+    LS --&gt; MD[Medaka, ONT samples]
+    MC --&gt;|checked model| MD
+    MD --&gt; OUT</code></pre>
+<p>Filtlong filters the reads, hifiasm or Flye assembles them, and the screen examines
+<code>assembly.fasta</code> with BLAST, BlobTools and, for the mitochondrion, the assembler's evidence. For
+ONT samples, unless Medaka is off, <code>check_medaka_model</code> settles the model on the raw reads before
+the assembler starts, and Medaka polishes the screened assembly with that model. The polished
+assembly, or the screened one for PacBio HiFi samples or with Medaka off, becomes
+<code>contigs_all.fasta</code>, which is split into <code>contigs_final.fasta</code> and <code>contigs_mitochondrial.fasta</code>.</p>
+<h2 id="steps">Steps<a class="headerlink" href="#steps" title="Permanent link">¶</a></h2>
+<p>FunFlux filters the reads and reports on them, and checks the Medaka model of ONT samples before
+the assembler starts. It then screens the assembly and polishes ONT assemblies with Medaka before
+it writes the genome files.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Rule (as named in the console and in <code>logs/</code>)</th>
+<th>Tool</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read filter</td>
+<td><code>filter_long_reads</code></td>
+<td>Filtlong 0.3.1</td>
+<td><code>01.reads/{sample}/long/{sample}_filtered.fastq</code></td>
+</tr>
+<tr>
+<td>Read QC</td>
+<td><code>raw_long_read_qc</code>, <code>filtered_long_read_qc</code></td>
+<td>NanoPlot 1.46.2</td>
+<td><code>01.reads/{sample}/long/raw_qc/</code>, <code>filtered_qc/</code></td>
+</tr>
+<tr>
+<td>Model check (ONT with Medaka)</td>
+<td><code>check_medaka_model</code></td>
+<td>Medaka 2.2.2</td>
+<td><code>{sample}_medaka_model.txt</code></td>
+</tr>
+<tr>
+<td>Assembly</td>
+<td><code>long_read_assembly</code></td>
+<td>hifiasm 0.25.0 or Flye 2.9.6</td>
+<td><code>hifiasm/</code> or <code>flye/</code>, <code>assembly.fasta</code>, <code>assembly_provenance.tsv</code></td>
+</tr>
+<tr>
+<td>Assembler evidence</td>
+<td><code>assembly_evidence</code></td>
+<td>FunFlux script, Python 3.12</td>
+<td><code>assembly_evidence.tsv</code></td>
+</tr>
+<tr>
+<td>Coverage track</td>
+<td><code>map_contigs</code></td>
+<td>minimap2 2.30, samtools 1.21</td>
+<td><code>contaminants/{sample}_map.bam</code></td>
+</tr>
+<tr>
+<td>Mapping QC</td>
+<td><code>map_evaluation</code></td>
+<td>Qualimap 2.3</td>
+<td><code>eval/qualimap/</code></td>
+</tr>
+<tr>
+<td>Screen</td>
+<td><code>blast_contigs</code>, <code>blob_json</code>, <code>blob_table</code>, <code>screen_mitochondria</code>, <code>select_contigs</code></td>
+<td>BLAST+ 2.16.0, BlobTools 1.1.1</td>
+<td><code>contaminants/</code>, <code>mitochondria/</code></td>
+</tr>
+<tr>
+<td>Polishing (ONT with Medaka)</td>
+<td><code>long_read_consensus</code></td>
+<td>Medaka 2.2.2</td>
+<td><code>medaka/consensus.fasta</code></td>
+</tr>
+<tr>
+<td>Genome files</td>
+<td><code>finalize_assembly</code>, <code>separate_mitochondria</code></td>
+<td></td>
+<td><code>contigs_all.fasta</code>, <code>contigs_final.fasta</code>, <code>contigs_mitochondrial.fasta</code></td>
+</tr>
+</tbody>
+</table>
+<p>Paths without a stage prefix are under <code>02.assembly/{sample}/</code>. One sample plans 41 jobs, 43 for
+an ONT sample with Medaka, and the AMR screen adds 2
+(<a href="../../reference/running/#dry-run">Dry run</a>). The threads of each step are listed on
+<a href="../../reference/running/#cpu-cores-and-threads">CPU cores and threads</a>.</p>
+<h2 id="read-filter">Read filter<a class="headerlink" href="#read-filter" title="Permanent link">¶</a></h2>
+<p><code>filter_long_reads</code> runs Filtlong on the raw reads, without a reference. With the defaults,
+Filtlong drops reads under 1,000 bp and keeps the best reads up to 90 % of the bases, favouring
+long reads. The total is not capped unless <code>target_bases</code> is set.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Key in <code>parameters.longread.filtlong</code></th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--min_length</code></td>
+<td><code>min_length</code></td>
+<td>1000</td>
+<td>discards reads shorter than this</td>
+</tr>
+<tr>
+<td><code>--keep_percent</code></td>
+<td><code>keep_percent</code></td>
+<td>90</td>
+<td>keeps the best reads up to this percentage of the bases</td>
+</tr>
+<tr>
+<td><code>--length_weight</code></td>
+<td><code>length_weight</code></td>
+<td>10</td>
+<td>weight of read length in Filtlong's score (Filtlong default: 1); a higher value favours longer reads</td>
+</tr>
+<tr>
+<td><code>--target_bases</code></td>
+<td><code>target_bases</code></td>
+<td>empty</td>
+<td>empty: no cap. A size such as <code>2.4g</code> keeps the best reads up to that many bases, for a very deep run</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Without a reference, Filtlong scores read quality from the Phred scores. <code>--trim</code> and <code>--split</code>
+  need a reference and are not used in this mode. <a href="../hybrid/"><code>hybrid</code></a> mode can score ONT reads
+  against Illumina pairs instead, when you switch that on.</li>
+<li>The defaults are sized for ONT reads. For PacBio HiFi reads they are provisional, because they
+  have run on one public dataset only
+  (<a href="../../about/validation/#pacbio-hifi-reads-cordyceps-cateniannulata-gxu-8616">PacBio HiFi reads</a>).</li>
+<li>The filtered reads are kept, uncompressed. Filtlong's report, which counts the reads and bases in
+  and the reads and bases kept, is <code>logs/filter_long_reads_{sample}.log</code>.</li>
+</ul>
+<h2 id="read-qc">Read QC<a class="headerlink" href="#read-qc" title="Permanent link">¶</a></h2>
+<p>NanoPlot reports on the raw reads (<code>raw_qc/</code>) and on the filtered reads (<code>filtered_qc/</code>), with read
+lengths on a log scale, so that the two reports show what Filtlong removed. A NanoPlot failure
+leaves a <code>[FunFlux]</code> line in the log and does not stop the run. The MultiQC page then has no
+read-QC row for the sample.</p>
+<h2 id="medaka-model-checked-before-assembly">Medaka model, checked before assembly<a class="headerlink" href="#medaka-model-checked-before-assembly" title="Permanent link">¶</a></h2>
+<p>Medaka polishes after the assembly and the screen, and its model has to match the basecaller that
+produced the reads. <code>check_medaka_model</code> settles the model on the raw ONT reads before the
+assembler starts, so a wrong model stops the run within seconds instead of hours later. PacBio HiFi
+samples are not checked.</p>
+<p>Keep <code>auto</code> when the reads still carry their basecaller tag, name the model when they do not, and
+set <code>false</code> to skip Medaka.</p>
+<table>
+<thead>
+<tr>
+<th><code>parameters.longread.medaka_model</code></th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auto</code> (default; also empty or an unquoted <code>null</code>, <code>true</code>, <code>yes</code>, <code>on</code>, <code>1</code>)</td>
+<td>model worked out from the basecaller tag in the FASTQ headers</td>
+</tr>
+<tr>
+<td>a model name, e.g. <code>r1041_e82_400bps_sup_v4.3.0</code></td>
+<td>that model, after checking that this Medaka version has it</td>
+</tr>
+<tr>
+<td><code>false</code> (also <code>0</code>, <code>no</code>, <code>off</code>, <code>none</code>, and <code>null</code> in quotes)</td>
+<td>no Medaka; <code>contigs_all.fasta</code> is the screened assembly</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>auto</code> asks Medaka for its generic <code>consensus</code> model for the basecaller named in the reads. It
+  needs exactly one basecaller tag (<code>basecall_model_version_id=</code>) among the first 100 reads. Reads
+  from public archives, or reads pooled from several basecalling runs, often lack tags or mix
+  them, so name the model for those. <code>zcat reads.fastq.gz | head -n 1</code> shows what a file carries.</li>
+<li>Medaka downloads the weights of a model the first time it uses that model, so the first run
+  needs network access. The download happens during the check, for a named model and with <code>auto</code>,
+  on the computer that runs Snakemake, and polishing then needs no network. Medaka 2.2.2 ships the
+  weights of four models, which need no download.</li>
+<li>A named model that this Medaka version does not have stops the run with a table of the closest
+  models, printed to the console as well as to <code>logs/check_medaka_model_{sample}.log</code>.
+  <code>medaka_model_fallback_auto: true</code> makes it fall back to <code>auto</code> instead, with a warning.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Changing <code>medaka_model</code> re-runs the assembly of every ONT sample</p>
+<p>The resolved model is written to <code>02.assembly/{sample}/{sample}_medaka_model.txt</code>, and the
+assembler waits for this file. A changed <code>medaka_model</code> therefore re-runs the assembly of every
+ONT sample.</p>
+</div>
+<p>How the model is checked or worked out, and what can fail, is described on
+<a href="../../methods/medaka-model/">The Medaka model</a>.</p>
+<h2 id="assembly">Assembly<a class="headerlink" href="#assembly" title="Permanent link">¶</a></h2>
+<p>One assembler serves the whole run, <code>parameters.longread.assembler: hifiasm</code> (the default) or
+<code>flye</code>. Either way, the same three files end up next to the assembler's own folder, so the screen
+reads the same draft and the same evidence table whichever assembler ran:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Content</th>
+<th>Written by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>assembly.fasta</code></td>
+<td>the assembly the screen examines</td>
+<td><code>long_read_assembly</code></td>
+</tr>
+<tr>
+<td><code>assembly_evidence.tsv</code></td>
+<td>per contig: <code>contig</code>, <code>source</code>, <code>circular</code>, <code>coverage</code>, <code>repeat</code>, <code>alt_group</code>; read by the mitochondrion screen</td>
+<td><code>assembly_evidence</code>, a short step right after the assembly, from the assembler's own per-contig file</td>
+</tr>
+<tr>
+<td><code>assembly_provenance.tsv</code></td>
+<td>assembler, version, read type, input file and command line</td>
+<td><code>long_read_assembly</code></td>
+</tr>
+</tbody>
+</table>
+<p>If <code>assembly_evidence</code> fails, the run stops there, but the assembly stays on disk. The next run
+makes the table again without assembling again.</p>
+<h3 id="hifiasm">hifiasm<a class="headerlink" href="#hifiasm" title="Permanent link">¶</a></h3>
+<p>With hifiasm, <code>long_read_assembly</code> runs this command. The options in brackets come from the keys
+in the table that follows it, and <code>--ont</code> is added for ONT reads.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>hifiasm -i --primary -f &lt;bloom_filter_bits&gt; [--hg-size ...] [-l ...] [--hom-cov ...] [--telo-m ...] [--ont] \
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    -t &lt;resources.threads&gt; -o hifiasm/hifiasm &lt;filtered reads&gt;
+</code></pre></div>
+<p><code>assembly.fasta</code> holds the primary contigs of <code>hifiasm/hifiasm.p_ctg.gfa</code>, and the rule stops when
+the graph holds no contig. The coverage in the evidence table is the <code>rd:i</code> read depth of each
+contig, and a contig whose name ends in <code>c</code> is recorded as circular. <code>-i</code> makes hifiasm ignore read
+corrections and overlaps saved by an earlier run.</p>
+<table>
+<thead>
+<tr>
+<th>Key in <code>parameters.longread.hifiasm</code></th>
+<th>Default</th>
+<th>hifiasm option (hifiasm 0.25.0 help)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>genome_size</code></td>
+<td>empty</td>
+<td><code>--hg-size</code>: estimated haploid genome size, used to infer read coverage, e.g. <code>40m</code>. Empty: hifiasm infers it</td>
+</tr>
+<tr>
+<td><code>bloom_filter_bits</code></td>
+<td>0</td>
+<td><code>-f</code>: bits of the bloom filter; 0 disables it (hifiasm default: 37)</td>
+</tr>
+<tr>
+<td><code>purge_dups</code></td>
+<td><code>auto</code></td>
+<td><code>-l</code>: purge level, 0 none, 1 light, 2 or 3 aggressive. <code>auto</code> passes nothing</td>
+</tr>
+<tr>
+<td><code>homozygous_coverage</code></td>
+<td><code>auto</code></td>
+<td><code>--hom-cov</code>: read depth of the homozygous peak. <code>auto</code> passes nothing</td>
+</tr>
+<tr>
+<td><code>telomere_motif</code></td>
+<td>empty</td>
+<td><code>--telo-m</code>: "telomere motif at 5'-end; CCCTAA for human"</td>
+</tr>
+</tbody>
+</table>
+<p>With the defaults, the only assembly options hifiasm gets are <code>-i --primary -f 0</code>, plus <code>--ont</code> for
+ONT reads. It infers the read coverage and the homozygous coverage itself, but not the purge level.
+With no <code>-l</code>, hifiasm uses its own default, <code>-l 3</code> outside trio mode (hifiasm's mode for parental
+reads, which FunFlux does not use). No telomere motif is passed, because
+<code>parameters.longread.hifiasm.telomere_motif</code> is empty.</p>
+<h3 id="flye">Flye<a class="headerlink" href="#flye" title="Permanent link">¶</a></h3>
+<p>With Flye, <code>long_read_assembly</code> runs:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>flye &lt;read flag&gt; &lt;filtered reads&gt; --out-dir flye/ --threads &lt;resources.threads&gt; --iterations 5
+</code></pre></div>
+<p><code>--iterations 5</code> runs five rounds of Flye's own polishing (the Flye default is 1). Flye's
+<code>assembly.fasta</code> is copied from <code>flye/</code> up one level. The evidence table comes from
+<code>flye/assembly_info.txt</code>, which gives the mean read depth, the circularity, and the repeat and
+alternative-group flags.</p>
+<p><code>parameters.longread.flye_input_mode</code> sets the ONT flag. It takes <code>nano-hq</code>, <code>nano-raw</code> or <code>auto</code>
+(the default), while the <code>_pacbio</code> suffix alone decides <code>--pacbio-hifi</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Read flag</th>
+<th>Used for</th>
+<th>Flye 2.9.6 help</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--pacbio-hifi</code></td>
+<td>every PacBio sample</td>
+<td>PacBio HiFi reads (&lt;1% error)</td>
+</tr>
+<tr>
+<td><code>--nano-hq</code></td>
+<td>ONT samples with <code>flye_input_mode: nano-hq</code>, or with <code>auto</code> (default) unless <code>medaka_model</code> names a model with <code>fast</code> in its name</td>
+<td>ONT R10 reads, aka Q20 (&lt;3% error)</td>
+</tr>
+<tr>
+<td><code>--nano-raw</code></td>
+<td>ONT samples with <code>flye_input_mode: nano-raw</code>, or with <code>auto</code> when <code>medaka_model</code> names a model with <code>fast</code> in its name</td>
+<td>ONT reads with older chemistries, pre R9 Guppy5 (10-20% error)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">With <code>flye_input_mode: auto</code>, naming a fast Medaka model also changes Flye's read mode</p>
+<p>For ONT reads, <code>flye_input_mode: auto</code> follows the Medaka model. Naming a fast Medaka model
+then changes the assembler's read mode as well as the polisher. Set <code>flye_input_mode</code>
+explicitly to keep the two apart.</p>
+</div>
+<ul>
+<li><code>flye_input_mode: pacbio-hifi</code> stops the run with a message, because the <code>_pacbio</code> suffix
+  chooses <code>--pacbio-hifi</code>.</li>
+<li>With hifiasm, <code>flye_input_mode</code> is ignored, and a NOTE says so when it is set to anything but
+  <code>auto</code>.</li>
+<li>Flye does not repeat its assembly byte for byte from run to run.</li>
+<li>Very deep ONT data can leave Flye with no assembly. In BacFlux's runs on 300x to 1,000x reads of
+  five bacteria, Flye reported <code>Assembled 0 disjointigs</code>, while the 136x reads of B05.10 assembled
+  normally. For much deeper reads, cap them with <code>filtlong.target_bases</code> at about 100 times the
+  genome size, for example <code>4g</code> for a 40 Mb genome.</li>
+</ul>
+<h3 id="hifiasm-or-flye">hifiasm or Flye<a class="headerlink" href="#hifiasm-or-flye" title="Permanent link">¶</a></h3>
+<p>Both assemblers have run on the same reads of two public genomes, with the same settings apart
+from the assembler and the number of cores. The runs are described on
+<a href="../../about/validation/">Validation on public genomes</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Reads</th>
+<th>Assembler</th>
+<th>Contigs</th>
+<th>Of them, rDNA pieces</th>
+<th>N50 (Mb)</th>
+<th>Contigs with telomeres at both ends</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Botrytis cinerea</em> B05.10, ONT 136x</td>
+<td>hifiasm</td>
+<td>32</td>
+<td>13</td>
+<td>2.58</td>
+<td>15</td>
+</tr>
+<tr>
+<td></td>
+<td>Flye</td>
+<td>25</td>
+<td>0</td>
+<td>2.58</td>
+<td>6</td>
+</tr>
+<tr>
+<td><em>Cordyceps cateniannulata</em> GXU-8616, PacBio HiFi 85x</td>
+<td>hifiasm</td>
+<td>18</td>
+<td>7</td>
+<td>4.79</td>
+<td>7</td>
+</tr>
+<tr>
+<td></td>
+<td>Flye</td>
+<td>12</td>
+<td>0</td>
+<td>4.79</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<p>In these runs the N50 was the same with both assemblers, and hifiasm gave more contigs with
+telomeres at both ends, most clearly on the ONT reads (15 against 6).</p>
+<ul>
+<li><strong>Contigs</strong> are those of <code>contigs_final.fasta</code>, the nuclear genome, as QUAST counts them.</li>
+<li><strong>rDNA pieces</strong> are the contigs to which the <a href="../../analysis/contig-summary/">contig summary</a>
+  gives the verdict <code>rDNA_array</code>. hifiasm's extra contigs are such pieces of the rDNA array, which
+  Flye did not produce. Without them, hifiasm has fewer contigs than Flye: 19 against 25 on B05.10
+  and 11 against 12 on GXU-8616.</li>
+<li><strong>Telomeres</strong> come from the contig summary too: the last column counts the contigs with a
+  telomere array at both ends. On the ONT reads, 11 Flye contigs carry a telomere array at one end
+  only, against 4 with hifiasm.</li>
+<li>Each assembler ran once on each genome. Whether a contig is a whole chromosome is checked against
+  the reference on the validation page.</li>
+</ul>
+<h2 id="coverage-track-screen-and-polishing">Coverage track, screen and polishing<a class="headerlink" href="#coverage-track-screen-and-polishing" title="Permanent link">¶</a></h2>
+<p>The filtered reads are mapped to <code>assembly.fasta</code> with <code>minimap2 -ax map-ont</code> or <code>map-hifi</code>. The
+alignments, <code>contaminants/{sample}_map.bam</code>, are kept. BlobTools reads them for the read coverage
+of each contig, and Qualimap (<code>map_evaluation</code>) reports on them in <code>eval/qualimap/</code>. A Qualimap
+failure does not stop the run (<a href="../../analysis/assembly-qc/#qualimap-read-modes">Assembly QC</a>).</p>
+<p>The screen runs on <code>assembly.fasta</code> with BLAST (50 subjects and 5 alignments per subject),
+BlobTools and the contig selector. The mitochondrion screen also reads <code>assembly_evidence.tsv</code>,
+and decides as follows whether a contig is confirmed:</p>
+<table>
+<thead>
+<tr>
+<th>A BLAST hit to a mitochondrial genome covers</th>
+<th>Plus, from the assembler</th>
+<th>Contig</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>at least <code>very_strong_qcov</code> percent of it (70)</td>
+<td>nothing needed</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td>at least <code>min_direct_blast_qcov</code> percent of it (35)</td>
+<td>read depth at least <code>min_assembler_coverage_ratio</code> (3.0) times the median depth of the contigs</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td>at least <code>min_direct_blast_qcov</code> percent of it (35)</td>
+<td>a circle that is not a repeat or an alternative copy of another contig</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td>no hit</td>
+<td>circularity or depth</td>
+<td>never confirmed</td>
+</tr>
+</tbody>
+</table>
+<p>A BLAST hit is always needed, and the assembler's evidence lets a partial hit count. See
+<a href="../../analysis/mitochondria/">Mitochondria</a>.</p>
+<p><code>long_read_consensus</code> polishes <code>contaminants/contigs_decontam.fasta</code>, the contigs the contig
+selector kept, with the filtered reads:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>medaka_consensus -i &lt;filtered reads&gt; -d contaminants/contigs_decontam.fasta -x -t &lt;up to 12&gt; -m &lt;model&gt; -o medaka/
+</code></pre></div>
+<ul>
+<li><code>&lt;model&gt;</code> is the line in <code>{sample}_medaka_model.txt</code>: the checked name, or the path of the model
+  file <code>auto</code> found.</li>
+<li>A Medaka failure stops the run with a <code>[FunFlux] long_read_consensus:</code> line that names the model
+  and the log. Unlike the QC steps, polishing is never skipped on failure, because its output is
+  the genome.</li>
+<li>Medaka is distributed under the Oxford Nanopore Technologies Public License 1.0, which grants use
+  for research purposes. See <a href="../../about/licensing/">Licensing</a>.</li>
+</ul>
+<p><code>contigs_all.fasta</code> is then the Medaka consensus for ONT samples with Medaka, and
+<code>contigs_decontam.fasta</code> for PacBio HiFi samples or with Medaka off.
+<code>logs/finalize_assembly_{sample}.log</code> names the file that was copied. <code>separate_mitochondria</code>
+splits <code>contigs_all.fasta</code> into <code>contigs_final.fasta</code> and <code>contigs_mitochondrial.fasta</code>, and QUAST
+reports on <code>contigs_final.fasta</code>.</p>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h2>
+<p><code>parameters.longread</code> is read only in <code>longread</code> mode, and <code>hybrid</code> mode reads the same keys from
+<code>parameters.hybrid</code>. An unknown key in the block stops the run. So do <code>long_read_assembler</code>,
+<code>flye_input_mode</code>, <code>medaka_model</code>, <code>filtlong</code> and <code>hifiasm</code> when they sit at the top of
+<code>parameters</code>, where FunFluxL kept its long-read settings, and the message then names their new
+place.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">longread</span><span class="p">:</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">assembler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hifiasm</span><span class="w">               </span><span class="c1"># hifiasm | flye</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nt">flye_input_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span><span class="w">            </span><span class="c1"># Flye, ONT samples: auto | nano-hq | nano-raw</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nt">medaka_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span><span class="w">               </span><span class="c1"># ONT samples: auto | a model name | false</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="nt">medaka_model_fallback_auto</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="nt">filtlong</span><span class="p">:</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">      </span><span class="nt">min_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">      </span><span class="nt">keep_percent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">      </span><span class="nt">length_weight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">      </span><span class="nt">target_bases</span><span class="p">:</span><span class="w">                  </span><span class="c1"># empty: no cap</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span><span class="nt">hifiasm</span><span class="p">:</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">      </span><span class="nt">genome_size</span><span class="p">:</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">      </span><span class="nt">bloom_filter_bits</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">      </span><span class="nt">purge_dups</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">      </span><span class="nt">homozygous_coverage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">      </span><span class="nt">telomere_motif</span><span class="p">:</span>
+</code></pre></div>
+<p><code>directories.blast_db</code> is required. Every key is listed on
+<a href="../../reference/configuration/">Configuration</a>.</p>
+<h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">¶</a></h2>
+<p>Each sample has its reads in <code>01.reads</code> and its assembly in <code>02.assembly</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&lt;output_dir&gt;/
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── 01.reads/{sample}/long/
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>│   ├── {sample}_filtered.fastq           Filtlong output (kept, uncompressed)
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>│   └── raw_qc/  filtered_qc/             NanoPlot
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>└── 02.assembly/{sample}/
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    ├── hifiasm/ or flye/                 the assembler's own files
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    ├── assembly.fasta  assembly_evidence.tsv  assembly_provenance.tsv
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    ├── {sample}_medaka_model.txt         ONT samples with Medaka
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>    ├── contaminants/                     BAM, BLAST table, BlobTools table, decisions, contigs_decontam.fasta
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>    ├── mitochondria/                     mitochondrial_screen.tsv, confirmed_mitochondrial.ids
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>    ├── medaka/consensus.fasta            ONT samples with Medaka
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>    ├── contigs_all.fasta  contigs_final.fasta  contigs_mitochondrial.fasta
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    └── eval/quast/  eval/busco/  eval/qualimap/  eval/telomere_*  eval/contig_summary*.tsv
+</code></pre></div>
+<p>In the MultiQC report a sample has the rows <code>NanoPlot raw read QC | {sample}</code>,
+<code>NanoPlot filtered read QC | {sample}</code>, <code>mapping QC | {sample}</code>, <code>QUAST assembly QC | {sample}</code> and
+its BUSCO rows, and one row per contig, <code>{sample}: {contig}</code>, in the contig summary table
+(<a href="../../analysis/report/">Report</a>). <code>03.taxonomy</code> to <code>06.report</code> are the same in every mode, as
+described on <a href="../../reference/output/">Output files</a>.</p>
+<h2 id="tested-so-far">Tested so far<a class="headerlink" href="#tested-so-far" title="Permanent link">¶</a></h2>
+<p>Each read type has run on one public genome, and each assembler at least once on each:</p>
+<table>
+<thead>
+<tr>
+<th>Reads</th>
+<th>Genome</th>
+<th>Assemblers that have run</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ONT, 136x and a 42x subsample</td>
+<td><em>Botrytis cinerea</em> B05.10</td>
+<td>hifiasm (both depths), Flye (136x)</td>
+<td><a href="../../about/validation/">Validation on public genomes</a></td>
+</tr>
+<tr>
+<td>PacBio HiFi, 85x</td>
+<td><em>Cordyceps cateniannulata</em> GXU-8616</td>
+<td>hifiasm, Flye</td>
+<td><a href="../../about/validation/#pacbio-hifi-reads-cordyceps-cateniannulata-gxu-8616">PacBio HiFi reads</a></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

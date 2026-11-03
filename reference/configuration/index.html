@@ -1,0 +1,4123 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/reference/configuration/">
+      
+      
+        <link rel="prev" href="../../methods/run-to-run-differences/">
+      
+      
+        <link rel="next" href="../output/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Configuration - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#configuration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configuration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/external-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/from-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/longread/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/mitochondria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/assembly-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/contig-summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/gene-prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#how-the-file-is-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the file is read
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-every-run-needs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What every run needs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        input
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        directories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        links
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parameters
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blast-database-and-hit-depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLAST database and hit depth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spades_kmers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        spades_kmers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decontamination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        decontamination
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitochondria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mitochondria
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#busco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        busco
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contig_summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        contig_summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#its-and-its_taxonomy_cutoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        its and its_taxonomy_cutoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#repeat-masking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repeat masking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        prediction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#genemark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        genemark
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiberius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tiberius
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signalp6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        signalp6
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amr
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#longread-and-hybrid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        longread and hybrid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contigs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        contigs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#annotation-parameter-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Annotation parameter table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coming-from-a-v1-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coming from a v1 configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#how-the-file-is-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the file is read
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-every-run-needs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What every run needs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        input
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        directories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        links
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parameters
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blast-database-and-hit-depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BLAST database and hit depth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spades_kmers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        spades_kmers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decontamination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        decontamination
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mitochondria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mitochondria
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#busco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        busco
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contig_summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        contig_summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#its-and-its_taxonomy_cutoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        its and its_taxonomy_cutoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#repeat-masking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repeat masking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        prediction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#genemark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        genemark
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiberius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tiberius
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signalp6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        signalp6
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        amr
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#longread-and-hybrid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        longread and hybrid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contigs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        contigs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#annotation-parameter-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Annotation parameter table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coming-from-a-v1-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coming from a v1 configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/reference/configuration.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h1>
+<p>One YAML file describes a FunFlux run: its mode, its input and output folders, the databases, the
+resources and the analysis settings. This page lists every key of that file, the modes that read
+it, its default and its allowed values. The template is <code>config/config.yaml</code>. Copy it, fill in the
+copy and pass it with <code>--configfile</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cp<span class="w"> </span>config/config.yaml<span class="w"> </span>config/config_custom.yaml
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--cores<span class="w"> </span><span class="m">24</span><span class="w"> </span>--configfile<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+<p>Without <code>--configfile</code>, the run stops at once with <code>[FunFlux] No configuration supplied.</code> Git
+ignores <code>config/config_custom.yaml</code>, so your filled-in copy is never committed.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>YAML</strong></td>
+<td>the text format of the configuration file, with keys indented under their block; unquoted <code>yes</code>, <code>on</code>, <code>true</code> read as true and <code>no</code>, <code>off</code>, <code>false</code> as false</td>
+</tr>
+<tr>
+<td><strong>NOTE</strong></td>
+<td>a line starting <code>[FunFlux] NOTE</code> that reports something to check without stopping the run; read them after every dry run</td>
+</tr>
+<tr>
+<td><strong>launch folder</strong></td>
+<td>the folder Snakemake is started from, normally the FunFlux repository; relative paths are read from it, and <code>.snakemake/</code> is created there</td>
+</tr>
+<tr>
+<td><strong>the screen</strong></td>
+<td>the contamination and mitochondrion screen of the draft assembly: BLAST against core_nt, BlobTools, the mitochondrion screen and the contig selector</td>
+</tr>
+<tr>
+<td><strong>batch</strong></td>
+<td>the samples one run finds in its mode's input folder; each needs a row in the annotation parameter table</td>
+</tr>
+<tr>
+<td><strong>funannotate database</strong></td>
+<td>the frozen snapshot of funannotate's data, such as Swiss-Prot, Pfam, the BUSCO set and stored AUGUSTUS models, downloaded once from Zenodo into <code>directories.funannotate_db</code></td>
+</tr>
+<tr>
+<td><strong>checksum (SHA-256)</strong></td>
+<td>a 64-character fingerprint of a file's content, printed by <code>sha256sum</code>; FunFlux checks several downloads against stored checksums and stops on a mismatch</td>
+</tr>
+<tr>
+<td><strong>heavy step, long step</strong></td>
+<td>on a cluster, heavy steps ask the scheduler for <code>ram_gb</code> and <code>runtime_hours</code>, and long steps for <code>runtime_hours</code> only</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="how-the-file-is-read">How the file is read<a class="headerlink" href="#how-the-file-is-read" title="Permanent link">¶</a></h2>
+<p>FunFlux checks the configuration before any job starts, so a dry run (<code>snakemake -n</code>) finds
+configuration errors in seconds. The first failing check stops the run, so repeat the dry run
+until it passes. A line <code>[FunFlux] NOTE: ...</code> does not stop the run.
+<a href="../../troubleshooting/">Troubleshooting</a> lists the messages.</p>
+<p>FunFlux treats a wrong, empty, missing or unknown entry as follows.</p>
+<table>
+<thead>
+<tr>
+<th>In the file</th>
+<th>What FunFlux does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a value outside the allowed values listed below</td>
+<td>stops the run with a message that starts <code>[FunFlux] &lt;key&gt;:</code></td>
+</tr>
+<tr>
+<td><code>nan</code> or <code>inf</code> (YAML <code>.nan</code>, <code>.inf</code>) where a number is expected</td>
+<td>refuses it, as above</td>
+</tr>
+<tr>
+<td>a missing optional key</td>
+<td>uses the default given in the tables below. The template ships the same value unless a table says otherwise</td>
+</tr>
+<tr>
+<td>a missing or empty required key</td>
+<td>stops the run</td>
+</tr>
+<tr>
+<td>a number key that is present but empty</td>
+<td>stops the run, unless its table lists empty as allowed. Delete the line to get the default</td>
+</tr>
+<tr>
+<td>an unknown or misplaced key under <code>parameters</code></td>
+<td>stops the run with a message that lists the known keys or names the right place</td>
+</tr>
+<tr>
+<td>a misspelt optional key in the blocks <code>input</code>, <code>directories</code>, <code>files</code>, <code>links</code> or <code>resources</code></td>
+<td>ignores it without a message, because these blocks are not checked for unknown keys. With <code>antismash</code> instead of <code>antismash_db</code> in <code>directories</code>, for example, the antiSMASH database is downloaded</td>
+</tr>
+<tr>
+<td>a misspelt top-level key</td>
+<td>ignores it without a message, because top-level keys are not checked either. With a misspelt <code>parameter:</code> block, every key under <code>parameters</code> takes its default</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Outside <code>parameters</code>, a misspelt optional key is ignored without a message</p>
+<p>A misspelt key or a refused value under <code>parameters</code> stops the run before any job starts. A
+misspelt optional key in another block is ignored, and its default is used. A misspelt
+<code>parameters</code> or <code>resources</code> block is ignored too, and all its keys take their defaults. Check
+those names yourself.</p>
+</div>
+<p>YAML reads unquoted <code>off</code>, <code>no</code> and <code>false</code> as false, and <code>on</code>, <code>yes</code> and <code>true</code> as true, before
+FunFlux sees them. What a key then does depends on the key:</p>
+<table>
+<thead>
+<tr>
+<th>Keys</th>
+<th>Unquoted <code>off</code>, <code>no</code> or <code>false</code></th>
+<th>Empty (<code>key:</code> or <code>key: ""</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code> of <code>decontamination</code>, <code>mitochondria</code>, <code>genemark</code>, <code>tiberius</code> and <code>signalp6</code>, and <code>amr.chroquetas</code></td>
+<td>read as <code>off</code>, so <code>decontamination.mode: off</code> works without quotes</td>
+<td>the default of the key (<code>off</code> for <code>amr.chroquetas</code>)</td>
+</tr>
+<tr>
+<td><code>amr.mito_genetic_code</code></td>
+<td>refused, and so is true</td>
+<td><code>auto</code></td>
+</tr>
+<tr>
+<td><code>nt_version</code>, <code>masking_method</code>, <code>busco.lineage</code>, <code>prediction.busco_db</code>, <code>assembler</code>, <code>flye_input_mode</code></td>
+<td>read as empty, so the default applies: <code>masking_method: off</code> still masks with tantan</td>
+<td>the default</td>
+</tr>
+</tbody>
+</table>
+<p>In a key that has an <code>off</code> value, <code>off</code> needs no quotes. The six keys of the last row
+have no such value, and an unquoted <code>off</code> gives their default. <code>tiberius.mode</code> and
+<code>amr.chroquetas</code> also read an unquoted <code>on</code>, <code>yes</code> or <code>true</code> as <code>on</code>.</p>
+<p>A relative path is read from the launch folder, not from the folder of the configuration file and
+not from <code>output_dir</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Keys</th>
+<th>A relative path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>output_dir</code>, the <code>directories.*_db</code> paths, <code>files.iprscan</code>, <code>files.annotation_params</code>, the protein files of the <a href="#annotation-parameter-table">annotation parameter table</a></td>
+<td>is made absolute as FunFlux reads it</td>
+</tr>
+<tr>
+<td><code>directories.genemark_dir</code>, <code>files.signalp6_archive</code></td>
+<td>stops the run when GeneMark or SignalP 6 is on, because these must already be absolute</td>
+</tr>
+</tbody>
+</table>
+<p>Write absolute paths unless you know the launch folder in advance.</p>
+<p>The Modes column of the tables below names the modes that read a key, and the other modes ignore
+it. "screen" stands for the contamination and mitochondrion screen, which runs in <code>illumina</code>,
+<code>longread</code> and <code>hybrid</code> mode, and in <code>contigs</code> mode with <code>parameters.contigs.screen: true</code>.</p>
+<h2 id="what-every-run-needs">What every run needs<a class="headerlink" href="#what-every-run-needs" title="Permanent link">¶</a></h2>
+<p>These are the keys to fill in. The <code>links</code> come filled in, and every key under <code>parameters</code> has a
+default.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Set it to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td><code>illumina</code>, <code>longread</code>, <code>hybrid</code> or <code>contigs</code> (<a href="../../getting-started/choosing-a-mode/">Choosing a mode</a>)</td>
+</tr>
+<tr>
+<td><code>input.illumina_dir</code>, <code>input.longread_dir</code> or <code>input.contigs_dir</code></td>
+<td>the input folder of the mode, and in <code>hybrid</code> mode the first two</td>
+</tr>
+<tr>
+<td><code>directories.output_dir</code></td>
+<td>the folder for results and logs</td>
+</tr>
+<tr>
+<td><code>directories.eggnog_db</code>, <code>directories.funannotate_db</code></td>
+<td>the eggNOG-mapper data, and the folder for the funannotate database (<a href="../../getting-started/databases/">Reference databases</a>)</td>
+</tr>
+<tr>
+<td><code>directories.blast_db</code></td>
+<td>the NCBI BLAST database folder, when the screen runs</td>
+</tr>
+<tr>
+<td><code>files.annotation_params</code></td>
+<td>the <a href="#annotation-parameter-table">annotation parameter table</a></td>
+</tr>
+<tr>
+<td><code>files.iprscan</code></td>
+<td>the InterProScan launcher (<a href="../../getting-started/external-tools/">Licensed and external tools</a>)</td>
+</tr>
+<tr>
+<td><code>resources.threads</code></td>
+<td>the number you give to <code>--cores</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="mode"><code>mode</code><a class="headerlink" href="#mode" title="Permanent link">¶</a></h2>
+<p>The top-level key <code>mode</code> selects the input mode of the run.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td>required; <code>illumina</code> in the template</td>
+<td><code>illumina</code>, <code>longread</code>, <code>hybrid</code>, <code>contigs</code> (case and surrounding spaces are ignored)</td>
+<td>all</td>
+<td>Selects the input type, how the reads are cleaned and assembled, and the input folder that is searched for samples. The contamination and mitochondrion screen and every later step except polishing are the same in all modes.</td>
+</tr>
+</tbody>
+</table>
+<p>A configuration without <code>mode</code> is taken for a FunFlux 1.x, FunFluxL or FunFluxL+ configuration, and
+the run stops with a message that points to <a href="../../getting-started/from-v1/">Coming from v1</a>.</p>
+<h2 id="input"><code>input</code><a class="headerlink" href="#input" title="Permanent link">¶</a></h2>
+<p>The <code>input</code> block names the folders that FunFlux searches for samples. A run reads only the keys
+of its mode.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">input</span><span class="p">:</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">illumina_dir</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w">             </span><span class="c1"># illumina, hybrid</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">longread_dir</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w">             </span><span class="c1"># longread, hybrid</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">contigs_dir</span><span class="p">:</span><span class="w">  </span><span class="s">""</span><span class="w">             </span><span class="c1"># contigs</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>illumina_dir</code></td>
+<td>required in its modes</td>
+<td>an existing folder holding <code>{sample}_R1.&lt;ext&gt;</code> and <code>{sample}_R2.&lt;ext&gt;</code></td>
+<td><code>illumina</code>, <code>hybrid</code></td>
+<td>Paired-end reads. Samples are found from the R1 files, and an R1 file without its R2 stops the run.</td>
+</tr>
+<tr>
+<td><code>longread_dir</code></td>
+<td>required in its modes</td>
+<td>an existing folder holding <code>{sample}_ont.&lt;ext&gt;</code> or <code>{sample}_pacbio.&lt;ext&gt;</code></td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td>Long reads. The suffix sets the technology of each sample, <code>_ont</code> for Oxford Nanopore and <code>_pacbio</code> for PacBio HiFi (CCS). One batch may mix both, but a sample with both files stops the run. In <code>hybrid</code> mode it may be the same folder as <code>illumina_dir</code>.</td>
+</tr>
+<tr>
+<td><code>contigs_dir</code></td>
+<td>required in its mode</td>
+<td>an existing folder holding <code>{sample}.fasta</code>, <code>{sample}.fa</code> or <code>{sample}.fna</code></td>
+<td><code>contigs</code></td>
+<td>One assembly per sample.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Read files end in <code>fastq</code>, <code>fq</code>, <code>fastq.gz</code> or <code>fq.gz</code>. All files of one kind in a batch
+  (Illumina reads, long reads, assemblies) must share one extension, and two extensions stop the
+  run.</li>
+<li>A <code>_pacbio</code> file is taken to hold HiFi reads, and a NOTE says so. PacBio CLR reads are not
+  supported.</li>
+<li>In <code>hybrid</code> mode every sample needs Illumina and long reads. The run stops and lists the samples
+  that lack either.</li>
+<li>In <code>contigs_dir</code> every file whose name contains a dot is taken as a sample, and the last dot
+  splits off the extension (<code>my.genome.fasta</code> is the sample <code>my.genome</code>). Keep nothing else there.
+  A <code>README.txt</code> stops the run with the two-extensions error, and a FASTA in a subfolder becomes a
+  sample name containing <code>/</code>, which is refused.</li>
+</ul>
+<p>Sample names become file names, report labels and the locus-tag prefix of every gene
+(<code>funannotate predict --name</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Sample name</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>contains a space or one of <code>* # @ % ^ / ! ? &amp; : ; | &lt; &gt;</code></td>
+<td>stops the run</td>
+</tr>
+<tr>
+<td>contains underscores or dots</td>
+<td>allowed</td>
+</tr>
+<tr>
+<td>is not 3 to 12 letters or digits starting with a letter</td>
+<td>runs, with a NOTE that its gene IDs cannot be submitted to GenBank as they are</td>
+</tr>
+</tbody>
+</table>
+<p>A name such as <code>SAMPLE1</code>, 3 to 12 letters or digits starting with a letter, gets neither
+the stop nor the NOTE.</p>
+<h2 id="directories"><code>directories</code><a class="headerlink" href="#directories" title="Permanent link">¶</a></h2>
+<p>The <code>directories</code> block names the output folder and the folders of the databases and of
+GeneMark-ES.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">directories</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">output_dir</span><span class="p">:</span><span class="w">     </span><span class="s">""</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">blast_db</span><span class="p">:</span><span class="w">       </span><span class="s">""</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">eggnog_db</span><span class="p">:</span><span class="w">      </span><span class="s">""</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nt">funannotate_db</span><span class="p">:</span><span class="w"> </span><span class="s">""</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="nt">genemark_dir</span><span class="p">:</span><span class="w">   </span><span class="s">""</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="nt">antismash_db</span><span class="p">:</span><span class="w">   </span><span class="s">""</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="nt">unite_db</span><span class="p">:</span><span class="w">       </span><span class="s">""</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>output_dir</code></td>
+<td>required</td>
+<td>any path</td>
+<td>all</td>
+<td>Root of every result and log, created by the first job. Later runs with the same <code>output_dir</code> reuse the databases and the SignalP 6 installation stored in <code>00.resources/</code>. Two things are written elsewhere: the funannotate database, in <code>directories.funannotate_db</code>, and Snakemake's <code>.snakemake/</code> folder, in the launch folder. The <code>.snakemake/</code> folder holds Snakemake's records of the run, the run logs and, unless <code>--conda-prefix</code> is given, the conda environments.</td>
+</tr>
+<tr>
+<td><code>blast_db</code></td>
+<td>required with the screen</td>
+<td>a folder</td>
+<td>screen</td>
+<td>The NCBI nucleotide BLAST database. The folder holds the files named after <code>parameters.nt_version</code> (for <code>core_nt</code>, <code>core_nt.nal</code> and the <code>core_nt.NN.*</code> volumes), the BLAST taxonomy files <code>taxdb.btd</code> and <code>taxdb.bti</code>, and the NCBI taxonomy files <code>nodes.dmp</code> and <code>names.dmp</code>. FunFlux prints a NOTE when the folder does not exist. Without the two <code>.dmp</code> files the dry run stops with Snakemake's <code>MissingInputException in rule blob_json</code>, and without <code>taxdb.*</code> the organism names in the BLAST table read <code>N/A</code>.</td>
+</tr>
+<tr>
+<td><code>eggnog_db</code></td>
+<td>required</td>
+<td>a folder</td>
+<td>all</td>
+<td>The eggNOG-mapper data (<code>eggnog.db</code>, <code>eggnog_proteins.dmnd</code>), passed to <code>emapper.py --data_dir</code>. FunFlux prints a NOTE when the folder does not exist.</td>
+</tr>
+<tr>
+<td><code>funannotate_db</code></td>
+<td>required</td>
+<td>a folder, which may not exist yet</td>
+<td>all</td>
+<td>The funannotate database. When the folder holds no <code>funannotate-db-info.txt</code>, the archive named in <code>links.funannotate_link</code> is downloaded into it, checked against its <code>.sha256</code> file and unpacked. The absolute paths stored inside the database are rewritten to this location once per output folder.</td>
+</tr>
+<tr>
+<td><code>genemark_dir</code></td>
+<td>empty: no GeneMark-ES</td>
+<td>absolute path of the folder holding an executable <code>gmes_petap.pl</code></td>
+<td>all</td>
+<td>With <code>parameters.genemark.mode: auto</code>, funannotate predict runs GeneMark-ES from here. The licence key <code>~/.gm_key</code> of the user who runs Snakemake must then exist, or the run stops.</td>
+</tr>
+<tr>
+<td><code>antismash_db</code></td>
+<td>empty: download</td>
+<td>a folder containing <code>clusterblast/</code></td>
+<td>all</td>
+<td>An antiSMASH database you already hold. It is linked into <code>00.resources/antismash/databases/</code> and never written to. When empty, <code>download-antismash-databases</code> fills that folder (about 9.4 GB for antiSMASH 8.0.4).</td>
+</tr>
+<tr>
+<td><code>unite_db</code></td>
+<td>empty: download</td>
+<td>a folder containing an uncompressed <code>unite_its_sintax.fasta</code></td>
+<td>all</td>
+<td>A UNITE SINTAX reference you already hold. It is linked into <code>00.resources/unite/</code>, and <code>links.unite_its_link</code> is not used (a NOTE says so).</td>
+</tr>
+</tbody>
+</table>
+<p><code>antismash_db</code> and <code>unite_db</code> are checked as soon as they are set. A missing folder, or a folder
+without <code>clusterblast/</code> or <code>unite_its_sintax.fasta</code>, stops the run, dry runs included.</p>
+<div class="admonition warning">
+<p class="admonition-title">Start one run first when several runs share a funannotate database</p>
+<p>Several runs can share one funannotate database, but nothing stops two of them from repairing
+its stored paths at the same time. Start one run, let it pass the step
+<code>normalize_funannotate_db</code>, then start the others, and reach the folder under the same path in
+every run (<a href="../../getting-started/databases/#what-the-workflow-does">Reference databases</a>).</p>
+</div>
+<h2 id="files"><code>files</code><a class="headerlink" href="#files" title="Permanent link">¶</a></h2>
+<p>The <code>files</code> block names three single files: the annotation parameter table, the InterProScan
+launcher and the SignalP 6 archive.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">files</span><span class="p">:</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">annotation_params</span><span class="p">:</span><span class="w"> </span><span class="s">""</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">iprscan</span><span class="p">:</span><span class="w">           </span><span class="s">""</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">signalp6_archive</span><span class="p">:</span><span class="w">  </span><span class="s">""</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>annotation_params</code></td>
+<td>required</td>
+<td>path of a tab-separated table</td>
+<td>all</td>
+<td>The species name, protein evidence and AUGUSTUS model of each sample. See <a href="#annotation-parameter-table">Annotation parameter table</a>.</td>
+</tr>
+<tr>
+<td><code>iprscan</code></td>
+<td>required</td>
+<td>path of <code>interproscan.sh</code></td>
+<td>all</td>
+<td>The InterProScan 5 launcher, installed by hand (FunFlux v2 was tested with 5.78-109.0). It runs on the Java 11 of the workflow's <code>interproscan</code> environment. FunFlux prints a NOTE when the file does not exist.</td>
+</tr>
+<tr>
+<td><code>signalp6_archive</code></td>
+<td>empty</td>
+<td>absolute path of a readable file</td>
+<td>all, when <code>parameters.signalp6.mode</code> is not <code>off</code></td>
+<td>The SignalP 6 archive downloaded from DTU (for example <code>signalp-6.0i.fast.tar.gz</code>). It is installed once per output folder into <code>00.resources/signalp6/</code>, and the workflow never downloads SignalP.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="links"><code>links</code><a class="headerlink" href="#links" title="Permanent link">¶</a></h2>
+<p>The <code>links</code> block holds the download addresses of what the workflow fetches itself, and the
+template fills them in.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">links</span><span class="p">:</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">phix_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/819/615/GCF_000819615.1_ViralProj14015/GCF_000819615.1_ViralProj14015_genomic.fna.gz</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">funannotate_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://zenodo.org/records/23265189/files/funannotate_db_1.8.17_2026-10-08.tar.gz?download=1</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">unite_its_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="nt">tiberius_model_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://bioinf.uni-greifswald.de/bioinf/tiberius/models/fungi.tar.gz</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="nt">telomere_db_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://raw.githubusercontent.com/tolkit/a-telomeric-repeat-database/73c635c7b80e5ab369b4c7ec67d23db32dcaa1b8/data/telo_database_v2.tsv</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span><span class="nt">chroquetas_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://raw.githubusercontent.com/nmquijada/ChroQueTas/1aad051d6ad48f5e403636699d19095e655764f7</span>
+</code></pre></div>
+<p>The workflow has no built-in links, so the run stops when a link that the mode needs is missing.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>phix_link</code></td>
+<td>template URL</td>
+<td>a URL</td>
+<td><code>illumina</code>, <code>hybrid</code> (required there)</td>
+<td>The PhiX174 genome (RefSeq GCF_000819615.1) that Illumina libraries are spiked with. Reads that map to it are removed.</td>
+</tr>
+<tr>
+<td><code>funannotate_link</code></td>
+<td>template URL</td>
+<td>a Zenodo URL of the form <code>https://zenodo.org/records/&lt;id&gt;/files/&lt;archive&gt;</code></td>
+<td>all, and required even when the database is already on disk</td>
+<td>The archive of the funannotate database (Zenodo record 23265189, 2.1 GB), downloaded only while <code>directories.funannotate_db</code> holds no database. To switch to another version of the database, change the link and point <code>directories.funannotate_db</code> at a new, empty folder, for the reasons given under <a href="../../getting-started/databases/#build-snapshot">Newer snapshots, and building your own</a>. The checksum file, the archive name with <code>.sha256</code> in place of <code>.tar.gz</code>, is taken from the same record and checked with <code>sha256sum -c</code>. A mismatch stops the run before anything is unpacked.</td>
+</tr>
+<tr>
+<td><code>unite_its_link</code></td>
+<td>template URL</td>
+<td>a URL of a gzip-compressed SINTAX FASTA</td>
+<td>all, and required unless <code>directories.unite_db</code> is set</td>
+<td>The UNITE reference for the ITS classification. The template points to UNITE's SINTAX release for eukaryotes of 19.02.2025 (266,589 sequences). It is downloaded once per output folder and unpacked on the fly into <code>00.resources/unite/unite_its_sintax.fasta</code>, and <code>PROVENANCE.txt</code> beside it records the URL, date, md5 and size. No checksum is checked.</td>
+</tr>
+<tr>
+<td><code>tiberius_model_link</code></td>
+<td>template URL</td>
+<td>a URL of a <code>.tar.gz</code> archive holding one folder with the model files</td>
+<td>all, and required unless <code>parameters.tiberius.mode</code> is <code>off</code></td>
+<td>The <code>fungi</code> model of the Tiberius gene finder, from its authors' server (about 30 MB). It is downloaded once per output folder, checked against <a href="#tiberius"><code>parameters.tiberius.model_sha256</code></a> and unpacked into <code>00.resources/tiberius/model/</code>. A mismatch stops the run before anything is unpacked.</td>
+</tr>
+<tr>
+<td><code>telomere_db_link</code></td>
+<td>template URL</td>
+<td>the URL of the tab-separated database file</td>
+<td>all, and required</td>
+<td>The telomere repeat database of tidk, <code>telo_database_v2.tsv</code> (0.6 MB), with the known telomere repeat units that the contig summary checks its candidates against. It is downloaded once per output folder into <code>00.resources/telomeres/</code> and checked against <a href="#contig_summary"><code>parameters.contig_summary.telomere_db_sha256</code></a>, and a mismatch stops the run. The template address names one commit of the repository <code>tolkit/a-telomeric-repeat-database</code>, so the file behind it does not change (<a href="../../getting-started/databases/#telomere-db">Reference databases</a>).</td>
+</tr>
+<tr>
+<td><code>chroquetas_link</code></td>
+<td>template URL</td>
+<td>the raw-file address of one commit of the ChroQueTas repository on GitHub, without a file name</td>
+<td>all, required when <a href="#amr"><code>parameters.amr.chroquetas</code></a> is <code>on</code> and not read when it is <code>off</code></td>
+<td>ChroQueTas 1.0.1 and its FungAMR database. Rule <code>chroquetas_db</code> downloads <code>bin/ChroQueTas.sh</code>, <code>FungAMR_db/db-v20250811.tgz</code> and <code>LICENSE</code> from this address once per output folder into <code>00.resources/chroquetas/</code>. It checks the script and the archive against <code>parameters.amr.chroquetas_script_sha256</code> and <code>chroquetas_db_sha256</code>, and a mismatch stops the run before anything runs or is unpacked (<a href="../../getting-started/databases/#chroquetas">Reference databases</a>).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="resources"><code>resources</code><a class="headerlink" href="#resources" title="Permanent link">¶</a></h2>
+<p>The <code>resources</code> block holds three numbers: the threads, the memory in GB and, for a cluster, the
+time limit in hours.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>threads</code></td>
+<td>24</td>
+<td>an integer ≥ 1</td>
+<td>all</td>
+<td>The most threads any rule asks for (see below). On a single computer, give the same number to <code>--cores</code> and do not add <code>--jobs</code>/<code>-j</code>. For a local run <code>--jobs</code> is another name for <code>--cores</code>, and giving both can let the jobs use more CPUs than the machine has. On a cluster each job asks the scheduler for its rule's threads, so use at most the CPUs of one compute node (Slurm: <code>sinfo -o "%n %c"</code>).</td>
+</tr>
+<tr>
+<td><code>ram_gb</code></td>
+<td>128</td>
+<td>an integer ≥ 1</td>
+<td>all</td>
+<td>On a single computer, the memory limit SPAdes is given (<code>-m</code>, step <code>illumina_assembly</code>) and, capped at 64 GB, the Java heap of Qualimap (<code>map_evaluation</code>, and in <code>hybrid</code> also <code>map_guide_evaluation</code>). Snakemake reserves no memory for these steps unless <code>--resources</code> sets a limit, <code>mem_gb</code> for SPAdes and <code>java_mem</code> for Qualimap (<a href="../running/#cpu-cores-and-threads">Running FunFlux</a>). On a cluster, it is also the memory every heavy step asks the scheduler for, in every mode, and Qualimap asks for its heap plus 4 GB, never more than <code>ram_gb</code>. Use at most the memory the scheduler offers one compute node, or no node can take those steps (Slurm: <code>sinfo -o "%n %m"</code>, in MB). See <a href="../running/#cluster-resources">How the settings reach Slurm</a>. A change re-runs nothing.</td>
+</tr>
+<tr>
+<td><code>runtime_hours</code></td>
+<td>48</td>
+<td>an integer ≥ 1</td>
+<td>all</td>
+<td>On a cluster, the time limit that every heavy and every long step asks the scheduler for. These are the steps that can run for more than an hour, such as the assemblers, BLAST, gene prediction and InterProScan, and a step still running at the limit is stopped. Use at most the time limit of the partition, or the scheduler refuses those steps or never starts them (Slurm: <code>sinfo -o "%P %l"</code>). A single computer ignores it. A change re-runs nothing.</td>
+</tr>
+</tbody>
+</table>
+<p>The rules ask for threads in four ways:</p>
+<table>
+<thead>
+<tr>
+<th>Rules</th>
+<th>Threads they ask for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>funannotate_prediction</code>, <code>tiberius_prediction</code>, the assemblers (<code>illumina_assembly</code>, <code>long_read_assembly</code>), the read mappings (<code>map_phix</code>, <code>map_contigs</code>, <code>map_guide_contigs</code>, <code>map_sel_contigs</code>)</td>
+<td><code>threads</code></td>
+</tr>
+<tr>
+<td>the other CPU-bound rules</td>
+<td><code>threads</code>, up to a fixed cap between 2 and 24</td>
+</tr>
+<tr>
+<td>SignalP 6 (<code>signalp6_annotation</code>)</td>
+<td><code>parameters.signalp6.torch_num_threads</code>, lowered to <code>threads</code> when it is larger</td>
+</tr>
+<tr>
+<td>every other rule</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p><code>threads</code> is the most any one job takes, so it is the number to give <code>--cores</code>. When <code>--cores</code>
+is lower than a rule's number, Snakemake runs the job with <code>--cores</code> threads. The cap of every
+rule, with the reasons, is listed on <a href="../running/#cpu-cores-and-threads">CPU cores and threads</a>. On a
+cluster the three keys must each fit one compute node and one partition
+(<a href="../running/#on-a-cluster">On a cluster</a>).</p>
+<h2 id="parameters"><code>parameters</code><a class="headerlink" href="#parameters" title="Permanent link">¶</a></h2>
+<p>The <code>parameters</code> block holds the analysis settings. FunFlux checks every key under <code>parameters</code> in
+every mode, so a wrong value stops the run even in a mode that does not use the key. There are
+three exceptions: <code>spades_kmers</code> is read only in <code>illumina</code> and <code>hybrid</code> mode, the <code>longread</code> and
+<code>hybrid</code> blocks only in their own mode, and the files that the <code>decontamination</code> keys name only
+when the screen runs. After a change of most settings, the next run re-runs the step that uses it
+and every step after it.</p>
+<h3 id="blast-database-and-hit-depth">BLAST database and hit depth<a class="headerlink" href="#blast-database-and-hit-depth" title="Permanent link">¶</a></h3>
+<p>These keys choose the BLAST database of the screen and how many hits BLAST keeps for each contig.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">nt_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">core_nt</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">blast_max_target_seqs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">blast_max_hsps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nt_version</code></td>
+<td><code>core_nt</code></td>
+<td>the name of the BLAST database in <code>directories.blast_db</code>, usually <code>core_nt</code> or <code>nt</code>, not checked</td>
+<td>screen</td>
+<td>The database BLAST searches, as <code>blastn -db &lt;blast_db&gt;/&lt;nt_version&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>blast_max_target_seqs</code></td>
+<td>50</td>
+<td>an integer ≥ 1, with a NOTE below 5</td>
+<td>screen</td>
+<td><code>-max_target_seqs</code>, the number of database sequences kept per contig. BLAST applies it during the search, not as a final best-N filter, so a small value can lose better matches.</td>
+</tr>
+<tr>
+<td><code>blast_max_hsps</code></td>
+<td>5</td>
+<td>an integer ≥ 1, with a NOTE below 5 while the mitochondrion screen is on</td>
+<td>screen</td>
+<td><code>-max_hsps</code>, the number of alignments kept per database sequence. The mitochondrion screen reads <code>qcovs</code>, the share of the contig covered by one database sequence, which BLAST computes from the kept alignments only.</td>
+</tr>
+</tbody>
+</table>
+<p>One BLAST table feeds both BlobTools (the genus of each contig) and the mitochondrion screen. With
+<code>blast_max_hsps: 1</code> BLAST keeps only the single best local alignment per database sequence, so a
+complete mitochondrial genome that aligns to its closest reference in several blocks can look only
+half covered. Setting <code>blast_max_target_seqs: 10</code> and <code>blast_max_hsps: 1</code> gives the BLAST settings
+of FunFlux 1.1.x. These values also change the hits whose bit scores BlobTools adds up, and so can change the genus it gives a contig. See
+<a href="../../methods/blast-hit-depth/">BLAST hit depth</a>.</p>
+<h3 id="spades_kmers"><code>spades_kmers</code><a class="headerlink" href="#spades_kmers" title="Permanent link">¶</a></h3>
+<p><code>spades_kmers</code> lists the k-mer sizes that SPAdes assembles the Illumina reads with.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spades_kmers</code></td>
+<td><code>"21,33,55,77,99,127"</code></td>
+<td><code>auto</code>, or comma-separated text or a YAML list, with every k odd, from 1 to 127, and strictly ascending</td>
+<td><code>illumina</code>, <code>hybrid</code></td>
+<td>The SPAdes <code>-k</code> list. <code>auto</code> lets SPAdes choose from the read length (<a href="../../modes/illumina/">Illumina mode</a>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="decontamination"><code>decontamination</code><a class="headerlink" href="#decontamination" title="Permanent link">¶</a></h3>
+<p>These keys tell the contig selector which contigs to keep or remove by genus.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">decontamination</span><span class="p">:</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">off</span><span class="w">                  </span><span class="c1"># off | include | exclude</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="nt">discard_no_hit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nt">include_genera</span><span class="p">:</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="nt">include_genera_by_sample</span><span class="p">:</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="nt">exclude_genera</span><span class="p">:</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="nt">exclude_genera_file</span><span class="p">:</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="nt">sample_overrides</span><span class="p">:</span>
+</code></pre></div>
+<p>The contig selector, rule <code>select_contigs</code>, takes the genus BlobTools assigned to each contig (the
+taxon with the highest summed BLAST bit score) and keeps or removes the contig. With every policy,
+<code>off</code> included, it writes <code>contaminants/contig_taxonomy_decisions.tsv</code>, one line per contig with
+its genus, <code>keep</code> or <code>remove</code>, and the reason. With <code>mitochondria.mode: separate_confirmed</code> (the
+default), the contig selector always keeps the contigs that the mitochondrion screen confirmed (reason
+<code>protected_confirmed_mitochondrial</code>). With <code>report</code> or <code>off</code>, nothing is protected.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td><code>off</code></td>
+<td><code>off</code>, <code>include</code>, <code>exclude</code>, while <code>auto</code> stops the run (see the warning box below)</td>
+<td>screen</td>
+<td><code>off</code> keeps every contig. <code>include</code> keeps only the listed genera. Name the genera that <code>contig_taxonomy_decisions.tsv</code> gives the isolate's own contigs, which for a poorly sequenced fungus are often not its true genus. When the screen runs, a sample in <code>include</code> mode without a genus stops the run before any job starts. <code>exclude</code> removes the listed genera.</td>
+</tr>
+<tr>
+<td><code>discard_no_hit</code></td>
+<td><code>false</code></td>
+<td><code>true</code>, <code>false</code> (also <code>yes</code>/<code>no</code>, <code>on</code>/<code>off</code>, <code>1</code>/<code>0</code>)</td>
+<td>screen</td>
+<td>With <code>exclude</code>, also removes the contigs without a BLAST hit (reason <code>discarded_no_hit</code>). <code>include</code> removes them anyway, because no-hit is not on its list, and the setting changes only the reason. No effect with <code>off</code>.</td>
+</tr>
+<tr>
+<td><code>include_genera</code></td>
+<td>empty</td>
+<td>a genus, a YAML list, or names separated by <code>;</code> or <code>,</code></td>
+<td>screen</td>
+<td>Genera that <code>include</code> keeps.</td>
+</tr>
+<tr>
+<td><code>include_genera_by_sample</code></td>
+<td>empty</td>
+<td>path of a tab-separated table with the header columns <code>sample</code> and <code>genus</code>, in which a sample may have several rows</td>
+<td>screen</td>
+<td>Adds the sample's genera to <code>include_genera</code>.</td>
+</tr>
+<tr>
+<td><code>exclude_genera</code></td>
+<td>empty</td>
+<td>as <code>include_genera</code></td>
+<td>screen</td>
+<td>Genera that <code>exclude</code> removes.</td>
+</tr>
+<tr>
+<td><code>exclude_genera_file</code></td>
+<td>empty</td>
+<td>path of a text file with one genus per line, in which lines starting with <code>#</code> are skipped</td>
+<td>screen</td>
+<td>Adds its genera to <code>exclude_genera</code>.</td>
+</tr>
+<tr>
+<td><code>sample_overrides</code></td>
+<td>empty</td>
+<td>path of a tab-separated table with the columns <code>sample</code> and <code>mode</code>, and optionally <code>include_genera</code>, <code>exclude_genera</code>, <code>discard_no_hit</code></td>
+<td>screen</td>
+<td>Replaces the named settings for single samples, and an empty cell keeps the run-wide value. A <code>mode</code> cell holds <code>off</code>, <code>include</code>, <code>exclude</code> or nothing, and a <code>discard_no_hit</code> cell a yes/no word or nothing.</td>
+</tr>
+</tbody>
+</table>
+<p>Genus names are compared without regard to case. <code>include</code> also accepts a few aliases, from a table
+of bacterial genus splits and from the prefixes brady, meso, neo, sino, aeri, caldi and geo.
+<em>Neocosmospora</em> and <em>Cosmospora</em>, for example, match each other. An alias can only keep more
+contigs. <code>exclude</code> compares exact names.</p>
+<p>When the screen runs, the three files are checked before any job starts. Each must exist and be
+UTF-8 text:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Must also hold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>include_genera_by_sample</code></td>
+<td>a header line with the columns <code>sample</code> and <code>genus</code></td>
+</tr>
+<tr>
+<td><code>exclude_genera_file</code></td>
+<td>no further check</td>
+</tr>
+<tr>
+<td><code>sample_overrides</code></td>
+<td>a header line with the columns <code>sample</code> and <code>mode</code>. Every <code>mode</code> cell holds <code>off</code>, <code>include</code>, <code>exclude</code> or nothing, and the <code>discard_no_hit</code> cell of each sample of the batch a yes/no word or nothing</td>
+</tr>
+</tbody>
+</table>
+<p>Every sample of the batch that ends up in <code>include</code> mode needs at least one genus. The log
+<code>logs/select_contigs_{sample}.log</code> warns when more than 20 % of the bases are removed, and when two
+or more genera each hold at least 5 % of the bases.</p>
+<p>The v1 key <code>parameters.genus</code> is still read when the <code>decontamination</code> block is missing or empty,
+and a NOTE reports the translation:</p>
+<table>
+<thead>
+<tr>
+<th><code>decontamination</code> block</th>
+<th>v1 key <code>parameters.genus</code></th>
+<th>Becomes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>missing or empty</td>
+<td>a genus</td>
+<td><code>mode: include</code> with that genus</td>
+</tr>
+<tr>
+<td>missing or empty</td>
+<td>empty</td>
+<td><code>mode: off</code>, so every contig is kept</td>
+</tr>
+<tr>
+<td>not empty</td>
+<td>any value</td>
+<td>nothing, and <code>genus</code> is ignored without a message</td>
+</tr>
+</tbody>
+</table>
+<p>Move the genus into the <code>decontamination</code> block, because once that block holds anything, <code>genus</code>
+has no effect.</p>
+<div class="admonition warning">
+<p class="admonition-title">There is no <code>auto</code> mode, because BLAST genus labels are unreliable for poorly sequenced fungi</p>
+<p>The v1 workflows had a <code>mode: auto</code> that kept the genus BlobTools gave the most contigs.
+FunFlux v2 refuses it before any job starts and, when the screen runs, also in the <code>mode</code>
+column of <code>sample_overrides</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Why <code>auto</code> fails</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>it counts contigs, not bases</td>
+<td>when the contigs without a BLAST hit outnumber those of any genus, it keeps them and removes the rest of the genome</td>
+</tr>
+<tr>
+<td>the isolate's genus is poorly represented in core_nt</td>
+<td>BLAST labels much of the isolate's own DNA with related genera, so <code>auto</code> keeps a wrong genus, and even <code>include</code> with the true genus can remove most of the genome</td>
+</tr>
+</tbody>
+</table>
+<p><code>auto</code> can therefore remove most of the genome. Run with <code>off</code> (the default), read
+<code>contig_taxonomy_decisions.tsv</code> and <code>{sample}_composition.txt</code>, then <code>exclude</code> the contaminant
+genera or <code>include</code> the genera BLAST gave the isolate's own contigs
+(<a href="../../analysis/decontamination/#why-there-is-no-auto-mode">Why there is no auto mode</a>).</p>
+</div>
+<h3 id="mitochondria"><code>mitochondria</code><a class="headerlink" href="#mitochondria" title="Permanent link">¶</a></h3>
+<p>These keys set how the mitochondrion screen recognises the mitochondrial genome, and what happens
+to it.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">mitochondria</span><span class="p">:</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">separate_confirmed</span><span class="w">   </span><span class="c1"># off | report | separate_confirmed</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="nt">min_direct_blast_qcov</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">35</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="nt">min_assembler_coverage_ratio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.0</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="nt">very_strong_qcov</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70</span>
+</code></pre></div>
+<p>A direct hit is a BLAST hit whose title names a mitochondrial genome, and <code>qcovs</code> is the
+percentage of the contig that its best direct hit covers.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td><code>separate_confirmed</code></td>
+<td><code>off</code>, <code>report</code>, <code>separate_confirmed</code></td>
+<td>screen</td>
+<td><code>separate_confirmed</code> writes <code>mitochondria/mitochondrial_screen.tsv</code>, protects the confirmed contigs from the contig selector, and writes them to <code>contigs_mitochondrial.fasta</code> instead of <code>contigs_final.fasta</code>, the nuclear genome that QC, ITS and gene prediction read. <code>report</code> writes the table only, so nothing is protected or split off. <code>off</code> classifies nothing.</td>
+</tr>
+<tr>
+<td><code>min_direct_blast_qcov</code></td>
+<td>35</td>
+<td>a number above 0 and at most 100</td>
+<td>screen</td>
+<td>Without assembler evidence (<code>illumina</code> and <code>contigs</code> mode, and the <code>hybrid</code> guide), a direct hit with <code>qcovs</code> at or above this value confirms the contig, and a weaker one makes it a <code>mitochondrial_candidate</code>. With assembler evidence, it is the minimum that depth or circularity must back up.</td>
+</tr>
+<tr>
+<td><code>min_assembler_coverage_ratio</code></td>
+<td>3.0</td>
+<td>a number above 0</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td>Contig depth divided by the median contig depth, as reported by the assembler (Flye depth, hifiasm <code>rd:i</code>). A direct hit at or above <code>min_direct_blast_qcov</code>, plus a ratio at or above this value or a clean circle (circular, not a repeat, not an alternative copy), confirms the contig.</td>
+</tr>
+<tr>
+<td><code>very_strong_qcov</code></td>
+<td>70</td>
+<td>a number above 0 and at most 100</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td>A direct hit at or above this value confirms the contig without depth or circularity.</td>
+</tr>
+</tbody>
+</table>
+<p>The assembler evidence comes from the hifiasm or Flye assembly of <code>longread</code> and <code>hybrid</code> mode.
+<code>illumina</code> and <code>contigs</code> mode, and the guide screen of <code>hybrid</code>, give the screen none, so the last
+two keys change nothing there.
+Neither circularity nor high depth confirms a contig without a direct hit. See
+<a href="../../analysis/mitochondria/">Mitochondria</a>.</p>
+<h3 id="busco"><code>busco</code><a class="headerlink" href="#busco" title="Permanent link">¶</a></h3>
+<p>The <code>busco</code> block chooses the lineage dataset of the BUSCO completeness check.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lineage</code></td>
+<td><code>auto</code></td>
+<td><code>auto</code>, or a BUSCO dataset name ending in <code>_odb</code> and a number, such as <code>hypocreales_odb12</code> (case is ignored)</td>
+<td>all</td>
+<td><code>auto</code> runs <code>busco --auto-lineage-euk</code>. BUSCO then reports a generic (eukaryota) and a specific lineage, and MultiQC shows two BUSCO rows per sample. A name runs <code>busco -l &lt;name&gt;</code>, which gives one row and the same dataset for every sample.</td>
+</tr>
+</tbody>
+</table>
+<p>Where the lineage data come from depends on the setting:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Where the lineage data come from</th>
+<th>Internet needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auto</code></td>
+<td>downloaded again for every sample in every run, into a temporary folder of that sample</td>
+<td>in every BUSCO job</td>
+</tr>
+<tr>
+<td>a name</td>
+<td>downloaded once per output folder by rule <code>busco_data</code> into <code>00.resources/busco/</code>, and read by every BUSCO job with <code>--offline</code>. Later runs into the same folder reuse it</td>
+<td>once, on the computer that runs Snakemake</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">A named lineage is the one choice for compute nodes without internet</p>
+<p>A named lineage is downloaded once, on the computer that runs Snakemake, while <code>auto</code> needs
+internet in every BUSCO job.</p>
+</div>
+<p>The dry run checks only the form of the name. A name BUSCO does not offer stops <code>busco_data</code> with a
+<code>[FunFlux] busco_data:</code> message. A dataset archive takes tens to hundreds of MB (274.6 MB for
+<code>hypocreales_odb12</code>), and with <code>auto</code> the BUSCO folder of one sample holds several hundred MB. See
+<a href="../../analysis/assembly-qc/">Assembly QC</a>.</p>
+<h3 id="contig_summary"><code>contig_summary</code><a class="headerlink" href="#contig_summary" title="Permanent link">¶</a></h3>
+<p>These keys steer the contig summary, and above all how it finds the telomeres.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">contig_summary</span><span class="p">:</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="nt">telomere_motif</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="nt">telomere_db_sha256</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1d4f5c8c2cce6a76aaa8de01602317a8e0b8d0401711b96f3c7a826c385da699</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="nt">telomere_window</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25000</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="nt">min_telomere_copies</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="nt">min_rdna_units</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+</code></pre></div>
+<p>After the annotation, rule <code>contig_summary</code> writes <code>02.assembly/{sample}/eval/contig_summary.tsv</code>.
+It has one row per contig of the draft assembly, with the evidence the run produced about it and a
+verdict. The evidence consists of the telomere arrays at the contig ends, read depth, the
+assembler's depth and circularity flag, rDNA units, BUSCO markers, predicted genes and the calls of
+the contamination and mitochondrion screen. The verdict is one of <code>chromosome</code>, <code>chromosome_arm</code>,
+<code>mitochondrion</code>, <code>rDNA_array</code>, <code>low_depth</code>, <code>repeat</code>, <code>nuclear_contig</code>, <code>nuclear_fragment</code>,
+<code>contaminant</code> or <code>unclassified</code>.</p>
+<p>The telomere arrays are the one piece of evidence worked out from the sequence itself. Their repeat
+unit differs between fungal groups, so rule <code>telomere_units</code> chooses it from the assembly with tidk.
+It checks the unit against tidk's telomere repeat database, which rule <code>telomere_db</code> downloads once
+per output folder (<a href="../../analysis/contig-summary/#telomeres">Telomeres</a>). The first four keys steer
+that choice.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>telomere_motif</code></td>
+<td><code>auto</code></td>
+<td><code>auto</code> (any case), or letters A, C, G and T only, 4 to 30 long, with lower case upper-cased</td>
+<td>all</td>
+<td>With <code>auto</code>, the telomere repeat unit is chosen from the data. Every tandem repeat unit found at the contig ends, every unit of the tidk database and every unit of the literature is scored by how it behaves at the contig ends. The best-supported one is the unit of the assembly. A unit you set is used as given, whatever the data say, and the data's own choice is reported next to it, with a NOTE when it differs. The known fungal units are listed under <a href="../../analysis/contig-summary/#which-fungi-carry-which-repeat">Which fungi carry which repeat</a>. Either strand and any rotation work, so <code>CCCTAA</code> gives the same result as <code>TTAGGG</code>.</td>
+</tr>
+<tr>
+<td><code>telomere_db_sha256</code></td>
+<td>the checksum of the database file at the template address</td>
+<td>64 hexadecimal characters (capitals are accepted)</td>
+<td>all</td>
+<td>The SHA-256 that the file downloaded from <code>links.telomere_db_link</code> must have, checked by rule <code>telomere_db</code> before it is used. A mismatch stops the run. The template address names one commit of the database repository, so the file behind it does not change. To use another version, change the link and this checksum together (<code>sha256sum &lt;file&gt;</code> prints it).</td>
+</tr>
+<tr>
+<td><code>telomere_window</code></td>
+<td>25000</td>
+<td>an integer from 500 to 100000</td>
+<td>all</td>
+<td>The terminal window, in bp. It is the stretch at each contig end in which the candidate units are collected, and how far from the end <code>tidk ends</code> accepts an array. The telomere array can sit some kb inside a contig end when the assembler ran past the telomere, so the window must cover that. The two offset columns of the table show where each array lies.</td>
+</tr>
+<tr>
+<td><code>min_telomere_copies</code></td>
+<td>5</td>
+<td>an integer ≥ 2</td>
+<td>all</td>
+<td>The copies of the unit an array needs to count as a telomere. <code>tidk ends</code> requires this many unit lengths (30 bp for a 6-bp unit), and a unit is collected at the contig ends only when it forms a tandem run of this many copies.</td>
+</tr>
+<tr>
+<td><code>min_rdna_units</code></td>
+<td>3</td>
+<td>an integer ≥ 1</td>
+<td>all</td>
+<td>The number of rDNA units (the ITS windows of <code>its_windows</code>) from which a contig can be an <code>rDNA_array</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>A <code>parameters.contig_summary.telomere_motif</code> that is neither <code>auto</code> nor a plain unit stops the run
+with
+<code>[FunFlux] parameters.contig_summary.telomere_motif: must be auto (the unit is chosen from the data) or the telomere repeat unit of the species, 4 to 30 letters A, C, G and T, such as TTAGGG (got: &lt;value&gt;)</code>.
+A malformed checksum stops it with
+<code>[FunFlux] parameters.contig_summary.telomere_db_sha256: must be the SHA-256 checksum of the telomere database file, 64 hexadecimal characters (got: &lt;value&gt;)</code>.
+The three numbers are checked as whole numbers against the limits above.</p>
+<p>Every dry run prints the settings in one line:
+<code>Contig summary: telomere motif auto (the repeat unit is chosen from the data), a telomere from 5 tandem copies within 25000 bp of a contig end, an rDNA array from 3 rDNA unit(s).</code>
+With a unit set, the line reads <code>telomere motif TTAGGG (used as given; the data's own choice is reported next to it)</code>.</p>
+<p>A change of these settings re-runs the following steps:</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Re-runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>telomere_motif</code>, <code>telomere_window</code>, <code>min_telomere_copies</code></td>
+<td><code>telomere_units</code> and <code>contig_summary</code>, then MultiQC</td>
+</tr>
+<tr>
+<td><code>min_rdna_units</code></td>
+<td><code>contig_summary</code> only</td>
+</tr>
+<tr>
+<td><code>links.telomere_db_link</code> or <code>telomere_db_sha256</code></td>
+<td><code>telomere_db</code>, then <code>telomere_units</code> of every sample</td>
+</tr>
+</tbody>
+</table>
+<p>These keys re-run only the telomere and contig-summary steps, never the assembly or the
+annotation. hifiasm has a separate key of its own, <code>parameters.longread.hifiasm.telomere_motif</code> or
+<code>parameters.hybrid.hifiasm.telomere_motif</code>. It takes the unit as it reads at the 5' end of a
+chromosome (<code>CCCTAA</code> for <code>TTAGGG</code>). See <a href="../../analysis/contig-summary/">Contig summary</a>.</p>
+<h3 id="its-and-its_taxonomy_cutoff"><code>its</code> and <code>its_taxonomy_cutoff</code><a class="headerlink" href="#its-and-its_taxonomy_cutoff" title="Permanent link">¶</a></h3>
+<p>These keys steer how the ITS is extracted from the genome and classified against UNITE.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="nt">its</span><span class="p">:</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="nt">window_flank</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2000</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="nt">max_full_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1500</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="nt">unite_identified_only</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">  </span><span class="nt">its_taxonomy_cutoff</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
+</code></pre></div>
+<p>nhmmer finds every 5.8S gene in <code>contigs_final.fasta</code> with ITSx's own profiles. A window is cut
+around each, and windows on the minus strand are reverse-complemented. ITSx extracts ITS1, 5.8S and
+ITS2 from the windows, and SINTAX classifies ITS1 and ITS2 against UNITE.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>its.window_flank</code></td>
+<td>2000</td>
+<td>an integer ≥ 200</td>
+<td>all</td>
+<td>The bases kept on each side of the middle of each 5.8S site. 2,000 bp hold the end of the SSU, ITS1, ITS2 and the start of the LSU, which ITSx needs to recognise the unit.</td>
+</tr>
+<tr>
+<td><code>its.max_full_length</code></td>
+<td>1500</td>
+<td>an integer ≥ 400</td>
+<td>all</td>
+<td>The longest ITS1-5.8S-ITS2 record listed as <code>ok</code> in <code>{sample}_ITS_copies.txt</code>. A longer one is listed as <code>rejected_too_long</code> (1,500 bp is ITSx's own "suspiciously long" limit). Only ITS1 and ITS2 are classified, so this key changes that table only.</td>
+</tr>
+<tr>
+<td><code>its.unite_identified_only</code></td>
+<td><code>true</code></td>
+<td><code>true</code> or <code>false</code></td>
+<td>all</td>
+<td>With <code>true</code>, rule <code>unite_identified</code> keeps the UNITE records whose taxonomy names a genus (<code>g:</code> followed by a name) in <code>00.resources/unite/unite_its_sintax.identified.fasta</code>, and SINTAX classifies against that file. About a third of the records of the default release stop above the genus, and one that is identical to the query can hold the result at <code>d:Fungi</code>. With <code>false</code>, SINTAX classifies against the whole release, and rule <code>unite_identified</code> does not run. See <a href="../../analysis/its-taxonomy/#the-unite-reference-filter">The UNITE reference filter</a>.</td>
+</tr>
+<tr>
+<td><code>its_taxonomy_cutoff</code></td>
+<td>0.8</td>
+<td>a number above 0 and at most 1</td>
+<td>all</td>
+<td>Passed as <code>vsearch --sintax_cutoff</code>. <code>{sample}_ITS1_taxonomy.txt</code> and <code>{sample}_ITS2_taxonomy.txt</code> hold every rank with its bootstrap confidence in column 2, and in column 4 only the ranks whose confidence reaches the cutoff.</td>
+</tr>
+</tbody>
+</table>
+<p>ITS1 and ITS2 sequences outside 50 to 600 bp are listed in <code>{sample}_ITS_copies.txt</code> and not
+classified. That range is fixed. See <a href="../../analysis/its-taxonomy/">ITS taxonomy</a> and
+<a href="../../methods/its-long-read-contigs/">ITS on long-read contigs</a>.</p>
+<h3 id="repeat-masking">Repeat masking<a class="headerlink" href="#repeat-masking" title="Permanent link">¶</a></h3>
+<p>Before gene prediction, the genome is soft-masked by tantan, or by RepeatModeler and RepeatMasker.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">masking_method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tantan</span><span class="w">       </span><span class="c1"># tantan | repeatmodeler_repeatmasker</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span><span class="nt">repeatmodeler_quick</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="nt">repeatmodeler_ltrstruct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span><span class="nt">repeatmodeler_seed</span><span class="p">:</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>masking_method</code></td>
+<td><code>tantan</code></td>
+<td><code>tantan</code>, <code>repeatmodeler_repeatmasker</code></td>
+<td>all</td>
+<td>How <code>contigs_sort.fasta</code> is soft-masked (repeats in lower case) before gene prediction. <code>tantan</code> masks tandem repeats and low-complexity sequence. <code>repeatmodeler_repeatmasker</code> builds a repeat library from this genome with RepeatModeler and masks with RepeatMasker, which also finds interspersed repeats such as transposons. This method takes hours.</td>
+</tr>
+<tr>
+<td><code>repeatmodeler_quick</code></td>
+<td><code>true</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td>all (RepeatModeler only)</td>
+<td><code>RepeatModeler -quick</code>, a shorter run that finds fewer repeat families.</td>
+</tr>
+<tr>
+<td><code>repeatmodeler_ltrstruct</code></td>
+<td><code>false</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td>all (RepeatModeler only)</td>
+<td><code>RepeatModeler -LTRStruct</code>, which adds the LTR retrotransposon structural module.</td>
+</tr>
+<tr>
+<td><code>repeatmodeler_seed</code></td>
+<td>empty</td>
+<td>empty, or an integer ≥ 0</td>
+<td>all (RepeatModeler only)</td>
+<td><code>RepeatModeler -srand &lt;seed&gt;</code>. When empty, RepeatModeler seeds itself from the clock, and two runs on the same genome build slightly different libraries.</td>
+</tr>
+</tbody>
+</table>
+<p>RepeatMasker needs no Dfam or RepBase library here, because it masks with the library
+RepeatModeler built. See <a href="../../analysis/repeat-masking/">Repeat masking</a>.</p>
+<h3 id="prediction"><code>prediction</code><a class="headerlink" href="#prediction" title="Permanent link">¶</a></h3>
+<p>The <code>prediction</code> keys pass two settings to <code>funannotate predict</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>busco_db</code></td>
+<td><code>dikarya</code></td>
+<td>letters, digits and <code>_</code>, and once the database is on disk, a folder of that name must exist in it</td>
+<td>all</td>
+<td><code>funannotate predict --busco_db</code>, the conserved-gene set that SNAP and GlimmerHMM are trained on, and AUGUSTUS too for the samples without a model in column 4 of the annotation table. The funannotate database as downloaded holds only <code>dikarya</code> (BUSCO <code>dikarya_odb9</code>, 1,312 genes). For a fungus outside the Dikarya, add a set such as <code>fungi</code> (<a href="../../getting-started/databases/#busco-sets">Other BUSCO sets for gene prediction</a>) and set <code>busco_db: fungi</code>.</td>
+</tr>
+<tr>
+<td><code>augustus_optimize</code></td>
+<td><code>false</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td>all</td>
+<td><code>funannotate predict --optimize_augustus</code>, for the samples whose column 4 of the annotation table is empty. After the quick training, <code>optimize_augustus.pl</code> tunes AUGUSTUS's meta-parameters, the settings the quick training keeps fixed, by 8-fold cross-validation: each eighth of the BUSCO test genes is predicted by a model trained without it. AUGUSTUS is then trained again (see <a href="../../analysis/gene-prediction/#augustus-model">The AUGUSTUS model</a>). It adds about a quarter of an hour for a 40 Mb genome and uses at most 8 CPUs. It does not apply to samples that name a stored AUGUSTUS model, and a NOTE names them. Switching it re-runs gene prediction only for the samples whose column 4 is empty.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="genemark"><code>genemark</code><a class="headerlink" href="#genemark" title="Permanent link">¶</a></h3>
+<p>The <code>genemark</code> block decides whether funannotate predict uses GeneMark-ES.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td><code>auto</code></td>
+<td><code>auto</code>, <code>off</code> (also <code>false</code>, <code>no</code>, <code>0</code>, <code>none</code>, and <code>null</code> in quotes). An empty value (<code>mode:</code>, <code>mode: ""</code> or an unquoted <code>null</code>) means <code>auto</code>, as for the other mode keys</td>
+<td>all</td>
+<td>With <code>auto</code>, funannotate predict uses GeneMark-ES when <code>directories.genemark_dir</code> is set. With <code>off</code> it never does, and funannotate runs without GeneMark.</td>
+</tr>
+</tbody>
+</table>
+<p>With GeneMark on, the run stops before any job starts when <code>genemark_dir</code> is not absolute, holds no
+executable <code>gmes_petap.pl</code>, or <code>~/.gm_key</code> is missing. The step <code>genemark_check</code> also tests the
+licence key before gene prediction
+(<a href="../../getting-started/external-tools/#the-licence-check-before-gene-prediction">The licence check before gene prediction</a>).
+FunFlux v2 was tested with GeneMark-ES on, and with <code>mode: off</code> on one public genome
+(<a href="../../about/validation/#gene-finders">Validation on public genomes</a>).</p>
+<h3 id="tiberius"><code>tiberius</code><a class="headerlink" href="#tiberius" title="Permanent link">¶</a></h3>
+<p>The <code>tiberius</code> block switches the Tiberius gene finder on or off and pins its model.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">tiberius</span><span class="p">:</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">on</span><span class="w">                   </span><span class="c1"># on | off</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="nt">model_sha256</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4a309a630574f395d82d747dcf64716704dab056db534e427ae0cec1b7410e20</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td><code>on</code></td>
+<td><code>on</code> (also <code>true</code>, <code>yes</code>, <code>1</code>, and an empty value), <code>off</code> (also <code>false</code>, <code>no</code>, <code>0</code>, <code>none</code>, and <code>null</code> in quotes)</td>
+<td>all</td>
+<td>With <code>on</code>, Tiberius predicts genes (step <code>tiberius_prediction</code>) before <code>funannotate predict</code>, which adds them to its evidence (<code>--other_gff &lt;file&gt;:1</code>). With <code>off</code>, Tiberius does not run, its model is not downloaded, and <code>links.tiberius_model_link</code> is not read. Tiberius is independent of GeneMark-ES, and both can be on.</td>
+</tr>
+<tr>
+<td><code>model_sha256</code></td>
+<td>the checksum of the <code>fungi</code> model of 8 February 2026</td>
+<td>64 hexadecimal characters (capitals are accepted)</td>
+<td>Tiberius on</td>
+<td>The SHA-256 that the file at <code>links.tiberius_model_link</code> must have, checked before it is unpacked. The address carries no version number. When its authors replace the model, the run stops until you accept the new file by putting its checksum (<code>sha256sum &lt;archive&gt;</code>) here.</td>
+</tr>
+</tbody>
+</table>
+<p>Tiberius needs about 16 GB of memory, so switch it off on a computer with less free memory. What it
+does, and how its genes are combined with the others, is described under
+<a href="../../analysis/gene-prediction/#tiberius">Tiberius</a>.</p>
+<h3 id="signalp6"><code>signalp6</code><a class="headerlink" href="#signalp6" title="Permanent link">¶</a></h3>
+<p>The <code>signalp6</code> block sets whether and how SignalP 6 runs.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">signalp6</span><span class="p">:</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">off</span><span class="w">                  </span><span class="c1"># off | fast | slow | slow-sequential</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">    </span><span class="nt">archive_sha256</span><span class="p">:</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="nt">torch_num_threads</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="nt">batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td><code>off</code></td>
+<td><code>off</code>, <code>fast</code>, <code>slow</code>, <code>slow-sequential</code> (<code>off</code> also as empty, <code>false</code>, <code>no</code>, <code>0</code>, <code>none</code> or <code>null</code>)</td>
+<td>all</td>
+<td>Any value but <code>off</code> installs SignalP 6 from <code>files.signalp6_archive</code> once per output folder, predicts the signal peptides of the predicted proteins, and passes them to <code>funannotate annotate --signalp</code>. The archive must hold the model of the mode (table below).</td>
+</tr>
+<tr>
+<td><code>archive_sha256</code></td>
+<td>empty</td>
+<td>64 hexadecimal characters</td>
+<td>SignalP on</td>
+<td>Compared with the SHA-256 of the archive before installing, by the step that installs SignalP 6 (<code>install_signalp6</code>) and not by the dry run. <code>sha256sum &lt;archive&gt;</code> prints it.</td>
+</tr>
+<tr>
+<td><code>torch_num_threads</code></td>
+<td>8, or <code>resources.threads</code> when that is smaller</td>
+<td>an integer ≥ 1. A value above <code>resources.threads</code> is lowered to it, with a NOTE</td>
+<td>SignalP on</td>
+<td>The threads of <code>signalp6_annotation</code>, passed as <code>--torch_num_threads</code>.</td>
+</tr>
+<tr>
+<td><code>batch_size</code></td>
+<td>10</td>
+<td>an integer ≥ 1</td>
+<td>SignalP on</td>
+<td><code>--bsize</code>, the number of proteins that SignalP 6 processes together. Raise it only after checking memory use.</td>
+</tr>
+</tbody>
+</table>
+<p>Each mode needs its own model in the archive:</p>
+<table>
+<thead>
+<tr>
+<th><code>mode</code></th>
+<th>The archive must hold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fast</code></td>
+<td><code>distilled_model_signalp6.pt</code></td>
+</tr>
+<tr>
+<td><code>slow</code></td>
+<td><code>ensemble_model_signalp6.pt</code></td>
+</tr>
+<tr>
+<td><code>slow-sequential</code></td>
+<td><code>sequential_models_signalp6</code></td>
+</tr>
+</tbody>
+</table>
+<p>Choose the mode that matches the archive you downloaded, because a fast archive works only with
+<code>fast</code>. The speed and memory of the three modes, from the SignalP 6 README, are given under
+<a href="../../getting-started/external-tools/#signalp-6">SignalP 6</a>. FunFlux v2 was tested with <code>fast</code>.
+See <a href="../../analysis/functional-annotation/">Functional annotation</a>.</p>
+<h3 id="amr"><code>amr</code><a class="headerlink" href="#amr" title="Permanent link">¶</a></h3>
+<p>The <code>amr</code> block switches the AMR screen (the resistance-mutation screen) on or off, and sets the
+genetic code of its mitochondrial run and the checksums of its downloads.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="nt">amr</span><span class="p">:</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span><span class="nt">chroquetas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">off</span><span class="w">            </span><span class="c1"># off | on</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span><span class="nt">mito_genetic_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">    </span><span class="nt">chroquetas_script_sha256</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">d8961a0d311be57d4a9939bd9e4d90dbc796589b3298dd1835359ed776abfce3</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">    </span><span class="nt">chroquetas_db_sha256</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6f89ecb3117110aad85b8b6ca7b8a3d3715cb5984b6cb75450a6cda5633d16e7</span>
+</code></pre></div>
+<p>In the AMR screen, rule <code>amr_chroquetas</code> runs ChroQueTas on every genome. For each sample it writes
+<code>05.amr/{sample}/amr_summary.tsv</code>, with one row per target protein of the species, each with the
+mutations of the FungAMR database found in it and a verdict on resistance. It also writes <code>amr_positions.tsv</code>,
+every position compared. The species is column 2 of the
+<a href="#annotation-parameter-table">annotation table</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Switching the AMR screen on accepts a non-commercial licence</p>
+<p>ChroQueTas and its database are licensed CC BY-NC-ND 4.0, non-commercial use only. FunFlux
+downloads them at run time and does not ship them, and <code>on</code> is your acceptance of that licence
+(<a href="../../analysis/amr/">Antifungal resistance mutations</a>).</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>chroquetas</code></td>
+<td><code>off</code></td>
+<td><code>off</code> (also empty, <code>false</code>, <code>no</code>, <code>0</code>, <code>none</code>, <code>null</code>), <code>on</code> (also <code>true</code>, <code>yes</code>, <code>1</code>)</td>
+<td>all</td>
+<td>With <code>on</code>, ChroQueTas and its database are downloaded once per output folder (step <code>chroquetas_db</code>), every sample is screened (step <code>amr_chroquetas</code>) and gets <code>05.amr/{sample}/amr_summary.tsv</code>, and MultiQC shows the AMR table. <code>links.chroquetas_link</code> is then required. With <code>off</code>, neither step runs, and the link is not read.</td>
+</tr>
+<tr>
+<td><code>mito_genetic_code</code></td>
+<td><code>auto</code></td>
+<td><code>auto</code> (any case, or an empty value), or the number of an NCBI genetic code, 1-6, 9-16 or 21-33 (7, 8 and 17-20 are not NCBI codes, and miniprot refuses them)</td>
+<td>AMR on</td>
+<td>The genetic code of the second ChroQueTas run, on the mitochondrial genome, where cytochrome b is encoded. That run is made only for the 15 species whose database entry includes cytochrome b. With <code>auto</code>, the code is chosen per sample: code 3 (yeast mitochondrial) for the four Saccharomycetaceae of the database (<em>Saccharomyces cerevisiae</em>, <em>S. paradoxus</em>, <em>Nakaseomyces glabratus</em>, <em>Kluyveromyces marxianus</em>), and code 4 (mold mitochondrial) for every other species. A number sets that code for every sample. The nuclear run always uses the code ChroQueTas chooses for the species (<a href="../../analysis/amr/#two-runs">Two runs</a>).</td>
+</tr>
+<tr>
+<td><code>chroquetas_script_sha256</code></td>
+<td>the checksum of <code>bin/ChroQueTas.sh</code> at the template address</td>
+<td>64 hexadecimal characters (capitals are accepted)</td>
+<td>AMR on</td>
+<td>The SHA-256 that the downloaded script must have, checked before anything runs it.</td>
+</tr>
+<tr>
+<td><code>chroquetas_db_sha256</code></td>
+<td>the checksum of <code>FungAMR_db/db-v20250811.tgz</code> at the template address</td>
+<td>64 hexadecimal characters (capitals are accepted)</td>
+<td>AMR on</td>
+<td>The SHA-256 that the downloaded database archive must have, checked before it is unpacked.</td>
+</tr>
+</tbody>
+</table>
+<p>The template address names one commit, so the files behind it do not change. To use another
+version, change the link and both checksums together (<code>sha256sum &lt;file&gt;</code> prints them). A wrong value
+stops the run with <code>[FunFlux] parameters.amr.&lt;key&gt;: ...</code>, for example
+<code>[FunFlux] parameters.amr.mito_genetic_code: must be auto or the number of an NCBI genetic code: 1-6, 9-16 or 21-33 (got: &lt;value&gt;)</code>.
+Every dry run prints one line, <code>AMR screen: ChroQueTas on (licence CC BY-NC-ND 4.0: non-commercial use).</code>
+or <code>AMR screen: off.</code></p>
+<p>A change re-runs the following steps:</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Re-runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mito_genetic_code</code></td>
+<td><code>amr_chroquetas</code> and MultiQC</td>
+</tr>
+<tr>
+<td><code>links.chroquetas_link</code>, <code>chroquetas_script_sha256</code> or <code>chroquetas_db_sha256</code></td>
+<td><code>chroquetas_db</code>, then <code>amr_chroquetas</code> of every sample</td>
+</tr>
+<tr>
+<td>the species, column 2 of the annotation table</td>
+<td>also the gene prediction and everything after it, because funannotate reads the species too</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>amr</code> keys and the link re-run only the AMR steps and the report, while a new species
+re-runs the whole annotation.</p>
+<h3 id="longread-and-hybrid"><code>longread</code> and <code>hybrid</code><a class="headerlink" href="#longread-and-hybrid" title="Permanent link">¶</a></h3>
+<p>These two blocks hold the long-read settings: the assembler, Filtlong, Medaka and hifiasm, and in
+<code>hybrid</code> mode also the Filtlong guidance.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">longread</span><span class="p">:</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="nt">assembler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hifiasm</span><span class="w">         </span><span class="c1"># hifiasm | flye</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="nt">flye_input_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span><span class="w">      </span><span class="c1"># auto | nano-raw | nano-hq</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="nt">medaka_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="nt">medaka_model_fallback_auto</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="nt">filtlong</span><span class="p">:</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">      </span><span class="nt">min_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">      </span><span class="nt">keep_percent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">      </span><span class="nt">length_weight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">      </span><span class="nt">target_bases</span><span class="p">:</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">    </span><span class="nt">hifiasm</span><span class="p">:</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">      </span><span class="nt">genome_size</span><span class="p">:</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">      </span><span class="nt">bloom_filter_bits</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">      </span><span class="nt">purge_dups</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">      </span><span class="nt">homozygous_coverage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">      </span><span class="nt">telomere_motif</span><span class="p">:</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">  </span><span class="nt">hybrid</span><span class="p">:</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w">    </span><span class="c1"># the same keys as longread, plus:</span>
+<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w">    </span><span class="nt">short_read_guidance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w">    </span><span class="nt">filtlong_split</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+</code></pre></div>
+<p>The long-read settings sit in the block named after the mode, <code>parameters.longread</code> in <code>longread</code>
+mode and <code>parameters.hybrid</code> in <code>hybrid</code> mode. Each block is read only in its own mode. The same
+keys at the top of <code>parameters</code>, where FunFluxL and FunFluxL+ kept their long-read settings, stop
+the run in every mode.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>assembler</code></td>
+<td><code>hifiasm</code></td>
+<td><code>hifiasm</code>, <code>flye</code></td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td>One assembler for the whole run. Flye does not repeat its assembly byte for byte from run to run.</td>
+</tr>
+<tr>
+<td><code>flye_input_mode</code></td>
+<td><code>auto</code></td>
+<td><code>auto</code>, <code>nano-raw</code>, <code>nano-hq</code>, while <code>pacbio-hifi</code> stops the run</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td>The Flye read mode of ONT samples. <code>auto</code> gives <code>--nano-hq</code>, or <code>--nano-raw</code> when <code>medaka_model</code> names a model containing <code>fast</code>. PacBio samples always get <code>--pacbio-hifi</code>. Ignored with hifiasm, with a NOTE when it is set.</td>
+</tr>
+<tr>
+<td><code>medaka_model</code></td>
+<td><code>auto</code></td>
+<td><code>auto</code> (also empty or an unquoted <code>null</code>, <code>true</code>, <code>yes</code>, <code>on</code>, <code>1</code>), <code>false</code> for no Medaka (also <code>no</code>, <code>off</code>, <code>0</code>, <code>none</code>, <code>null</code> in quotes), or any other text, taken as a model name</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td>Medaka polishing of ONT samples. PacBio samples never use Medaka. <code>auto</code> takes the model from the basecaller tag in the first 100 reads of the raw FASTQ (exactly one tag must be present) and needs network access once. The model is checked before the assembler starts.</td>
+</tr>
+<tr>
+<td><code>medaka_model_fallback_auto</code></td>
+<td><code>false</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td>When a named model is not valid, try <code>auto</code> instead of stopping.</td>
+</tr>
+<tr>
+<td><code>filtlong.min_length</code></td>
+<td>1000</td>
+<td>an integer ≥ 1</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td>Filtlong <code>--min_length</code>, in bp.</td>
+</tr>
+<tr>
+<td><code>filtlong.keep_percent</code></td>
+<td>90</td>
+<td>a number above 0 and at most 100</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td><code>--keep_percent</code>, the share of the bases kept, best reads first.</td>
+</tr>
+<tr>
+<td><code>filtlong.length_weight</code></td>
+<td>10</td>
+<td>a number above 0</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td><code>--length_weight</code>. Higher values favour longer reads.</td>
+</tr>
+<tr>
+<td><code>filtlong.target_bases</code></td>
+<td>empty</td>
+<td>empty or 0 for no cap, or a size such as <code>1500000000</code> or <code>1.5g</code></td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td><code>--target_bases</code>, a cap on the bases kept, for very deep runs. With Flye and very deep ONT reads, set it to about 100 times the genome size (<a href="../../modes/longread/#flye">Flye</a>).</td>
+</tr>
+<tr>
+<td><code>hifiasm.genome_size</code></td>
+<td>empty</td>
+<td>empty or 0, or a size such as <code>40000000</code> or <code>40m</code></td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td><code>--hg-size</code>, the haploid genome size. When it is empty, hifiasm infers the depth itself.</td>
+</tr>
+<tr>
+<td><code>hifiasm.bloom_filter_bits</code></td>
+<td>0</td>
+<td>an integer from 0 to 63</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td><code>-f</code>, where 0 suits small fungal genomes.</td>
+</tr>
+<tr>
+<td><code>hifiasm.purge_dups</code></td>
+<td><code>auto</code></td>
+<td><code>auto</code> (also empty), or 0 to 3</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td><code>-l</code>, how strongly duplicated haplotigs are purged. <code>auto</code> keeps hifiasm's own choice.</td>
+</tr>
+<tr>
+<td><code>hifiasm.homozygous_coverage</code></td>
+<td><code>auto</code></td>
+<td><code>auto</code> (also empty), or an integer ≥ 1</td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td><code>--hom-cov</code>, the read depth of the homozygous peak.</td>
+</tr>
+<tr>
+<td><code>hifiasm.telomere_motif</code></td>
+<td>empty</td>
+<td>DNA or IUPAC letters, such as <code>CCCTAA</code></td>
+<td><code>longread</code>, <code>hybrid</code></td>
+<td><code>--telo-m</code>. Set it only when the organism's telomere repeat is known.</td>
+</tr>
+<tr>
+<td><code>short_read_guidance</code></td>
+<td><code>false</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td><code>hybrid</code></td>
+<td>With <code>true</code>, Filtlong scores each long read of an ONT sample against the selected pairs, the Illumina pairs properly paired on the screened guide assembly (<code>-1</code>, <code>-2</code>). With <code>false</code>, every sample gets the plain filter of <code>longread</code> mode. PacBio samples are never guided.</td>
+</tr>
+<tr>
+<td><code>filtlong_split</code></td>
+<td>1000 when the key is missing</td>
+<td>an integer ≥ 1, or empty or <code>null</code> to score but never cut</td>
+<td><code>hybrid</code></td>
+<td>With guidance, adds <code>--trim --split &lt;N&gt;</code>, so that a read is cut where the Illumina reads stop supporting it for N bp. Not used when <code>short_read_guidance</code> is false, and a number other than 1000 then gets a NOTE.</td>
+</tr>
+</tbody>
+</table>
+<p>PacBio samples are not guided, because cutting accurate HiFi reads where the Illumina coverage has
+a gap would throw away their length. Filtlong's README advises against a short-read reference
+unless you are confident in the quality of the short reads, since long reads that span a region the
+short reads miss can score low. That is why the guidance is off by default.
+<code>short_read_guidance: true</code> turns it on, and <code>filtlong_split: null</code> then keeps the scoring without
+cutting.</p>
+<p>The Filtlong defaults are sized for ONT reads and provisional for PacBio HiFi. hifiasm always runs
+with <code>--primary</code>. Every dry run prints the decisions for each sample, and
+<a href="../../modes/longread/#one-technology-per-sample">One technology per sample</a> lists what differs
+between ONT and PacBio HiFi samples.</p>
+<p>See <a href="../../modes/longread/">Long reads</a>, <a href="../../modes/hybrid/">Hybrid</a>,
+<a href="../../methods/medaka-model/">The Medaka model</a> and
+<a href="../../methods/filtlong-guidance/">Filtlong guidance in hybrid mode</a>.</p>
+<h3 id="contigs"><code>contigs</code><a class="headerlink" href="#contigs" title="Permanent link">¶</a></h3>
+<p>The <code>contigs</code> block has one key, which switches the screen on for supplied assemblies.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Allowed values</th>
+<th>Modes</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>screen</code></td>
+<td><code>false</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td><code>contigs</code> (checked in every mode)</td>
+<td>With <code>true</code>, the contamination and mitochondrion screen runs on the supplied FASTA. It needs <code>directories.blast_db</code>, and adds <code>contigs_filt.fasta</code>, the <code>contaminants/</code> and <code>mitochondria/</code> folders, <code>contigs_all.fasta</code> and <code>contigs_mitochondrial.fasta</code> to the outputs. With <code>false</code> there is no screen, and <code>contigs_final.fasta</code> is the FASTA after the contig filter. With SPAdes-style headers the filter keeps the contigs of at least 500 bp and 2x coverage, and other headers are only cut at the first space or tab. With <code>false</code>, a NOTE also warns that a mitochondrial genome in <code>contigs_final.fasta</code> would be annotated as nuclear.</td>
+</tr>
+</tbody>
+</table>
+<p>Assemblies from a sequencing provider usually still contain the mitochondrial genome. See
+<a href="../../modes/contigs/">Pre-assembled contigs</a>.</p>
+<h2 id="annotation-parameter-table">Annotation parameter table<a class="headerlink" href="#annotation-parameter-table" title="Permanent link">¶</a></h2>
+<p>The annotation parameter table gives FunFlux the species, the protein evidence and the AUGUSTUS
+model of each sample. It is a tab-separated text file, named by <code>files.annotation_params</code>, with
+three or four columns (the fourth is optional) and one row per sample.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Content</th>
+<th>Used as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 <code>sample</code></td>
+<td>the sample name, as found in the input folder</td>
+<td>the link between the row and the sample</td>
+</tr>
+<tr>
+<td>2 <code>species</code></td>
+<td>the species name, such as <code>Fusarium graminearum</code></td>
+<td><code>funannotate predict -s</code>, the organism of the GenBank files and of the <code>.sqn</code> submission file. With spaces turned into <code>_</code> and <code>_{sample}</code> appended, it is the stem of funannotate's file names (<code>Fusarium_graminearum_SAMPLE1.gbk</code>). With the AMR screen on, it is also the species looked up in the FungAMR database (<a href="../../analysis/amr/#species">The species</a>).</td>
+</tr>
+<tr>
+<td>3 <code>proteins</code></td>
+<td>path of a protein FASTA of related fungi, such as the RefSeq proteome of a species of the same genus (<a href="../../getting-started/quick-start/#6-write-the-annotation-parameter-table">how to download one</a>)</td>
+<td>gene evidence, as <code>funannotate predict --protein_evidence &lt;file&gt; &lt;funannotate_db&gt;/uniprot_sprot.fasta</code></td>
+</tr>
+<tr>
+<td>4 <code>augustus_species</code></td>
+<td>optional: the name of a stored AUGUSTUS model, or empty, or <code>-</code></td>
+<td>a name gives <code>funannotate predict --augustus_species &lt;name&gt;</code>, and AUGUSTUS uses that model as it is, without training on this genome. Empty or <code>-</code>, or no fourth column at all, means that AUGUSTUS is trained on the genome's BUSCO genes, the long way with <a href="#prediction"><code>prediction.augustus_optimize</code></a></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>#sample species proteins    augustus_species
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>SAMPLE1 Fusarium graminearum    /path/to/fusarium_proteins.faa  -
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>ARSEF3097   Beauveria bassiana  /path/to/beauveria_bassiana_proteins.faa    fusarium_graminearum
+</code></pre></div>
+<p>The first row trains AUGUSTUS on the genome (the default), and the second uses the stored
+<code>fusarium_graminearum</code> model as it is.</p>
+<p>FunFlux checks the table before any job starts:</p>
+<ul>
+<li>Lines starting with <code>#</code> and blank lines are skipped, and spaces around each field are removed.
+  Column names are not read, so the position decides. The shipped example
+  <code>config/annotation_parameters.tsv</code>, for instance, calls the fourth column <code>model</code>.</li>
+<li>Every data line, including a line for a sample outside the batch, has three or four tab-separated
+  fields, and no sample name appears twice. Columns separated by spaces give, for example,
+  <code>[FunFlux] files.annotation_params: line 2 has 1 tab-separated columns; expected 3 or 4 (sample, species, proteins and, optionally, augustus_species).</code></li>
+<li>Every sample of the batch has a row, and its protein file exists and is not empty. A relative
+  path is read from the launch folder. The protein files of samples outside the batch are not
+  checked, so one table can serve several batches.</li>
+</ul>
+<p>A named AUGUSTUS model must be one of the stored models, the folder names in
+<code>&lt;funannotate_db&gt;/trained_species/</code>. The default funannotate database holds 166 of them, including
+<code>fusarium_graminearum</code>, <code>aspergillus_nidulans</code>, <code>botrytis_cinerea</code> and <code>neurospora_crassa</code>. With
+<code>FUNANNOTATE_DB</code> set, <code>funannotate species</code> lists them. Capitals count. When the name is checked
+depends on whether the database is on disk yet, and every dry run prints the choice for each
+sample:</p>
+<table>
+<thead>
+<tr>
+<th>The funannotate database</th>
+<th>The name is checked</th>
+<th>The dry-run line, for example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>is on disk</td>
+<td>before any job starts</td>
+<td><code>AUGUSTUS: SAMPLE1 uses the stored model fusarium_graminearum.</code></td>
+</tr>
+<tr>
+<td>is not downloaded yet</td>
+<td>by rule <code>augustus_model_check</code>, right after the database is unpacked, with its log in <code>logs/augustus_model_check_{sample}.log</code></td>
+<td><code>SAMPLE1 names the stored model fusarium_graminearum (checked once the database is unpacked)</code>, and a sample with an empty column 4 gets the same <code>(checked once the database is unpacked)</code></td>
+</tr>
+</tbody>
+</table>
+<p>A name that is not in the database stops the run, at the latest right after the database
+is unpacked. The message gives the closest names, for example
+<code>[FunFlux] files.annotation_params: sample 'SAMPLE1' names the AUGUSTUS model 'fusarium_graminaerum', which is not a trained species of the funannotate database at '&lt;db&gt;'. Did you mean 'fusarium_graminearum'? ...</code>.</p>
+<p>With column 4 empty, AUGUSTUS is trained on the genome and needs at least 200 BUSCO models for it
+(<a href="../../analysis/gene-prediction/#augustus-model">The AUGUSTUS model</a>). If the database holds a
+model stored earlier under the sample's own name, funannotate uses that instead, and a NOTE says
+so. Which of the two to choose is discussed on
+<a href="../../analysis/gene-prediction/#augustus-model">Gene prediction</a>. A changed row re-runs gene
+prediction and every annotation step of that sample.</p>
+<h2 id="coming-from-a-v1-configuration">Coming from a v1 configuration<a class="headerlink" href="#coming-from-a-v1-configuration" title="Permanent link">¶</a></h2>
+<p>A v1 configuration stops at once, because it has no <code>mode</code>. Start from the v2 template and carry
+your values over. <a href="../../getting-started/from-v1/">Coming from v1</a> lists every key that was renamed,
+moved or removed, and every v1 value that now stops the run.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>
