@@ -1,0 +1,39 @@
+# The exact package builds of this environment are fixed by python.linux-64.pin.txt next to this
+# file; Snakemake creates the environment from that list. It holds Python 3.12 and nothing else.
+#
+# What it is for. Several FunFlux steps are small Python scripts that use only Python's standard
+# library and call no other program: the contig selector (select_contigs_by_taxonomy.py), the
+# mitochondrion screen, split and evidence table (mitochondria.py), the repair of the funannotate
+# database paths (normalize_funannotate_db_paths.py) and the AUGUSTUS model check
+# (check_augustus_model.py). Their rules have no tool environment of their own that could bring
+# a Python, so they run in this one: rules select_contigs, screen_mitochondria,
+# separate_mitochondria, normalize_funannotate_db, augustus_model_check and assembly_evidence,
+# and in hybrid mode also screen_guide_mitochondria and select_guide_contigs. A script whose
+# rule already has a tool environment with Python in it (the Medaka model check, the telomere
+# search, the contig summary, the ITS scripts, the AMR screen) runs with that environment's
+# Python instead.
+#
+# Why a pinned environment instead of the computer's own `python`. Without an environment, a
+# rule runs `python` from whatever comes first on the PATH (the list of folders the shell
+# searches for a program) of the computer that runs the job. That can be missing (Ubuntu 22.04
+# and later, Debian 12 and RHEL 9 install only `python3`), can be a Python 2.7 or 3.6 on an old
+# cluster, or can differ from one cluster node to the next. Activating this environment makes
+# `python` the same Python 3.12 everywhere, like every other tool of the workflow.
+#
+# Edit this file (a comment included) or its pin list only for a good reason: Snakemake compares
+# their text with that of the last run, so in an existing output folder every rule above runs
+# again, and with it every step that comes after them (the decontamination, the polishing and
+# the whole annotation).
+#
+# The list was made on 2026-10-12 (conda 26.7.2) with
+#   CONDA_ADD_PIP_AS_PYTHON_DEPENDENCY=false conda create -p <env> --override-channels \
+#       -c conda-forge python=3.12
+# and then conda list -p <env> --explicit wrote the list. The setting leaves out pip, which
+# conda otherwise adds to Python and nothing here uses; --override-channels makes conda use only
+# the channel named after it, whatever the computer's conda settings list. Python comes from
+# conda-forge, so that is the only channel the environment needs.
+name: python
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12

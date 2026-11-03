@@ -1,0 +1,23 @@
+# The exact package builds of this environment are fixed by tiberius.linux-64.pin.txt next to
+# this file; Snakemake creates the environment from that list. The list is the environment
+# Tiberius was tested in, made with conda 26.7.2 by
+#   conda create -p <env> --override-channels -c conda-forge -c bioconda python tiberius=1.1.8 gffread
+# without gffread, which that test needed for checks outside FunFlux and which no other
+# package of the list depends on. conda chose Python 3.12 and the CPU build of TensorFlow
+# 2.17.0 (tiberius 1.1.8 asks for TensorFlow below 2.18). The environment was then made again
+# from the list without gffread (conda create -p <env> --file <list>), Tiberius started in it,
+# and conda list -p <env> --explicit wrote the list.
+#
+# Why Tiberius 1.1.8 and not the newer bioconda package 2.0.9: 2.0.9 imports two Python
+# packages (bricks2marble and hidten) that its conda recipe does not install, so it stops at
+# start-up. The bioconda package installs no `tiberius` command; rule tiberius_prediction
+# (workflow/rules/shared/42_tiberius.smk) starts the program as the Python module tiberius.main.
+# The environment holds about 2 GB.
+name: tiberius
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.12
+  - tiberius=1.1.8
+  - tensorflow=2.17.0

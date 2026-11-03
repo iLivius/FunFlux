@@ -1,0 +1,12 @@
+# Packages for working ON FunFlux (running its tests, its checks and building its
+# documentation). They are NOT needed to run the workflow: Snakemake alone (tested with 9.14.6)
+# is enough for that, because every tool the workflow calls is installed per rule by
+# `--sdm conda`.
+#
+# Install into the same environment as Snakemake:
+#   conda install -n <snakemake env> -c conda-forge pytest pyyaml
+#   pip install mkdocs-material==9.7.7 mkdocs-glightbox==0.5.2   # only to build the documentation site
+pytest
+PyYAML
+mkdocs-material==9.7.7
+mkdocs-glightbox==0.5.2

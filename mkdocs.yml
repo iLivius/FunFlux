@@ -1,0 +1,153 @@
+site_name: FunFlux
+site_description: Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly
+site_author: Livio Antonielli
+repo_url: https://github.com/iLivius/FunFlux
+repo_name: iLivius/FunFlux
+edit_uri: edit/main/docs/
+
+# The address the site is published at. MkDocs writes it into sitemap.xml, and
+# Material's instant navigation (navigation.instant below) reads that file to know
+# which links lead to pages of this site. Without site_url the sitemap is empty, and
+# instant navigation has no list of the site's pages to work from.
+site_url: https://iLivius.github.io/FunFlux/
+
+# Where the Markdown pages are. `mkdocs serve` shows a local preview while you
+# edit; `mkdocs build` writes the finished site to site/ (git-ignored).
+docs_dir: docs
+
+# docs/ also holds requirements.txt, the Python packages for building this site and
+# running the tests. It is not a page of the site, so it is excluded: an excluded file
+# is not copied into site/.
+#
+# The pattern follows .gitignore rules. The leading slash ties it to the top level of
+# docs/, so a file of the same name in a subfolder is not excluded.
+exclude_docs: |
+  /requirements.txt
+
+# Link checks. `mkdocs build --strict` stops on every warning. A link to a page that
+# does not exist is a warning already; a link to a heading that does not exist on its
+# page (page.md#no-such-heading) is only an INFO line unless anchors is set to warn,
+# so this line makes a broken heading link stop the strict build too. The setting
+# needs MkDocs 1.6 or newer, which mkdocs-material 9.7.7 (docs/requirements.txt)
+# requires anyway.
+validation:
+  anchors: warn
+
+theme:
+  name: material
+  language: en
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.instant       # open a page without reloading the whole site
+    - navigation.tracking      # the address bar follows the section being read
+    - navigation.sections      # top-level groups shown as sections in the sidebar
+    - navigation.top           # back-to-top button
+    - navigation.indexes       # a section can have its own first page (Modes)
+    - toc.follow               # the table of contents follows the scroll position
+    - search.suggest           # search completes the word being typed
+    - search.highlight         # the searched words are highlighted on the page opened
+    - content.code.copy        # copy button on every code block
+    - content.action.edit      # "edit this page" link to the file on GitHub
+  palette:
+    # Light scheme by default, with a switch to the dark one. The colours are FunFlux's own
+    # "fly agaric" red, set in stylesheets/extra.css (custom = taken from there); no other
+    # BioFlux site uses red (BacFlux blue, MetaFlux teal, TabFlux deep purple).
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition                 # !!! note and !!! warning boxes
+  - attr_list                  # attributes on page elements, such as { .class }
+  - def_list                   # definition lists
+  - footnotes
+  - tables
+  - toc:
+      permalink: true          # a link anchor next to every heading
+  - pymdownx.details           # boxes that open and close (??? note)
+  - pymdownx.highlight:
+      anchor_linenums: true    # line numbers in code blocks can be linked to
+  - pymdownx.inlinehilite      # syntax colouring inside `inline code`
+  - pymdownx.snippets          # include the text of another file in a page
+  - pymdownx.superfences:      # code blocks inside lists and boxes, and Mermaid diagrams
+      # Without this entry a ```mermaid block is shown as plain text instead of
+      # being drawn. Material ships the Mermaid library itself, so no other
+      # plugin or script is needed.
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true    # tabbed blocks, for example one command per mode
+
+extra_css:
+  - stylesheets/extra.css      # wider pages and larger Mermaid labels
+
+plugins:
+  - search
+  - glightbox:                 # a selected image opens in an overlay with a close button
+      zoomable: true           # a click on the opened image shows it at full size
+      draggable: true
+      auto_themed: true        # the viewer shows only the light or the dark copy, matching the scheme
+
+# The nav follows how the workflow is built. The four modes differ only in their front
+# end (read processing, assembly, polishing): "Modes" has one page per front end. The
+# contamination and mitochondrion screen and every step after it are rules shared by
+# all modes: "Analysis stages" has one page per step. "Method references" explain the
+# reasoning behind particular defaults and which steps repeat exactly; "Reference" holds
+# the pages to look up keys, files and commands.
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - Getting started:
+      - Choosing a mode: getting-started/choosing-a-mode.md
+      - Installation: getting-started/installation.md
+      - Reference databases: getting-started/databases.md
+      - Licensed and external tools: getting-started/external-tools.md
+      - Quick start: getting-started/quick-start.md
+      - Coming from v1: getting-started/from-v1.md
+  - Modes:
+      - modes/index.md
+      - Illumina: modes/illumina.md
+      - Long reads (ONT and PacBio HiFi): modes/longread.md
+      - Hybrid: modes/hybrid.md
+      - Pre-assembled contigs: modes/contigs.md
+  - Analysis stages:
+      - Decontamination: analysis/decontamination.md
+      - Mitochondria: analysis/mitochondria.md
+      - Assembly QC: analysis/assembly-qc.md
+      - Contig summary: analysis/contig-summary.md
+      - ITS taxonomy: analysis/its-taxonomy.md
+      - Repeat masking: analysis/repeat-masking.md
+      - Gene prediction: analysis/gene-prediction.md
+      - Functional annotation: analysis/functional-annotation.md
+      - AMR mutations: analysis/amr.md
+      - Report: analysis/report.md
+  - Method references:
+      - BLAST hit depth: methods/blast-hit-depth.md
+      - ITS on long-read contigs: methods/its-long-read-contigs.md
+      - Filtlong guidance in hybrid mode: methods/filtlong-guidance.md
+      - The Medaka model: methods/medaka-model.md
+      - Run-to-run differences: methods/run-to-run-differences.md
+  - Reference:
+      - Configuration: reference/configuration.md
+      - Output files: reference/output.md
+      - Running FunFlux: reference/running.md
+  - Troubleshooting: troubleshooting.md
+  - About:
+      - Validation on public genomes: about/validation.md
+      - Rationale: about/rationale.md
+      - Licensing: about/licensing.md
+      - Citation and references: about/citation.md

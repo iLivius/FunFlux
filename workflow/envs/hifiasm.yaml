@@ -1,0 +1,9 @@
+# The exact package builds of this environment are fixed by hifiasm.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
+name: hifiasm
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  # ONT reads need hifiasm 0.21.0 or newer (--ont); older builds assemble HiFi reads only.
+  - hifiasm=0.25.0

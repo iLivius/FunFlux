@@ -1,0 +1,9 @@
+# The exact package builds of this environment are fixed by medaka.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
+name: medaka
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.12
+  - medaka=2.2.2

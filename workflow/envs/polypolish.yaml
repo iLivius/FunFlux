@@ -1,0 +1,9 @@
+# The exact package builds of this environment are fixed by polypolish.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
+name: polypolish
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bwa=0.7.19
+  - polypolish=0.6.1

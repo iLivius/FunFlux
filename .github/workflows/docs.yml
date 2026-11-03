@@ -1,0 +1,56 @@
+# Builds the documentation site from docs/ and mkdocs.yml and publishes it on GitHub Pages,
+# at https://iLivius.github.io/FunFlux/. GitHub runs this file by itself after every push to
+# main that changes the documentation. It plays no part in running the workflow.
+#
+# What one run does, on a temporary Ubuntu computer that GitHub provides:
+#   1. checks out the repository;
+#   2. installs Python, mkdocs-material 9.7.7 and mkdocs-glightbox 0.5.2 (the image viewer),
+#      the versions docs/requirements.txt names, so that a newer release cannot change the
+#      site unnoticed;
+#   3. runs `mkdocs gh-deploy`, which builds the site and pushes it to the gh-pages branch
+#      (made on the first run). GitHub Pages serves that branch, so the published site
+#      changes about a minute later.
+# A run that fails leaves the published site as it was.
+#
+# Step 3 may push to the gh-pages branch without any change to the repository's Actions
+# settings: the permissions line below grants this file the write access it needs. One
+# setting this file cannot switch on for itself; set it once, in the repository's Settings on
+# GitHub: Pages -> Source -> "Deploy from a branch" -> gh-pages. The branch exists only after
+# the first run, so choose it once that run has finished (a run can also be started by hand:
+# Actions -> docs -> Run workflow).
+#
+# The build here is not --strict, so a broken link does not hold back a documentation
+# update. The docs job of ci.yml builds with --strict on every push and pull request, and
+# shows a broken link as a red cross; `mkdocs build --strict` on your own computer finds it
+# before you push.
+
+name: docs
+
+on:
+  push:
+    branches:
+      - main
+    # Only a change to the documentation, or to this file, starts a run.
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - ".github/workflows/docs.yml"
+  # Adds a "Run workflow" button on the Actions page, to start a run by hand.
+  workflow_dispatch:
+
+permissions:
+  contents: write   # mkdocs gh-deploy pushes the built site to the gh-pages branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - run: pip install mkdocs-material==9.7.7 mkdocs-glightbox==0.5.2
+
+      - run: mkdocs gh-deploy --force

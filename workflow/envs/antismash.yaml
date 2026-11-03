@@ -1,6 +1,9 @@
+# The exact package builds of this environment are fixed by antismash.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
 name: antismash
 channels:
   - conda-forge
   - bioconda
 dependencies:
+  - python=3.11
   - antismash=8.0.4

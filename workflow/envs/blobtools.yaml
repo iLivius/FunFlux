@@ -1,6 +1,9 @@
+# The exact package builds of this environment are fixed by blobtools.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
 name: blobtools
 channels:
   - conda-forge
   - bioconda
 dependencies:
+  - python=3.13
   - blobtools=1.1.1

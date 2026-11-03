@@ -1,0 +1,17 @@
+# The exact package builds of this environment are fixed by signalp6.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
+# SignalP 6 is installed only from the user-provided official DTU archive by
+# scripts/45_signalp6/install_signalp6.py; do not substitute an unofficial conda package.
+# PyTorch 1.13 needs the pre-2024 MKL/OpenMP ABI (iJIT_NotifyEvent), hence mkl<2024.
+name: signalp6
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - pip
+  - numpy<2
+  - pytorch=1.13
+  - mkl<2024
+  - matplotlib>3.3.2
+  - tqdm>4.46.1

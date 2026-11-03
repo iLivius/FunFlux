@@ -1,0 +1,49 @@
+# The exact package builds of this environment are fixed by download.linux-64.pin.txt next to
+# this file; Snakemake creates the environment from that list. It holds curl, tar and gzip and
+# nothing else.
+#
+# What it is for. The rules that fetch a reference file from the internet download it with
+# curl, and three of them unpack a .tar.gz archive with tar, which calls gzip: download_phix
+# (the PhiX genome; illumina and hybrid mode), funannotate_db (the funannotate database
+# snapshot), unite_db (the UNITE reference, unpacked with gzip on the fly), telomere_db (tidk's
+# telomere repeat database), tiberius_model (the Tiberius fungi model) and chroquetas_db
+# (ChroQueTas and the FungAMR database). They run in this environment.
+#
+# Why not the computer's own programs. curl is not part of a minimal Debian or Ubuntu
+# installation (nor of the Ubuntu desktop image), and tar is missing from the minimal
+# installations and containers of Red Hat Enterprise Linux and its rebuilds (Rocky, Alma).
+# telomere_db runs in every mode and tiberius_model is on by default, so a computer without
+# curl would stop every first run. Activating this environment puts its curl, tar and gzip
+# first on the PATH (the list of folders the shell searches for a program), so every
+# computer uses the same versions. This curl trusts only the list of certificate authorities
+# shipped with the environment (ssl/cacert.pem inside it), not the computer's own; behind a
+# network proxy that re-signs HTTPS with an in-house certificate, set CURL_CA_BUNDLE to the
+# computer's list before starting Snakemake, and curl uses that one instead.
+#
+# What still comes from the computer: sha256sum and md5sum (the checksums), and date, wc,
+# cut, sort, chmod, mkdir, mv, rm and find. They belong to GNU coreutils and findutils, which
+# every Linux distribution the conda packages run on installs as part of its base system,
+# and the other FunFlux rules use them from the computer too. Adding them here would only
+# put a second copy in front of the computer's own.
+#
+# Edit this file (a comment included) or its pin list only for a good reason: Snakemake
+# compares their text with that of the last run, so in an existing output folder every rule
+# above downloads its file again, and every step that reads the file runs again too. For
+# funannotate_db that means unpacking the database again over the shared, already repaired
+# copy in directories.funannotate_db, and then the whole annotation.
+#
+# The list was made on 2026-10-12 (conda 26.7.2) with
+#   CONDA_ADD_PIP_AS_PYTHON_DEPENDENCY=false conda create -p <env> --override-channels \
+#       -c conda-forge curl tar gzip
+# (it chose the newest versions then: curl 8.22.0, tar 1.35 and gzip 1.14, the versions named
+# under dependencies below) and then conda list -p <env> --explicit wrote the list. The
+# setting keeps pip out (nothing here uses Python); --override-channels makes conda use only
+# the channel named after it, whatever the computer's conda settings list. All three come
+# from conda-forge, so that is the only channel the environment needs.
+name: download
+channels:
+  - conda-forge
+dependencies:
+  - curl=8.22.0
+  - tar=1.35
+  - gzip=1.14

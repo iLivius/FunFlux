@@ -1,7 +1,42 @@
+# The exact package builds of this environment are fixed by interproscan.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
+# InterProScan itself is not installed by conda: it is a large manual download that the
+# workflow calls through files.iprscan. This small environment supplies the Java and the
+# Python and the Perl that InterProScan runs. Its documentation asks for Java 11 (from release
+# 5.37-76.0 on) and Python 3.8 (from release 5.70-102.0 on).
+#   * openjdk 11: InterProScan is a Java program, and its launcher, interproscan.sh, stops
+#     on any Java older than 11 (checked in 5.77-108.0 and 5.78-109.0).
+#   * python 3.11: InterProScan runs `python3` (the command named in its settings file,
+#     interproscan.properties) for seven of its analyses: Gene3D, FunFam, HAMAP, MobiDB-lite,
+#     PANTHER, PIRSR and PROSITE profiles. With this environment active, that is this Python;
+#     all seven have been run with it. Rule iprscan_annotation also uses it to check
+#     the XML result.
+#   * perl 5.32: InterProScan runs `perl` (the command named in interproscan.properties) for
+#     SUPERFAMILY, whose scripts load the Thread and Thread::Semaphore modules, and for the
+#     PROSITE patterns (ps_scan.pl, which starts with "#!/usr/bin/env perl" and so also takes
+#     the first Perl on the PATH). conda-forge's Perl is built with thread support and carries
+#     all of Perl's standard modules. Without it, the computer's own Perl was used, and a
+#     minimal Debian or Ubuntu system (which installs only perl-base, without these modules)
+#     or a minimal Red Hat system (which may have no Perl at all) stopped InterProScan, after
+#     the hours of gene prediction.
+# The funannotate environment is not used for InterProScan: its pinned Java is openjdk 25
+# (funannotate.linux-64.pin.txt), a version InterProScan's documentation does not name.
+#
+# Perl was added on 2026-10-12 (conda 26.7.2): in an environment made from the earlier list
+# (conda create -p <env> --file <earlier list>), the command
+#   CONDA_AGGRESSIVE_UPDATE_PACKAGES="" CONDA_ADD_PIP_AS_PYTHON_DEPENDENCY=false conda install \
+#       -p <env> --override-channels -c conda-forge -c bioconda --freeze-installed perl
+# added perl-5.32.1 and changed no other build. The first setting stops conda from updating
+# ca-certificates and openssl on the way, which it otherwise does with every install; the
+# second stops conda from adding pip to Python (the pip already in the list stays as it
+# is); --override-channels makes conda use only the two channels named after it, whatever
+# the computer's conda settings list. Then conda list -p <env> --explicit wrote the list.
+# Perl 5.32.1 is the version the funannotate, BUSCO and other FunFlux environments pin.
 name: interproscan
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - openjdk=11
   - python=3.11
+  - openjdk=11
+  - perl=5.32

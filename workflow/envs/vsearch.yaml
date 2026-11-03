@@ -1,7 +1,21 @@
+# The exact package builds of this environment are fixed by vsearch.linux-64.pin.txt next to this
+# file; Snakemake creates the environment from that list. VSEARCH and its libraries keep the builds
+# of the tested environment. Python was added on 2026-10-08 (conda 26.7.2): in an
+# environment made from the earlier list (conda create -p <env> --file <earlier list>), the command
+#   CONDA_ADD_PIP_AS_PYTHON_DEPENDENCY=false conda install -p <env> --override-channels \
+#       -c conda-forge -c bioconda --freeze-installed python=3.12
+# added Python and the libraries it needs and changed no other build. The setting leaves out pip,
+# which conda otherwise adds to Python and nothing here uses; --override-channels makes conda use
+# only the two channels named after it, whatever the computer's conda settings list. Then
+# conda list -p <env> --explicit wrote the list.
+# Python is here for rules unite_identified and its_classification
+# (workflow/rules/shared/30_taxonomy.smk), which run the scripts unite_identified.py and
+# its_distinct.py with `python`: the job then uses this environment's own Python instead of
+# whatever `python` the server has (a server with only `python3` would stop the job).
 name: vsearch
 channels:
   - conda-forge
   - bioconda
 dependencies:
   - vsearch=2.30.0
-
+  - python=3.12

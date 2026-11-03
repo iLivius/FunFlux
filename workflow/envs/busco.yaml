@@ -1,7 +1,11 @@
+# The exact package builds of this environment are fixed by busco.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
+# numpy is kept below 2, as in the tested environment.
 name: busco
 channels:
   - conda-forge
   - bioconda
 dependencies:
+  - python=3.12
   - busco=6.0.0
   - numpy<2

@@ -1,32 +1,581 @@
-links:
-  phix_link: ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/819/615/GCF_000819615.1_ViralProj14015/GCF_000819615.1_ViralProj14015_genomic.fna.gz
-  funannotate_link: https://zenodo.org/records/18271295/files/funannotate_db_1.8.15_2025-12-15.tar.gz?download=1
-  unite_its_link: https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz
+# ═══════════════════════════════════════════════════════════════════════
+# FunFlux v2.0.0 — unified configuration
+# ═══════════════════════════════════════════════════════════════════════
+#
+# The template for a FunFlux v2 run. Copy it (for example to config/config_custom.yaml,
+# which git ignores), fill in the copy, and pass the copy on the command line.
+# workflow/rules/shared/00_common.smk reads these settings while Snakemake reads the
+# workflow, before any job starts, and stops there on most mistakes. Some show up only
+# when the step that uses the setting runs: for example a wrong parameters.nt_version
+# first fails in rule blast_contigs, not in the dry run. Likewise, an expired licence key
+# for directories.genemark_dir is found only by rule genemark_check, just before gene
+# prediction.
+#
+# ONE config drives all four input modes. Set `mode` first; then fill in only the
+# blocks that mode reads (each key below says which modes use it). Keys a mode does
+# not read are harmless if left at their defaults.
+#
+# Quick start:
+#   1. mode:               which pipeline to run
+#   2. input.*_dir:        where the raw inputs live (per technology)
+#   3. directories.*:      where the reference databases live, and the output directory
+#   4. files.*:            InterProScan, and the table that names each sample's species
+#   5. links.*:            download addresses for the databases the workflow fetches itself
+#   6. resources / parameters: threads, memory, and per-step options
+#
+# How this file is marked up:
+#   [longread|hybrid]   the modes that USE a key or a block. In every other mode its value
+#                       has no effect.
+#   [screen]            used only when the contamination and mitochondrion screen runs:
+#                       always in illumina, longread and hybrid mode, and in contigs mode
+#                       only with parameters.contigs.screen: true.
+#   [all modes]         read in every mode (an on/off setting may still switch the step
+#                       off). A key without a mode tag is read in every mode too.
+#   REQUIRED            the run stops within seconds, while Snakemake reads the workflow
+#                       and before any job starts, if it is missing or empty.
+#   OPTIONAL            leave it empty and the workflow does without it, or fetches
+#                       the thing itself.
+# Under resources and parameters, each value written below is also the value used when the
+# key is left out of your copy (the one exception, parameters.signalp6.torch_num_threads,
+# says so).
+#
+# Always dry-run first (`snakemake -n`): nearly all of the checking happens while the
+# plan is being built, so it costs seconds and catches a wrong mode, a missing input
+# directory, a bad sample name, a missing annotation row or a mistyped parameter name.
+#
+# Launch (the config is passed explicitly; there is no default):
+#   snakemake --sdm conda --cores 24 --configfile config/config_custom.yaml
+# --cores is the ONE CPU knob: give it the same number as resources.threads. On a single
+# computer, do not also pass --jobs/-j: there it means the same as --cores. On a cluster
+# (snakemake --executor slurm and the like) Snakemake needs --jobs N, the number of jobs
+# it may have queued at once; resources.ram_gb and resources.runtime_hours then set the
+# memory and the time the heavy steps ask for.
+#
+# Paths. directories.output_dir is turned into an absolute path automatically, so a
+# relative one (results/run1) lands where you expect. Every other relative path in this
+# file is read from the directory you launch snakemake from, NOT from output_dir, and so
+# are the protein paths in the annotation table. Absolute paths remove any doubt;
+# directories.genemark_dir and files.signalp6_archive must be absolute.
+
+# REQUIRED. Which pipeline to run (upper or lower case both work).
+#   illumina  Illumina paired-end reads: read QC and a SPAdes assembly
+#   longread  Oxford Nanopore and/or PacBio HiFi reads: a hifiasm or Flye assembly
+#   hybrid    Illumina and long reads of the same isolates: a long-read assembly that the
+#             Illumina reads guide (read selection) and correct (Polypolish)
+#   contigs   genomes you already have, as FASTA files: no reads, no assembly
+# After that, every mode runs the same steps: the contamination and mitochondrion screen
+# (in contigs mode only when switched on), assembly QC (QUAST, BUSCO), the ITS barcode,
+# repeat masking, gene prediction (funannotate, with Tiberius), functional annotation
+# (InterProScan, eggNOG-mapper, antiSMASH, optionally SignalP 6), optionally a screen for
+# antifungal resistance mutations (ChroQueTas) and a MultiQC report. A configuration
+# without `mode` (one written for v1) stops with a message saying so.
+mode: illumina                 # Options: illumina | longread | hybrid | contigs
+
+# Raw inputs, split by technology. A mode reads only the directory it needs; the
+# others may stay empty. FunFlux finds the samples by listing the directory and taking
+# each sample name from the file name (patterns below). All files of one kind (Illumina,
+# long reads, contigs) in a batch must share one file extension:
+#   <ext> for reads:   fastq, fq, fastq.gz or fq.gz
+#   <ext> for contigs: fasta, fa or fna
+# Sample names may contain underscores and dots; spaces and the characters
+# * # @ % ^ / ! ? & : ; | < > are rejected. A name that is not 3-12 letters/digits
+# starting with a letter is accepted with a NOTE: funannotate uses the sample name as the
+# locus-tag prefix of every gene, and GenBank does not accept such a prefix as it is.
+input:
+  illumina_dir: ""             # REQUIRED [illumina|hybrid] — {sample}_R1.<ext> and {sample}_R2.<ext>.
+                               #   Samples are found from the R1 files; each needs its R2 mate.
+  longread_dir: ""             # REQUIRED [longread|hybrid] — {sample}_ont.<ext> for Oxford Nanopore,
+                               #   {sample}_pacbio.<ext> for PacBio HiFi (CCS) reads. One batch may mix
+                               #   both; one sample must not have both. CLR reads are not supported.
+                               #   In hybrid mode this may be the same directory as illumina_dir, and
+                               #   every sample needs both Illumina and long reads (a sample with only
+                               #   one kind stops the run).
+  contigs_dir:  ""             # REQUIRED [contigs]         — {sample}.fasta (or .fa, .fna), one per genome.
+                               #   Keep nothing else in it: any other file with a dot in its name (a
+                               #   README.txt, a .fai index) counts as a second extension and stops the
+                               #   run. The last dot splits off the extension: my.genome.fasta is
+                               #   sample my.genome.
+
+# Reference databases and the output directory.
 directories:
-  output_dir: /path/to/output_dir
-  input_dir: /path/to/input_dir
-  blast_db: /path/to/NCBI_nt_core_db
-  eggnog_db: /path/to/eggnog_db
-  genemark_dir: /path/to/gmes_linux_64_4
-  funannotate_db: /path/to/funannotate_db
+  output_dir:     ""           # REQUIRED. All results and logs are written here (created if absent).
+                               #   Also written outside it: directories.funannotate_db (the download and
+                               #   the one-time path repair), and the .snakemake/ folder of the directory
+                               #   you launch from, where Snakemake keeps its run logs and, unless you pass
+                               #   --conda-prefix, the conda environments (SignalP 6 is installed into its
+                               #   environment there).
+  blast_db:       ""           # REQUIRED [screen]. One folder holding the NCBI nucleotide BLAST database
+                               #   (files core_nt.*, named by parameters.nt_version), BLAST's taxonomy files
+                               #   taxdb.btd and taxdb.bti, and nodes.dmp and names.dmp from the NCBI
+                               #   taxonomy dump. Used to find contaminant contigs and the mitochondrial
+                               #   genome. A missing folder only prints a NOTE while Snakemake reads the
+                               #   workflow, but nodes.dmp and names.dmp are inputs of rule blob_json, so
+                               #   without them the screen's jobs cannot even be planned.
+  eggnog_db:      ""           # REQUIRED. eggNOG-mapper database folder (eggnog.db, eggnog_proteins.dmnd,
+                               #   ...), prepared by you. Not opened while Snakemake reads the workflow:
+                               #   a missing folder only prints a NOTE, and the eggNOG step then fails.
+  funannotate_db: ""           # REQUIRED. funannotate database snapshot. If this directory holds none yet
+                               #   (no funannotate-db-info.txt), the workflow downloads it from
+                               #   links.funannotate_link, checks its checksum and unpacks it here, so the
+                               #   path may point at a place that does not exist yet. The first run on a
+                               #   new snapshot rewrites the absolute paths stored INSIDE it, in place and
+                               #   with no lock (rule normalize_funannotate_db): let that step finish before
+                               #   a second run uses the same directory. After that it only reads it.
+  genemark_dir:   ""           # OPTIONAL. A GeneMark-ES installation: an absolute path to the directory
+                               #   holding an executable gmes_petap.pl. GeneMark is licensed per user;
+                               #   leave empty to run without it. Needs a valid, unexpired licence key at
+                               #   ~/.gm_key: GeneMark's download page says the licence is valid for one
+                               #   year from the date of download, and the date of the key file is no guide.
+                               #   Rule genemark_check tests the key on a 200 kb slice of each genome, so a
+                               #   dead key stops the run before gene prediction starts, not well
+                               #   into it. parameters.genemark.mode: off ignores this directory.
+  antismash_db:   ""           # OPTIONAL. An antiSMASH database you already hold (the directory with
+                               #   clusterblast/, pfam/, ...), made for antiSMASH 8 (the workflow runs 8.0.4).
+                               #   When set, nothing is downloaded and the workflow only ever READS it; a
+                               #   directory without clusterblast/ stops the run at once. When empty, rule
+                               #   antismash_db downloads the database into 00.resources/antismash/ of the
+                               #   output directory.
+  unite_db:       ""           # OPTIONAL. A directory holding the UNITE SINTAX reference as an uncompressed
+                               #   unite_its_sintax.fasta. When set it replaces links.unite_its_link
+                               #   (the file is linked, not copied). Checked as soon as it is set.
+
+# Files you supply (not directories).
 files:
-  annotation_params: /path/to/annotation_parameters.tsv
-  iprscan: /path/to/interproscan-5.77-108.0/interproscan.sh
+  annotation_params: ""        # REQUIRED. A tab-separated table, one row per sample, three or four columns
+                               #   (config/annotation_parameters.tsv is an example):
+                               #     sample   species   proteins   [augustus_species]
+                               #   species         the species name written into the GenBank/GFF files (and,
+                               #                   with spaces turned into underscores, into the names of
+                               #                   funannotate's output files)
+                               #   proteins        a protein FASTA of closely related fungi (gene evidence);
+                               #                   it must exist and not be empty
+                               #   augustus_species OPTIONAL. A trained species of the funannotate database
+                               #                   (a folder name in <funannotate_db>/trained_species/, e.g.
+                               #                   fusarium_graminearum): AUGUSTUS then uses that species'
+                               #                   stored parameters as they are, and is NOT trained on your
+                               #                   genome. Left out, left empty or written -, AUGUSTUS is
+                               #                   trained on your genome's BUSCO genes (see
+                               #                   parameters.prediction), which needs at least 200 of them.
+                               #                   A name the database does not hold stops the run, with the
+                               #                   closest names it does hold.
+                               #   Blank lines and lines starting with # are ignored. Every sample of the
+                               #   batch needs a row. Every row, also of a sample outside this batch, needs
+                               #   three or four tab-separated columns, and a sample may be listed only once,
+                               #   or the run stops. Beyond that, rows for samples outside this batch are not
+                               #   used (their protein file and model are not checked).
+  iprscan:           ""        # REQUIRED. The InterProScan launcher, e.g. /path/interproscan-5.78-109.0/interproscan.sh.
+                               #   InterProScan is installed by hand (it is not on bioconda) and runs on Java 11,
+                               #   which the workflow's own environment supplies. A missing file only prints a
+                               #   NOTE while Snakemake reads the workflow; the InterProScan step then fails.
+  signalp6_archive:  ""        # OPTIONAL. The licensed SignalP 6 archive you downloaded from DTU (absolute
+                               #   path). Read only when parameters.signalp6.mode is not off; it must then
+                               #   exist (checked before any job starts) and hold the model of that mode
+                               #   (checked only when rule install_signalp6 runs).
+
+# Download addresses for databases the workflow fetches itself when they are not on disk.
+links:
+  phix_link: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/819/615/GCF_000819615.1_ViralProj14015/GCF_000819615.1_ViralProj14015_genomic.fna.gz
+                               # REQUIRED [illumina|hybrid]. The PhiX174 genome that Illumina libraries are
+                               #   spiked with; reads that map to it are removed.
+  funannotate_link: https://zenodo.org/records/23265189/files/funannotate_db_1.8.17_2026-10-08.tar.gz?download=1
+                               # REQUIRED. A frozen funannotate database snapshot (a database archive, not the
+                               #   funannotate program). Downloaded only when directories.funannotate_db holds
+                               #   no snapshot, but read in every run. Must be a Zenodo URL of the form
+                               #   https://zenodo.org/records/<id>/files/<name>.tar.gz: the checksum file
+                               #   published beside it (<name>.sha256) is found from the same record and
+                               #   checked before the archive is unpacked. A new snapshot needs a NEW, empty
+                               #   directories.funannotate_db folder: in a folder that holds an older one,
+                               #   FunFlux keeps using the old one or unpacks the new one over it (old files
+                               #   stay behind), and other workflows may share that folder.
+                               #   miscellaneous/build_funannotate_db.sh builds a new snapshot.
+  unite_its_link: https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz
+                               # REQUIRED unless directories.unite_db is set. The UNITE SINTAX reference
+                               #   (a gzip-compressed FASTA) used to classify the ITS barcode. Downloaded
+                               #   once per output directory, into 00.resources/unite/.
+  tiberius_model_link: https://bioinf.uni-greifswald.de/bioinf/tiberius/models/fungi.tar.gz
+                               # REQUIRED unless parameters.tiberius.mode is off. The Tiberius "fungi" model
+                               #   (the trained network, about 30 MB) from the Tiberius authors. Downloaded
+                               #   once per output directory, into 00.resources/tiberius/, and checked
+                               #   against parameters.tiberius.model_sha256 before it is unpacked.
+  telomere_db_link: https://raw.githubusercontent.com/tolkit/a-telomeric-repeat-database/73c635c7b80e5ab369b4c7ec67d23db32dcaa1b8/data/telo_database_v2.tsv
+                               # REQUIRED. The telomere repeat database of tidk (one row per species whose
+                               #   chromosome ends have been examined, with its telomere repeat unit; about
+                               #   600 KB), used to choose the telomere repeat unit of each assembly. The
+                               #   address is pinned to one revision of the database. Downloaded once per
+                               #   output directory, into 00.resources/telomeres/, and checked against
+                               #   parameters.contig_summary.telomere_db_sha256. The database's repository
+                               #   carries no licence file, so FunFlux fetches the file at run time and does
+                               #   not ship it.
+  chroquetas_link: https://raw.githubusercontent.com/nmquijada/ChroQueTas/1aad051d6ad48f5e403636699d19095e655764f7
+                               # REQUIRED when parameters.amr.chroquetas is on, not read when it is off.
+                               #   ChroQueTas and its FungAMR database of resistance mutations, at one pinned
+                               #   commit of the authors' GitHub repository (ChroQueTas v1.0.1): rule
+                               #   chroquetas_db downloads bin/ChroQueTas.sh, FungAMR_db/db-v20250811.tgz and
+                               #   LICENSE from this address, once per output directory, into
+                               #   00.resources/chroquetas/, and checks the script and the database against
+                               #   parameters.amr.chroquetas_script_sha256 and chroquetas_db_sha256. Both are
+                               #   licensed CC BY-NC-ND 4.0, so FunFlux fetches them unchanged at run time and
+                               #   does not ship them. A new commit needs its address here AND the two new
+                               #   checksums (sha256sum <file>) under parameters.amr.
+
+# Compute limits for the whole run [all modes].
 resources:
-  threads: 24
-  ram_gb: 128
+  threads: 24                  # The most CPU threads any one step may use (SignalP 6 uses
+                               #   parameters.signalp6.torch_num_threads, lowered to this number when it is
+                               #   larger). Allowed: a whole number, 1 or more. Pass the same number to
+                               #   --cores, which limits the threads of all steps running at the same time.
+                               #   On a cluster each step asks the scheduler for up to this many CPUs, so use
+                               #   at most the CPUs of one compute node (on Slurm, sinfo -o "%n %c" lists them).
+  ram_gb:  128                 # The memory (GB) one heavy step may use: the limit SPAdes is given (-m, rule
+                               #   illumina_assembly) and, capped at 64 GB, the Java heap of Qualimap (rules
+                               #   map_evaluation and, in hybrid mode, map_guide_evaluation). On a cluster it is
+                               #   also the memory every heavy step (assembly, mapping, BLAST, BUSCO, gene
+                               #   prediction, annotation) asks the scheduler for, in every mode; Qualimap asks
+                               #   for its heap plus 4 GB, but never more than ram_gb. Use at most the memory
+                               #   the scheduler offers one compute node, or no node can take those steps: on
+                               #   Slurm, sinfo -o "%n %m" lists it in MB; divide by 1024 and round down (it is
+                               #   often a little less than the size the node is sold with). On a single
+                               #   computer only SPAdes and Qualimap read it. Passed as a Snakemake resource, so
+                               #   changing it re-runs nothing. Allowed: a whole number, 1 or more.
+  runtime_hours: 48            # On a cluster: the time limit (hours) every heavy and every long step asks the scheduler for
+                               #   (assembly, BLAST, gene prediction, InterProScan and the other steps that can
+                               #   run for more than an hour); a step still running then is stopped. Use at
+                               #   most the time limit of your partition, or the scheduler refuses those steps
+                               #   or never starts them (on Slurm, sinfo -o "%P %l" lists it). A single
+                               #   computer ignores it, and changing it re-runs nothing. Allowed: a whole
+                               #   number, 1 or more.
+
+# Per-step settings. Every key name under parameters is checked (the longread and hybrid
+# blocks only in their own mode): a name FunFlux does not know, usually a typo, stops the
+# run instead of being silently ignored.
 parameters:
+  nt_version: core_nt          # [screen] The BLAST database name inside directories.blast_db (core_nt or nt).
+                               #   Any name is accepted here; a wrong one first fails in rule blast_contigs.
+
+  # BLAST hit depth for the contamination and mitochondrion screen [screen]
+  # (docs/methods/blast-hit-depth.md).
+  # The two numbers are NOT interchangeable "how many hits" knobs:
+  #   blast_max_hsps: how many alignments BLAST keeps per database sequence. With 1, BLAST
+  #     reports how much of a contig a database sequence covers by its single best local
+  #     alignment only. A complete mitochondrial genome that aligns in several blocks then
+  #     looks only partly covered, and the mitochondrion screen can miss it. Keep 5 or more;
+  #     below 5 a NOTE is printed (unless mitochondria.mode is off).
+  #   blast_max_target_seqs: how many database sequences BLAST keeps per contig. It is applied
+  #     DURING the search, not as a final "best N" filter, so a small value can drop better
+  #     matches; BLAST recommends at least 5 (a NOTE is printed below 5).
+  # Both take a whole number, 1 or more. v1 FunFlux searched with -max_target_seqs 10 and
+  # -max_hsps 1.
+  blast_max_target_seqs: 50
+  blast_max_hsps: 5
+
+  spades_kmers: "21,33,55,77,99,127"   # [illumina|hybrid] SPAdes k-mer sizes: odd, below 128, ascending.
+                                       #   The list v1 used. A YAML list ([21, 33, ...]) works too.
+                                       #   Or auto: SPAdes picks the list from the read length (21 to 77
+                                       #   for 150 bp reads). The fixed list gave fewer, longer contigs
+                                       #   on a fungus at about 80x; auto may suit thin coverage better.
+
+  # Which contigs the contamination screen may remove [screen]. BLAST searches every contig
+  # against the nucleotide database, and BlobTools gives each contig the genus whose hits
+  # have the highest summed BLAST score. For fungi the default is OFF: every contig is kept,
+  # and every contig still gets a verdict in contig_taxonomy_decisions.tsv, because the genus
+  # BLAST names is often not the organism's own when reference genomes are sparse (read the
+  # table before turning removal on). Contigs the mitochondrion screen confirmed
+  # (mitochondria.mode: separate_confirmed) are kept whatever the mode below says.
+  # When the screen runs, these settings are checked before any job starts: each of the three
+  # file paths below, when set, must name an existing UTF-8 text file; the two tables need
+  # their header columns; every mode cell of sample_overrides must be off, include, exclude or
+  # blank; the discard_no_hit cell of a sample in this run must be true, false (yes/no, on/off
+  # and 1/0 also work) or blank; and every sample in include mode needs a genus.
   decontamination:
-    mode: off # Options: off, auto, include, exclude
-    discard_no_hit: true
-    include_genera:
-    include_genera_by_sample:
-    exclude_genera:
-    exclude_genera_file:
-    sample_overrides:
-  its_taxonomy_cutoff: 0.8
-  masking_method: tantan
-  repeatmodeler_quick: true
-  repeatmodeler_ltrstruct: false
-  # Alternative masking methods:
-  # masking_method: repeatmodeler_repeatmasker
+    mode: off                  # Options: off | include | exclude
+                               #   off      keep everything (every contig still gets an audited verdict)
+                               #   include  keep the contigs of the genera listed below
+                               #   exclude  drop the contigs of the genera listed below (exact genus names)
+                               #   There is no auto mode (FunFlux 1.x and BacFlux have one; here it stops the
+                               #   run): BLAST genus labels are unreliable for poorly sequenced fungi
+                               #   (docs/analysis/decontamination.md).
+    discard_no_hit: false      # true: also drop the contigs BLAST could not place in any genus ("no-hit"),
+                               #   in include and exclude mode (include drops them anyway, as no-hit is not
+                               #   on its list); mode off ignores it.
+    include_genera:            # include: genera to keep, one name ("Botrytis") or a list ([Botrytis,
+                               #   Alternaria]). Name the genera BLAST gave the isolate's own contigs in
+                               #   contig_taxonomy_decisions.tsv; for a poorly sequenced fungus they may not
+                               #   be its true genus. BLAST may give the true genus to only a few contigs, and
+                               #   include with that genus alone then removes most of the genome.
+                               #   Include mode needs at least one genus: here, in the table below, or in
+                               #   a sample_overrides row (a filled include_genera cell there replaces the
+                               #   run's whole include list for that sample).
+    include_genera_by_sample:  # include: path to a tab-separated table with the header columns sample and
+                               #   genus, one genus per row; a sample's genera are added to include_genera
+    exclude_genera:            # exclude: genera to drop, inline
+    exclude_genera_file:       # exclude: path to a file with one genus per line (lines starting with #
+                               #   are skipped), added to exclude_genera
+    sample_overrides:          # path to a tab-separated table that changes the policy for single samples:
+                               #   header columns sample and mode, optionally include_genera,
+                               #   exclude_genera and discard_no_hit. An empty cell keeps the run's value.
+
+  # The mitochondrion [screen]: found among the contigs and kept out of the nuclear gene
+  # prediction (a fungal mitochondrion uses another genetic code). Only a BLAST hit to a
+  # reference that IS a mitochondrial genome counts. In contigs and illumina mode, where
+  # there is no assembler evidence, such a hit covering min_direct_blast_qcov percent of the
+  # contig confirms it. In the long-read modes the assembler's own evidence must agree too
+  # (read depth well above the nuclear contigs, or a clean circular contig), unless the hit
+  # alone is near-complete (very_strong_qcov).
+  mitochondria:
+    mode: separate_confirmed   # Options: off | report | separate_confirmed
+                               #   off                examine no contig (nothing is protected or split off)
+                               #   report             write the screen table; protect and split nothing
+                               #   separate_confirmed also write the confirmed contigs to their own file
+                               #                      (contigs_mitochondrial.fasta)
+    min_direct_blast_qcov: 35  # percent of the contig the best mitochondrial-genome hit must cover (BLAST qcovs).
+                               #   Allowed: above 0, at most 100.
+    min_assembler_coverage_ratio: 3.0   # contig depth / median depth; long-read modes (also accepted as
+                                        #   min_flye_coverage_ratio). Allowed: above 0.
+    very_strong_qcov: 70       # long-read modes: percent coverage at which a direct hit confirms the contig on its own.
+                               #   Allowed: above 0, at most 100.
+
+  # Genome completeness [all modes].
+  busco:
+    lineage: auto              # auto = BUSCO picks the lineage (--auto-lineage-euk). Or name one,
+                               #   e.g. hypocreales_odb12 (busco --list-datasets lists them; leave out the
+                               #   version it prints after a dot, as in hypocreales_odb12.2). With auto,
+                               #   every BUSCO job downloads the lineage data for its sample, so the
+                               #   computer running it needs internet. A named lineage is downloaded once
+                               #   per output folder, into 00.resources/busco/, by rule busco_data on the
+                               #   computer that runs Snakemake, and BUSCO reads it offline: on a cluster
+                               #   whose compute nodes have no internet, name a lineage. BUSCO runs with
+                               #   --opt-out-run-stats, so it sends no usage statistics.
+
+  # What every contig is [all modes]. After the annotation, rule telomere_units works out the
+  # telomere repeat unit of each assembly with tidk and calls the telomere at both ends of
+  # every contig; rule contig_summary joins that call with the evidence the run produced
+  # about each contig of the draft assembly (read depth, the assembler's depth and
+  # circularity flag, rDNA units, BUSCO markers, predicted genes, the verdicts of the
+  # contamination and mitochondrion screens) into one table per sample,
+  # 02.assembly/{sample}/eval/contig_summary.tsv, and gives each contig a verdict:
+  # chromosome, chromosome_arm, mitochondrion, rDNA_array, low_depth, repeat,
+  # nuclear_contig, nuclear_fragment, contaminant or unclassified, with the evidence in a
+  # reason column. The table also appears in the MultiQC report. The telomere is the one
+  # piece of evidence worked out from the sequence itself, and its repeat unit differs
+  # between fungal groups, so it is chosen from the data unless you name it.
+  contig_summary:
+    telomere_motif: auto       # auto: the telomere repeat unit is chosen from the data. tidk lists every
+                               #   tandem repeat unit at the contig ends; those units, the units of tidk's
+                               #   telomere database and the units the literature names for fungi are each
+                               #   scored by how they behave at the contig ends (a telomere repeat points the
+                               #   same way at every chromosome end, a satellite points either way), and the
+                               #   best-supported unit is the unit of the assembly.
+                               #   02.assembly/{sample}/eval/telomere_candidates.tsv lists every candidate
+                               #   with its score and whether it is a known telomere repeat, and the log of
+                               #   rule telomere_units names the choice.
+                               #   Or the unit of the species, letters A, C, G and T only, 4 to 30 long (upper
+                               #   or lower case), such as TTAGGG: it is then used as given, and the data's
+                               #   own choice is reported next to it (a [FunFlux] NOTE in the log when the two
+                               #   differ). TTAGGG is the unit of most filamentous Ascomycota, of most
+                               #   Basidiomycota and of the Mucoromycota; the documentation lists the known
+                               #   exceptions. The budding yeasts (Saccharomycotina) and the fission yeasts
+                               #   have long or irregular repeats that no single unit describes, and none
+                               #   is found for them. A changed value re-runs telomere_units, contig_summary
+                               #   and the MultiQC report. hifiasm's parameters.longread.hifiasm.telomere_motif
+                               #   takes the unit written as it reads at the 5' end (CCCTAA for TTAGGG).
+    telomere_db_sha256: 1d4f5c8c2cce6a76aaa8de01602317a8e0b8d0401711b96f3c7a826c385da699
+                               # The SHA-256 checksum the telomere database file at links.telomere_db_link
+                               #   must have; rule telomere_db checks the downloaded file against it before
+                               #   anything reads it. The address is pinned to one revision of the database,
+                               #   so the two are changed together: a new revision needs its address there
+                               #   AND its checksum (sha256sum <file>) here.
+    telomere_window: 25000     # Bases tidk looks at from each contig end: an array must begin within this
+                               #   distance of the end, and the candidate units are collected from these
+                               #   terminal windows. Allowed: a whole number from 500 to 100000. The array
+                               #   can sit some kb inside a contig end when the assembler ran past the
+                               #   telomere, so the window must cover that, and the table's two offset
+                               #   columns show where each array lies. A wider window collects more
+                               #   unrelated tandem repeats as candidates, and every candidate costs one
+                               #   tidk run.
+    min_telomere_copies: 5     # Tandem copies of the unit from which a telomere is called (5 copies of
+                               #   TTAGGG = 30 bp): the shortest array tidk accepts, and the shortest tandem
+                               #   run that makes a unit a candidate. Allowed: a whole number, 2 or more.
+    min_rdna_units: 3          # rDNA units (the ITS windows of parameters.its) from which a contig can be a
+                               #   piece of the rDNA array. Allowed: a whole number, 1 or more.
+
+  # ITS barcode [all modes]. The ITS region is cut out of the genome and classified with SINTAX
+  # against UNITE. Each rDNA copy is first cut out with a window of window_flank bp on each side
+  # of its 5.8S gene, because ITSx fails on a multi-megabase contig carrying a minus-strand rDNA
+  # array (docs/methods/its-long-read-contigs.md). ITS1 and ITS2 records outside 50-600 bp are
+  # listed, not classified (a fixed limit).
+  its:
+    window_flank: 2000         # bp kept on each side of every 5.8S gene before ITSx runs.
+                               #   Allowed: a whole number, 200 or more.
+    max_full_length: 1500      # the longest whole ITS1-5.8S-ITS2 record (bp) marked ok in
+                               #   {sample}_ITS_copies.txt; a longer one is marked rejected_too_long. Only
+                               #   ITS1 and ITS2 are classified. Allowed: a whole number, 400 or more.
+    unite_identified_only: true  # true: SINTAX reads only the UNITE records whose taxonomy names a genus (a record
+                                 #   without one can stop the result at d:Fungi); false: the whole release, as in v1.
+  its_taxonomy_cutoff: 0.8     # SINTAX confidence a rank needs to be reported. Allowed: above 0, at most 1.
+
+  # Repeat masking before gene prediction [all modes]. Repeats are written in lower case
+  # (soft-masked), so that transposon sequence does not produce false genes.
+  masking_method: tantan       # Options: tantan | repeatmodeler_repeatmasker
+                               #   tantan                      fast: tandem repeats and low-complexity sequence
+                               #   repeatmodeler_repeatmasker  builds a repeat library from THIS genome (hours),
+                               #                               so transposons are masked too
+  # The three repeatmodeler_* keys are used only with repeatmodeler_repeatmasker.
+  repeatmodeler_quick: true    # RepeatModeler -quick (shorter, fewer repeat families)
+  repeatmodeler_ltrstruct: false   # RepeatModeler -LTRStruct (adds the LTR retrotransposon structural module)
+  repeatmodeler_seed:          # empty: RepeatModeler seeds itself from the clock (runs differ slightly);
+                               #   a whole number (0 or more) fixes the seed (-srand) of its random choice of
+                               #   genome samples; whether the masking then repeats exactly has not been tested
+
+  # Gene prediction with funannotate predict [all modes].
+  prediction:
+    busco_db: dikarya          # The conserved-gene set funannotate trains SNAP, GlimmerHMM and (for samples
+                               #   without an augustus_species) AUGUSTUS on. Only
+                               #   'dikarya' ships in the database snapshot. Outside the Dikarya, first add
+                               #   a set with FunFlux's funannotate conda environment activated ("Other BUSCO
+                               #   sets for gene prediction" in the documentation shows how to find it):
+                               #   `funannotate setup -i busco -b fungi -d <funannotate_db> -w`, then set
+                               #   fungi here. A set missing from a database already on disk stops the run.
+    augustus_optimize: false   # true adds funannotate's --optimize_augustus, its "long" AUGUSTUS training, for
+                               #   the samples whose augustus_species is empty: AUGUSTUS's meta-parameters (the
+                               #   settings the quick training keeps fixed) are tuned by cross-validation (each
+                               #   part of the BUSCO test genes is predicted by a model trained without it)
+                               #   before the final training. It adds about a quarter of an hour for a 40 Mb
+                               #   genome (at most 8 CPUs).
+                               #   Samples that name a stored model are not trained, so it does not apply to
+                               #   them, and switching it re-runs only the samples whose augustus_species is
+                               #   empty.
+
+  # GeneMark-ES [all modes]: an optional, separately licensed gene finder that funannotate
+  # predict can use (see directories.genemark_dir).
+  genemark:
+    mode: auto                 # Options: auto | off. auto uses GeneMark when directories.genemark_dir is set.
+                               #   Left empty (mode: or mode: ""), it means auto, its default: every mode key
+                               #   under parameters reads an empty value as its own default.
+
+  # Tiberius [all modes, on by default]: a gene finder built from a deep neural network and a
+  # hidden Markov model, with a model its authors trained on many fungal genomes (FunFlux runs
+  # Tiberius 1.1.8 on the CPU). Its gene models join those of funannotate's own gene finders when
+  # EVidenceModeler builds the final gene set, with weight 1 (docs/analysis/gene-prediction.md).
+  # Independent of GeneMark-ES: with both on, both count. Needs about 16 GB of memory.
+  tiberius:
+    mode: on                   # Options: on | off. off leaves Tiberius out, for example on a computer
+                               #   with less free memory.
+    model_sha256: 4a309a630574f395d82d747dcf64716704dab056db534e427ae0cec1b7410e20
+                               # The SHA-256 checksum the file at links.tiberius_model_link must have
+                               #   (the fungi model of 8 February 2026). That address has no version
+                               #   number: if the authors replace the model, the run stops with a
+                               #   message instead of silently changing the gene models. To accept a
+                               #   new model, put its checksum here (sha256sum <archive>).
+
+  # SignalP 6 [all modes, switched off by default]: predicts which proteins are secreted;
+  # funannotate annotate turns the result into the secretome list. It is licensed DTU
+  # software: the workflow never downloads it, it installs files.signalp6_archive.
+  signalp6:
+    mode: off                  # Options: off | fast | slow | slow-sequential. Not off needs files.signalp6_archive.
+    archive_sha256:            # OPTIONAL. SHA-256 of the archive (sha256sum <archive>); checked before installing.
+    torch_num_threads: 8       # CPU threads for SignalP's neural network. Left out: resources.threads, at most 8.
+                               #   Allowed: a whole number, 1 or more; a value above resources.threads is
+                               #   lowered to resources.threads, with a NOTE.
+    batch_size: 10             # proteins per batch; raise only after checking memory.
+                               #   Allowed: a whole number, 1 or more.
+
+  # Antifungal resistance mutations [all modes, switched off by default]. Resistance of a fungus to
+  # antifungal drugs and fungicides comes mostly from point mutations in the protein the drug acts
+  # on (beta-tubulin for the benzimidazoles, cytochrome b for the QoI fungicides, Cyp51 for the
+  # azoles, ...), not from acquired genes. ChroQueTas (Bédard et al. 2025) finds each target protein
+  # of the species in the genome and compares it, position by position, with the single mutations
+  # the FungAMR database records at known positions, each with its evidence for or against
+  # resistance (57 species in the pinned version). The species is
+  # the species column of files.annotation_params; a species the database does not hold is reported
+  # as not screened, and the run goes on. Results: 05.amr/{sample}/ (one row per target protein in
+  # amr_summary.tsv, every position checked in amr_positions.tsv), and a table in the MultiQC report.
+  # ChroQueTas and its database are licensed CC BY-NC-ND 4.0 (non-commercial use only; no modified
+  # copies may be passed on). FunFlux does not ship them: rule chroquetas_db downloads them at run
+  # time from links.chroquetas_link. Switching the step on means you accept that licence.
+  # docs/analysis/amr.md describes the step, the statuses and the columns.
+  amr:
+    chroquetas: off            # Options: off | on.
+    mito_genetic_code: auto    # The genetic code of the mitochondrial genome. Cytochrome b, the target of the
+                               #   QoI fungicides, is encoded there, and fungal mitochondria read some codons
+                               #   differently from the nucleus. ChroQueTas runs on the nuclear genome with the
+                               #   code it picks for the species (12 for the CTG-clade yeasts, 1 for the others);
+                               #   for a species whose database entry includes cytochrome b (15 of the 57) it
+                               #   runs a second time, on the mitochondrial genome, with this code. For the
+                               #   other species this setting is not used.
+                               #   auto: code 3 (yeast mitochondrial) for the database's Saccharomycetaceae
+                               #   (Saccharomyces cerevisiae and paradoxus, Nakaseomyces glabratus, Kluyveromyces
+                               #   marxianus), code 4 (mold mitochondrial) for every other species.
+                               #   Or the number of an NCBI genetic code, used for every sample. Allowed: auto, or
+                               #   1-6, 9-16 or 21-33 (7, 8 and 17-20 are not NCBI codes).
+    chroquetas_script_sha256: d8961a0d311be57d4a9939bd9e4d90dbc796589b3298dd1835359ed776abfce3
+                               # The SHA-256 checksum the file bin/ChroQueTas.sh at links.chroquetas_link must
+                               #   have; rule chroquetas_db checks the download against it before anything runs it.
+    chroquetas_db_sha256: 6f89ecb3117110aad85b8b6ca7b8a3d3715cb5984b6cb75450a6cda5633d16e7
+                               # The SHA-256 checksum of the database archive FungAMR_db/db-v20250811.tgz at
+                               #   links.chroquetas_link; checked before the archive is unpacked. Both checksums
+                               #   belong to the pinned commit, so the three are changed together.
+
+  # ── Long reads [longread]: the block named after your mode. Hybrid has its own copy below. ──
+  longread:
+    assembler: hifiasm         # Options: hifiasm | flye. hifiasm is the default; Flye is available as an
+                               #   alternative (docs/modes/longread.md). One assembler is used for the
+                               #   whole run.
+    flye_input_mode: auto      # Flye only, ONT samples: auto | nano-raw | nano-hq. PacBio samples always get
+                               #   Flye --pacbio-hifi. auto chooses nano-hq, or nano-raw when the Medaka model
+                               #   named below has "fast" in its name (naming such a model changes the
+                               #   assembler's read mode as well as the polisher; set this explicitly to avoid it).
+    medaka_model: auto         # ONT samples only. auto = worked out from the FASTQ headers, and checked BEFORE
+                               #   assembly (needs network once; the reads must carry exactly one basecaller tag).
+                               #   A model name (e.g. r1041_e82_400bps_sup_v4.3.0) uses that model.
+                               #   false (also no, off, 0, none, or null in quotes) = skip Medaka; empty or
+                               #   an unquoted null = auto. PacBio samples never use Medaka.
+    medaka_model_fallback_auto: false   # true: if a NAMED model is not valid, work it out as auto does instead of stopping
+    filtlong:                  # which long reads are kept before assembly (sized for ONT; provisional for
+                               #   HiFi, see docs/modes/longread.md)
+      min_length: 1000         #   discard reads shorter than this (bp). Allowed: a whole number, 1 or more.
+      keep_percent: 90         #   keep the best this-many percent of the bases. Allowed: above 0, at most 100.
+      length_weight: 10        #   higher favours longer reads among reads of similar quality. Allowed: above 0.
+      target_bases:            #   empty or 0: no cap. A size such as 2.4g (or 2400000000) caps a very deep run.
+    hifiasm:
+      genome_size:             # haploid size estimate such as 40m or 40000000 (--hg-size); empty lets hifiasm
+                               #   infer the depth
+      bloom_filter_bits: 0     # hifiasm -f, 0-63; 0 is right for small fungal genomes
+      purge_dups: auto         # auto, or 0-3 (hifiasm -l: how aggressively duplicate haplotigs are purged)
+      homozygous_coverage: auto   # auto, or the read depth of the homozygous peak, a whole number of 1 or
+                                  #   more (--hom-cov)
+      telomere_motif:          # hifiasm --telo-m: the telomere repeat as it reads at the 5' end, in DNA
+                               #   letters (IUPAC codes allowed). For the common TTAGGG repeat that is CCCTAA
+                               #   (hifiasm's help: "CCCTAA for human"). Empty unless you know it.
+
+  # ── Hybrid [hybrid]: the same keys as longread, plus the two Illumina-guidance keys. ──
+  # The Illumina reads are first assembled on their own (the "guide" assembly) and screened;
+  # the read pairs that map to the screened guide are the ones used below.
+  hybrid:
+    assembler: hifiasm
+    flye_input_mode: auto
+    medaka_model: auto
+    medaka_model_fallback_auto: false
+    # filtlong and hifiasm: the same keys, meanings and defaults as under longread, one line each.
+    filtlong: {min_length: 1000, keep_percent: 90, length_weight: 10, target_bases: null}
+    hifiasm: {genome_size: null, bloom_filter_bits: 0, purge_dups: auto, homozygous_coverage: auto, telomere_motif: null}
+    short_read_guidance: false # false (default): ONT reads get the plain length and quality filter of
+                               #   longread mode. true: Filtlong also scores each ONT read against the selected
+                               #   pairs, properly paired on the screened guide assembly, which can break an
+                               #   assembly apart at repeats. PacBio samples are never guided
+                               #   (docs/methods/filtlong-guidance.md).
+    filtlong_split: 1000       # only with short_read_guidance: true: cut a read wherever the Illumina reads
+                               #   stop supporting it for at least this many bp (Filtlong --trim --split).
+                               #   Allowed: a whole number, 1 or more, or null, which scores but never cuts.
+
+  # ── Pre-assembled contigs [contigs] ──
+  contigs:
+    screen: false              # Rule filter_contigs always tidies your FASTA first: a SPAdes assembly (first
+                               #   header like >NODE_1_length_45678_cov_23.4) loses contigs under 500 bp or
+                               #   under 2x coverage and keeps its headers; any other FASTA keeps every contig
+                               #   and has its headers cut at the first space or tab.
+                               #   false: nothing more; a mitochondrial genome in it is annotated as nuclear.
+                               #   true:  then run the contamination and mitochondrion screen on it (needs
+                               #          directories.blast_db; see docs/modes/contigs.md).
+                               #   Checked in every mode, used only in contigs mode: true or false (yes/no,
+                               #   on/off and 1/0 also work; screen: with nothing after it means false);
+                               #   anything else, "" included, stops the run.

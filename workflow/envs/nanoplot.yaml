@@ -1,0 +1,14 @@
+# The exact package builds of this environment are fixed by nanoplot.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
+name: nanoplot
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.13
+  - nanoplot=1.46.2
+  # plotly 7 removed figure_factory.create_2d_density, which NanoPlot 1.46.2 calls for its
+  # read length/quality density plot: with plotly 7 NanoPlot writes NanoStats.txt and then
+  # stops with an error. The pin list holds plotly 6.9.0; this line keeps plotly below 7
+  # also when the environment is solved from this file instead of the pin list.
+  - plotly<7

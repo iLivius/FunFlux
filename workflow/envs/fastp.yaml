@@ -1,3 +1,5 @@
+# The exact package builds of this environment are fixed by fastp.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
 name: fastp
 channels:
   - conda-forge

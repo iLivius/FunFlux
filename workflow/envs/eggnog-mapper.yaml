@@ -1,6 +1,9 @@
+# The exact package builds of this environment are fixed by eggnog-mapper.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
 name: eggnog-mapper
 channels:
   - conda-forge
   - bioconda
 dependencies:
+  - python=3.11
   - eggnog-mapper=2.1.13

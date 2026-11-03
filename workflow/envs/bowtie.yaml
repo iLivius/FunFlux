@@ -1,8 +1,10 @@
+# The exact package builds of this environment are fixed by bowtie.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
 name: bowtie
 channels:
   - conda-forge
   - bioconda
 dependencies:
+  - python=3.14
   - bowtie2=2.5.4
   - samtools=1.21
- 

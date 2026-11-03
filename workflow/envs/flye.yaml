@@ -1,0 +1,9 @@
+# The exact package builds of this environment are fixed by flye.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
+name: flye
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.13
+  - flye=2.9.6

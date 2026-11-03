@@ -1,0 +1,9 @@
+# The exact package builds of this environment are fixed by minimap.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
+name: minimap
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - minimap2=2.30
+  - samtools=1.21

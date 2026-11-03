@@ -1,8 +1,11 @@
+# The exact package builds of this environment are fixed by repeatmasking.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
 name: repeatmasking
 channels:
   - conda-forge
   - bioconda
 dependencies:
+  - python=3.12
   - tantan=51
   - repeatmodeler=2.0.8
   - repeatmasker=4.2.3

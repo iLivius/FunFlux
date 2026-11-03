@@ -1,0 +1,32 @@
+# The exact package builds of this environment are fixed by chroquetas.linux-64.pin.txt next
+# to this file; Snakemake creates the environment from that list. The five tools are the
+# programs ChroQueTas calls: miniprot (finds each target protein in the genome), BLAST's
+# blastp (keeps close hits), MAFFT (aligns the found protein with the reference), EMBOSS's
+# seqret and SeqKit (check and convert the input), at the versions that the author's own
+# conda package of ChroQueTas 1.0.1 (anaconda.org channel nmquijada) asks for.
+# ChroQueTas itself is NOT in this environment: it is not packaged on bioconda, and its
+# licence (CC BY-NC-ND 4.0: non-commercial use, no modified copies passed on) would bind
+# anything that ships it, so FunFlux does not ship it, and rule chroquetas_db
+# (workflow/rules/shared/50_amr.smk) downloads the unmodified script and database instead.
+# Python is here because rule amr_chroquetas runs chroquetas_amr.py, which runs ChroQueTas,
+# in this environment: the tools must be on the job's PATH (seqret, in particular, is a
+# wrapper that finds its programs there), and `python` is then this environment's Python
+# instead of whatever `python` the computer has. The list was made on 2026-10-11 (conda
+# 26.7.2) with
+#   CONDA_ADD_PIP_AS_PYTHON_DEPENDENCY=false conda create -p <env> --override-channels \
+#       -c conda-forge -c bioconda blast=2.16.0 emboss=6.6.0 mafft=7.525 miniprot=0.14 \
+#       seqkit=2.1.0 python=3.12
+# and then conda list -p <env> --explicit wrote the list. The setting leaves out pip, which
+# conda otherwise adds to Python and nothing here uses; --override-channels makes conda use only
+# the two channels named after it, whatever the computer's conda settings list.
+name: chroquetas
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - blast=2.16.0
+  - emboss=6.6.0
+  - mafft=7.525
+  - miniprot=0.14
+  - seqkit=2.1.0
+  - python=3.12

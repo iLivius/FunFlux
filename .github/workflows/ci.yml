@@ -1,0 +1,96 @@
+# Runs FunFlux's automatic checks on temporary Ubuntu computers that GitHub provides, after
+# every push and for every pull request, and shows the result next to the commit or the pull
+# request: a green check when every job passes, a red cross when one fails. It plays no part in
+# running the workflow. The three jobs run side by side, so a failure in one does not hide the
+# result of the others:
+#
+#   docs        `mkdocs build --strict`: the documentation site must build without a single
+#               warning, so a link to a missing page or to a missing heading is found before
+#               it reaches main. docs.yml publishes the site; this job only checks it.
+#   unit-tests  `pytest workflow/scripts miscellaneous`: the tests of the helper scripts, run
+#               on small test inputs (workflow/scripts/README.md lists the scripts), and the
+#               tests that read the rule files as text (every rule that starts Python, curl or
+#               tar gets it from a pinned conda environment; every download rule runs where
+#               Snakemake runs and is part of download_all). Then check_comment_references.py:
+#               every repository path, rule and config key that a comment names must exist.
+#   dry-runs    check_parse_time.py: Snakemake reads the workflow with many purpose-built
+#               configurations, on stand-in input files, and each must either plan the expected
+#               jobs or stop with the expected [FunFlux] message (the top of that script lists
+#               the groups of cases).
+#
+# None of the jobs builds a conda environment, downloads a database or runs an analysis tool,
+# so all three finish in minutes. The few tests that need a real tool (tidk, ChroQueTas) are
+# skipped here. A green check therefore says that the workflow's logic and its helper scripts
+# behave as their tests expect; it does not replace a run on real data.
+#
+# Versions are pinned to the ones the checks were run with locally, so that a new release of a
+# tool cannot change a result unnoticed. Change a pin only after running the same commands
+# locally with the new version.
+
+name: ci
+
+on:
+  push:
+    # Every branch except gh-pages, which holds the built documentation site that docs.yml
+    # publishes, not the workflow.
+    branches-ignore:
+      - gh-pages
+  pull_request:
+  # Adds a "Run workflow" button on the Actions page, to start the checks by hand.
+  workflow_dispatch:
+
+# A new push to the same branch stops the checks still running for the previous one.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# The checks only read the repository.
+permissions:
+  contents: read
+
+# Every job first copies the repository onto the computer (actions/checkout) and installs
+# Python (actions/setup-python). Both are used in their current major version, which runs on
+# Node 24, the JavaScript runtime GitHub's computers now use (Node 20, which the versions before
+# checkout v5 and setup-python v6 needed, is retired).
+jobs:
+  docs:
+    name: Docs build (strict)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      # The versions docs/requirements.txt names, as in docs.yml.
+      - run: pip install mkdocs-material==9.7.7 mkdocs-glightbox==0.5.2
+      - name: Build the documentation, stopping on any warning
+        run: mkdocs build --strict
+
+  unit-tests:
+    name: Unit tests (pytest) and comment check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      # pytest runs the tests; PyYAML reads the config template in the comment check.
+      - run: pip install pytest==9.0.2 pyyaml==6.0.3
+      - name: Run the test suite
+        run: pytest workflow/scripts miscellaneous -q
+      - name: Check the paths, rules and config keys named in comments
+        run: python miscellaneous/check_comment_references.py --quiet
+
+  dry-runs:
+    name: Parse-time checks (Snakemake dry runs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      # The Snakemake release FunFlux v2 was tested with (README). Installed with pip, not
+      # conda: a dry run never builds a job's environment.
+      - run: pip install snakemake==9.14.6
+      - name: Dry runs of the test configurations
+        run: python miscellaneous/check_parse_time.py

@@ -1,0 +1,219 @@
+# ═══════════════════════════════════════════════════════════════════════
+# FunFlux v2.0.0 — dry-run test configs (one per mode, plus the mixed cases)
+# ═══════════════════════════════════════════════════════════════════════
+#
+# Five independent, MINIMAL configs for checking that FunFlux reads a configuration the way
+# it should. They are made for a dry run (`snakemake -n`), which checks the configuration and
+# plans the jobs but runs none, so they need no real reads and no databases: a few small
+# stand-in files are enough (all empty except the protein FASTA and the annotation table).
+#
+# They are NOT one YAML file — each block between a BEGIN and an END marker is a complete
+# standalone config. Use them ONE AT A TIME: copy a single block into a file and run, from
+# the repository root,
+#   snakemake -n --cores 1 --configfile <your copy>
+#
+# miscellaneous/check_parse_time.py does all of this for you: it makes the stand-in files in
+# a scratch folder, cuts the blocks out of this file and dry-runs each one. It also starts
+# from these blocks to build the variants it tests: broken configurations that must be
+# refused, configurations that must be accepted with a NOTE, and contigs runs that switch on
+# optional steps (the screen, SignalP 6, GeneMark, local databases). It finds each block by
+# its BEGIN and END marker lines and names it by the marker text after the colon, up to the
+# first " (" (for example "mode = longread"), and it rewrites the paths /tmp/ff and
+# /abs/placeholder/db/NCBI_core_nt to point into its scratch folder. So keep the marker
+# lines and those two paths exactly as they are.
+#
+# What each block is for:
+#   mode = illumina   the smallest Illumina configuration.
+#   mode = longread   a mixed batch: SAM1 has Oxford Nanopore reads, SAM2 PacBio HiFi reads,
+#                     so the two samples get different assembler, minimap2 and Medaka settings.
+#   mode = hybrid     Illumina reads for both samples plus the same mixed long reads. The block
+#                     switches the Illumina guidance of Filtlong on (it is off by default), so
+#                     the dry run shows the guided command; only the ONT sample gets it.
+#   mode = contigs    annotation of a finished genome, without the screen and therefore without
+#                     a BLAST database.
+#   the last block    the same contigs run with the contamination and mitochondrion screen on.
+#
+# What a dry run actually touches, since that is all these configs have to satisfy:
+#   * input.<mode>_dir must be an EXISTING directory holding at least one correctly named
+#     sample file. Sample discovery lists it while Snakemake reads the workflow and stops
+#     when it finds nothing, so a placeholder input path stops even `snakemake -n`.
+#   * files.annotation_params must exist and name every sample, and the protein file it
+#     points to must exist and not be empty.
+#   * directories.output_dir is only turned into an absolute path; a dry run creates nothing
+#     there, so a placeholder is fine. The database DIRECTORIES (blast_db, eggnog_db,
+#     funannotate_db) and files.iprscan are not opened either; a NOTE is printed when
+#     eggnog_db, files.iprscan or (with the screen) blast_db does not exist on this machine.
+#     The one exception: the screen's jobs are planned in every block but the plain contigs
+#     one, and rule blob_json needs nodes.dmp and names.dmp from the blast_db folder as
+#     inputs, so those two files must exist (see below).
+#   * The OPTIONAL local-database keys (antismash_db, unite_db, genemark_dir) are checked
+#     the moment they are set, so leave them out unless real.
+#
+# Create the stand-in files first (any file works; the dry run never reads the sequences):
+#
+#   mkdir -p /tmp/ff/in/illumina /tmp/ff/in/longread /tmp/ff/in/hybrid_short /tmp/ff/in/contigs /tmp/ff/ref
+#   touch /tmp/ff/in/illumina/SAM1_R1.fastq.gz /tmp/ff/in/illumina/SAM1_R2.fastq.gz
+#   touch /tmp/ff/in/longread/SAM1_ont.fastq.gz /tmp/ff/in/longread/SAM2_pacbio.fastq.gz
+#   touch /tmp/ff/in/hybrid_short/SAM1_R1.fastq.gz /tmp/ff/in/hybrid_short/SAM1_R2.fastq.gz
+#   touch /tmp/ff/in/hybrid_short/SAM2_R1.fastq.gz /tmp/ff/in/hybrid_short/SAM2_R2.fastq.gz
+#   touch /tmp/ff/in/contigs/SAM1.fasta
+#   printf '>p1\nMKVLA\n' > /tmp/ff/ref/proteins.faa
+#   printf 'SAM1\tFusarium graminearum\t/tmp/ff/ref/proteins.faa\tfusarium_graminearum\nSAM2\tFusarium graminearum\t/tmp/ff/ref/proteins.faa\tfusarium_graminearum\n' > /tmp/ff/ref/params.tsv
+#   mkdir -p /tmp/ff/ref/blastdb && touch /tmp/ff/ref/blastdb/nodes.dmp /tmp/ff/ref/blastdb/names.dmp
+#
+# For the illumina, longread, hybrid and screen blocks, also change directories.blast_db in
+# your copy to /tmp/ff/ref/blastdb (check_parse_time.py makes the same change).
+#
+# Expected result of a dry run:
+#   * every block prints the mode line, the settings lines (decontamination, GeneMark,
+#     SignalP 6; the mitochondrion screen and the long-read assembler where they apply) and
+#     one "Sample ... will be processed" line per sample. The longread and hybrid blocks also
+#     print, per sample, the tools it gets, such as
+#     "[FunFlux] SAM1: ont reads -> hifiasm --ont, minimap2 map-ont, Medaka.";
+#   * every block plans its mode's whole chain, up to multiqc: the illumina block 43 jobs
+#     (one sample), the longread block 75 (two samples, one of them with the Medaka model
+#     check and polishing), the hybrid block 107 (two samples), the plain contigs block 28
+#     and the screen block 36, which adds the BLAST, BlobTools and mitochondrion jobs. The
+#     counts hold with Tiberius on and the UNITE reference filter on (both the default) and
+#     the AMR screen off (the default; on, it adds one job per run and one per sample);
+#     check_parse_time.py checks them.
+# ═══════════════════════════════════════════════════════════════════════
+
+
+# ═══════ BEGIN CONFIG: mode = illumina ═══════
+# Illumina paired-end short reads.
+mode: illumina
+input:
+  illumina_dir: /tmp/ff/in/illumina
+directories:
+  output_dir: /tmp/ff/out/illumina
+  blast_db: /abs/placeholder/db/NCBI_core_nt
+  eggnog_db: /abs/placeholder/db/eggnog
+  funannotate_db: /abs/placeholder/db/funannotate
+files:
+  annotation_params: /tmp/ff/ref/params.tsv
+  iprscan: /abs/placeholder/interproscan-5.78-109.0/interproscan.sh
+# phix_link is needed only by the modes with Illumina reads (illumina, hybrid).
+links:
+  phix_link: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/819/615/GCF_000819615.1_ViralProj14015/GCF_000819615.1_ViralProj14015_genomic.fna.gz
+  funannotate_link: https://zenodo.org/records/23265189/files/funannotate_db_1.8.17_2026-10-08.tar.gz?download=1
+  unite_its_link: https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz
+  tiberius_model_link: https://bioinf.uni-greifswald.de/bioinf/tiberius/models/fungi.tar.gz
+  telomere_db_link: https://raw.githubusercontent.com/tolkit/a-telomeric-repeat-database/73c635c7b80e5ab369b4c7ec67d23db32dcaa1b8/data/telo_database_v2.tsv
+resources:
+  threads: 8
+  ram_gb: 32
+# ═══════ END CONFIG: mode = illumina ═══════
+
+
+# ═══════ BEGIN CONFIG: mode = longread (SAM1 is ONT, SAM2 is PacBio HiFi: a mixed batch) ═══════
+mode: longread
+input:
+  longread_dir: /tmp/ff/in/longread
+directories:
+  output_dir: /tmp/ff/out/longread
+  blast_db: /abs/placeholder/db/NCBI_core_nt
+  eggnog_db: /abs/placeholder/db/eggnog
+  funannotate_db: /abs/placeholder/db/funannotate
+files:
+  annotation_params: /tmp/ff/ref/params.tsv
+  iprscan: /abs/placeholder/interproscan-5.78-109.0/interproscan.sh
+# No phix_link: there are no Illumina reads in this mode.
+links:
+  funannotate_link: https://zenodo.org/records/23265189/files/funannotate_db_1.8.17_2026-10-08.tar.gz?download=1
+  unite_its_link: https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz
+  tiberius_model_link: https://bioinf.uni-greifswald.de/bioinf/tiberius/models/fungi.tar.gz
+  telomere_db_link: https://raw.githubusercontent.com/tolkit/a-telomeric-repeat-database/73c635c7b80e5ab369b4c7ec67d23db32dcaa1b8/data/telo_database_v2.tsv
+resources:
+  threads: 8
+# hifiasm is the default, written out. Naming the Medaka model makes the dry run print it
+# ("Medaka model: ..."); it applies to SAM1 only, as PacBio samples never use Medaka.
+parameters:
+  longread:
+    assembler: hifiasm
+    medaka_model: r1041_e82_400bps_sup_v4.3.0
+# ═══════ END CONFIG: mode = longread ═══════
+
+
+# ═══════ BEGIN CONFIG: mode = hybrid (Illumina for SAM1 and SAM2; SAM1 ONT, SAM2 PacBio HiFi) ═══════
+# The Illumina reads have their own folder; the long reads are the longread block's files.
+mode: hybrid
+input:
+  illumina_dir: /tmp/ff/in/hybrid_short
+  longread_dir: /tmp/ff/in/longread
+directories:
+  output_dir: /tmp/ff/out/hybrid
+  blast_db: /abs/placeholder/db/NCBI_core_nt
+  eggnog_db: /abs/placeholder/db/eggnog
+  funannotate_db: /abs/placeholder/db/funannotate
+files:
+  annotation_params: /tmp/ff/ref/params.tsv
+  iprscan: /abs/placeholder/interproscan-5.78-109.0/interproscan.sh
+links:
+  phix_link: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/819/615/GCF_000819615.1_ViralProj14015/GCF_000819615.1_ViralProj14015_genomic.fna.gz
+  funannotate_link: https://zenodo.org/records/23265189/files/funannotate_db_1.8.17_2026-10-08.tar.gz?download=1
+  unite_its_link: https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz
+  tiberius_model_link: https://bioinf.uni-greifswald.de/bioinf/tiberius/models/fungi.tar.gz
+  telomere_db_link: https://raw.githubusercontent.com/tolkit/a-telomeric-repeat-database/73c635c7b80e5ab369b4c7ec67d23db32dcaa1b8/data/telo_database_v2.tsv
+resources:
+  threads: 8
+# Illumina guidance switched on (the default is off), with the default split: cut a long
+# read where the Illumina reads stop supporting it for at least 1000 bp. Only SAM1 (ONT) is
+# guided.
+parameters:
+  hybrid:
+    assembler: hifiasm
+    short_read_guidance: true
+    filtlong_split: 1000
+# ═══════ END CONFIG: mode = hybrid ═══════
+
+
+# ═══════ BEGIN CONFIG: mode = contigs (annotation only; no BLAST database needed) ═══════
+# No blast_db and no phix_link: contigs mode without the screen needs neither. The dry run
+# prints a NOTE saying the screen is off, so a mitochondrial genome in the FASTA would be
+# annotated as nuclear.
+mode: contigs
+input:
+  contigs_dir: /tmp/ff/in/contigs
+directories:
+  output_dir: /tmp/ff/out/contigs
+  eggnog_db: /abs/placeholder/db/eggnog
+  funannotate_db: /abs/placeholder/db/funannotate
+files:
+  annotation_params: /tmp/ff/ref/params.tsv
+  iprscan: /abs/placeholder/interproscan-5.78-109.0/interproscan.sh
+links:
+  funannotate_link: https://zenodo.org/records/23265189/files/funannotate_db_1.8.17_2026-10-08.tar.gz?download=1
+  unite_its_link: https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz
+  tiberius_model_link: https://bioinf.uni-greifswald.de/bioinf/tiberius/models/fungi.tar.gz
+  telomere_db_link: https://raw.githubusercontent.com/tolkit/a-telomeric-repeat-database/73c635c7b80e5ab369b4c7ec67d23db32dcaa1b8/data/telo_database_v2.tsv
+resources:
+  threads: 8
+# ═══════ END CONFIG: mode = contigs ═══════
+
+
+# ═══════ BEGIN CONFIG: mode = contigs with the contamination and mitochondrion screen ═══════
+# screen: true (at the bottom) makes blast_db REQUIRED. For a dry run by hand, point it at
+# the folder with the nodes.dmp and names.dmp stand-ins (see the header).
+mode: contigs
+input:
+  contigs_dir: /tmp/ff/in/contigs
+directories:
+  output_dir: /tmp/ff/out/contigs_screen
+  blast_db: /abs/placeholder/db/NCBI_core_nt
+  eggnog_db: /abs/placeholder/db/eggnog
+  funannotate_db: /abs/placeholder/db/funannotate
+files:
+  annotation_params: /tmp/ff/ref/params.tsv
+  iprscan: /abs/placeholder/interproscan-5.78-109.0/interproscan.sh
+links:
+  funannotate_link: https://zenodo.org/records/23265189/files/funannotate_db_1.8.17_2026-10-08.tar.gz?download=1
+  unite_its_link: https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz
+  tiberius_model_link: https://bioinf.uni-greifswald.de/bioinf/tiberius/models/fungi.tar.gz
+  telomere_db_link: https://raw.githubusercontent.com/tolkit/a-telomeric-repeat-database/73c635c7b80e5ab369b4c7ec67d23db32dcaa1b8/data/telo_database_v2.tsv
+resources:
+  threads: 8
+parameters:
+  contigs:
+    screen: true
+# ═══════ END CONFIG: mode = contigs with the screen ═══════

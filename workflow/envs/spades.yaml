@@ -1,6 +1,9 @@
+# The exact package builds of this environment are fixed by spades.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
 name: spades
 channels:
   - conda-forge
   - bioconda
 dependencies:
+  - python=3.14
   - spades=4.2.0

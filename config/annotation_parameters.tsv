@@ -1,2 +1,4 @@
 #sample	species	proteins	model
-ARSEF3097	Beauveria bassiana	/path/to/beauveria_bassiana_proteins.faa	fusarium_graminearum
+# Fourth column: - (or empty) trains AUGUSTUS on the genome, the default; a stored model name such as
+# fusarium_graminearum makes AUGUSTUS use that model as it is (FunFlux v2; v1 needs a model name).
+ARSEF3097	Beauveria bassiana	/path/to/beauveria_bassiana_proteins.faa	-

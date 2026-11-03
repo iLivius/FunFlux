@@ -1,7 +1,12 @@
+# The exact package builds of this environment are fixed by funannotate.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
+# biopython is held at 1.77, the version the tested environment resolved.
+# The funannotate 1.8.17 package itself requires biopython below 1.80.
 name: funannotate
 channels:
   - conda-forge
   - bioconda
 dependencies:
+  - python=3.8
   - funannotate=1.8.17
   - biopython=1.77

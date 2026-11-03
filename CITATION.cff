@@ -1,0 +1,56 @@
+# Citation metadata in the Citation File Format (CFF) 1.2.0. GitHub reads this file to offer
+# "Cite this repository" on the repository page.
+#
+# It describes the version named below. At each release, update `version` and
+# `date-released` (the day the release is tagged; correct it if the tag lands on another
+# day). Only the concept DOI is given: it never changes and always leads to the newest
+# release, so this file needs no edit after Zenodo has archived a release. The version DOI
+# of each release is on its Zenodo page.
+#
+# The tools and databases FunFlux runs are not repeated here. Their complete list, with the
+# references, is the documentation page "Citation and references" (docs/about/citation.md).
+#
+# When a repository holds both files, Zenodo takes the metadata of each release's record
+# from .zenodo.json, not from this file. Keep the title, version and authors the same in both.
+
+cff-version: 1.2.0
+message: "If you use FunFlux, please cite it as below, and also cite the tools and databases whose output you used (see https://iLivius.github.io/FunFlux/about/citation/)."
+title: "FunFlux: Integrated workflow for fungal genome assembly and annotation"
+abstract: >-
+  FunFlux is a Snakemake workflow for fungal whole-genome sequencing data. It
+  takes a fungal isolate from raw reads, or from an assembly made elsewhere,
+  through assembly, contamination and mitochondrion screening, quality control,
+  ITS taxonomy, repeat masking, gene prediction and functional annotation, with
+  one MultiQC report per run. Version 2.0.0 brings together the earlier FunFlux
+  1.x, Funnotator and FunFluxL workflows as four modes of one workflow: Illumina
+  paired-end reads, Oxford Nanopore or PacBio HiFi long reads, a hybrid of
+  Illumina and long reads, and genomes already assembled.
+type: software
+version: 2.0.0
+date-released: 2026-11-03
+license: MIT
+repository-code: "https://github.com/iLivius/FunFlux"
+url: "https://iLivius.github.io/FunFlux/"
+doi: 10.5281/zenodo.13612159
+
+authors:
+  - family-names: Antonielli
+    given-names: Livio
+    affiliation: AIT Austrian Institute of Technology
+  - family-names: Brader
+    given-names: Günter
+    affiliation: AIT Austrian Institute of Technology
+
+keywords:
+  - fungal genomics
+  - whole-genome sequencing
+  - Snakemake
+  - genome assembly
+  - genome annotation
+  - gene prediction
+  - ITS barcode
+  - secondary metabolites
+  - antifungal resistance
+  - Illumina
+  - Oxford Nanopore
+  - PacBio HiFi

@@ -1,0 +1,8 @@
+# The exact package builds of this environment are fixed by filtlong.linux-64.pin.txt next to this file,
+# captured from a tested environment; Snakemake creates the environment from that list.
+name: filtlong
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - filtlong=0.3.1
