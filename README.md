@@ -13,9 +13,11 @@ FunFlux v2.0.0
 **Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads,
 a hybrid of short and long reads, or an assembly you already have.**
 
+<!-- Badges. The last one, "ci", shows the result of the automatic checks in .github/workflows/ci.yml (documentation build, unit tests, Snakemake dry runs) on the newest commit of main. GitHub updates it after every push; it does not run the workflow on real data. -->
 [![Snakemake](https://img.shields.io/badge/snakemake-tested%209.14.6-brightgreen.svg)](https://snakemake.github.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13612159.svg)](https://doi.org/10.5281/zenodo.13612159)
+[![CI](https://github.com/iLivius/FunFlux/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/iLivius/FunFlux/actions/workflows/ci.yml)
 
 <!-- Workflow overview as a metro map, one coloured line per mode. GitHub shows the dark version to readers in dark mode and the light one otherwise. The detailed map is on the documentation home page (docs/index.md). -->
 <p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/funflux_overview_dark.png"><img src="docs/assets/funflux_overview.png" alt="FunFlux v2.0.0 workflow overview as a metro map. One coloured line per mode (Illumina, ONT or PacBio HiFi long reads, hybrid, contigs) runs from the reads, or from an assembly, to one final genome file, contigs_final.fasta; the hybrid line also builds the Illumina guide assembly. From there the four lines run on together through assembly QC, ITS taxonomy, gene prediction, functional annotation and the contig summary to a MultiQC report. A dashed red branch is the optional resistance-mutation screen; open rings are steps the configuration can switch on or off."></picture></p>
