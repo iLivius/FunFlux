@@ -267,14 +267,15 @@ were used for this page only and are not part of FunFlux.
 To tell run-to-run noise from the effect of each gene finder, one genome was annotated six times:
 the `hybrid` run, and five `contigs`-mode runs on its `contigs_final.fasta`. The five ran at the
 same time, each with 20 CPU threads instead of the `hybrid` run's 32. All six annotated the same
-masked genome, byte for byte. The default run used Tiberius, GeneMark-ES and AUGUSTUS trained on
-the genome.
+masked genome, byte for byte. The reference run, the `hybrid` run, used Tiberius, GeneMark-ES and
+AUGUSTUS trained on the genome. GeneMark-ES is off by default, so the run without it is the one
+with the default settings.
 
-| Run | What changed, besides the mode and the threads | Protein-coding genes | Genes identical to the default run | Matching genes | Matching genes, difference from the default |
+| Run | What changed, besides the mode and the threads | Protein-coding genes | Genes identical to the reference run | Matching genes | Matching genes, difference from the reference run |
 |---|---|---|---|---|---|
-| Default (the `hybrid` run) | – | 11,830 | – | 10,623 | – |
+| Reference (the `hybrid` run) | – | 11,830 | – | 10,623 | – |
 | Replicate | nothing | 11,825 | 11,718 | 10,619 | −4 |
-| No GeneMark-ES | `genemark.mode: off` | 11,834 | 11,253 | 10,590 | −33 |
+| No GeneMark-ES (the default settings) | `genemark.mode: off` | 11,834 | 11,253 | 10,590 | −33 |
 | No Tiberius | `tiberius.mode: off` | 11,729 | 10,494 | 10,257 | −366 |
 | Neither | both off; AUGUSTUS, SNAP and GlimmerHMM remain | 11,503 | 9,528 | 9,630 | −993 |
 | Stored AUGUSTUS model | annotation table, column 4: `botrytis_cinerea` | 11,934 | 11,277 | 10,694 | +71 |
@@ -286,7 +287,7 @@ are lost, and about 9 % without both Tiberius and GeneMark-ES. GeneMark-ES on it
 difference (33 genes), which one replicate cannot separate from noise. The stored *B. cinerea*
 AUGUSTUS model adds 71. Read these numbers with the head start described in the note below.
 
-- **The replicate.** 112 of the 11,830 genes of the default run differ in the replicate. The
+- **The replicate.** 112 of the 11,830 genes of the reference run differ in the replicate. The
   matches lost (38) and gained (34) almost cancel, hence the difference of 4.
 - **Noise.** One replicate is one measurement of the run-to-run noise, not its range, and it holds
   any effect of the thread count as well.
@@ -504,7 +505,7 @@ lie on the 1.3 Mb that the reference lacks, so the counts cannot be set against 
   B05.10 gene table. The two columns use different gene sets and cannot be compared with each
   other.
 - **`hybrid` and hifiasm** annotated nearly the same genome, 38 positions apart, and differ by 3
-  genes. That is about as much as the B05.10 default run and its replicate, which differ by 5
+  genes. That is about as much as the B05.10 reference run and its replicate, which differ by 5
   genes ([Repeated runs](#gene-finders)).
 - **tRNA genes**, 105 to 107 per run, are left out.
 

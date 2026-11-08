@@ -16,9 +16,9 @@ the assembled genome, its predicted genes and their functional annotation, inclu
 secondary-metabolite gene clusters found by antiSMASH. They are predictions from the genome
 sequence, to be weighed with curation and experimental evidence.
 
-An optional screen looks for point mutations known to confer resistance to antifungal drugs and
-fungicides. The configuration key `mode` selects the input mode. This site documents version
-**v2.0.0**.
+An optional screen looks for the point mutations that the FungAMR database lists with evidence
+for or against resistance to antifungal drugs and fungicides. The configuration key `mode` selects
+the input mode. This site documents version **v2.0.0**.
 
 FunFlux belongs to the [BioFlux](https://github.com/stars/iLivius/lists/bioflux) family of
 pipelines.
@@ -127,9 +127,10 @@ All four modes are launched the same way, from the repository root:
 snakemake --sdm conda --cores 24 --configfile config/config_custom.yaml
 ```
 
-`--sdm conda` builds the conda environment of each rule on first use, so only Snakemake is
-installed by hand. `--cores` sets the CPU budget of a local run and is used without `--jobs`. See
-[Running FunFlux](reference/running.md).
+`--sdm conda` builds the conda environment of each rule on first use. Besides Snakemake, you
+obtain InterProScan yourself, and the optional GeneMark-ES and SignalP 6 if you use them
+([Licensed and external tools](getting-started/external-tools.md)). `--cores` sets the CPU budget
+of a local run and is used without `--jobs`. See [Running FunFlux](reference/running.md).
 
 Pass the configuration file explicitly with `--configfile`. FunFlux ships a template,
 `config/config.yaml`, but does not load it on its own: copy it, then set the mode, the input and

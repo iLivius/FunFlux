@@ -1636,7 +1636,7 @@ if SCREEN and BLAST_MAX_TARGET_SEQS < 5:
 
 # ── 9a. Repeat masking ──
 # Genes are predicted on a genome whose repeats are soft-masked (lowercase), so that
-# transposon sequence does not produce false genes. Rule repeat_masking reads all
+# repeat sequence does not produce false genes. Rule repeat_masking reads all
 # four settings below.
 #   tantan                     : fast; masks low-complexity and tandem repeats.
 #   repeatmodeler_repeatmasker : builds a repeat library from THIS genome with
@@ -2330,8 +2330,9 @@ if AMR_MITO_CONTIGS:
 # ═══════════════ 10. Database download links ═══════════════
 # Links the workflow downloads from when a database is not already on disk.
 #   phix_link         : the PhiX174 genome, which Illumina libraries are spiked with;
-#                       reads that map to it are removed. Short-read modes only
-#                       (required there; rule download_phix fetches it as PHIX_FASTA).
+#                       read pairs that align to it concordantly are removed.
+#                       Short-read modes only (required there; rule download_phix
+#                       fetches it as PHIX_FASTA).
 #   funannotate_link  : the funannotate database snapshot (a Zenodo record). The
 #                       checksum file next to it is found from the same record.
 #                       Rule funannotate_db downloads both, as FUNANNOTATEID.tar.gz

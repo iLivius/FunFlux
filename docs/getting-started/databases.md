@@ -533,7 +533,7 @@ Only `illumina` and `hybrid` mode use the PhiX genome. `links.phix_link` points 
 genome (GCF_000819615.1, 2 kB compressed), the control that Illumina libraries are spiked with.
 `download_phix` fetches it with `curl` once per output folder into `00.resources/phix/`, and
 `build_phix` indexes it there for bowtie2. `map_phix` then removes the read pairs of every sample
-that map to it. In these modes an empty value stops the run before any job starts.
+that align to it concordantly. In these modes an empty value stops the run before any job starts.
 
 ## Medaka model { #medaka }
 

@@ -8,7 +8,7 @@
 #   1. tidied      : very short contigs, and contigs that are near-copies of part of another
 #                    contig, are dropped; the rest are sorted by length and renamed scaffold_1,
 #                    scaffold_2, ... (funannotate_preprocess);
-#   2. soft-masked : repeats are written in lowercase, so that transposon sequence does not
+#   2. soft-masked : repeats are written in lowercase, so that repeat sequence does not
 #                    give rise to false genes (repeat_masking);
 #   3. searched for genes (funannotate_prediction): gene finders that learn from the genome
 #                    itself, plus protein evidence from a related fungus and from UniProt;

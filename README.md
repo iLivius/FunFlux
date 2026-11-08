@@ -51,7 +51,7 @@ decides which of four front ends runs:
                ── contamination screen (BLAST+, BlobTools), mitochondrion screen * ──
                                Medaka (ONT)       Medaka (ONT),
                                                   Polypolish
-               ──── 02.assembly/{sample}/contigs_final.fasta: the nuclear genome ────
+               ── 02.assembly/{sample}/contigs_final.fasta: the genome all later steps read ──
 02.assembly    QUAST, BUSCO
 03.taxonomy    ITS: 5.8S windows (nhmmer), ITSx, SINTAX against UNITE
 04.annotation  funannotate clean and sort; tantan or RepeatModeler + RepeatMasker;
@@ -68,9 +68,11 @@ the assembled genome, its predicted genes and their functional annotation, inclu
 secondary-metabolite gene clusters found by antiSMASH. They are predictions from the genome
 sequence, to be weighed with curation and experimental evidence.
 
-Each mode produces `02.assembly/{sample}/contigs_final.fasta`, the nuclear genome, for a shared
-set of downstream analyses. The confirmed mitochondrial contigs are written to
-`contigs_mitochondrial.fasta`. Common processing improves consistency across datasets, while the
+Each mode produces `02.assembly/{sample}/contigs_final.fasta`, the genome that every later
+analysis reads. When the mitochondrion screen runs with its default settings, the confirmed
+mitochondrial contigs are split off into `contigs_mitochondrial.fasta`, and `contigs_final.fasta`
+holds the nuclear genome alone. The screen always runs in `illumina`, `longread` and `hybrid`, and
+in `contigs` mode only when it is switched on. Common processing improves consistency across datasets, while the
 read type, the sequencing depth and the fragmentation of the assembly still affect the results.
 
 **The resistance-mutation screen** (`05.amr`, disabled by default) searches each genome with
@@ -111,8 +113,11 @@ snakemake --sdm conda --cores 24 --configfile config/config_custom.yaml
 ```
 
 Run both commands from the repository root: `workflow/Snakefile` is found there automatically.
-Only Snakemake is installed by hand — `--sdm conda` builds each rule's own conda environment on
-first use, so every analysis tool is provisioned for you.
+Besides Snakemake, three tools are not installed by conda: InterProScan, which every run needs, and
+the optional GeneMark-ES and SignalP 6, which need a licence from their authors. You obtain them
+yourself ([Licensed and external tools](https://iLivius.github.io/FunFlux/getting-started/external-tools/)).
+`--sdm conda` builds each rule's own conda environment on first use, so every other analysis tool
+is provisioned for you. The databases are listed below.
 
 For a local run, `--cores N` sets the CPU budget and should take the value of
 `resources.threads`. Do not add `--jobs`/`-j`: for a local run it is another name for `--cores`, and giving both can let

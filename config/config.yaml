@@ -176,7 +176,7 @@ files:
 links:
   phix_link: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/819/615/GCF_000819615.1_ViralProj14015/GCF_000819615.1_ViralProj14015_genomic.fna.gz
                                # REQUIRED [illumina|hybrid]. The PhiX174 genome that Illumina libraries are
-                               #   spiked with; reads that map to it are removed.
+                               #   spiked with; read pairs that align to it concordantly are removed.
   funannotate_link: https://zenodo.org/records/23265189/files/funannotate_db_1.8.17_2026-10-08.tar.gz?download=1
                                # REQUIRED. A frozen funannotate database snapshot (a database archive, not the
                                #   funannotate program). Downloaded only when directories.funannotate_db holds
@@ -346,10 +346,11 @@ parameters:
                                #   whose compute nodes have no internet, name a lineage. BUSCO runs with
                                #   --opt-out-run-stats, so it sends no usage statistics.
 
-  # What every contig is [all modes]. After the annotation, rule telomere_units works out the
-  # telomere repeat unit of each assembly with tidk and calls the telomere at both ends of
-  # every contig; rule contig_summary joins that call with the evidence the run produced
-  # about each contig of the draft assembly (read depth, the assembler's depth and
+  # What every contig is [all modes]. Rule telomere_units works out the telomere repeat unit
+  # of each draft assembly with tidk and calls the telomere at both ends of every contig (it
+  # needs only the draft, so it can run early). After the annotation, rule contig_summary
+  # joins that call with the evidence the run produced about each contig of the draft
+  # assembly (read depth, the assembler's depth and
   # circularity flag, rDNA units, BUSCO markers, predicted genes, the verdicts of the
   # contamination and mitochondrion screens) into one table per sample,
   # 02.assembly/{sample}/eval/contig_summary.tsv, and gives each contig a verdict:
@@ -414,7 +415,9 @@ parameters:
   its_taxonomy_cutoff: 0.8     # SINTAX confidence a rank needs to be reported. Allowed: above 0, at most 1.
 
   # Repeat masking before gene prediction [all modes]. Repeats are written in lower case
-  # (soft-masked), so that transposon sequence does not produce false genes.
+  # (soft-masked), so that repeat sequence does not produce false genes. The default, tantan,
+  # masks tandem repeats and low-complexity sequence only; transposons are masked only with
+  # repeatmodeler_repeatmasker.
   masking_method: tantan       # Options: tantan | repeatmodeler_repeatmasker
                                #   tantan                      fast: tandem repeats and low-complexity sequence
                                #   repeatmodeler_repeatmasker  builds a repeat library from THIS genome (hours),
