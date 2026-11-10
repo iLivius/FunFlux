@@ -78,6 +78,8 @@ must contain one of these phrases, in upper or lower case:
 - `mitochondrial genome`
 
 A nuclear gene described as, for example, `mitochondrial ribosomal protein L5 mRNA` does not count.
+One whose title contains a listed wording, such as `mitochondrial DNA-directed RNA polymerase`,
+does.
 
 For each contig, the mitochondrion screen takes the direct hit with the highest `qcovs`, the
 percentage of the contig covered by all kept alignments to that subject.
@@ -86,7 +88,9 @@ only the single best local alignment per database sequence. A complete mitochond
 aligns in several blocks can then look only half covered, and a mitogenome rearranged relative to
 its closest reference can fall below the threshold. In a run with the screen and with
 `parameters.mitochondria.mode` other than `off`, the dry run prints a NOTE when `blast_max_hsps`
-is below 5.
+is below 5. `parameters.blast_max_target_seqs` (default 10) sets how many subjects BLAST keeps per
+contig. BLAST applies that limit during the search, so it can miss a mitochondrial genome even when
+that genome scores higher than the subjects it kept.
 
 ### Without assembler evidence (contigs, illumina)
 
@@ -264,13 +268,16 @@ unknown, and the flag depends on the ratio alone.
 
 | Finding | Meaning | What to do |
 |---|---|---|
-| a `mitochondrial_candidate` row with reason `weak_direct_blast` | a direct hit covers less than `min_direct_blast_qcov` of the contig | if the length (usually some tens of kb) and the title fit, set `min_direct_blast_qcov` to the row's `best_mito_qcovs` or lower and run again |
-| no row with a direct hit | core_nt holds no mitochondrial genome close enough | nothing to set in `contigs` and `illumina` mode; in the long-read modes depth and circularity can only give a candidate or `..._unclassified` row |
+| a `mitochondrial_candidate` row with reason `weak_direct_blast` | a direct hit covers less than `min_direct_blast_qcov` of the contig | if the length (usually some tens of kb) and the title fit, set `min_direct_blast_qcov` to the row's `best_mito_qcovs` or lower and run again. Or set `blast_max_target_seqs: 50`: BLAST applies that limit during the search, so 10 subjects can miss mitochondrial genomes that score higher and cover more of the contig |
+| no row with a direct hit | core_nt holds no mitochondrial genome close enough; or the subjects BLAST kept for the contig (10 by default) are records of single mitochondrial genes, such as cox1, which do not count; or a mitochondrial genome's title uses none of the wordings above | read the titles of the contig's hits, the last column of `contaminants/blastout` (a table without a header line). If they are single-gene records, set `blast_max_target_seqs: 50` and run again. Otherwise nothing can be set in `contigs` and `illumina` mode; in the long-read modes depth and circularity can only give a candidate or `..._unclassified` row |
 | `blast_max_hsps` below 5 | `qcovs` counts only the alignments BLAST kept per subject, with 1 the best one alone | set `blast_max_hsps: 5` |
 
-A weak hit or a low `blast_max_hsps` can be fixed with a setting, but a missing reference genome
-cannot. A changed threshold re-runs the mitochondrion screen and every step after it, as described
-under [Changing the policy after a run](decontamination.md#changing-the-policy-after-a-run).
+A weak hit, a low `blast_max_hsps` or too few subjects can be fixed with a setting, but a missing
+reference genome cannot. A changed threshold re-runs the mitochondrion screen and every step after
+it. A changed `blast_max_hsps` or `blast_max_target_seqs` re-runs BLAST first (in `hybrid` also the
+guide's BLAST), and with a genus filter it can change the genus calls too
+([BLAST hit depth](../methods/blast-hit-depth.md#ten-subjects-what-the-genus-calls-need)). Both are
+described under [Changing the policy after a run](decontamination.md#changing-the-policy-after-a-run).
 
 ## Output files
 

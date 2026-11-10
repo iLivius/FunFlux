@@ -194,7 +194,7 @@ sizes and the depth per contig.
 
 The screen runs on `contigs_filt.fasta`, in four steps:
 
-1. `blast_contigs` runs megablast against NCBI core_nt (`-evalue 1e-5`) and saves up to 50
+1. `blast_contigs` runs megablast against NCBI core_nt (`-evalue 1e-10`) and saves up to 10
    subjects and 5 alignments per subject, as set by `parameters.blast_max_target_seqs` and
    `parameters.blast_max_hsps`.
 2. `screen_mitochondria` decides from BLAST alone, because Illumina reads give no assembler
@@ -214,7 +214,7 @@ The screen runs on `contigs_filt.fasta`, in four steps:
 
 [Decontamination](../analysis/decontamination.md) and [Mitochondria](../analysis/mitochondria.md)
 describe the screen in detail. [BLAST hit depth](../methods/blast-hit-depth.md) explains why BLAST
-keeps 5 alignments per subject.
+keeps 10 subjects with 5 alignments each.
 
 ## Configuration
 
@@ -229,7 +229,7 @@ set, while every other key here has one.
 | `resources.threads` | 24 | SPAdes `-t`, bowtie2; upper limit for every other rule. Pass the same number to `--cores` |
 | `resources.ram_gb` | 128 | SPAdes `-m`; Qualimap Java heap `min(ram_gb, 64)` GB |
 | `directories.blast_db` | none, required | NCBI core_nt with its taxonomy files: [Reference databases](../getting-started/databases.md) |
-| `parameters.nt_version`, `blast_max_target_seqs`, `blast_max_hsps`, `decontamination.mode`, `mitochondria.mode` | `core_nt`, 50, 5, `off`, `separate_confirmed` | the screen |
+| `parameters.nt_version`, `blast_max_target_seqs`, `blast_max_hsps`, `decontamination.mode`, `mitochondria.mode` | `core_nt`, 10, 5, `off`, `separate_confirmed` | the screen |
 
 Every key is listed on [Configuration](../reference/configuration.md).
 

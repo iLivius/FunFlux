@@ -270,10 +270,14 @@ parameters:
   #     below 5 a NOTE is printed (unless mitochondria.mode is off).
   #   blast_max_target_seqs: how many database sequences BLAST keeps per contig. It is applied
   #     DURING the search, not as a final "best N" filter, so a small value can drop better
-  #     matches; BLAST recommends at least 5 (a NOTE is printed below 5).
+  #     matches; BLAST recommends at least 5 (a NOTE is printed below 5). A large value has
+  #     the opposite problem: BlobTools adds up the scores of every kept hit per genus, so a
+  #     genus with many database entries of one gene (the same gene sequenced from many
+  #     isolates) can outvote the genus of the closest matches. 10 is the BlobTools authors'
+  #     value; FunFlux 2.0.0 kept 50.
   # Both take a whole number, 1 or more. v1 FunFlux searched with -max_target_seqs 10 and
   # -max_hsps 1.
-  blast_max_target_seqs: 50
+  blast_max_target_seqs: 10
   blast_max_hsps: 5
 
   spades_kmers: "21,33,55,77,99,127"   # [illumina|hybrid] SPAdes k-mer sizes: odd, below 128, ascending.

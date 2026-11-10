@@ -340,12 +340,13 @@ rule map_guide_evaluation:
 #              the selector is about to drop. The database folder comes from
 #              directories.blast_db (BLASTDB) and the database name from
 #              parameters.nt_version (NT_VERSION).
-# Does:        one `blastn -task megablast` run per sample, with the same database, the same
-#              hit depth (parameters.blast_max_target_seqs, parameters.blast_max_hsps; the
-#              shared rule explains why the two numbers matter, and
-#              docs/methods/blast-hit-depth.md the choice) and the same 15-column -outfmt
-#              as the shared rule. Do NOT change the column list: BlobTools and the
-#              mitochondrion screen pick their columns by POSITION.
+# Does:        one `blastn -task megablast` run per sample, with the same database, hit
+#              depth, e-value (1e-10) and 15-column -outfmt as the shared rule. The hit
+#              depth comes from parameters.blast_max_target_seqs and
+#              parameters.blast_max_hsps; the shared rule explains why the two numbers
+#              matter, and docs/methods/blast-hit-depth.md explains the defaults. Do NOT
+#              change the column list: BlobTools and the mitochondrion screen pick their
+#              columns by POSITION.
 # Produces:    GUIDE_BLASTOUT (guide/contaminants/blastout), the tabular hits, kept.
 # Consumed by: blob_guide_json and screen_guide_mitochondria below.
 #
@@ -353,8 +354,9 @@ rule map_guide_evaluation:
 # large as the one on the long-read assembly; see the CPU note at the head of this file.
 #
 # v1 -> v2: FunFluxL+ (rule blast_short_contigs) ran with -max_target_seqs 50 -max_hsps 5
-# and the database name typed into the rule; both depths and the name now come from the
-# configuration, with the same defaults, and the CPU count is Snakemake's own threads:.
+# -evalue 1e-5 and took the database name from parameters.nt_version, as now. Both depths
+# now come from the configuration, with defaults of 10 and 5 (FunFlux 2.0.0: 50 and 5).
+# The e-value is 1e-10, as in the shared rule. The CPU count is Snakemake's own threads:.
 # The hits moved from 03.read_selection/contamination/{sample}/blastout to the guide's
 # contaminants folder.
 rule blast_guide_contigs:
@@ -385,7 +387,7 @@ rule blast_guide_contigs:
           -db {params.db} \
           -outfmt '6 qseqid staxids bitscore pident evalue length qlen slen qcovs qcovhsp sskingdoms scomnames sscinames sblastnames stitle' \
           -num_threads {threads} \
-          -evalue 1e-5 \
+          -evalue 1e-10 \
           -max_target_seqs {params.max_target_seqs} \
           -max_hsps {params.max_hsps} \
           -out {output.blast} > {log} 2>&1

@@ -298,7 +298,11 @@ when the screen runs, because without the screen that table is not read.
 
     The calls also depend on the BLAST hit depth. Keeping more hits per contig changes the
     bit-score sums, and with them the genus of some contigs
-    ([BLAST hit depth](../methods/blast-hit-depth.md)).
+    ([BLAST hit depth](../methods/blast-hit-depth.md)). By default FunFlux 2.1.0 keeps 10
+    database sequences per contig, where FunFlux 2.0.0 kept 50, so a genus list chosen from a
+    2.0.0 run may no longer fit: read the new `contig_taxonomy_decisions.tsv` before you filter
+    again. A configuration copied from the 2.0.0 template still sets 50
+    ([Updating from FunFlux 2.0.0](../methods/blast-hit-depth.md#updating-from-funflux-200)).
 
 ## Audit files
 
@@ -381,7 +385,7 @@ and re-runs the steps that use it and every step after them.
 | Change | Re-runs |
 |---|---|
 | a new decontamination policy | `select_contigs`, the mitochondrion split, QC, ITS and the whole annotation of every sample: hours per sample |
-| a new hit depth, `nt_version` or `blast_db` path | BLAST as well, and every step after it |
+| a new hit depth, `nt_version` or `blast_db` path | BLAST as well (in `hybrid` also the guide's BLAST), and every step after it |
 | a new mitochondrion threshold | the mitochondrion screen and every step after it |
 
 !!! warning "A BLAST database or a file-setting table changed in place needs `--forcerun`"
@@ -424,8 +428,8 @@ blastn -task megablast \
   -query 02.assembly/{sample}/contigs_filt.fasta \
   -db /path/to/blast_db/core_nt \
   -outfmt '6 qseqid staxids bitscore pident evalue length qlen slen qcovs qcovhsp sskingdoms scomnames sscinames sblastnames stitle' \
-  -num_threads 24 -evalue 1e-5 \
-  -max_target_seqs 50 -max_hsps 5 \
+  -num_threads 24 -evalue 1e-10 \
+  -max_target_seqs 10 -max_hsps 5 \
   -out 02.assembly/{sample}/contaminants/blastout
 ```
 
@@ -447,14 +451,18 @@ contig.
 
 | Key | BLAST option | Keeps | Default | Allowed | The dry run prints a NOTE when |
 |---|---|---|---|---|---|
-| `parameters.blast_max_target_seqs` | `-max_target_seqs` | database sequences ("subjects") per contig | 50 | integer ≥ 1 | below 5 |
+| `parameters.blast_max_target_seqs` | `-max_target_seqs` | database sequences ("subjects") per contig | 10 | integer ≥ 1 | below 5 |
 | `parameters.blast_max_hsps` | `-max_hsps` | alignments per subject | 5 | integer ≥ 1 | below 5, unless `mitochondria.mode` is `off` |
 
-Keep the defaults, 50 subjects with 5 alignments each per contig, because smaller values lose
-evidence in two ways.
+Keep the defaults, 10 subjects per contig with 5 alignments each, unless the mitochondrion is not
+confirmed ([Mitochondria](mitochondria.md#when-no-mitochondrion-is-confirmed)): much smaller values
+lose evidence, and much larger ones skew the genus calls.
 
 - BLAST applies `-max_target_seqs` during the search, not as a final best-N filter, so a small
   value can lose better matches. BLAST recommends 5 or more.
+- A large `-max_target_seqs` skews the genus calls. BlobTools adds up the bit scores of every kept
+  hit per genus, so a genus with many core_nt entries of one gene (the same gene sequenced from
+  many isolates) can outvote the genus of the closest matches.
 - The `qcovs` column (query coverage per subject), which the mitochondrion screen reads, is
   computed from the kept alignments only. With `-max_hsps 1`, BLAST keeps only the single best
   local alignment per database sequence, so a complete mitochondrial genome that aligns in several

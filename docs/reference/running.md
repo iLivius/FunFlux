@@ -334,7 +334,7 @@ settings FunFlux passes to rules, and the first rule each one re-runs:
 
 | Changed in the configuration | First rule that runs again |
 |---|---|
-| `directories.blast_db`, `parameters.nt_version`, `blast_max_target_seqs`, `blast_max_hsps` | `blast_contigs` |
+| `directories.blast_db`, `parameters.nt_version`, `blast_max_target_seqs`, `blast_max_hsps` | `blast_contigs`; in `hybrid` also `blast_guide_contigs` |
 | `parameters.decontamination.*` | `select_contigs` |
 | `parameters.mitochondria.*` | `screen_mitochondria` |
 | `parameters.busco.lineage` | `busco_data` when a named lineage is not in `00.resources/busco/` yet, then `completeness` |

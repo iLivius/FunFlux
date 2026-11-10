@@ -417,7 +417,11 @@ if SCREEN:
     #   -max_target_seqs  how many different database sequences ("subjects") to keep per
     #                     contig. BLAST applies it DURING the search, not as a final "best N"
     #                     filter, so a small value can lose better matches; BLAST itself
-    #                     recommends 5 or more. FunFlux uses 50.
+    #                     recommends 5 or more. FunFlux uses 10. A large value skews the
+    #                     genus calls: BlobTools adds up the bit scores of every kept hit
+    #                     per genus, so a genus with many database entries of one gene
+    #                     (the same gene sequenced from many isolates) can outvote the
+    #                     genus of the closest matches.
     #   -max_hsps         how many alignments to keep per subject (an HSP, a high-scoring
     #                     segment pair, is one local alignment between the contig and the
     #                     subject). This one decides the mitochondrion screen: BLAST works
@@ -441,14 +445,17 @@ if SCREEN:
     #
     # BLASTDB={params.dir} points BLAST at the folder that also holds its taxonomy files
     # (taxdb.btd and taxdb.bti); without them the organism-name columns come out as N/A.
-    # -db names the database itself, inside that folder. -evalue 1e-5 ignores matches that
-    # chance alone would produce more than once in 100,000 searches.
+    # -db names the database itself, inside that folder. -evalue 1e-10 ignores matches that
+    # chance alone would produce more than once in ten billion searches; it is the value of
+    # the Sanger Tree of Life BlobToolKit pipeline. A close match over hundreds of bases has
+    # an e-value far below it, so the cut-off drops only weak or short matches.
     #
-    # v1 -> v2: v1 FunFlux ran with -max_target_seqs 10 -max_hsps 1 and the database name
-    # core_nt typed into the rule. Both depths are now configurable and default to 50 and 5
-    # (see above), and the database name is parameters.nt_version. CPU use is declared with
-    # `threads:` (capped at 24, as before) instead of the custom `resources: cpus`, which
-    # --cores did not count.
+    # v1 -> v2: v1 FunFlux ran with -max_target_seqs 10 -max_hsps 1 -evalue 1e-5 and the
+    # database name core_nt typed into the rule. Both depths are now configurable, with
+    # defaults of 10 and 5 (FunFlux 2.0.0: 50 and 5; see above). The e-value is 1e-10
+    # (FunFlux 2.0.0: 1e-5). The database name is parameters.nt_version. CPU use is declared
+    # with `threads:` (capped at 24, as before) instead of the custom `resources: cpus`,
+    # which --cores did not count.
     rule blast_contigs:
         input:
             contigs = DRAFT_CONTIGS,
@@ -477,7 +484,7 @@ if SCREEN:
               -db {params.db} \
               -outfmt '6 qseqid staxids bitscore pident evalue length qlen slen qcovs qcovhsp sskingdoms scomnames sscinames sblastnames stitle' \
               -num_threads {threads} \
-              -evalue 1e-5 \
+              -evalue 1e-10 \
               -max_target_seqs {params.max_target_seqs} \
               -max_hsps {params.max_hsps} \
               -out {output.blast} > {log} 2>&1

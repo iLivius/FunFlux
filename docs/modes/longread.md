@@ -333,7 +333,7 @@ alignments, `contaminants/{sample}_map.bam`, are kept. BlobTools reads them for 
 of each contig, and Qualimap (`map_evaluation`) reports on them in `eval/qualimap/`. A Qualimap
 failure does not stop the run ([Assembly QC](../analysis/assembly-qc.md#qualimap-read-modes)).
 
-The screen runs on `assembly.fasta` with BLAST (50 subjects and 5 alignments per subject),
+The screen runs on `assembly.fasta` with BLAST (10 subjects and 5 alignments per subject),
 BlobTools and the contig selector. The mitochondrion screen also reads `assembly_evidence.tsv`,
 and decides as follows whether a contig is confirmed:
 

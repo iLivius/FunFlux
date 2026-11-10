@@ -1656,21 +1656,27 @@ if SCREEN:
     )
 
 # ── 8c. BLAST hit depth (docs/methods/blast-hit-depth.md) ──
-# One BLAST run per contig feeds BOTH BlobTools (which sums hit scores per genus) and
-# the mitochondrion screen (which reads how much of the contig an organelle genome
-# covers, the BLAST column "qcovs"). qcovs is worked out from the alignments BLAST
+# One BLAST run per draft assembly, with every draft contig as a query (in hybrid mode
+# the guide assembly gets a second run), feeds BOTH BlobTools (which sums hit scores per
+# genus) and the mitochondrion screen (which reads how much of the contig an organelle
+# genome covers, the BLAST column "qcovs"). qcovs is worked out from the alignments BLAST
 # SAVED for each subject. With -max_hsps 1 only the single best local alignment
 # survives, so a complete mitochondrial genome that aligns to its closest reference
 # in several blocks is reported as only partly covered. That is why max_hsps
-# defaults to 5. max_target_seqs is applied DURING the
-# search, not as a final "best N" filter, so a small value can drop better subjects;
-# BLAST itself recommends at least 5.
-# All three values go to rule blast_contigs (10_decontam.smk). NT_VERSION is the
-# name of the BLAST database inside directories.blast_db (core_nt unless changed).
+# defaults to 5. max_target_seqs is applied DURING the search, not as a final
+# "best N" filter, so a small value can drop better subjects; BLAST itself recommends
+# at least 5. It defaults to 10, the BlobTools authors' value, because a large value
+# skews the genus calls: BlobTools sums the bit scores of every kept hit per genus, so
+# with many kept subjects (FunFlux 2.0.0 kept 50) a genus with many core_nt entries of
+# one gene (the same gene sequenced from many isolates) can outvote the genus of the
+# closest hits.
+# All three values go to rule blast_contigs (10_decontam.smk) and, in hybrid mode, to
+# rule blast_guide_contigs (hybrid/25_guide.smk). NT_VERSION is the name of the BLAST
+# database inside directories.blast_db (core_nt unless changed).
 # The two NOTEs below only appear in a run that has the screen.
 NT_VERSION = str(PARAMETERS.get("nt_version") or "core_nt").strip()
 BLAST_MAX_TARGET_SEQS = _to_int(
-    "parameters.blast_max_target_seqs", PARAMETERS.get("blast_max_target_seqs", 50), minimum=1
+    "parameters.blast_max_target_seqs", PARAMETERS.get("blast_max_target_seqs", 10), minimum=1
 )
 BLAST_MAX_HSPS = _to_int(
     "parameters.blast_max_hsps", PARAMETERS.get("blast_max_hsps", 5), minimum=1

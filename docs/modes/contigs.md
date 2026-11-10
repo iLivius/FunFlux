@@ -164,7 +164,7 @@ per sample are added:
 | Rule | Does |
 |---|---|
 | `map_contigs` | maps the contigs to themselves with minimap2, because BlobTools needs a BAM file |
-| `blast_contigs` | megablast against NCBI core_nt, up to 50 subjects and 5 alignments per subject |
+| `blast_contigs` | megablast against NCBI core_nt, up to 10 subjects and 5 alignments per subject |
 | `blob_json`, `blob_table` | BlobTools: one taxon per contig from the BLAST hits |
 | `screen_mitochondria` | a contig is confirmed mitochondrial when a BLAST hit to a mitochondrial genome in core_nt covers at least `parameters.mitochondria.min_direct_blast_qcov` percent of it (35); BLAST is the only evidence in this mode |
 | `select_contigs` | applies `parameters.decontamination` (default `off`: every contig kept) and writes a decision for every contig; with the default `parameters.mitochondria.mode: separate_confirmed`, confirmed mitochondrial contigs are always kept |

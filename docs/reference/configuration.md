@@ -274,22 +274,32 @@ These keys choose the BLAST database of the screen and how many hits BLAST keeps
 ```yaml
 parameters:
   nt_version: core_nt
-  blast_max_target_seqs: 50
+  blast_max_target_seqs: 10
   blast_max_hsps: 5
 ```
 
 | Key | Default | Allowed values | Modes | What it does |
 |---|---|---|---|---|
 | `nt_version` | `core_nt` | the name of the BLAST database in `directories.blast_db`, usually `core_nt` or `nt`, not checked | screen | The database BLAST searches, as `blastn -db <blast_db>/<nt_version>`. |
-| `blast_max_target_seqs` | 50 | an integer ≥ 1, with a NOTE below 5 | screen | `-max_target_seqs`, the number of database sequences kept per contig. BLAST applies it during the search, not as a final best-N filter, so a small value can lose better matches. |
+| `blast_max_target_seqs` | 10 | an integer ≥ 1, with a NOTE below 5 | screen | `-max_target_seqs`, the number of database sequences kept per contig. BLAST applies it during the search, not as a final best-N filter, so a small value can lose better matches. A large value skews the genus calls: BlobTools adds up the bit scores of every kept hit per genus, so a genus with many database entries of one gene can outvote the genus of the closest matches. |
 | `blast_max_hsps` | 5 | an integer ≥ 1, with a NOTE below 5 while the mitochondrion screen is on | screen | `-max_hsps`, the number of alignments kept per database sequence. The mitochondrion screen reads `qcovs`, the share of the contig covered by one database sequence, which BLAST computes from the kept alignments only. |
 
 One BLAST table feeds both BlobTools (the genus of each contig) and the mitochondrion screen. With
 `blast_max_hsps: 1` BLAST keeps only the single best local alignment per database sequence, so a
 complete mitochondrial genome that aligns to its closest reference in several blocks can look only
-half covered. Setting `blast_max_target_seqs: 10` and `blast_max_hsps: 1` gives the BLAST settings
-of FunFlux 1.1.x. These values also change the hits whose bit scores BlobTools adds up, and so can change the genus it gives a contig. See
+half covered. These values also change the hits whose bit scores BlobTools adds up, and so can
+change the genus it gives a contig. The e-value is fixed at 1e-10. See
 [BLAST hit depth](../methods/blast-hit-depth.md).
+
+To come close to an earlier version, set `blast_max_target_seqs: 50` (FunFlux 2.0.0 kept 50
+database sequences per contig, with 5 alignments each) or `blast_max_hsps: 1` (FunFlux 1.1.x kept
+10, with 1 alignment each). Both versions searched with an e-value of 1e-5.
+
+!!! note "A configuration copied from FunFlux 2.0.0"
+
+    The FunFlux 2.0.0 template sets `blast_max_target_seqs: 50`, and updating FunFlux does not
+    change your copy. Set it to 10, or delete the line, to search as FunFlux 2.1.0 does
+    ([BLAST hit depth](../methods/blast-hit-depth.md#updating-from-funflux-200)).
 
 ### `spades_kmers`
 
