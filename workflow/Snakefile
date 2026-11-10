@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — Unified fungal whole-genome workflow (workflow/Snakefile).
+# FunFlux v2.1.0 — Unified fungal whole-genome workflow (workflow/Snakefile).
 #
 # The entry point: the file Snakemake reads first. It prints the banner, reads the rule
 # files in a fixed order, and ends with two rules that only gather files: rule all, the
@@ -61,7 +61,7 @@ __  /_   _  / / /_  __ \_  /_   __  /_  / / /_  |/_/
 _  __/   / /_/ /_  / / /  __/   _  / / /_/ /__>  <
 /_/      \__,_/ /_/ /_//_/      /_/  \__,_/ /_/|_|
 
-FunFlux v2.0.0
+FunFlux v2.1.0
 Unified genomic analysis of fungal genomes
 Illumina · Long reads (ONT, PacBio HiFi) · Hybrid · Pre-assembled contigs
 

@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — Stage 90: the report (rules/shared/90_report.smk)
+# FunFlux v2.1.0 — Stage 90: the report (rules/shared/90_report.smk)
 #
 # One rule: gather the quality-control results of the whole run into a single MultiQC page
 # (06.report/multiqc_report.html), with sample names a person can read. MultiQC is a program

@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — SignalP 6: which of the predicted proteins are secreted? (optional)
+# FunFlux v2.1.0 — SignalP 6: which of the predicted proteins are secreted? (optional)
 # (rules/shared/45_signalp6.smk)
 #
 # Many proteins that matter for how a fungus lives — digestive enzymes, toxins, effectors

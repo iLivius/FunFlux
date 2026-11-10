@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — stage 04, annotation (rules/shared/40_annotation.smk): from the finished
+# FunFlux v2.1.0 — stage 04, annotation (rules/shared/40_annotation.smk): from the finished
 # nuclear genome to a functionally annotated one.
 #
 # The genome that arrives here (FINAL_CONTIGS, 02.assembly/{sample}/contigs_final.fasta) is

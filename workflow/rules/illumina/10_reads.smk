@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — illumina front end, read preparation: PhiX removal and trimming
+# FunFlux v2.1.0 — illumina front end, read preparation: PhiX removal and trimming
 # (rules/illumina/10_reads.smk).
 #
 # This mode starts from Illumina paired-end reads. Before anything is assembled, two

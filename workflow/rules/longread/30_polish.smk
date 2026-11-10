@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — longread front end, step 3: polishing and the finished assembly
+# FunFlux v2.1.0 — longread front end, step 3: polishing and the finished assembly
 # (rules/longread/30_polish.smk).
 #
 # Two rules close the assembly chain of the longread mode:

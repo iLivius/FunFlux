@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — mitochondrion screen (rules/shared/15_mitochondria.smk): find the
+# FunFlux v2.1.0 — mitochondrion screen (rules/shared/15_mitochondria.smk): find the
 # mitochondrial genome among the contigs and set it apart from the nuclear genome.
 #
 # Why. A fungal cell carries two genomes: the nuclear genome (the chromosomes, tens of

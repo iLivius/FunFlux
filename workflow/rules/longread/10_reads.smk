@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — longread front end, step 1: read filtering and read QC
+# FunFlux v2.1.0 — longread front end, step 1: read filtering and read QC
 # (rules/longread/10_reads.smk).
 #
 # This mode assembles a genome from long reads alone: Oxford Nanopore (ONT) or PacBio

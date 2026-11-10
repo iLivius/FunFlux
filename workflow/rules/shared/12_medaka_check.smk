@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — Medaka model check (rules/shared/12_medaka_check.smk): make sure the
+# FunFlux v2.1.0 — Medaka model check (rules/shared/12_medaka_check.smk): make sure the
 # Medaka model exists, or work one out from the reads, BEFORE the assembler starts.
 #
 # Why. Medaka polishes an Oxford Nanopore (ONT) assembly with the reads it was built

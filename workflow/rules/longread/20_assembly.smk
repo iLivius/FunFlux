@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — longread front end, step 2: the assembler
+# FunFlux v2.1.0 — longread front end, step 2: the assembler
 # (rules/longread/20_assembly.smk).
 #
 # Two rules. long_read_assembly builds the draft genome from the filtered long reads. It

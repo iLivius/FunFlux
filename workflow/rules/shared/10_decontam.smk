@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — contamination screen of the draft assembly (rules/shared/10_decontam.smk)
+# FunFlux v2.1.0 — contamination screen of the draft assembly (rules/shared/10_decontam.smk)
 #
 # What it does: every contig of the draft assembly is searched with BLAST against NCBI nt
 # (the core_nt database by default) to learn its taxonomy; BlobTools joins those hits with a

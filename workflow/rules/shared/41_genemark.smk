@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — GeneMark-ES licence check (rules/shared/41_genemark.smk)
+# FunFlux v2.1.0 — GeneMark-ES licence check (rules/shared/41_genemark.smk)
 #
 # GeneMark-ES is an optional gene finder that funannotate can use during gene prediction. It is
 # licensed per user: the licence is a key file, ~/.gm_key, that EXPIRES (GeneMark's download

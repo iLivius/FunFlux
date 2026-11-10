@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — hybrid front end, step 5: the long-read assembler
+# FunFlux v2.1.0 — hybrid front end, step 5: the long-read assembler
 # (rules/hybrid/40_long_assembly.smk).
 #
 # Identical to rules/longread/20_assembly.smk: keep in sync. Everything below this header

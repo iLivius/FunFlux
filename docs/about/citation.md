@@ -65,7 +65,7 @@ If a v1 workflow produced your results, cite the record of the version you ran:
 ## Tools and databases
 
 Cite the tools and databases your run used, as well as FunFlux. Which rows apply depends on the
-mode, the read type and the settings of your run. The versions are those FunFlux 2.0.0 installs
+mode, the read type and the settings of your run. The versions are those FunFlux 2.1.0 installs
 or, for the tools you install yourself, those it was tested with. The numbers in the last column
 point to the list under [References](#references).
 

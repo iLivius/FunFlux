@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — contigs front end: make a genome you already have usable
+# FunFlux v2.1.0 — contigs front end: make a genome you already have usable
 # (rules/contigs/20_assembly.smk).
 #
 # This mode annotates genomes that are ALREADY assembled: the user hands over FASTA

@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — Tiberius, a gene finder beside those of funannotate (rules/shared/42_tiberius.smk)
+# FunFlux v2.1.0 — Tiberius, a gene finder beside those of funannotate (rules/shared/42_tiberius.smk)
 #
 # Tiberius finds the protein-coding genes of a genome with a deep neural network joined to a
 # hidden Markov model (the kind of model AUGUSTUS and GeneMark use to describe the order of

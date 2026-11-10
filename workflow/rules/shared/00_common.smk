@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — shared foundation module (rules/shared/00_common.smk)
+# FunFlux v2.1.0 — shared foundation module (rules/shared/00_common.smk)
 #
 # workflow/Snakefile includes this file FIRST, before any rule file. It reads the
 # configuration (the YAML file given with --configfile), checks it, finds the

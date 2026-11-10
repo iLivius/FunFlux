@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — Stage 20: assembly quality control (rules/shared/20_qc.smk)
+# FunFlux v2.1.0 — Stage 20: assembly quality control (rules/shared/20_qc.smk)
 #
 # Two checks of the finished NUCLEAR genome (FINAL_CONTIGS, contigs_final.fasta), one tool
 # each:

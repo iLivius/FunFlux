@@ -18,7 +18,7 @@ sequence, to be weighed with curation and experimental evidence.
 
 An optional screen looks for the point mutations that the FungAMR database lists with evidence
 for or against resistance to antifungal drugs and fungicides. The configuration key `mode` selects
-the input mode. This site documents version **v2.0.0**.
+the input mode. This site documents version **v2.1.0**.
 
 FunFlux belongs to the [BioFlux](https://github.com/stars/iLivius/lists/bioflux) family of
 pipelines.

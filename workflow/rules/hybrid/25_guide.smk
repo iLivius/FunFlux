@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — hybrid front end, step 3: the guide screen and the read selection
+# FunFlux v2.1.0 — hybrid front end, step 3: the guide screen and the read selection
 # (rules/hybrid/25_guide.smk).
 #
 # What this file is for. In hybrid mode the Illumina reads are not assembled into the

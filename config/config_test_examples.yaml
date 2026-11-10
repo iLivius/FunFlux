@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════
-# FunFlux v2.0.0 — dry-run test configs (one per mode, plus the mixed cases)
+# FunFlux v2.1.0 — dry-run test configs (one per mode, plus the mixed cases)
 # ═══════════════════════════════════════════════════════════════════════
 #
 # Five independent, MINIMAL configs for checking that FunFlux reads a configuration the way

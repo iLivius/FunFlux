@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — hybrid front end, step 6: polishing and the finished assembly
+# FunFlux v2.1.0 — hybrid front end, step 6: polishing and the finished assembly
 # (rules/hybrid/50_polish.smk).
 #
 # Three rules close the assembly chain of the hybrid mode:

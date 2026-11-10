@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — Stage 50: antifungal resistance mutations, with ChroQueTas (optional)
+# FunFlux v2.1.0 — Stage 50: antifungal resistance mutations, with ChroQueTas (optional)
 # (rules/shared/50_amr.smk)
 #
 # A fungus becomes resistant to an antifungal drug or a fungicide mostly through a point

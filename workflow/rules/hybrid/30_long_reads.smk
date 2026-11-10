@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — hybrid front end, step 4: long-read filtering, guided by the Illumina
+# FunFlux v2.1.0 — hybrid front end, step 4: long-read filtering, guided by the Illumina
 # pairs when parameters.hybrid.short_read_guidance is on, and long-read QC
 # (rules/hybrid/30_long_reads.smk).
 #

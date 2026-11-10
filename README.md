@@ -7,7 +7,7 @@ __  /_   _  / / /_  __ \_  /_   __  /_  / / /_  |/_/
 _  __/   / /_/ /_  / / /  __/   _  / / /_/ /__>  <
 /_/      \__,_/ /_/ /_//_/      /_/  \__,_/ /_/|_|
 
-FunFlux v2.0.0
+FunFlux v2.1.0
 ```
 
 **Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads,

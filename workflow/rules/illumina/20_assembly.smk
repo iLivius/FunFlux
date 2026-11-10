@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — illumina front end, assembly: SPAdes, the contig filter and the
+# FunFlux v2.1.0 — illumina front end, assembly: SPAdes, the contig filter and the
 # hand-off to the mitochondrion split (rules/illumina/20_assembly.smk).
 #
 # The trimmed, PhiX-free read pairs of rules/illumina/10_reads.smk are assembled into

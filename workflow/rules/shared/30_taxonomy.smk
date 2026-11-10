@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — Stage 30: the fungal ITS barcode, cut out of the genome and classified
+# FunFlux v2.1.0 — Stage 30: the fungal ITS barcode, cut out of the genome and classified
 # (rules/shared/30_taxonomy.smk)
 #
 # The ITS (internal transcribed spacer) is the standard DNA barcode of fungi. It sits in

@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — Stage 25: the contig summary, one table that says what every contig is
+# FunFlux v2.1.0 — Stage 25: the contig summary, one table that says what every contig is
 # (rules/shared/25_contig_summary.smk)
 #
 # A finished assembly is a list of contigs, and the list alone does not say what each

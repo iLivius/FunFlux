@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — hybrid front end, step 2: the Illumina GUIDE assembly, SPAdes and the
+# FunFlux v2.1.0 — hybrid front end, step 2: the Illumina GUIDE assembly, SPAdes and the
 # contig filter (rules/hybrid/20_assembly.smk).
 #
 # Identical to rules/illumina/20_assembly.smk: keep in sync. The two rules below,

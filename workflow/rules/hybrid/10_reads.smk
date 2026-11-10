@@ -1,4 +1,4 @@
-# FunFlux v2.0.0 — hybrid front end, step 1: Illumina read preparation, PhiX removal and
+# FunFlux v2.1.0 — hybrid front end, step 1: Illumina read preparation, PhiX removal and
 # trimming (rules/hybrid/10_reads.smk).
 #
 # Identical to rules/illumina/10_reads.smk: keep in sync. Everything after this header,
