@@ -346,6 +346,45 @@ def job_counts(output):
     return counts
 
 
+def job_resources(output):
+    # Read what every planned job asks a cluster for into
+    # {rule name: [{resource name: value as text}, one dict per job of that rule]}.
+    # Takes everything one dry run printed (from run_snakemake); a rule with no job in the
+    # plan is not in the result. Called by check() for the cases that pass
+    # expect_resources.
+    #
+    # A dry run prints each job as a block that starts with "rule <name>:" (or
+    # "localrule <name>:" for a job that runs on the launch machine) and holds one
+    # resources line. Snakemake 9.14.6 writes the SPAdes job of the illumina example as
+    #   rule illumina_assembly:
+    #       ...
+    #       resources: tmpdir=<TBD>, mem_gb=32, mem_mb=32768, mem_mib=31250, runtime=2880
+    # and Snakemake 9.27.1 writes the same job as
+    #       resources: tmpdir=/tmp, mem_gb=32, runtime=2880, mem_mb=32768, mem=32.77 GB, mem_mib=31250
+    # that is, with the real temporary folder instead of <TBD>, in another order and with
+    # one more entry (mem). Reading the line into names and values lets a case compare
+    # the values FunFlux sets (mem_gb, mem_mb, java_mem, runtime) in any Snakemake version.
+    jobs = {}
+    current_rule = None
+    for line in output.splitlines():
+        stripped = line.strip()
+        # The first line of a job block names its rule.
+        start = re.match(r"^(?:local)?rule (\w+):$", stripped)
+        if start:
+            current_rule = start.group(1)
+            continue
+        # The resources line of that job: entries separated by ", ", each one name=value.
+        if current_rule and stripped.startswith("resources: "):
+            resources = {}
+            for entry in stripped[len("resources: "):].split(", "):
+                name, _, value = entry.partition("=")
+                resources[name] = value
+            jobs.setdefault(current_rule, []).append(resources)
+            # This job is read; the next resources line belongs to the next job block.
+            current_rule = None
+    return jobs
+
+
 def main():
     # Run every test case and report. Makes the scratch folder and fills it (build_stubs),
     # reads the example blocks (extract_blocks), then runs the cases below one by one;
@@ -373,7 +412,8 @@ def main():
     # The three helpers below are defined inside main() so that they can use base, blocks,
     # failures and args directly.
 
-    def check(label, config, expect_ok, expect_texts, forbid_texts=(), home=None, expect_jobs=None, target=None):
+    def check(label, config, expect_ok, expect_texts, forbid_texts=(), home=None, expect_jobs=None, target=None,
+              expect_resources=None):
         # Run one test case and print PASS or FAIL for it.
         #   label        : the case name printed on the PASS/FAIL line
         #   config       : the configuration as a dict (an example block, or a variant() of
@@ -388,6 +428,13 @@ def main():
         #                  A rule that is not in the table counts as 0 jobs, so
         #                  {"long_read_consensus": 0} says "this rule must not be planned".
         #   target       : handed to run_snakemake (only the download_all cases use it)
+        #   expect_resources : optional {rule name: {resource name: value}}, compared with
+        #                  the resources line of every job of that rule (job_resources).
+        #                  The value None says "this job must not set this resource" (a
+        #                  light step asks the scheduler for nothing). Only the named
+        #                  resources are compared, so the entries Snakemake adds by itself
+        #                  (tmpdir, and mem and mem_mib, worked out from mem_mb) never
+        #                  matter.
         # A failed case is added to `failures`.
         #
         # The texts are looked for in a copy of the output in which every run of spaces,
@@ -437,6 +484,24 @@ def main():
                         planned = counts.get(name, 0)
                         if planned != expected:
                             problems.append(f"{name}: {planned} job(s) planned, expected {expected}")
+            if expect_resources:
+                planned_resources = job_resources(output)
+                for rule_name, expected_resources in expect_resources.items():
+                    jobs_of_rule = planned_resources.get(rule_name, [])
+                    if not jobs_of_rule:
+                        problems.append(f"{rule_name}: no job planned, so its resources cannot be checked")
+                        continue
+                    for resources in jobs_of_rule:
+                        for name, expected in expected_resources.items():
+                            # The dry run prints text, so a number in the case is compared
+                            # as text; get() gives None when the job does not set it.
+                            if expected is not None:
+                                expected = str(expected)
+                            found = resources.get(name)
+                            if found != expected:
+                                found_text = "not set" if found is None else found
+                                expected_text = "not set" if expected is None else expected
+                                problems.append(f"{rule_name}: {name} is {found_text}, expected {expected_text}")
 
         # Print the verdict. A FAIL also shows the last 8 lines Snakemake printed, which
         # usually hold the [FunFlux] message or the error.
@@ -1439,30 +1504,37 @@ def main():
     # Under a cluster executor Snakemake hands each job's mem_mb (MB) and runtime (minutes)
     # resources to the scheduler. The heavy steps ask for resources.ram_gb (32 GB, so 32768
     # MB, in the illumina example) and resources.runtime_hours (48 h by default, so 2880
-    # minutes); SPAdes keeps its own mem_gb, which its -m option reads. Qualimap asks for its
-    # Java heap plus 4 GB, but never more than ram_gb: (32 + 4) x 1024 = 36864 MB would be
-    # more than the 32 GB set, so it asks for 32768 MB. map_phix reads every read but needs
-    # little memory, so it asks only for the time; fastp (rule trim_adapters) is light and
-    # asks for nothing. A dry run prints a job's resources on the line before "Shell
-    # command", which is what the texts below match.
-    check("heavy steps ask for ram_gb and 48 hours by default", blocks["mode = illumina"], True,
-          ["mem_gb=32, mem_mb=32768,", "runtime=2880 Shell command: OMP_NUM_THREADS=",
-           "java_mem=32, mem_mb=32768,",
-           "resources: tmpdir=<TBD>, runtime=2880 Shell command: bowtie2",
-           "resources: tmpdir=<TBD> Shell command: fastp", done])
+    # minutes); SPAdes (rule illumina_assembly) keeps its own mem_gb, which its -m option
+    # reads. Qualimap (rule map_evaluation) asks for its Java heap plus 4 GB, but never more
+    # than ram_gb: (32 + 4) x 1024 = 36864 MB would be more than the 32 GB set, so it asks
+    # for 32768 MB. map_phix reads every read but needs little memory, so it asks only for
+    # the time; fastp (rule trim_adapters) is light and asks for nothing. The cases compare
+    # the values in each job's resources line (expect_resources), so they hold whatever
+    # order and extra entries a Snakemake version prints there.
+    check("heavy steps ask for ram_gb and 48 hours by default", blocks["mode = illumina"], True, [done],
+          expect_resources={
+              "illumina_assembly": {"mem_gb": 32, "mem_mb": 32768, "runtime": 2880},
+              "map_evaluation": {"java_mem": 32, "mem_mb": 32768, "runtime": 2880},
+              "map_phix": {"runtime": 2880, "mem_mb": None},
+              "trim_adapters": {"mem_mb": None, "runtime": None},
+          })
     # With ram_gb 100 the Qualimap heap stays at its cap of 64 GB, and the job asks for the
     # heap plus 4 GB, (64 + 4) x 1024 = 69632 MB, which is less than ram_gb, while the heavy
-    # steps ask for 100 x 1024 = 102400 MB.
+    # steps ask for 100 x 1024 = 102400 MB. No job may still ask for 36864 or 32768 MB.
     check("Qualimap asks for its heap plus 4 GB when ram_gb is larger", variant("mode = illumina",
-          [("resources.ram_gb", 100)]), True,
-          ["java_mem=64, mem_mb=69632,", "mem_gb=100, mem_mb=102400,", done],
-          ["mem_mb=36864", "mem_mb=32768"])
-    # A good value: 12 hours become 720 minutes, on every long step.
+          [("resources.ram_gb", 100)]), True, [done], ["mem_mb=36864", "mem_mb=32768"],
+          expect_resources={
+              "map_evaluation": {"java_mem": 64, "mem_mb": 69632},
+              "illumina_assembly": {"mem_gb": 100, "mem_mb": 102400},
+          })
+    # A good value: 12 hours become 720 minutes, on every long step; no job may still ask
+    # for 2880 minutes.
     check("runtime_hours 12 gives the long steps 720 minutes", variant("mode = illumina",
-          [("resources.runtime_hours", 12)]), True,
-          ["runtime=720 Shell command: OMP_NUM_THREADS=", "resources: tmpdir=<TBD>, runtime=720 Shell command: bowtie2",
-           done],
-          ["runtime=2880"])
+          [("resources.runtime_hours", 12)]), True, [done], ["runtime=2880"],
+          expect_resources={
+              "illumina_assembly": {"runtime": 720},
+              "map_phix": {"runtime": 720},
+          })
 
     print("=== accepted, with a NOTE ===")
     # Unusual settings that must be accepted. Some must print a NOTE; the others check
