@@ -176,8 +176,9 @@ rule filter_long_reads:
 
 
 # ───────────── raw_long_read_qc — NanoPlot on the reads as delivered ─────────────
-# Takes in:    the sample's RAW long-read FASTQ (raw_long_fastq), the same file Filtlong
-#              starts from.
+# Takes in:    the sample's RAW long-read FASTQ (raw_long_fastq), as delivered. Filtlong
+#              starts from the same file for a PacBio HiFi sample, or with ont_adapter:
+#              off; for an ONT sample it starts from the reads fastplong trimmed.
 # Does:        NanoPlot reads every record and draws the read-length and read-quality
 #              distributions (histograms, length against quality, --loglength adds the
 #              log-scaled length plots), and writes a NanoStats table of the numbers:

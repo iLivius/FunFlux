@@ -4,8 +4,10 @@
 # This mode assembles a genome from long reads alone: Oxford Nanopore (ONT) or PacBio
 # HiFi, decided per sample by the file name ({sample}_ont.<ext> or {sample}_pacbio.<ext>
 # in input.longread_dir; 00_common.smk, section 12). Both technologies take the same
-# three steps here, with the same settings. The technology only starts to matter at the
-# assembler (rules/longread/20_assembly.smk) and in polishing (rules/longread/30_polish.smk).
+# three steps here, with the same settings. Before them, ONT reads alone are trimmed of the
+# sequencing adapter (rules/shared/05_ont_adapters.smk), so Filtlong reads the trimmed file
+# for an ONT sample. After that, the technology matters at the assembler
+# (rules/longread/20_assembly.smk) and in polishing (rules/longread/30_polish.smk).
 # The Snakefile includes this file in longread mode only, right after 00_common.smk.
 #
 # What happens to a sample's reads. {sample} is a wildcard: a placeholder that Snakemake
@@ -30,10 +32,11 @@
 # (the assembler needs reads that span repeats), and the worst reads add errors. Filtlong
 # drops the reads under a minimum length, ranks the rest by quality and length, and keeps
 # the best share of the bases. The two NanoPlot reports, one before and one after, show
-# what the filter did: the read-length and quality distributions as delivered and as
-# handed to the assembler. The settings live in parameters.longread.filtlong
-# (00_common.smk, section 11) and are sized for ONT reads; for PacBio HiFi, which is
-# already accurate, they are provisional (docs/modes/longread.md).
+# what adapter trimming (ONT samples) and the filter did together: the read-length and
+# quality distributions as delivered and as handed to the assembler. The settings live
+# in parameters.longread.filtlong (00_common.smk, section 11) and are sized for ONT
+# reads; for PacBio HiFi, which is already accurate, they are provisional
+# (docs/modes/longread.md).
 #
 # The hybrid mode reuses this step: rules/hybrid/30_long_reads.smk holds a copy of the
 # two NanoPlot rules and a Filtlong rule of its own, in which the Illumina reads of the
@@ -124,8 +127,9 @@ rule filter_long_reads:
 
 
 # ───────────── raw_long_read_qc — NanoPlot on the reads as delivered ─────────────
-# Takes in:    the sample's RAW long-read FASTQ (raw_long_fastq), the same file Filtlong
-#              starts from.
+# Takes in:    the sample's RAW long-read FASTQ (raw_long_fastq), as delivered. Filtlong
+#              starts from the same file for a PacBio HiFi sample, or with ont_adapter:
+#              off; for an ONT sample it starts from the reads fastplong trimmed.
 # Does:        NanoPlot reads every record and draws the read-length and read-quality
 #              distributions (histograms, length against quality, --loglength adds the
 #              log-scaled length plots), and writes a NanoStats table of the numbers:
