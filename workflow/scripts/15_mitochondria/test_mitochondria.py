@@ -571,6 +571,60 @@ def test_read_blast_picks_the_best_direct_hit_and_keeps_both_lengths(tmp_path):
     assert weak["direct_hits"] == 1
 
 
+def test_is_direct_mito_title_accepts_the_organelle_genome_wordings():
+    # Every wording that says "this sequence IS mitochondrial DNA", in any case. The
+    # last one is how NCBI titles the mitochondrial sequence of a genome assembly.
+    titles = [
+        "Fusarium graminearum mitochondrion, complete genome",
+        "Example fungus MITOCHONDRION, COMPLETE SEQUENCE",
+        "Example fungus mitochondrion, partial genome",
+        "TPA_asm: Botrytis pseudocinerea mitochondrion, partial sequence",
+        "Homo sapiens mitochondrial DNA, complete genome",
+        "Neurospora crassa mitochondrial genome",
+        "Cordyceps fumosorosea genome assembly, organelle: mitochondrion",
+    ]
+    for title in titles:
+        assert mito.is_direct_mito_title(title), title
+
+
+def test_is_direct_mito_title_rejects_nuclear_genes_named_after_mitochondrial_dna():
+    # Records of nuclear genes, transcripts and proteins, some of them with
+    # "mitochondrial DNA" or "mitochondrial genome" in their names. The first three
+    # are NCBI titles that BLAST returned for fungal contigs.
+    titles = [
+        "Botrytis fragariae putative mitochondrial dna-directed rna polymerase protein (Bfra_005969), partial mRNA",
+        "Cordyceps militaris CM01 mitochondrial DNA-directed RNA polymerase, putative (CCM_08799), partial mRNA",
+        "Isaria fumosorosea ARSEF 2679 Increased loss of mitochondrial DNA protein 1 (ISF_05954), partial mRNA",
+        "Example fungus mitochondrial genome maintenance protein MGM101",
+        "Fusarium graminearum mitochondrial ribosomal protein L5 (MRPL5) mRNA",
+        NUCLEAR_TITLE,
+    ]
+    for title in titles:
+        assert not mito.is_direct_mito_title(title), title
+
+
+def test_read_blast_counts_assembly_mitochondria_and_ignores_nuclear_gene_records(tmp_path):
+    blast_path = write_blast(tmp_path / "blastout", [
+        # contig_A: its best hit uses the genome-assembly wording; the second hit, a
+        # nuclear gene named after mitochondrial DNA, covers more but must not count.
+        blast_line("contig_A", "Cordyceps fumosorosea genome assembly, organelle: mitochondrion", 50,
+                   qlen=49194, slen=27605),
+        blast_line("contig_A", "Cordyceps militaris CM01 mitochondrial DNA-directed RNA polymerase, "
+                   "putative (CCM_08799), partial mRNA", 90, qlen=49194, slen=4000),
+        # contig_B only matches such a nuclear gene: no direct hit at all.
+        blast_line("contig_B", "Isaria fumosorosea ARSEF 2679 Increased loss of mitochondrial DNA "
+                   "protein 1 (ISF_05954), partial mRNA", 60, qlen=3000, slen=2500),
+    ])
+    evidence = mito.read_blast(blast_path)
+
+    assert sorted(evidence) == ["contig_A"]
+    best = evidence["contig_A"]
+    assert best["best_qcov"] == 50.0
+    assert best["best_title"] == "Cordyceps fumosorosea genome assembly, organelle: mitochondrion"
+    assert best["best_slen"] == 27605
+    assert best["direct_hits"] == 1
+
+
 def test_read_blast_keeps_the_first_hit_when_two_are_equally_good(tmp_path):
     blast_path = write_blast(tmp_path / "blastout", [
         blast_line("contig_A", "First mitochondrion, complete sequence", 100, qlen=29980, slen=30000),

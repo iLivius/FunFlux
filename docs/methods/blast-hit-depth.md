@@ -166,22 +166,18 @@ settings.
   FunFlux 2.0.0 had given four of them the strain's genus.
 - **The mitochondrion screen** confirmed the same mitochondrial contigs, with the same coverage,
   under both settings. Both strains' own mitochondrial genomes are in core_nt, and their
-  mitochondrial contigs match them best. Three contigs of 32 kb to 2 Mb were
-  `mitochondrial_candidate` with 50 subjects and not with 10, because the subject behind the call,
-  which covered 1 % of the contig or less, was no longer among the 10 kept. One of these subjects
-  was a mitochondrial genome; the other two were nuclear genes whose names contain "mitochondrial
-  DNA", which the screen counts as direct hits. A candidate stays in the nuclear genome, so no
-  genome file changed; only those three rows of `mitochondrial_screen.tsv` did.
+  mitochondrial contigs match them best. One contig of 32 kb was a `mitochondrial_candidate` with
+  50 subjects and not with 10: its direct hits, to mitochondrial genomes that each covered 1 % of
+  it or less, were no longer among the 10 subjects. A candidate stays in the nuclear genome, so no
+  genome file changed; only that row of `mitochondrial_screen.tsv` did.
 - **Without the strain's own species in core_nt**, as for a new species, the three mitochondrial
   contigs were searched again with that species left out. With it, their best direct hit covered
-  99 to 100 % of them. Without it, all three were still confirmed with either setting, but 10
-  subjects left less margin. The best direct hit of the GXU-8616 mitochondrion covered 46 % with
-  50 subjects and 35 % with 10 in the HiFi draft, where the contig holds two copies of the
-  mitochondrial genome end to end, and 70 and 57 % in the MGISEQ draft. 35 % is the threshold when
-  BLAST is the only evidence; in `longread` mode the HiFi contig would also have needed its circle,
-  which hifiasm recorded. The 10-subject search missed the mitochondrial genomes that covered most,
-  although they scored higher than the ones it kept, because BLAST applies the limit during the
-  search. The B05.10 mitochondrion reached 89 % with either setting. If no mitochondrion is
+  99 to 100 % of them. Without it, all three were still confirmed, with the same best coverage
+  under both settings: 89 % for the B05.10 mitochondrion, and 50 % (HiFi draft, where the contig
+  holds two copies of the mitochondrial genome end to end) and 72 % (MGISEQ draft) for GXU-8616.
+  For GXU-8616 that best hit was a record titled "genome assembly, organelle: mitochondrion". The
+  10-subject search did miss some other mitochondrial genomes that scored higher than ones it kept,
+  because BLAST applies the limit during the search, but not the best one. If no mitochondrion is
   confirmed, see [Mitochondria](../analysis/mitochondria.md#when-no-mitochondrion-is-confirmed).
 - **Run time** was the same with either setting: 44 to 63 minutes per draft on 24 threads, with
   both searches running at the same time on a shared server. The BLAST table is three to five

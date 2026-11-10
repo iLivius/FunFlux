@@ -76,7 +76,7 @@ A contig is never called mitochondrial from circularity or read depth alone.
 #                         Every line of that reference shows the same number.
 #                         100 means the whole contig matches that reference.
 #   direct organelle hit  a hit whose reference title says the reference IS a
-#                         mitochondrial genome (see DIRECT_MITO_TITLE).
+#                         mitochondrial genome (see is_direct_mito_title()).
 #
 # This script uses only the Python standard library. Every rule that runs it
 # does so in workflow/envs/python.yaml, a conda environment that holds a pinned
@@ -93,28 +93,55 @@ import sys                           # error messages and exit status
 from collections import OrderedDict  # FASTA records that keep the order of the input file
 
 
-# ── Fixed settings: the organelle title pattern, the modes, two cut-offs ─────
+# ── Fixed settings: the organelle title check, the modes, two cut-offs ───────
 
 # Recognise BLAST reference titles that describe an organelle genome itself.
-# This is a regular expression (a text pattern), searched for anywhere in the
-# title, upper or lower case alike. It accepts two wordings: "mitochondrion,"
-# followed by "complete" or "partial" and then "genome" or "sequence"; or
-# "mitochondrial DNA" / "mitochondrial genome".
 # The title is the last BLAST column (stitle), free text typed by whoever
-# deposited the sequence in NCBI. Examples that match:
-#   "Example fungus mitochondrion, complete sequence"
-#   "Fusarium graminearum mitochondrion, complete genome"
-#   "Neurospora crassa mitochondrial genome"
+# deposited the sequence in NCBI. The decision is made in is_direct_mito_title()
+# below, with two regular expressions (text patterns), each searched for anywhere
+# in the title, upper or lower case alike. The match is on the wording of the
+# title, not on the species.
+#
+# MITO_GENOME_WORDING: the wordings that say "this sequence IS mitochondrial DNA":
+#   - "mitochondrion," followed by "complete" or "partial" and then "genome" or
+#     "sequence": "Fusarium graminearum mitochondrion, complete genome";
+#   - "mitochondrial DNA" or "mitochondrial genome": "Homo sapiens mitochondrial
+#     DNA, complete genome". Not when a hyphen follows, as in "mitochondrial
+#     DNA-directed RNA polymerase", the name of a nuclear gene;
+#   - "organelle: mitochondrion", the wording NCBI uses for the mitochondrial
+#     sequence of a genome assembly: "Cordyceps fumosorosea genome assembly,
+#     organelle: mitochondrion".
 # Do not match the much broader word "mitochondrial": nuclear-encoded proteins
 # routinely use it in their descriptions (for example "mitochondrial ribosomal
 # protein L5 mRNA"), and a contig that matches such a gene is nuclear and must
-# stay in the nuclear genome. The match is on the wording of the title, not on
-# the species.
-DIRECT_MITO_TITLE = re.compile(
+# stay in the nuclear genome.
+MITO_GENOME_WORDING = re.compile(
     r"\bmitochondrion,\s*(?:complete|partial)\s+(?:genome|sequence)\b"
-    r"|\bmitochondrial\s+(?:DNA|genome)\b",
+    r"|\bmitochondrial\s+(?:DNA|genome)\b(?!-)"
+    r"|\borganelle:\s*mitochondrion\b",
     re.IGNORECASE,
 )
+
+# NUCLEAR_GENE_RECORD: the words "mRNA" and "protein", which mark the record of a
+# nuclear gene, its transcript or its protein. Some such genes carry one of the
+# wordings above in their names, for example "Increased loss of mitochondrial DNA
+# protein 1 (ISF_05954), partial mRNA" or "mitochondrial genome maintenance protein";
+# a title with either word is never an organelle genome. The organelle-encoded
+# genes themselves (cox1, cytb and so on) are deposited as genomic DNA, with
+# "gene" and "cds" in the title, not "mRNA".
+NUCLEAR_GENE_RECORD = re.compile(r"\bmRNA\b|\bprotein\b", re.IGNORECASE)
+
+
+def is_direct_mito_title(title):
+    """Say whether a BLAST reference title describes a mitochondrial genome.
+
+    Takes in:  one title (the stitle column of the BLAST table).
+    Does:      True when the title has one of the MITO_GENOME_WORDING wordings and
+               neither word of NUCLEAR_GENE_RECORD.
+    Used by:   read_blast(), which counts only the hits whose title passes this test.
+    """
+    return bool(MITO_GENOME_WORDING.search(title)) and not NUCLEAR_GENE_RECORD.search(title)
+
 
 # The three values allowed for --mode (set by parameters.mitochondria.mode in
 # the workflow configuration):
@@ -281,7 +308,7 @@ def read_blast(path):
     sequence; the columns are counted from one.) Only columns 1, 7, 8, 9 and 15
     are read.
 
-    Only direct organelle hits count (see DIRECT_MITO_TITLE). For each contig
+    Only direct organelle hits count (see is_direct_mito_title()). For each contig
     the best one is kept: the hit with the highest qcovs; on a tie the earlier
     line wins. This is the cautious choice: taking the single best reference,
     rather than adding up several, can only underestimate how much of the
@@ -313,7 +340,7 @@ def read_blast(path):
             contig = row[0].strip()
             title = row[14].strip()
             # Only hits whose reference IS an organelle genome count here.
-            if not contig or not DIRECT_MITO_TITLE.search(title):
+            if not contig or not is_direct_mito_title(title):
                 continue
             qcov = as_float(row[8], "BLAST qcovs")
             # CHANGED in FunFlux v2: also read the contig length (qlen, column 7)

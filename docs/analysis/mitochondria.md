@@ -74,12 +74,14 @@ must contain one of these phrases, in upper or lower case:
 - `mitochondrion, complete sequence`
 - `mitochondrion, partial genome`
 - `mitochondrion, partial sequence`
-- `mitochondrial DNA`
-- `mitochondrial genome`
+- `mitochondrial DNA` or `mitochondrial genome`, but not followed by a hyphen
+- `organelle: mitochondrion`, NCBI's wording for the mitochondrial sequence of a genome assembly
 
-A nuclear gene described as, for example, `mitochondrial ribosomal protein L5 mRNA` does not count.
-One whose title contains a listed wording, such as `mitochondrial DNA-directed RNA polymerase`,
-does.
+A title with the word `mRNA` or `protein` never counts, because it describes a nuclear gene, its
+transcript or its protein, even when the gene's name contains one of the phrases. For example,
+`mitochondrial DNA-directed RNA polymerase, putative, partial mRNA` and `Increased loss of
+mitochondrial DNA protein 1` are nuclear genes and do not count, nor does `mitochondrial ribosomal
+protein L5 mRNA`.
 
 For each contig, the mitochondrion screen takes the direct hit with the highest `qcovs`, the
 percentage of the contig covered by all kept alignments to that subject.
