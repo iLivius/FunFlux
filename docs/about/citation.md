@@ -76,7 +76,8 @@ point to the list under [References](#references).
 | | fastp (1.0.1) | 18, 19, 20 |
 | | SPAdes (4.2.0) | 60 |
 | | Qualimap (2.3) | 56 |
-| Reads and assembly, `longread` | Filtlong (0.3.1) | 77 |
+| Reads and assembly, `longread` | fastplong (0.7.1), ONT adapter trimming; its author asks users to cite fastp until fastplong has a paper of its own | 18 |
+| | Filtlong (0.3.1) | 77 |
 | | NanoPlot (1.46.2) | 25 |
 | | hifiasm (0.25.0), the default assembler | 21, 22, 23 |
 | | Flye (2.9.6), the alternative assembler | 38 |
@@ -87,6 +88,7 @@ point to the list under [References](#references).
 | Contig self-mapping, `contigs` with the screen | minimap2 (2.30) and SAMtools (1.21) | 45, 46, 24 |
 | Contamination screen | BLAST+ (2.16.0), megablast against NCBI core_nt | 14, 55, 80 |
 | | BlobTools (1.1.1) | 40 |
+| Adapter screen | BLAST+ (2.16.0), blastn-short, against the adapters and barcodes of the Oxford Nanopore Chemistry Technical Document (CHTD_500_v1_revAV_24July2026), the PacBio and MGI records of NCBI UniVec (the file of 21 August 2024) and the Illumina records of UniVec build 10.1 | 14 |
 | Assembly QC | QUAST (5.3.0) | 53 |
 | | BUSCO (6.0.0) with the odb12 lineage datasets, finding the genes with miniprot (0.18) | 72, 47 |
 | Contig summary | tidk (0.3.0): `tidk explore` lists the tandem repeat units of the contig ends, `tidk ends` calls the arrays of every candidate unit | 12 |

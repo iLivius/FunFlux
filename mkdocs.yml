@@ -138,6 +138,7 @@ nav:
   - Method references:
       - BLAST hit depth: methods/blast-hit-depth.md
       - ITS on long-read contigs: methods/its-long-read-contigs.md
+      - Adapter trimming and the adapter screen: methods/adapter-trimming.md
       - Filtlong guidance in hybrid mode: methods/filtlong-guidance.md
       - The Medaka model: methods/medaka-model.md
       - Run-to-run differences: methods/run-to-run-differences.md

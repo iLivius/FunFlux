@@ -22,6 +22,7 @@
 #   QUAST (assembly QC)           x          x       x (2)       x      rule genome_assembly_evaluation
 #   BUSCO (completeness)          x          x         x         x      rule completeness
 #   Contig summary (table)        x          x         x         x      rule contig_summary
+#   Adapters (table)              x          x         x         x      rule screen_adapters
 #   AMR mutations (table)        (3)        (3)       (3)       (3)     rule amr_chroquetas
 #                                                      (2) = the Illumina "guide" assembly gets its own
 #                                                            QUAST label and its own Qualimap report
@@ -30,7 +31,9 @@
 # The contig summary (shared/25_contig_summary.smk) is not the output of a tool MultiQC knows:
 # it is a table FunFlux writes itself, behind a few header lines that tell MultiQC what it is
 # ("custom content", in MultiQC's words), one row per contig of the draft assembly, named
-# "<sample>: <contig>". MultiQC shows the tables of all samples as one table. The AMR table
+# "<sample>: <contig>". MultiQC shows the tables of all samples as one table. The Adapters table
+# (shared/25_contig_summary.smk) is custom content too, one row per sample, named after the
+# sample: the ONT adapter trimming of the reads and the adapter found on the contigs. The AMR table
 # (shared/50_amr.smk) is custom content in the same way: one row per target protein of the
 # species, named "<sample>: <target>", with the mutations found, a verdict on resistance, and
 # the drugs with evidence for and against it.
@@ -49,7 +52,7 @@
 #
 # Everything referenced here is defined once in 00_common.smk and never worked out again: OUT (the
 # output folder), DIR_REPORT, MULTIQC_REPORT, FASTP_JSON, NANOPLOT_RAW_DIR, NANOPLOT_FILTERED_DIR,
-# QUALIMAP_DIR, GUIDE_QUALIMAP_DIR, QUAST_DIR, BUSCO_DIR, CONTIG_SUMMARY_MQC, AMR_SUMMARY_MQC,
+# QUALIMAP_DIR, GUIDE_QUALIMAP_DIR, QUAST_DIR, BUSCO_DIR, CONTIG_SUMMARY_MQC, ADAPTER_SCREEN_MQC, AMR_SUMMARY_MQC,
 # AMR_ENABLED, SAMPLES, LOGS and the capability flags. A name that 00_common.smk does not have is
 # defined below, starting with an underscore.
 #
@@ -70,7 +73,8 @@ _MULTIQC_DATA = DIR_REPORT + "/multiqc_data"
 #              active mode, in the order the table above has them: the read QC (fastp's JSON
 #              report, NanoPlot's two folders), the mapping QC (the Qualimap folder, and in
 #              hybrid mode the guide's Qualimap folder too), then QUAST_DIR, BUSCO_DIR, the
-#              contig summary table and, when the AMR screen is on, the AMR table. MultiQC
+#              contig summary table, the Adapters table and, when the AMR screen is on, the AMR
+#              table. MultiQC
 #              finds the right files inside the folders. Each group is added only when the run
 #              makes it: asking for a file that no rule makes would stop the workflow.
 # Produces:    a list of absolute paths. It is used twice: as the input of rule multiqc, which
@@ -107,6 +111,13 @@ def multiqc_qc_inputs():
     # -d (see rule multiqc) prefixes only the sample names it takes from FILE names. So the
     # rename lines below need no entry for this table.
     paths += expand(CONTIG_SUMMARY_MQC, sample=SAMPLES)
+    # The Adapters table: one row per sample from the contig adapter screen (rule
+    # screen_adapters in shared/25_contig_summary.smk), with the read-level numbers of the ONT
+    # samples whose reads fastplong trimmed. Read the same way as the contig summary: the row
+    # names are the sample names, written by the script, and the rows of all samples merge
+    # into one table because their files share the table id. fastplong's own JSON report is not
+    # listed: MultiQC's fastp module would read it as a fastp run.
+    paths += expand(ADAPTER_SCREEN_MQC, sample=SAMPLES)
     if AMR_ENABLED:
         # The AMR table of every sample (rule amr_chroquetas in shared/50_amr.smk), in its copy
         # written for MultiQC. Read the same way as the contig summary just above: the script
@@ -288,9 +299,9 @@ else:
 #              mode's front end (fastp, NanoPlot), the Qualimap folder(s) of rule map_evaluation
 #              (and rule map_guide_evaluation in hybrid mode), the QUAST and BUSCO folders of
 #              rule genome_assembly_evaluation and rule completeness in shared/20_qc.smk, the
-#              contig summary table of rule contig_summary in shared/25_contig_summary.smk and,
-#              when the AMR screen is on, the AMR table of rule amr_chroquetas in
-#              shared/50_amr.smk.
+#              contig summary table of rule contig_summary and the Adapters table of rule
+#              screen_adapters in shared/25_contig_summary.smk and, when the AMR screen is on,
+#              the AMR table of rule amr_chroquetas in shared/50_amr.smk.
 # Does:        (1) writes MultiQC's configuration file: the names of the two outputs, two options
 #                  that keep the folder paths and the creation date out of the page header, the
 #                  option that stops MultiQC from shortening sample names on its own, and the

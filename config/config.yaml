@@ -206,6 +206,14 @@ links:
                                #   parameters.contig_summary.telomere_db_sha256. The database's repository
                                #   carries no licence file, so FunFlux fetches the file at run time and does
                                #   not ship it.
+  univec_link: https://ftp.ncbi.nlm.nih.gov/pub/UniVec/archive/10.1/UniVec
+                               # NCBI's UniVec, build 10.1 (about 1.7 MB). Its Illumina adapter and primer
+                               #   records join the adapters FunFlux ships (ONT, PacBio, MGI) in the contig
+                               #   adapter screen. Downloaded once per output directory, into
+                               #   00.resources/adapters/, and checked against
+                               #   parameters.contig_summary.univec_sha256; only the Illumina records are kept,
+                               #   because Illumina's oligonucleotide sequences are copyrighted. Left out, this
+                               #   address is used.
   chroquetas_link: https://raw.githubusercontent.com/nmquijada/ChroQueTas/1aad051d6ad48f5e403636699d19095e655764f7
                                # REQUIRED when parameters.amr.chroquetas is on, not read when it is off.
                                #   ChroQueTas and its FungAMR database of resistance mutations, at one pinned
@@ -352,7 +360,7 @@ parameters:
   # joins that call with the evidence the run produced about each contig of the draft
   # assembly (read depth, the assembler's depth and
   # circularity flag, rDNA units, BUSCO markers, predicted genes, the verdicts of the
-  # contamination and mitochondrion screens) into one table per sample,
+  # contamination and mitochondrion screens, the adapter screen) into one table per sample,
   # 02.assembly/{sample}/eval/contig_summary.tsv, and gives each contig a verdict:
   # chromosome, chromosome_arm, mitochondrion, rDNA_array, low_depth, repeat,
   # nuclear_contig, nuclear_fragment, contaminant or unclassified, with the evidence in a
@@ -398,6 +406,11 @@ parameters:
                                #   run that makes a unit a candidate. Allowed: a whole number, 2 or more.
     min_rdna_units: 3          # rDNA units (the ITS windows of parameters.its) from which a contig can be a
                                #   piece of the rDNA array. Allowed: a whole number, 1 or more.
+    univec_sha256: 687d8aa872d4ee215c9e0b3b004d0ee709fb243436d36d159a3f0ac5c25b5e36
+                               # The SHA-256 checksum the UniVec file at links.univec_link must have (build
+                               #   10.1). The two are changed together. The file feeds the adapter screen,
+                               #   which searches every draft assembly for adapter sequence and reports it
+                               #   in the adapter column of the contig summary.
 
   # ITS barcode [all modes]. The ITS region is cut out of the genome and classified with SINTAX
   # against UNITE. Each rDNA copy is first cut out with a window of window_flank bp on each side
@@ -533,6 +546,11 @@ parameters:
                                #   false (also no, off, 0, none, or null in quotes) = skip Medaka; empty or
                                #   an unquoted null = auto. PacBio samples never use Medaka.
     medaka_model_fallback_auto: false   # true: if a NAMED model is not valid, work it out as auto does instead of stopping
+    ont_adapter: detect        # ONT samples only: remove the ONT sequencing adapter, and the barcode that follows
+                               #   it, from the read ends with fastplong before Filtlong (docs/methods/adapter-trimming.md).
+                               #   detect: FunFlux works the sequence out from the reads, or leaves reads that
+                               #   are already trimmed alone. off: no trimming (FunFlux v2.0.0). Or the sequence
+                               #   to trim, 20 to 200 bases of A, C, G, T. PacBio samples are never trimmed.
     filtlong:                  # which long reads are kept before assembly (sized for ONT; provisional for
                                #   HiFi, see docs/modes/longread.md)
       min_length: 1000         #   discard reads shorter than this (bp). Allowed: a whole number, 1 or more.
@@ -558,6 +576,7 @@ parameters:
     flye_input_mode: auto
     medaka_model: auto
     medaka_model_fallback_auto: false
+    ont_adapter: detect        # the same as under longread
     # filtlong and hifiasm: the same keys, meanings and defaults as under longread, one line each.
     filtlong: {min_length: 1000, keep_percent: 90, length_weight: 10, target_bases: null}
     hifiasm: {genome_size: null, bloom_filter_bits: 0, purge_dups: auto, homozygous_coverage: auto, telomere_motif: null}

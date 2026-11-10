@@ -22,7 +22,7 @@ writes. Read it to find a sample's row in the report or the file behind a number
 
 ## What feeds it
 
-QUAST, BUSCO and the contig summary feed the report in every mode. The read and mapping QC depend
+QUAST, BUSCO, the contig summary and the adapter screen feed the report in every mode. The read and mapping QC depend
 on the mode, and the AMR table appears only with the AMR screen on:
 
 | Tool | What MultiQC reads | Modes |
@@ -33,6 +33,7 @@ on the mode, and the AMR table appears only with the AMR screen on:
 | QUAST 5.3.0 | `02.assembly/{sample}/eval/quast/`; in `hybrid` the report holds the guide assembly and the final genome, two rows | all |
 | BUSCO 6.0.0 | `02.assembly/{sample}/eval/busco/` | all |
 | FunFlux contig summary | `02.assembly/{sample}/eval/contig_summary_mqc.tsv`: one row per contig of the draft assembly, with its verdict | all |
+| FunFlux adapter screen | `02.assembly/{sample}/eval/adapter_screen_mqc.tsv`: one row per sample, with the ONT adapter trimming of the reads and the adapter found on the contigs | all |
 | FunFlux AMR screen (ChroQueTas) | `05.amr/{sample}/amr_summary_mqc.tsv`: one row per target protein of the species, with the FungAMR mutations found and a verdict on resistance | all, with `parameters.amr.chroquetas: on` |
 
 The ITS taxonomy and the annotation are not in the report. Their results are in `03.taxonomy/`
@@ -40,7 +41,8 @@ and `04.annotation/`.
 
 QUAST, BUSCO and Qualimap themselves are described under [Assembly QC](assembly-qc.md). The pages
 of the individual modes, reached from [Modes](../modes/index.md), describe fastp and NanoPlot. The
-contig summary is described under [Contig summary](contig-summary.md), and the AMR table under
+contig summary is described under [Contig summary](contig-summary.md), the Adapters table under
+[Adapter trimming and the adapter screen](../methods/adapter-trimming.md), and the AMR table under
 [Antifungal resistance mutations](amr.md).
 
 !!! warning "A failed QUAST, Qualimap or NanoPlot run does not stop the workflow"
@@ -83,7 +85,7 @@ and two such samples would share one row. The names do not depend on where the o
 For QUAST and BUSCO, the General Statistics table of the report shows by default the N50, the
 assembly length and the complete single-copy and missing BUSCO counts. Its numbers are in
 `06.report/multiqc_data/multiqc_general_stats.txt`. That file has one line for each row name
-listed above except the contig-summary and AMR rows, for example `QUAST assembly QC | SAMPLE1`.
+listed above except the contig-summary, Adapters and AMR rows, for example `QUAST assembly QC | SAMPLE1`.
 Each line fills only the columns of its own tool. The QUAST and BUSCO columns are these:
 
 | Column | Unit | In the General Statistics table of the report |
@@ -99,13 +101,14 @@ Each line fills only the columns of its own tool. The QUAST and BUSCO columns ar
 The complete, duplicated and fragmented counts can be switched on in the column settings of the
 General Statistics table.
 
-The sections of the report for QUAST, BUSCO and the two FunFlux tables hold the following:
+The sections of the report for QUAST, BUSCO and the FunFlux tables hold the following:
 
 | Section of the report | What it holds |
 |---|---|
 | QUAST | the full QUAST table and a plot of contig counts by length |
 | BUSCO | one bar chart per dataset |
-| **Contig summary** | `contig_summary_mqc.tsv` of every sample as one table, one row per contig of the draft assembly with all 20 columns of the file; the table's column settings show or hide columns, and `multiqc_data/multiqc_contig_summary.txt` holds the numbers. It is not part of the General Statistics table |
+| **Adapters** | one row per sample: for ONT samples, the share of reads that started with the adapter before and after trimming, ONT's published barcodes found in the reads, and what was trimmed; for every sample, the contig ends with adapter, the adapter matches inside contigs and a verdict |
+| **Contig summary** | `contig_summary_mqc.tsv` of every sample as one table, one row per contig of the draft assembly with all 21 columns of the file; the table's column settings show or hide columns, and `multiqc_data/multiqc_contig_summary.txt` holds the numbers. It is not part of the General Statistics table |
 | **AMR mutations (ChroQueTas)**, with the AMR screen on | `amr_summary_mqc.tsv` of every sample as one table, one row per target protein of the species: its status, the positions compared, the verdict, the FungAMR mutations and new mutations found, and the drugs with evidence of resistance and of no resistance, with their levels ([The tables](amr.md#tables)) |
 
 !!! note "MultiQC shows a table with more than 500 rows as a violin plot"

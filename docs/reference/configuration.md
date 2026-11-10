@@ -215,10 +215,12 @@ links:
   unite_its_link: https://s3.hpc.ut.ee/plutof-public/original/338a1413-6039-4e00-b5cf-410346a1e366.gz
   tiberius_model_link: https://bioinf.uni-greifswald.de/bioinf/tiberius/models/fungi.tar.gz
   telomere_db_link: https://raw.githubusercontent.com/tolkit/a-telomeric-repeat-database/73c635c7b80e5ab369b4c7ec67d23db32dcaa1b8/data/telo_database_v2.tsv
+  univec_link: https://ftp.ncbi.nlm.nih.gov/pub/UniVec/archive/10.1/UniVec
   chroquetas_link: https://raw.githubusercontent.com/nmquijada/ChroQueTas/1aad051d6ad48f5e403636699d19095e655764f7
 ```
 
-The workflow has no built-in links, so the run stops when a link that the mode needs is missing.
+The run stops when a link that the mode needs is missing. `univec_link` is the one exception: left
+out, it takes the address shown above.
 
 | Key | Default | Allowed values | Modes | What it does |
 |---|---|---|---|---|
@@ -227,6 +229,7 @@ The workflow has no built-in links, so the run stops when a link that the mode n
 | `unite_its_link` | template URL | a URL of a gzip-compressed SINTAX FASTA | all, and required unless `directories.unite_db` is set | The UNITE reference for the ITS classification. The template points to UNITE's SINTAX release for eukaryotes of 19.02.2025 (266,589 sequences). It is downloaded once per output folder and unpacked on the fly into `00.resources/unite/unite_its_sintax.fasta`, and `PROVENANCE.txt` beside it records the URL, date, md5 and size. No checksum is checked. |
 | `tiberius_model_link` | template URL | a URL of a `.tar.gz` archive holding one folder with the model files | all, and required unless `parameters.tiberius.mode` is `off` | The `fungi` model of the Tiberius gene finder, from its authors' server (about 30 MB). It is downloaded once per output folder, checked against [`parameters.tiberius.model_sha256`](#tiberius) and unpacked into `00.resources/tiberius/model/`. A mismatch stops the run before anything is unpacked. |
 | `telomere_db_link` | template URL | the URL of the tab-separated database file | all, and required | The telomere repeat database of tidk, `telo_database_v2.tsv` (0.6 MB), with the known telomere repeat units that the contig summary checks its candidates against. It is downloaded once per output folder into `00.resources/telomeres/` and checked against [`parameters.contig_summary.telomere_db_sha256`](#contig_summary), and a mismatch stops the run. The template address names one commit of the repository `tolkit/a-telomeric-repeat-database`, so the file behind it does not change ([Reference databases](../getting-started/databases.md#telomere-db)). |
+| `univec_link` | the address above | a URL of a UniVec FASTA file | all | NCBI's UniVec, build 10.1 in NCBI's archive (1.7 MB). Rule `univec_illumina` downloads it once per output folder into `00.resources/adapters/`, checks it against [`parameters.contig_summary.univec_sha256`](#contig_summary) and keeps the 151 Illumina adapter and primer records for the contig adapter screen; a mismatch stops the run ([Adapter trimming and the adapter screen](../methods/adapter-trimming.md#the-contig-adapter-screen)). |
 | `chroquetas_link` | template URL | the raw-file address of one commit of the ChroQueTas repository on GitHub, without a file name | all, required when [`parameters.amr.chroquetas`](#amr) is `on` and not read when it is `off` | ChroQueTas 1.0.1 and its FungAMR database. Rule `chroquetas_db` downloads `bin/ChroQueTas.sh`, `FungAMR_db/db-v20250811.tgz` and `LICENSE` from this address once per output folder into `00.resources/chroquetas/`. It checks the script and the archive against `parameters.amr.chroquetas_script_sha256` and `chroquetas_db_sha256`, and a mismatch stops the run before anything runs or is unpacked ([Reference databases](../getting-started/databases.md#chroquetas)). |
 
 ## `resources`
@@ -442,13 +445,15 @@ parameters:
     telomere_window: 25000
     min_telomere_copies: 5
     min_rdna_units: 3
+    univec_sha256: 687d8aa872d4ee215c9e0b3b004d0ee709fb243436d36d159a3f0ac5c25b5e36
 ```
 
 After the annotation, rule `contig_summary` writes `02.assembly/{sample}/eval/contig_summary.tsv`.
 It has one row per contig of the draft assembly, with the evidence the run produced about it and a
 verdict. The evidence consists of the telomere arrays at the contig ends, read depth, the
 assembler's depth and circularity flag, rDNA units, BUSCO markers, predicted genes and the calls of
-the contamination and mitochondrion screen. The verdict is one of `chromosome`, `chromosome_arm`,
+the contamination and mitochondrion screen, and the `adapter` column says whether the contig
+adapter screen found adapter sequence on the contig. The verdict is one of `chromosome`, `chromosome_arm`,
 `mitochondrion`, `rDNA_array`, `low_depth`, `repeat`, `nuclear_contig`, `nuclear_fragment`,
 `contaminant` or `unclassified`.
 
@@ -465,6 +470,7 @@ that choice.
 | `telomere_window` | 25000 | an integer from 500 to 100000 | all | The terminal window, in bp. It is the stretch at each contig end in which the candidate units are collected, and how far from the end `tidk ends` accepts an array. The telomere array can sit some kb inside a contig end when the assembler ran past the telomere, so the window must cover that. The two offset columns of the table show where each array lies. |
 | `min_telomere_copies` | 5 | an integer ≥ 2 | all | The copies of the unit an array needs to count as a telomere. `tidk ends` requires this many unit lengths (30 bp for a 6-bp unit), and a unit is collected at the contig ends only when it forms a tandem run of this many copies. |
 | `min_rdna_units` | 3 | an integer ≥ 1 | all | The number of rDNA units (the ITS windows of `its_windows`) from which a contig can be an `rDNA_array`. |
+| `univec_sha256` | the checksum of UniVec build 10.1 | 64 hexadecimal characters (capitals are accepted) | all | The SHA-256 that the file downloaded from `links.univec_link` must have, checked by rule `univec_illumina` before its Illumina records are used. A mismatch stops the run. Change the link and this checksum together. |
 
 A `parameters.contig_summary.telomere_motif` that is neither `auto` nor a plain unit stops the run
 with
@@ -484,6 +490,7 @@ A change of these settings re-runs the following steps:
 | `telomere_motif`, `telomere_window`, `min_telomere_copies` | `telomere_units` and `contig_summary`, then MultiQC |
 | `min_rdna_units` | `contig_summary` only |
 | `links.telomere_db_link` or `telomere_db_sha256` | `telomere_db`, then `telomere_units` of every sample |
+| `links.univec_link` or `univec_sha256` | `univec_illumina`, then the adapter screen and the contig summary of every sample |
 
 These keys re-run only the telomere and contig-summary steps, never the assembly or the
 annotation. hifiasm has a separate key of its own, `parameters.longread.hifiasm.telomere_motif` or
@@ -670,8 +677,8 @@ re-runs the whole annotation.
 
 ### `longread` and `hybrid`
 
-These two blocks hold the long-read settings: the assembler, Filtlong, Medaka and hifiasm, and in
-`hybrid` mode also the Filtlong guidance.
+These two blocks hold the long-read settings: the assembler, the ONT adapter trimming, Filtlong,
+Medaka and hifiasm, and in `hybrid` mode also the Filtlong guidance.
 
 ```yaml
 parameters:
@@ -680,6 +687,7 @@ parameters:
     flye_input_mode: auto      # auto | nano-raw | nano-hq
     medaka_model: auto
     medaka_model_fallback_auto: false
+    ont_adapter: detect        # detect | off | the sequence to trim
     filtlong:
       min_length: 1000
       keep_percent: 90
@@ -708,6 +716,7 @@ the run in every mode.
 | `flye_input_mode` | `auto` | `auto`, `nano-raw`, `nano-hq`, while `pacbio-hifi` stops the run | `longread`, `hybrid` | The Flye read mode of ONT samples. `auto` gives `--nano-hq`, or `--nano-raw` when `medaka_model` names a model containing `fast`. PacBio samples always get `--pacbio-hifi`. Ignored with hifiasm, with a NOTE when it is set. |
 | `medaka_model` | `auto` | `auto` (also empty or an unquoted `null`, `true`, `yes`, `on`, `1`), `false` for no Medaka (also `no`, `off`, `0`, `none`, `null` in quotes), or any other text, taken as a model name | `longread`, `hybrid` | Medaka polishing of ONT samples. PacBio samples never use Medaka. `auto` takes the model from the basecaller tag in the first 100 reads of the raw FASTQ (exactly one tag must be present) and needs network access once. The model is checked before the assembler starts. |
 | `medaka_model_fallback_auto` | `false` | `true`, `false` | `longread`, `hybrid` | When a named model is not valid, try `auto` instead of stopping. |
+| `ont_adapter` | `detect` | `detect` (also empty), `off` (also `false`, `no`, `none`), or a sequence of 20 to 200 letters A, C, G and T | `longread`, `hybrid` | Removes the ONT sequencing adapter, and the barcode that follows it, from the read ends of ONT samples with fastplong before Filtlong. `detect` works the sequence out from the reads and leaves reads that are already trimmed as they are; a sequence is trimmed as written. A short unit repeated end to end (a telomere repeat, for example) stops the run, and a sequence under 50 bp gets a NOTE. PacBio samples are never trimmed ([Adapter trimming](../methods/adapter-trimming.md)). |
 | `filtlong.min_length` | 1000 | an integer ≥ 1 | `longread`, `hybrid` | Filtlong `--min_length`, in bp. |
 | `filtlong.keep_percent` | 90 | a number above 0 and at most 100 | `longread`, `hybrid` | `--keep_percent`, the share of the bases kept, best reads first. |
 | `filtlong.length_weight` | 10 | a number above 0 | `longread`, `hybrid` | `--length_weight`. Higher values favour longer reads. |

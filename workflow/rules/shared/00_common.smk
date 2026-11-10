@@ -61,9 +61,9 @@
 #                        the AMR screen (ChroQueTas), each with the inputs it has
 #                        in this mode.
 # 10. Database download links.
-# 11. Long-read options : assembler, Medaka, Flye read mode, Filtlong, hifiasm and
-#                        the hybrid-only Illumina guidance (longread and hybrid
-#                        only).
+# 11. Long-read options : assembler, Medaka, Flye read mode, Filtlong, ONT adapter
+#                        trimming, hifiasm and the hybrid-only Illumina guidance
+#                        (longread and hybrid only).
 #     11b. A check of every top-level key under `parameters`: typos, and
 #                        settings left at their old v1 place.
 # 12. Sample discovery  : lists the input directory of the ACTIVE mode only, reads
@@ -71,7 +71,8 @@
 #                        prints the "AUGUSTUS:" line, and, when the screen runs, checks
 #                        the decontamination tables against the samples.
 # 13. Per-sample technology decisions : which tool flags each long-read sample
-#                        gets (an ONT sample and a PacBio sample need different ones).
+#                        gets (an ONT sample and a PacBio sample need different ones),
+#                        and which ONT samples have their adapters trimmed.
 # 14. Wildcard constraint : {sample} may only stand for a real sample name.
 # 15. Targets           : the files `rule all` asks for (the whole run), and the
 #                        files `rule download_all` asks for (only the downloads).
@@ -668,6 +669,17 @@ LOGS           = OUT + "/logs"           # one log per rule and sample (one per 
 #                                     telomere_units reads the database for every sample.
 #                                     The database's repository carries no licence file,
 #                                     so the file is fetched into the run, never shipped.
+#   UNIVEC_ILLUMINA,
+#   UNIVEC_PROVENANCE               : the Illumina adapter and primer records of NCBI's
+#                                     UniVec (build 10.1), for the contig adapter screen.
+#                                     Rule univec_illumina (25_contig_summary.smk) downloads
+#                                     UniVec from links.univec_link, checks it against
+#                                     parameters.contig_summary.univec_sha256, keeps the
+#                                     records whose description names Illumina and writes
+#                                     the PROVENANCE file. Illumina's oligonucleotide
+#                                     sequences are copyrighted, so they are fetched into
+#                                     the run, never shipped. Rule blast_adapters adds them
+#                                     to the adapters shipped in workflow/data/adapters/.
 #   CHROQUETAS_DIR and the six      : ChroQueTas and the FungAMR database of antifungal
 #   CHROQUETAS_* paths below          resistance mutations, for the AMR screen when it is
 #                                     on (section 9i). Rule chroquetas_db (50_amr.smk)
@@ -699,6 +711,8 @@ TIBERIUS_MODEL_CONFIG  = TIBERIUS_MODEL_DIR + "/model_config.json"    # the netw
 TIBERIUS_MODEL_WEIGHTS = TIBERIUS_MODEL_DIR + "/weights.h5"           # the trained weights
 TELOMERE_DB            = DIR_RESOURCES + "/telomeres/telo_database_v2.tsv"   # tidk's telomere repeat database, one row per species
 TELOMERE_DB_PROVENANCE = DIR_RESOURCES + "/telomeres/PROVENANCE.txt"         # where it came from, when, its checksum and row count
+UNIVEC_ILLUMINA        = DIR_RESOURCES + "/adapters/univec_illumina.fasta"   # the Illumina records of UniVec 10.1
+UNIVEC_PROVENANCE      = DIR_RESOURCES + "/adapters/PROVENANCE.txt"          # where they came from, when, the checksum and record count
 CHROQUETAS_DIR          = DIR_RESOURCES + "/chroquetas"
 CHROQUETAS_SCRIPT       = CHROQUETAS_DIR + "/ChroQueTas.sh"         # the program: one bash script, run as `bash ChroQueTas.sh ...`
 CHROQUETAS_DB_ARCHIVE   = CHROQUETAS_DIR + "/db-v20250811.tgz"      # the database as downloaded; deleted once it is unpacked
@@ -740,6 +754,21 @@ FASTP_HTML = READS_ILLUMINA_DIR + "/{sample}_fastp.html"         # the same as a
 FILTERED_LONG         = READS_LONG_DIR + "/{sample}_filtered.fastq"   # Filtlong output (kept)
 NANOPLOT_RAW_DIR      = READS_LONG_DIR + "/raw_qc"
 NANOPLOT_FILTERED_DIR = READS_LONG_DIR + "/filtered_qc"
+# ONT reads only, unless parameters.<mode>.ont_adapter is off (rules/shared/05_ont_adapters.smk).
+# Rule find_ont_adapter reads the raw reads and decides which sequence (the ONT adapter, with the
+# barcode block that follows it) fastplong removes; rule trim_ont_adapters writes the trimmed
+# reads, which Filtlong reads instead of the raw ones (filtlong_input, section 13); rule
+# check_ont_trimming counts the adapters left. The sequence file also goes to the contig adapter
+# screen (rule blast_adapters), the choice and check files to its report (rule screen_adapters).
+READS_ADAPTER_DIR     = READS_LONG_DIR + "/adapters"
+ONT_ADAPTER_SCAN      = READS_ADAPTER_DIR + "/{sample}_adapter_scan.tsv"       # reads with the adapter, per 10,000 reads
+ONT_ADAPTER_CHOICE    = READS_ADAPTER_DIR + "/{sample}_adapter_choice.tsv"     # the decision and the numbers behind it
+ONT_FASTPLONG_OPTIONS = READS_ADAPTER_DIR + "/{sample}_fastplong_options.txt"  # one line: -s <sequence> ..., or -A
+ONT_ADAPTER_SEQUENCE  = READS_ADAPTER_DIR + "/{sample}_adapter_sequence.fasta" # the trimmed sequence, or an empty file
+TRIMMED_LONG          = READS_LONG_DIR + "/{sample}_trimmed.fastq.gz"         # fastplong output (temporary)
+FASTPLONG_JSON        = READS_ADAPTER_DIR + "/{sample}_fastplong.json"         # fastplong's numbers
+FASTPLONG_HTML        = READS_ADAPTER_DIR + "/{sample}_fastplong.html"         # the same as a page for people
+ONT_ADAPTER_CHECK     = READS_ADAPTER_DIR + "/{sample}_adapter_check.tsv"      # reads still carrying the adapter
 # hybrid only: the Illumina read pairs that map to the clean Illumina guide
 # assembly (rule map_sel_contigs in rules/hybrid/25_guide.smk writes them). Filtlong
 # uses them to score the long reads, Polypolish uses them to correct the final
@@ -914,6 +943,19 @@ TELOMERE_ENDS       = ASSEMBLY_DIR + "/eval/telomere_ends.tsv"         # tidk's 
 CONTIG_SUMMARY      = ASSEMBLY_DIR + "/eval/contig_summary.tsv"
 CONTIG_SUMMARY_MQC  = ASSEMBLY_DIR + "/eval/contig_summary_mqc.tsv"    # the same table, for MultiQC
 
+# The contig adapter screen, per sample and in every mode (25_contig_summary.smk). Rule
+# blast_adapters searches the draft contigs for the adapters shipped in workflow/data/adapters/,
+# the Illumina records of UniVec (UNIVEC_ILLUMINA) and, for a trimmed ONT sample, the sequence
+# that was trimmed from its reads (ONT_ADAPTER_SEQUENCE); it writes the list it searched for
+# (ADAPTER_QUERY, temporary) and BLAST's hits (ADAPTER_BLAST). Rule screen_adapters turns the
+# hits into adapter loci near contig ends and inside contigs (ADAPTER_SCREEN; rule
+# contig_summary adds them to its table as the adapter column) and writes one row per sample
+# for the Adapters table of the MultiQC report (ADAPTER_SCREEN_MQC).
+ADAPTER_QUERY       = ASSEMBLY_DIR + "/eval/adapter_query.fasta"       # the adapters searched for (temporary)
+ADAPTER_BLAST       = ASSEMBLY_DIR + "/eval/adapter_blast.tsv"         # BLAST's hits on the draft contigs
+ADAPTER_SCREEN      = ASSEMBLY_DIR + "/eval/adapter_screen.tsv"        # one row per adapter locus
+ADAPTER_SCREEN_MQC  = ASSEMBLY_DIR + "/eval/adapter_screen_mqc.tsv"    # one row per sample, for MultiQC
+
 # The names QUAST prints for the genome(s) it is given, one per input FASTA, in the
 # same order. Every report that reads QUAST (MultiQC) finds the sample through these
 # labels. In hybrid mode one QUAST call compares the Illumina "guide" assembly with
@@ -1024,11 +1066,15 @@ MULTIQC_REPORT = DIR_REPORT + "/multiqc_report.html"   # the run's MultiQC page 
 # workflow.basedir is the folder that holds the Snakefile (workflow/), as an
 # absolute path, so these paths work wherever snakemake is started.
 # The rule that runs each script:
+#   ONT_ADAPTER_SCRIPT      : rules find_ont_adapter and check_ont_trimming
+#                             (05_ont_adapters.smk), and the start-up check of a sequence
+#                             given in parameters.<mode>.ont_adapter (section 11)
 #   SELECT_TAXONOMY_SCRIPT  : rule select_contigs
 #   MEDAKA_CHECK_SCRIPT     : rule check_medaka_model (12_medaka_check.smk)
 #   MITOCHONDRIA_SCRIPT     : rules screen_mitochondria and separate_mitochondria
 #   TELOMERE_UNITS_SCRIPT   : rule telomere_units (25_contig_summary.smk)
 #   CONTIG_SUMMARY_SCRIPT   : rule contig_summary (25_contig_summary.smk)
+#   ADAPTER_SCREEN_SCRIPT   : rule screen_adapters (25_contig_summary.smk)
 #   UNITE_IDENTIFIED_SCRIPT : rule unite_identified
 #   ITS_WINDOWS_SCRIPT      : rule its_windows
 #   ITS_DISTINCT_SCRIPT     : rule its_classification
@@ -1039,11 +1085,24 @@ MULTIQC_REPORT = DIR_REPORT + "/multiqc_report.html"   # the run's MultiQC page 
 #   CHROQUETAS_AMR_SCRIPT   : rule amr_chroquetas (50_amr.smk)
 WORKFLOW_DIR = workflow.basedir
 SCRIPTS_DIR  = os.path.join(WORKFLOW_DIR, "scripts")
+ONT_ADAPTER_SCRIPT      = os.path.join(SCRIPTS_DIR, "05_ont_adapters", "find_ont_adapter.py")
 SELECT_TAXONOMY_SCRIPT  = os.path.join(SCRIPTS_DIR, "10_decontam", "select_contigs_by_taxonomy.py")
 MEDAKA_CHECK_SCRIPT     = os.path.join(SCRIPTS_DIR, "12_medaka_check", "medaka_model_check.py")
 MITOCHONDRIA_SCRIPT     = os.path.join(SCRIPTS_DIR, "15_mitochondria", "mitochondria.py")
 TELOMERE_UNITS_SCRIPT   = os.path.join(SCRIPTS_DIR, "25_contig_summary", "telomere_units.py")
 CONTIG_SUMMARY_SCRIPT   = os.path.join(SCRIPTS_DIR, "25_contig_summary", "contig_summary.py")
+ADAPTER_SCREEN_SCRIPT   = os.path.join(SCRIPTS_DIR, "25_contig_summary", "adapter_screen.py")
+# The adapter sequences shipped with FunFlux for the contig adapter screen (rule blast_adapters;
+# workflow/data/adapters/README.md says where each comes from): ONT's adapters and barcodes from
+# its Chemistry Technical Document, and the PacBio and MGI adapters of NCBI UniVec.
+# ONT_BARCODE_LIST, the first of them, also goes to rule find_ont_adapter (05_ont_adapters.smk),
+# which names the barcodes it finds in the reads from it and trims every barcode of a file that
+# holds several.
+ONT_BARCODE_LIST = os.path.join(WORKFLOW_DIR, "data", "adapters", "ont_chtd.fasta")
+ADAPTER_LIST_FILES = [
+    ONT_BARCODE_LIST,
+    os.path.join(WORKFLOW_DIR, "data", "adapters", "univec_pacbio_mgi.fasta"),
+]
 UNITE_IDENTIFIED_SCRIPT = os.path.join(SCRIPTS_DIR, "30_taxonomy", "unite_identified.py")
 ITS_WINDOWS_SCRIPT      = os.path.join(SCRIPTS_DIR, "30_taxonomy", "its_windows.py")
 ITS_DISTINCT_SCRIPT     = os.path.join(SCRIPTS_DIR, "30_taxonomy", "its_distinct.py")
@@ -2084,6 +2143,10 @@ elif HAS_SHORT_READS:
 #                         counts a contig end as a telomere from that many copies.
 #   min_rdna_units      : the rDNA units (the ITS windows of rule its_windows) from which a
 #                         contig can be a piece of the rDNA array (default 3, at least 1).
+#   univec_sha256       : the SHA-256 checksum of NCBI's UniVec file at links.univec_link
+#                         (build 10.1 in NCBI's archive, which does not change). Rule
+#                         univec_illumina checks the downloaded file against it before it
+#                         takes the Illumina records out for the contig adapter screen.
 # The limits are the ones the scripts enforce as well (telomere_units.py and
 # contig_summary.py in workflow/scripts/25_contig_summary/), so a run of a script by hand
 # is held to the same rules. The motif, the window and the copies go to rule telomere_units
@@ -2092,7 +2155,8 @@ elif HAS_SHORT_READS:
 # rule telomere_db. The line printed at the end says what the run will use.
 _contig_summary = _parameter_block(
     "contig_summary",
-    {"telomere_motif", "telomere_db_sha256", "telomere_window", "min_telomere_copies", "min_rdna_units"},
+    {"telomere_motif", "telomere_db_sha256", "telomere_window", "min_telomere_copies", "min_rdna_units",
+     "univec_sha256"},
 )
 # The motif: the word auto in any case is stored as "auto"; anything else must be a unit.
 CONTIG_SUMMARY_TELOMERE_MOTIF = str(_contig_summary.get("telomere_motif") or "auto").strip()
@@ -2114,6 +2178,15 @@ if not re.fullmatch(r"[0-9a-f]{64}", TELOMERE_DB_SHA256):
     sys.exit(
         "[FunFlux] parameters.contig_summary.telomere_db_sha256: must be the SHA-256 checksum of the "
         f"telomere database file, 64 hexadecimal characters (got: {_contig_summary.get('telomere_db_sha256')!r})"
+    )
+# The checksum of UniVec build 10.1 (https://ftp.ncbi.nlm.nih.gov/pub/UniVec/archive/10.1/UniVec);
+# a configuration without the key gets it, so a v2.0.0 configuration still runs.
+UNIVEC_DEFAULT_SHA256 = "687d8aa872d4ee215c9e0b3b004d0ee709fb243436d36d159a3f0ac5c25b5e36"
+UNIVEC_SHA256 = str(_contig_summary.get("univec_sha256") or UNIVEC_DEFAULT_SHA256).strip().lower()
+if not re.fullmatch(r"[0-9a-f]{64}", UNIVEC_SHA256):
+    sys.exit(
+        "[FunFlux] parameters.contig_summary.univec_sha256: must be the SHA-256 checksum of the "
+        f"UniVec file, 64 hexadecimal characters (got: {_contig_summary.get('univec_sha256')!r})"
     )
 CONTIG_SUMMARY_TELOMERE_WINDOW = _to_int(
     "parameters.contig_summary.telomere_window", _contig_summary.get("telomere_window", 25000),
@@ -2349,6 +2422,11 @@ if AMR_MITO_CONTIGS:
 #                       parameters.contig_summary.telomere_db_sha256 (section 9h).
 #                       Required in every mode: the contig summary runs in all of
 #                       them, and the database is never shipped with FunFlux.
+#   univec_link       : NCBI's UniVec file (rule univec_illumina keeps its Illumina records
+#                       for the contig adapter screen), checked against
+#                       parameters.contig_summary.univec_sha256 (section 9h). Optional: a
+#                       configuration without the key gets the address of build 10.1 in
+#                       NCBI's archive, so a v2.0.0 configuration still runs.
 #   chroquetas_link   : the address of one pinned commit of the ChroQueTas repository on
 #                       GitHub (raw files), from which rule chroquetas_db downloads three
 #                       files: bin/ChroQueTas.sh, FungAMR_db/db-v20250811.tgz and LICENSE.
@@ -2378,6 +2456,9 @@ else:
 
 TELOMERE_DB_URL = _required_text("links", "telomere_db_link")
 
+UNIVEC_DEFAULT_URL = "https://ftp.ncbi.nlm.nih.gov/pub/UniVec/archive/10.1/UniVec"
+UNIVEC_URL = _optional_text("links", "univec_link") or UNIVEC_DEFAULT_URL
+
 if AMR_ENABLED:
     CHROQUETAS_URL = _required_text("links", "chroquetas_link").rstrip("/")
 else:
@@ -2392,8 +2473,8 @@ else:
 # names it defines are set to harmless empty values first, so later sections can
 # use them in every mode.
 # The settings are checked here, section 13 turns them into one value per sample and
-# prints what each sample gets, and the rules of the longread and hybrid front ends
-# and of 12_medaka_check.smk read the results.
+# prints what each sample gets, and the rules of the longread and hybrid front ends,
+# of 05_ont_adapters.smk and of 12_medaka_check.smk read the results.
 LONG_READ_ASSEMBLER = ""
 MEDAKA_MODEL = None
 MEDAKA_FALLBACK_AUTO = False
@@ -2407,12 +2488,13 @@ FILTLONG_TARGET_BASES = ""
 FILTLONG_TARGET_ARG = ""
 HYBRID_SHORT_READ_GUIDANCE = False
 HYBRID_FILTLONG_SPLIT = None
+ONT_ADAPTER_SETTING = "off"
 
 if HAS_LONG_READS:
     # The keys the block may hold; hybrid adds its two guidance keys. _lr is the
     # checked block, and _lr_name ("parameters.longread" or "parameters.hybrid") is
     # how the messages below name it.
-    _long_read_keys = {"assembler", "flye_input_mode", "medaka_model", "medaka_model_fallback_auto", "filtlong", "hifiasm"}
+    _long_read_keys = {"assembler", "flye_input_mode", "medaka_model", "medaka_model_fallback_auto", "filtlong", "hifiasm", "ont_adapter"}
     if IS_HYBRID:
         _long_read_keys = _long_read_keys | {"short_read_guidance", "filtlong_split"}
     _lr = _parameter_block(MODE, _long_read_keys)
@@ -2506,6 +2588,64 @@ if HAS_LONG_READS:
     # a set value arrives as the two words Filtlong expects.
     if FILTLONG_TARGET_BASES != "":
         FILTLONG_TARGET_ARG = "--target_bases " + FILTLONG_TARGET_BASES
+
+    # ── ONT adapter trimming (rules/shared/05_ont_adapters.smk; docs/methods/adapter-trimming.md) ──
+    # Before Filtlong, fastplong removes the ONT sequencing adapter, and the barcode block that
+    # follows it, from the ends of the ONT reads. PacBio HiFi reads are never trimmed.
+    #   detect (default; also a missing or empty key, an unquoted null, or true) : rule
+    #                 find_ont_adapter works the sequence out from the reads, or decides that
+    #                 there is nothing to trim.
+    #   off (also false, no, none, and null in quotes) : no trimming; Filtlong reads the raw
+    #                 reads, as in v2.0.0.
+    #                 These words are tested first: EMPTY_WORDS (section 1b) would count them as
+    #                 "not set", which here would mean the default, detect.
+    #   a sequence  : 20 to 200 bases of A, C, G and T, trimmed as given (fastplong searches only
+    #                 the first and last 200 bp of a read). A short tandem repeat is refused, so
+    #                 that a telomere repeat can never be set as the adapter by mistake.
+    # ONT_ADAPTER_SETTING keeps "detect", "off" or the sequence in capitals; section 13 turns it
+    # into the list of samples that are trimmed (ONT_TRIM_SAMPLES). The checks on a sequence use
+    # find_ont_adapter.py itself, loaded as a module the way section 9d loads the AUGUSTUS check
+    # (importlib: find the file, make an empty module from it, run the file's code into it).
+    _ont_adapter_spec = importlib.util.spec_from_file_location("find_ont_adapter", ONT_ADAPTER_SCRIPT)
+    ONT_ADAPTER_MODULE = importlib.util.module_from_spec(_ont_adapter_spec)
+    _ont_adapter_spec.loader.exec_module(ONT_ADAPTER_MODULE)
+
+    # A missing key or an unquoted empty value arrives as None (the default, detect); YAML turns
+    # an unquoted true/false (also yes/no, on/off) into True/False.
+    _ont_adapter = _lr.get("ont_adapter")
+    if _ont_adapter is None:
+        _ont_word = ""
+    else:
+        _ont_word = str(_ont_adapter).strip().lower()
+    if _ont_word in {"off", "false", "no", "none", "null"}:
+        ONT_ADAPTER_SETTING = "off"
+    elif _ont_word in {"", "detect", "true", "yes", "on"}:
+        ONT_ADAPTER_SETTING = "detect"
+    else:
+        _ont_sequence = ONT_ADAPTER_MODULE.clean_sequence(_ont_adapter)
+        if _ont_sequence is None or not 20 <= len(_ont_sequence) <= 200:
+            sys.exit(
+                f"[FunFlux] {_lr_name}.ont_adapter: write detect, off, or the sequence to trim "
+                f"(20 to 200 bases of A, C, G and T; got: {_ont_adapter!r})"
+            )
+        if ONT_ADAPTER_MODULE.is_tandem_repeat(_ont_sequence):
+            sys.exit(
+                f"[FunFlux] {_lr_name}.ont_adapter: {_ont_sequence} is a short unit repeated end to end "
+                "(a telomere repeat, for example), not an adapter. Trimming it would cut real genome "
+                "from the read ends."
+            )
+        if ONT_ADAPTER_MODULE.ADAPTER_CORE not in _ont_sequence:
+            _note(
+                f"{_lr_name}.ont_adapter does not contain the core of the ONT adapter "
+                f"({ONT_ADAPTER_MODULE.ADAPTER_CORE}); it is trimmed as given."
+            )
+        if len(_ont_sequence) < ONT_ADAPTER_MODULE.MIN_SPLIT_LENGTH:
+            _note(
+                f"{_lr_name}.ont_adapter is shorter than {ONT_ADAPTER_MODULE.MIN_SPLIT_LENGTH} bp, so fastplong "
+                "trims it at the read ends only and does not split reads where it occurs in the middle "
+                "(a short sequence matches genome by chance)."
+            )
+        ONT_ADAPTER_SETTING = _ont_sequence
 
     # ── hifiasm: only the settings that have a clear biological or resource meaning ──
     # Graph-cleaning and overlap switches keep the defaults of the pinned version.
@@ -3051,12 +3191,14 @@ if SCREEN:
 
 
 # ═══════════ 13. Per-sample technology decisions ═══════════
-# A longread or hybrid batch can hold S1_ont.fastq.gz next to S2_pacbio.fastq.gz. Five
-# things then differ per sample, and one of them (Medaka) changes the job graph (the
-# set of jobs Snakemake plans: a PacBio sample has no Medaka jobs at all):
+# A longread or hybrid batch can hold S1_ont.fastq.gz next to S2_pacbio.fastq.gz. Six
+# things then differ per sample, and two of them (adapter trimming and Medaka) change the
+# job graph (the set of jobs Snakemake plans: a PacBio sample has no trimming and no
+# Medaka jobs at all):
 #   * the Flye read-mode flag                 (--nano-hq / --nano-raw  vs  --pacbio-hifi)
 #   * the hifiasm technology flag             (--ont  vs  nothing: native HiFi mode)
 #   * the minimap2 preset                     (map-ont  vs  map-hifi)
+#   * whether the adapters are trimmed        (ONT only, unless ont_adapter is off)
 #   * whether Filtlong is Illumina-guided     (ONT in a hybrid run with guidance on only)
 #   * whether Medaka runs                     (ONT only)
 # READ_TECH is the one source of truth; this section turns it into one value per
@@ -3067,9 +3209,15 @@ if SCREEN:
 # is empty and nothing here does anything.
 #   ONT_SAMPLES, PACBIO_SAMPLES : the samples of each technology, in SAMPLES order.
 #   MEDAKA_SAMPLES              : the ONT samples when Medaka is on, otherwise none.
+#   ONT_TRIM_SAMPLES            : the ONT samples whose reads fastplong trims before Filtlong
+#                                 (all of them unless parameters.<mode>.ont_adapter is off).
 ONT_SAMPLES    = [sample for sample in SAMPLES if READ_TECH.get(sample) == "ont"]
 PACBIO_SAMPLES = [sample for sample in SAMPLES if READ_TECH.get(sample) == "pacbio"]
 MEDAKA_SAMPLES = ONT_SAMPLES if USE_MEDAKA else []
+if ONT_ADAPTER_SETTING == "off":
+    ONT_TRIM_SAMPLES = []
+else:
+    ONT_TRIM_SAMPLES = ONT_SAMPLES
 
 # One dictionary per decision: sample name -> value.
 FLYE_READ_FLAG = {}
@@ -3143,13 +3291,24 @@ for _sample in LONG_READ_SAMPLES:
         _filtlong_text = "Filtlong not guided, "
     else:
         _filtlong_text = ""
-    print(f"[FunFlux] {_sample}: {READ_TECH[_sample]} reads -> {_filtlong_text}{_assembler_text}, minimap2 {MINIMAP_PRESET[_sample]}, {_medaka_text}.")
+
+    # ONT samples whose reads are trimmed first say so at the front of the line.
+    if _sample in ONT_TRIM_SAMPLES:
+        _trim_text = "adapter check + fastplong, "
+    else:
+        _trim_text = ""
+    print(f"[FunFlux] {_sample}: {READ_TECH[_sample]} reads -> {_trim_text}{_filtlong_text}{_assembler_text}, minimap2 {MINIMAP_PRESET[_sample]}, {_medaka_text}.")
 
 # A batch with PacBio samples gets one NOTE: _pacbio must mean HiFi (CCS) reads
 # (docs/modes/longread.md).
 if PACBIO_SAMPLES:
     _note("samples with a _pacbio file are assumed to hold PacBio HiFi (CCS) reads: " + ", ".join(PACBIO_SAMPLES)
           + ". Continuous long reads (CLR) are not supported by this workflow.")
+
+# A sequence given in parameters.<mode>.ont_adapter has nothing to act on in a batch without ONT
+# reads; say so, as for the Medaka model below.
+if HAS_LONG_READS and not ONT_SAMPLES and ONT_ADAPTER_SETTING not in ("detect", "off"):
+    _note(f"no ONT samples in this batch: parameters.{MODE}.ont_adapter is ignored.")
 
 # One line about Medaka for the whole run. If any sample uses Medaka: which model, or
 # that it will be worked out from the reads. Otherwise, in a long-read run: why
@@ -3173,6 +3332,7 @@ elif HAS_LONG_READS:
 # 12_medaka_check.smk, and the long-read version of rule map_contigs in
 # 10_decontam.smk:
 #   raw_long_fastq    : the sample's long-read input file
+#   filtlong_input    : the reads Filtlong starts from (trimmed for ONT samples, otherwise raw)
 #   read_tech         : ont or pacbio, the sample's technology (for the provenance table)
 #   flye_read_flag    : --pacbio-hifi, --nano-hq or --nano-raw
 #   hifiasm_tech_flag : --ont, or nothing for HiFi reads
@@ -3182,7 +3342,22 @@ elif HAS_LONG_READS:
 #   polish_source     : the assembly after long-read polishing (Medaka or not)
 #   finalize_source   : the file that becomes contigs_all.fasta
 #   medaka_gate       : the Medaka model check the assembler waits for, if any
+#   trimmed_adapter_sequence, trimmed_adapter_inputs, trimmed_adapter_choice,
+#   trimmed_adapter_check : the read-level files of a trimmed ONT sample that the contig
+#                       adapter screen uses (rules blast_adapters and screen_adapters in
+#                       25_contig_summary.smk), or nothing for any other sample
 def raw_long_fastq(wildcards):
+    return LONG_FASTQ[wildcards.sample]
+
+
+def filtlong_input(wildcards):
+    # The reads rule filter_long_reads (longread and hybrid) starts from: for an ONT sample
+    # that is trimmed, fastplong's output (TRIMMED_LONG, rule trim_ont_adapters in
+    # 05_ont_adapters.smk); for a PacBio sample, or with parameters.<mode>.ont_adapter off,
+    # the raw file. The raw NanoPlot report and the Medaka model check keep reading the raw
+    # file: they describe the reads as delivered.
+    if wildcards.sample in ONT_TRIM_SAMPLES:
+        return TRIMMED_LONG.format(sample=wildcards.sample)
     return LONG_FASTQ[wildcards.sample]
 
 
@@ -3225,6 +3400,46 @@ def polish_source(wildcards):
 
 def finalize_source(wildcards):
     return FINALIZE_SOURCE[wildcards.sample].format(sample=wildcards.sample)
+
+
+def trimmed_adapter_sequence(wildcards):
+    # The sequences fastplong trimmed from the reads of an ONT sample (ONT_ADAPTER_SEQUENCE, rule
+    # find_ont_adapter in 05_ont_adapters.smk), as a list of one file, which rule blast_adapters
+    # adds to the adapters it searches the contigs for. Any other sample (PacBio, Illumina,
+    # contigs mode, or trimming off) gets an empty list, which the rule's command writes as
+    # nothing at all.
+    if wildcards.sample in ONT_TRIM_SAMPLES:
+        return [ONT_ADAPTER_SEQUENCE.format(sample=wildcards.sample)]
+    return []
+
+
+def trimmed_adapter_inputs(wildcards):
+    # The choice and check files of rules find_ont_adapter and check_ont_trimming that rule
+    # screen_adapters reports in the Adapters table, for an ONT sample whose reads were trimmed.
+    # Listed as inputs so that the screen waits for them; any other sample gets an empty list.
+    if wildcards.sample in ONT_TRIM_SAMPLES:
+        return [
+            ONT_ADAPTER_CHOICE.format(sample=wildcards.sample),
+            ONT_ADAPTER_CHECK.format(sample=wildcards.sample),
+        ]
+    return []
+
+
+# The same two files one by one, for the params of rule screen_adapters: the path, or an empty
+# text. Snakemake writes an empty text as nothing at all, so the script then sees the option
+# without a value and reads it as "not given".
+
+
+def trimmed_adapter_choice(wildcards):
+    if wildcards.sample in ONT_TRIM_SAMPLES:
+        return ONT_ADAPTER_CHOICE.format(sample=wildcards.sample)
+    return ""
+
+
+def trimmed_adapter_check(wildcards):
+    if wildcards.sample in ONT_TRIM_SAMPLES:
+        return ONT_ADAPTER_CHECK.format(sample=wildcards.sample)
+    return ""
 
 
 def medaka_gate(wildcards):
@@ -3369,6 +3584,12 @@ def _shared_targets():
     # the ends table are its inputs, and the candidates table comes from the same job
     # as those two, so none of them needs a listing of its own.
     targets += expand(CONTIG_SUMMARY, sample=SAMPLES)
+    # The contig adapter screen (rule screen_adapters, 25_contig_summary.smk), in every mode;
+    # the contig summary reads it too. For the ONT samples whose reads fastplong trimmed, the
+    # count of adapters left in the trimmed reads (rule check_ont_trimming, 05_ont_adapters.smk).
+    targets += expand(ADAPTER_SCREEN, sample=SAMPLES)
+    if HAS_LONG_READS and ONT_TRIM_SAMPLES:
+        targets += expand(ONT_ADAPTER_CHECK, sample=ONT_TRIM_SAMPLES)
 
     targets += expand(ITS_FULL, sample=SAMPLES)
     targets += expand(ITS_ITS1, sample=SAMPLES)
@@ -3435,6 +3656,8 @@ def all_targets():
 #                       already holds (UNITEDB is then not empty, and nothing is
 #                       downloaded).
 #   telomere_db         TELOMERE_DB, in every mode (the contig summary runs in all).
+#   univec_illumina     UNIVEC_ILLUMINA, in every mode (the contig adapter screen runs in
+#                       all).
 #   tiberius_model      TIBERIUS_MODEL_WEIGHTS, when Tiberius is on (TIBERIUS_ENABLED).
 #   chroquetas_db       CHROQUETAS_SPECIES_LIST, when the AMR screen is on
 #                       (AMR_ENABLED). The rule writes it last, once the database is
@@ -3474,6 +3697,9 @@ def download_targets():
 
     # The telomere repeat database.
     targets.append(TELOMERE_DB)
+
+    # The Illumina adapter records of UniVec, for the contig adapter screen.
+    targets.append(UNIVEC_ILLUMINA)
 
     # The Tiberius fungi model.
     if TIBERIUS_ENABLED:

@@ -203,6 +203,10 @@ INPUTS
                          sequence name (scaffold_N).
     --annotated-fasta    CONTIGS_SORT, the genome as funannotate annotated it, with the
                          scaffold_N names. Needed to join the GFF3 to the draft contigs.
+    --adapter-screen     ADAPTER_SCREEN, adapter_screen.tsv of the contig adapter screen
+                         (adapter_screen.py, same folder): one row per adapter locus, with
+                         the columns contig and position (end or internal). It fills the
+                         adapter column and does not change any verdict.
     --min-telomere-copies, --min-rdna-units
                          the two tuning options (see TELOMERES and RULES); the
                          workflow passes the values of the configuration block
@@ -321,7 +325,7 @@ COLUMNS = [
     "telomere_end_offset_start", "telomere_end_offset_end",
     "telomere_unit",
     "rdna_units", "busco_markers", "genes",
-    "genus", "screen", "annotated_as",
+    "genus", "screen", "adapter", "annotated_as",
     "verdict", "reason",
 ]
 
@@ -568,7 +572,7 @@ def read_tsv_rows(path, required_columns):
                silently give empty columns.
     Produces:  a list of row dictionaries.
     Used by:   the readers of the telomere ends, decisions, mitochondrion screen,
-               assembly evidence and ITS window tables.
+               assembly evidence, ITS window and adapter tables.
     """
     with open(path, "r", encoding="utf-8", errors="replace", newline="") as table:
         reader = csv.DictReader(table, delimiter="\t")
@@ -841,6 +845,47 @@ def read_gene_counts(path):
 # ======================================================================
 # STEP 4: JOIN THE DRAFT CONTIGS TO FUNANNOTATE'S SCAFFOLD NAMES
 # ======================================================================
+
+def read_adapter_loci(path):
+    """Read the adapter loci of the contig adapter screen.
+
+    Takes in:  --adapter-screen (adapter_screen.tsv): one row per adapter locus, with the
+               columns contig and position (end or internal) among others.
+    Produces:  a dict contig -> the set of positions found on it ({"end"}, {"internal"} or
+               both). A contig without a locus is not in the dict.
+    Used by:   run(); adapter_column_text() turns it into the adapter column.
+    """
+    loci = {}
+    for row in read_tsv_rows(path, {"contig", "position"}):
+        position = (row["position"] or "").strip()
+        if position not in ("end", "internal"):
+            raise ValueError(f"{path}: position must be end or internal, got {position!r}")
+        loci.setdefault(row["contig"], set()).add(position)
+    return loci
+
+
+def adapter_column_text(adapter_loci, contig):
+    """Build the adapter column: none, at_end, internal or at_end+internal.
+
+    Takes in:  the dict of read_adapter_loci() (None when the screen was not given) and the
+               contig name.
+    Produces:  NA without a screen; otherwise none, at_end (adapter within 100 bp of a contig
+               end), internal (a whole adapter inside the contig) or both. The verdicts do not
+               use it: adapter at a contig end changes neither what the contig is nor where it
+               came from.
+    Used by:   run().
+    """
+    if adapter_loci is None:
+        return NA
+    positions = adapter_loci.get(contig, set())
+    if positions == {"end", "internal"}:
+        return "at_end+internal"
+    if positions == {"end"}:
+        return "at_end"
+    if positions == {"internal"}:
+        return "internal"
+    return "none"
+
 
 def find_scaffold_by_probes(sequence, scaffolds, claimed):
     """Find the scaffold that holds a polished copy of this contig.
@@ -1218,6 +1263,7 @@ def formatted_row(row):
         format_cell(row["genes"]),
         format_cell(row["genus"]),
         format_cell(row["screen"]),
+        format_cell(row["adapter"]),
         format_cell(row["annotated_as"]),
         row["verdict"],
         row["reason"],
@@ -1325,6 +1371,7 @@ def run(args):
     if args.busco_dir:
         busco_counts, busco_lineage = read_busco_markers(args.busco_dir, contig_names)
     gene_counts = read_gene_counts(args.gff3) if args.gff3 else None
+    adapter_loci = read_adapter_loci(args.adapter_screen) if args.adapter_screen else None
     scaffold_mapping = None
     if args.annotated_fasta:
         scaffolds = read_fasta(args.annotated_fasta)
@@ -1358,6 +1405,7 @@ def run(args):
         row["screen_reason"] = screen_reason
         row["is_removed"] = action == "remove"
         row["screen"] = screen_column_text(row, action)
+        row["adapter"] = adapter_column_text(adapter_loci, contig)
 
         # Depth and the assembler's evidence.
         row["depth"] = depths.get(contig) if depths is not None else None
@@ -1505,7 +1553,7 @@ def parse_arguments(argv):
         "--telomere-ends", required=True,
         help="telomere_ends.tsv of telomere_units.py: tidk's table of what it found at every contig end",
     )
-    # The nine optional inputs may be given with nothing after them: nargs="?" (zero or
+    # The ten optional inputs may be given with nothing after them: nargs="?" (zero or
     # one value) allows that, and the flag then takes its const value, an empty text,
     # meaning "not given". Snakemake's {...:q} quoting writes an empty value as nothing
     # at all, so a rule can write every flag and leave the value empty in the modes
@@ -1521,6 +1569,7 @@ def parse_arguments(argv):
         ("--busco-dir", "the BUSCO output folder of the sample"),
         ("--gff3", "the funannotate GFF3 annotation"),
         ("--annotated-fasta", "the genome as funannotate annotated it (scaffold_N names)"),
+        ("--adapter-screen", "adapter_screen.tsv of the contig adapter screen"),
     ]
     for flag, help_text in optional_inputs:
         parser.add_argument(flag, nargs="?", const="", default="", help=help_text + " (optional)")

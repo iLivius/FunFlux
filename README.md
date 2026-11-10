@@ -44,11 +44,13 @@ decides which of four front ends runs:
 
 ```
                illumina        longread           hybrid                contigs
-01.reads       PhiX removal    Filtlong           PhiX removal, fastp   -
-               fastp           NanoPlot           Filtlong, NanoPlot
+01.reads       PhiX removal    fastplong (ONT)    PhiX removal, fastp   -
+               fastp           Filtlong           fastplong (ONT)
+                               NanoPlot           Filtlong, NanoPlot
 02.assembly    SPAdes          hifiasm or Flye    SPAdes guide,         contig filter
                                                   hifiasm or Flye
                ── contamination screen (BLAST+, BlobTools), mitochondrion screen * ──
+               ── adapter screen of the draft contigs (BLAST+) ──
                                Medaka (ONT)       Medaka (ONT),
                                                   Polypolish
                ── 02.assembly/{sample}/contigs_final.fasta: the genome all later steps read ──
@@ -154,9 +156,10 @@ eggNOG 5.0.2, so data made for eggnog-mapper 3 (eggNOG 7) does not work with it.
 
 Everything else — the funannotate database snapshot (Zenodo record 23265189, checked against its
 SHA-256 before unpacking), UNITE, the antiSMASH databases, the Tiberius model, the telomere repeat
-database, the PhiX genome, the BUSCO lineage data, the Medaka model weights and, with the
-resistance-mutation screen on, ChroQueTas with its FungAMR database — is downloaded on the first
-run that needs it, most of it once per output folder, or all at once with
+database, the Illumina adapter records of NCBI UniVec, the PhiX genome, the BUSCO lineage data,
+the Medaka model weights and, with the resistance-mutation screen on, ChroQueTas with its FungAMR
+database — is downloaded on the first run that needs it, most of it once per output folder, or all
+at once with
 `snakemake download_all`. `directories.unite_db` and `directories.antismash_db` take copies you
 already hold. Download commands, disk sizes and every optional key are on
 [Reference databases](https://iLivius.github.io/FunFlux/getting-started/databases/). Running on a

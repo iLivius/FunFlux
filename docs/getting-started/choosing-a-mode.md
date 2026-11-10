@@ -45,7 +45,7 @@ in detail.
 
 | | `illumina` | `longread` | `hybrid` | `contigs` |
 |---|---|---|---|---|
-| Reads | PhiX removal (bowtie2), adapter and quality trimming (fastp) | Filtlong; NanoPlot before and after | both; Filtlong as in `longread`, optionally guided by the Illumina pairs | none |
+| Reads | PhiX removal (bowtie2), adapter and quality trimming (fastp) | ONT adapter and barcode removal (fastplong); Filtlong; NanoPlot before and after | both; Filtlong as in `longread`, optionally guided by the Illumina pairs | none |
 | Assembly | SPAdes `--isolate`; contigs of at least 500 bp and 2x coverage kept | hifiasm (default) or Flye | SPAdes guide assembly of the Illumina reads, then hifiasm or Flye of the long reads | your FASTA ([below](#contigs-from-another-assembler)) |
 | Polishing | none | Medaka, ONT samples only | Medaka for ONT samples, then Polypolish with the Illumina reads | none |
 | Mitochondrion | found by BLAST | found by BLAST, supported by read depth or circularity from the assembler; a BLAST hit covering at least 70 % confirms alone | as `longread`; the guide assembly is screened as well | only with `parameters.contigs.screen: true`, by BLAST |

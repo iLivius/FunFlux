@@ -57,10 +57,11 @@ the whole run, and everything else is the same for both technologies.
 | hifiasm | `--ont` | no flag: hifiasm's HiFi mode |
 | Flye | `--nano-hq`, or `--nano-raw` (see [Flye](#flye)) | `--pacbio-hifi` |
 | minimap2 preset for the coverage track | `map-ont` | `map-hifi` |
+| Adapter trimming before Filtlong | yes, unless `ont_adapter: off` | never |
 | Medaka | yes, unless `medaka_model: false` | never |
 | Filtlong guided by the Illumina pairs (`hybrid` only) | only with `short_read_guidance: true` | never |
 
-PacBio HiFi samples therefore get neither Medaka nor the Filtlong guidance. In `hybrid` mode,
+PacBio HiFi samples therefore get no adapter trimming, no Medaka and no Filtlong guidance. In `hybrid` mode,
 Polypolish corrects the assemblies of both technologies with the Illumina pairs, as described on
 [Hybrid](hybrid.md).
 
@@ -72,7 +73,7 @@ sample of each technology, the output reads:
 Long-read assembler: hifiasm.
 Sample SAM1 will be processed.
 Sample SAM2 will be processed.
-[FunFlux] SAM1: ont reads -> hifiasm --ont, minimap2 map-ont, Medaka.
+[FunFlux] SAM1: ont reads -> adapter check + fastplong, hifiasm --ont, minimap2 map-ont, Medaka.
 [FunFlux] SAM2: pacbio reads -> hifiasm, minimap2 map-hifi, no Medaka.
 [FunFlux] NOTE: samples with a _pacbio file are assumed to hold PacBio HiFi (CCS) reads: SAM2. Continuous long reads (CLR) are not supported by this workflow.
 Medaka model will be worked out from the FASTQ headers (checked before assembly).
@@ -90,7 +91,9 @@ config:
     rankSpacing: 35
 ---
 flowchart TD
-    LR([ONT or PacBio HiFi reads]) --> FL[Filtlong]
+    LR([ONT or PacBio HiFi reads]) -->|PacBio HiFi| FL[Filtlong]
+    LR -->|ONT reads| AT[adapter and barcode removed<br/>find_ont_adapter, fastplong]
+    AT --> FL
     LR -->|ONT reads, Medaka on| MC[Medaka model check<br/>check_medaka_model]
     FL --> ASM[hifiasm or Flye]
     MC --> ASM
@@ -101,7 +104,9 @@ flowchart TD
     MD --> OUT
 ```
 
-Filtlong filters the reads, hifiasm or Flye assembles them, and the screen examines
+For ONT samples, fastplong first removes the adapter and the barcode that follows it from the
+read ends ([Adapter trimming](../methods/adapter-trimming.md)). Filtlong filters the reads,
+hifiasm or Flye assembles them, and the screen examines
 `assembly.fasta` with BLAST, BlobTools and, for the mitochondrion, the assembler's evidence. For
 ONT samples, unless Medaka is off, `check_medaka_model` settles the model on the raw reads before
 the assembler starts, and Medaka polishes the screened assembly with that model. The polished
@@ -116,6 +121,7 @@ it writes the genome files.
 
 | Step | Rule (as named in the console and in `logs/`) | Tool | Writes |
 |---|---|---|---|
+| Adapter trimming (ONT) | `find_ont_adapter`, `trim_ont_adapters`, `check_ont_trimming` | FunFlux script, fastplong 0.7.1 | `01.reads/{sample}/long/adapters/` |
 | Read filter | `filter_long_reads` | Filtlong 0.3.1 | `01.reads/{sample}/long/{sample}_filtered.fastq` |
 | Read QC | `raw_long_read_qc`, `filtered_long_read_qc` | NanoPlot 1.46.2 | `01.reads/{sample}/long/raw_qc/`, `filtered_qc/` |
 | Model check (ONT with Medaka) | `check_medaka_model` | Medaka 2.2.2 | `{sample}_medaka_model.txt` |
@@ -126,15 +132,28 @@ it writes the genome files.
 | Screen | `blast_contigs`, `blob_json`, `blob_table`, `screen_mitochondria`, `select_contigs` | BLAST+ 2.16.0, BlobTools 1.1.1 | `contaminants/`, `mitochondria/` |
 | Polishing (ONT with Medaka) | `long_read_consensus` | Medaka 2.2.2 | `medaka/consensus.fasta` |
 | Genome files | `finalize_assembly`, `separate_mitochondria` | | `contigs_all.fasta`, `contigs_final.fasta`, `contigs_mitochondrial.fasta` |
+| Adapter screen of the draft | `blast_adapters`, `screen_adapters` | BLAST+ 2.16.0, FunFlux script | `eval/adapter_screen.tsv` |
 
-Paths without a stage prefix are under `02.assembly/{sample}/`. One sample plans 41 jobs, 43 for
-an ONT sample with Medaka, and the AMR screen adds 2
+Paths without a stage prefix are under `02.assembly/{sample}/`. One PacBio HiFi sample plans 44
+jobs, an ONT sample with Medaka 49, and the AMR screen adds 2
 ([Dry run](../reference/running.md#dry-run)). The threads of each step are listed on
 [CPU cores and threads](../reference/running.md#cpu-cores-and-threads).
 
+## Adapter trimming
+
+ONT reads that were not trimmed at basecalling start with the sequencing adapter and, in a barcoded
+library, the barcode. `find_ont_adapter` reads every read and works out the sequence to remove:
+the adapter, followed by the barcode block when most reads share one, or nothing when the reads
+are already trimmed. fastplong then removes exactly that sequence from both read ends, and
+`check_ont_trimming` counts what is left. fastplong never guesses the adapter itself: on fungal
+reads its guess can be the telomere repeat. `ont_adapter: off` switches the step off, and a
+sequence written there is trimmed as given. [Adapter trimming](../methods/adapter-trimming.md)
+explains the method and what it changed in the *Botrytis cinerea* B05.10 assembly.
+
 ## Read filter
 
-`filter_long_reads` runs Filtlong on the raw reads, without a reference. With the defaults,
+`filter_long_reads` runs Filtlong without a reference, on the reads fastplong trimmed (ONT) or on
+the raw reads (PacBio HiFi, or `ont_adapter: off`). With the defaults,
 Filtlong drops reads under 1,000 bp and keeps the best reads up to 90 % of the bases, favouring
 long reads. The total is not capped unless `target_bases` is set.
 
@@ -364,6 +383,7 @@ parameters:
     flye_input_mode: auto            # Flye, ONT samples: auto | nano-hq | nano-raw
     medaka_model: auto               # ONT samples: auto | a model name | false
     medaka_model_fallback_auto: false
+    ont_adapter: detect              # ONT samples: detect | off | the sequence to trim
     filtlong:
       min_length: 1000
       keep_percent: 90
@@ -388,6 +408,7 @@ Each sample has its reads in `01.reads` and its assembly in `02.assembly`:
 <output_dir>/
 ├── 01.reads/{sample}/long/
 │   ├── {sample}_filtered.fastq           Filtlong output (kept, uncompressed)
+│   ├── adapters/                         ONT samples: the adapter scan, the trimmed sequence, fastplong's reports, the check
 │   └── raw_qc/  filtered_qc/             NanoPlot
 └── 02.assembly/{sample}/
     ├── hifiasm/ or flye/                 the assembler's own files
@@ -397,13 +418,13 @@ Each sample has its reads in `01.reads` and its assembly in `02.assembly`:
     ├── mitochondria/                     mitochondrial_screen.tsv, confirmed_mitochondrial.ids
     ├── medaka/consensus.fasta            ONT samples with Medaka
     ├── contigs_all.fasta  contigs_final.fasta  contigs_mitochondrial.fasta
-    └── eval/quast/  eval/busco/  eval/qualimap/  eval/telomere_*  eval/contig_summary*.tsv
+    └── eval/quast/  eval/busco/  eval/qualimap/  eval/telomere_*  eval/adapter_*  eval/contig_summary*.tsv
 ```
 
 In the MultiQC report a sample has the rows `NanoPlot raw read QC | {sample}`,
 `NanoPlot filtered read QC | {sample}`, `mapping QC | {sample}`, `QUAST assembly QC | {sample}` and
-its BUSCO rows, and one row per contig, `{sample}: {contig}`, in the contig summary table
-([Report](../analysis/report.md)). `03.taxonomy` to `06.report` are the same in every mode, as
+its BUSCO rows, one row per contig, `{sample}: {contig}`, in the contig summary table, and one
+row, `{sample}`, in the Adapters table ([Report](../analysis/report.md)). `03.taxonomy` to `06.report` are the same in every mode, as
 described on [Output files](../reference/output.md).
 
 ## Tested so far

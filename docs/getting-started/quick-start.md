@@ -210,7 +210,7 @@ AUGUSTUS: SAMPLE1 is trained on its BUSCO genes (checked once the database is un
 The `Decontamination mode` line is printed in every run, and without the screen it has no effect.
 
 Snakemake then prints `Conda environment ... will be created.` for every environment not built
-yet (14 here), followed by the jobs it plans:
+yet (15 here), followed by the jobs it plans:
 
 ```text
 Job stats:
@@ -220,6 +220,7 @@ all                               1
 antismash_annotation              1
 antismash_db                      1
 augustus_model_check              1
+blast_adapters                    1
 cleanup                           1
 completeness                      1
 contig_summary                    1
@@ -237,6 +238,7 @@ its_windows                       1
 multiqc                           1
 normalize_funannotate_db          1
 repeat_masking                    1
+screen_adapters                   1
 telomere_db                       1
 telomere_units                    1
 tiberius_gff3                     1
@@ -244,10 +246,11 @@ tiberius_model                    1
 tiberius_prediction               1
 unite_db                          1
 unite_identified                  1
-total                            28
+univec_illumina                   1
+total                            31
 ```
 
-One block per job follows, each with the reason it runs. Each further sample adds 19 jobs, and
+One block per job follows, each with the reason it runs. Each further sample adds 21 jobs, and
 other settings change the plan as follows:
 
 | Setting | Jobs |
@@ -262,15 +265,15 @@ other settings change the plan as follows:
 | `parameters.amr.chroquetas: on` | `chroquetas_db` once, `amr_chroquetas` per sample: the AMR screen for antifungal resistance mutations ([Antifungal resistance mutations](../analysis/amr.md)) |
 
 With the funannotate database present, a local antiSMASH database, and GeneMark-ES and SignalP 6
-on, the plan has 30 jobs. The read-based modes plan more jobs per sample, for the read processing,
+on, the plan has 33 jobs. The read-based modes plan more jobs per sample, for the read processing,
 the assembly, the polishing and the mapping QC:
 
 | Mode | Jobs in the first run of one sample |
 |---|---|
-| `contigs`, the example | 28 |
-| `illumina` | 43 |
-| `longread` | 41 (PacBio HiFi) or 43 (ONT with Medaka) |
-| `hybrid` | 58 (PacBio HiFi) or 60 (ONT with Medaka) |
+| `contigs`, the example | 31 |
+| `illumina` | 46 |
+| `longread` | 44 (PacBio HiFi) or 49 (ONT with Medaka) |
+| `hybrid` | 61 (PacBio HiFi) or 66 (ONT with Medaka) |
 
 How these counts are made up is explained on [Running FunFlux](../reference/running.md#dry-run).
 
@@ -316,7 +319,7 @@ data are fetched again in every BUSCO job.
 
 | What | Where | Size | When |
 |---|---|---|---|
-| conda environments (14 in the example) | `.snakemake/conda/`, or the `--conda-prefix` folder | about 20 GB, plus conda's package cache | first use of each |
+| conda environments (15 in the example) | `.snakemake/conda/`, or the `--conda-prefix` folder | about 20 GB, plus conda's package cache | first use of each |
 | funannotate database snapshot (Zenodo record 23265189) and its `.sha256` file | `directories.funannotate_db` | 2.1 GB archive; 6.1 GB unpacked, 8.1 GB with the archive | when `funannotate-db-info.txt` is missing there |
 | antiSMASH 8.0.4 databases | `00.resources/antismash/databases/` | about 9.4 GB | unless `directories.antismash_db` is set |
 | UNITE SINTAX reference, release 19.02.2025, all eukaryotes | `00.resources/unite/unite_its_sintax.fasta` | 35.7 MB download, 207 MB unpacked | unless `directories.unite_db` is set |

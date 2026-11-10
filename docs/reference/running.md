@@ -102,14 +102,15 @@ resistance-mutation screen) off, the first run of one sample plans:
 
 | Mode | Per sample | Once per run | First run, one sample |
 |---|---|---|---|
-| `illumina` | 32 | 11 | 43 |
-| `longread` | 32, plus `check_medaka_model` and `long_read_consensus` for an ONT sample with Medaka | 9 | 41 (PacBio HiFi) or 43 (ONT with Medaka) |
-| `hybrid` | 47, plus the same two for an ONT sample with Medaka | 11 | 58 (PacBio HiFi) or 60 (ONT with Medaka) |
-| `contigs` | 19; the screen adds 8 | 9 | 28; 36 with the screen |
+| `illumina` | 34 | 12 | 46 |
+| `longread` | 34, plus `find_ont_adapter`, `trim_ont_adapters` and `check_ont_trimming` for an ONT sample (unless `ont_adapter` is `off`), and `check_medaka_model` and `long_read_consensus` for an ONT sample with Medaka | 10 | 44 (PacBio HiFi) or 49 (ONT with Medaka) |
+| `hybrid` | 49, plus the same five for an ONT sample | 12 | 61 (PacBio HiFi) or 66 (ONT with Medaka) |
+| `contigs` | 21; the screen adds 8 | 10 | 31; 39 with the screen |
 
 `illumina` and `hybrid` add `download_phix` and `build_phix` to the jobs that run once per run.
 The other once-per-run jobs are `normalize_funannotate_db`, `antismash_db` or
-`antismash_db_local`, `unite_db` or `unite_db_local`, `telomere_db`, `multiqc` and `all`. Six
+`antismash_db_local`, `unite_db` or `unite_db_local`, `telomere_db`, `univec_illumina`, `multiqc`
+and `all`. Six
 more are added only when their condition holds. The counts in the table include the first three,
 which hold on a first run with the default settings; with the funannotate database already in
 place, `funannotate_db` drops out and every count is one lower:
@@ -125,18 +126,19 @@ The optional steps change these counts in every mode:
 
 | Setting | Jobs per sample | Once per run |
 |---|---|---|
-| Tiberius off | 2 fewer (a `contigs` sample without the screen: 17 instead of 19) | `tiberius_model` left out |
+| Tiberius off | 2 fewer (a `contigs` sample without the screen: 19 instead of 21) | `tiberius_model` left out |
 | GeneMark-ES on | 1 more | |
 | SignalP 6 on | 1 more | `install_signalp6` added |
 | AMR screen on | 1 more (`amr_chroquetas`) | `chroquetas_db` added |
 | `parameters.its.unite_identified_only: false` | | `unite_identified` left out |
 | `parameters.busco.lineage` names a lineage | | `busco_data` added |
 | `parameters.contigs.screen: true` (`contigs` mode only) | 8 more | |
+| `parameters.<mode>.ont_adapter: off` (ONT samples in `longread` and `hybrid`) | 3 fewer | |
 
-For example, the first run of one `contigs` sample without the screen plans 28 jobs, and 30 with
-the AMR screen on. The two-sample examples of `config/config_test_examples.yaml` plan 75 jobs in
-`longread` mode, with one ONT and one PacBio sample, and 107 in `hybrid` mode. With the AMR screen
-on, they plan 78 and 110. On a finished output folder, a dry run prints
+For example, the first run of one `contigs` sample without the screen plans 31 jobs, and 33 with
+the AMR screen on. The two-sample examples of `config/config_test_examples.yaml` plan 83 jobs in
+`longread` mode, with one ONT and one PacBio sample, and 115 in `hybrid` mode. With the AMR screen
+on, they plan 86 and 118. On a finished output folder, a dry run prints
 `Nothing to be done (all requested files are present and up to date).`
 
 ## CPU cores and threads
@@ -153,7 +155,7 @@ tools are capped, so that several run side by side. In the table, "up to 12" mea
 |---|---|
 | `resources.threads` | SPAdes (`illumina_assembly`), hifiasm or Flye (`long_read_assembly`), Tiberius (`tiberius_prediction`), funannotate predict (`funannotate_prediction`); the read mappings: PhiX removal (`map_phix`), the coverage track (`map_contigs`) and, in `hybrid`, the guide mapping and the read selection (`map_guide_contigs`, `map_sel_contigs`) |
 | up to 24 | BLAST (`blast_contigs`, `blast_guide_contigs`), QUAST (`genome_assembly_evaluation`), BUSCO (`completeness`), Qualimap (`map_evaluation`, `map_guide_evaluation`), bwa mem before Polypolish (`short_read_correction`; Polypolish itself runs on one thread) |
-| up to 16 | fastp (`trim_adapters`) |
+| up to 16 | fastp (`trim_adapters`), fastplong (`trim_ont_adapters`) |
 | up to 12 | Medaka (`long_read_consensus`), RepeatModeler and RepeatMasker (`repeat_masking`), antiSMASH (`antismash_annotation`), eggNOG-mapper (`eggnog_annotation`), funannotate annotate (`funannotate_annotation`) |
 | up to 10 | InterProScan (`iprscan_annotation`) |
 | up to 8 | nhmmer (`its_windows`), ITSx (`its_extraction`), NanoPlot (`raw_long_read_qc`, `filtered_long_read_qc`) |
@@ -206,8 +208,8 @@ licensed tools are installed by hand, as described on
 [Installation](../getting-started/installation.md) and
 [Licensed and external tools](../getting-started/external-tools.md).
 
-Building needs network access, once per environment. A `contigs` run builds 14 environments by
-default and a `hybrid` run up to 26. The full list is on
+Building needs network access, once per environment. A `contigs` run builds 15 environments by
+default and a `hybrid` run up to 27. The full list is on
 [Installation](../getting-started/installation.md#sdm-conda).
 
 The environments are stored in `.snakemake/conda/` of the launch folder. `--conda-prefix` stores
@@ -339,6 +341,7 @@ settings FunFlux passes to rules, and the first rule each one re-runs:
 | `parameters.contig_summary.telomere_motif`, `telomere_window`, `min_telomere_copies` | `telomere_units`, then `contig_summary` and `multiqc`; nothing else |
 | `parameters.contig_summary.min_rdna_units` | `contig_summary`, then `multiqc`; nothing else |
 | `links.telomere_db_link`, `parameters.contig_summary.telomere_db_sha256` | `telomere_db`, then `telomere_units` of every sample, `contig_summary` and `multiqc` |
+| `links.univec_link`, `parameters.contig_summary.univec_sha256` | `univec_illumina`, then `blast_adapters` and `screen_adapters` of every sample, `contig_summary` and `multiqc` |
 | `parameters.its.window_flank` | `its_windows` |
 | `parameters.its.max_full_length`, `parameters.its_taxonomy_cutoff` | `its_classification` |
 | `parameters.its.unite_identified_only` | `its_classification` (its UNITE input changes); switched on, `unite_identified` runs first if its files are missing |
@@ -363,6 +366,7 @@ settings FunFlux passes to rules, and the first rule each one re-runs:
 | `links.chroquetas_link`, `parameters.amr.chroquetas_script_sha256`, `parameters.amr.chroquetas_db_sha256` | `chroquetas_db`, then `amr_chroquetas` of every sample and `multiqc` |
 | `links.phix_link` | `download_phix`, then `build_phix` and every `map_phix` |
 | `parameters.spades_kmers` | `illumina_assembly` (in `hybrid`: the guide assembly) |
+| `parameters.<mode>.ont_adapter` | `find_ont_adapter` of every ONT sample, then the trimming, Filtlong and the whole assembly; switched off, `filter_long_reads` reads the raw reads, which re-runs the same chain |
 | `parameters.<mode>.filtlong.*`, `parameters.hybrid.short_read_guidance`, `parameters.hybrid.filtlong_split` | `filter_long_reads` |
 | `parameters.<mode>.assembler`, `flye_input_mode`, `hifiasm.*` | `long_read_assembly` |
 | `parameters.<mode>.medaka_model`, `medaka_model_fallback_auto` | `check_medaka_model`; `long_read_assembly` of every ONT sample waits for its file and runs again too. Switching Medaka off or on also changes which file `finalize_assembly` (`longread`) or `short_read_correction` (`hybrid`) copies or corrects |
@@ -519,6 +523,7 @@ configuration:
 | funannotate database, then the repair of the paths stored in it | `funannotate_db`, `normalize_funannotate_db` | the download only while `directories.funannotate_db` holds no database | `directories.funannotate_db` |
 | UNITE reference | `unite_db` | unless `directories.unite_db` names your copy | `00.resources/unite/` |
 | telomere repeat database | `telomere_db` | always | `00.resources/telomeres/` |
+| Illumina adapter records of NCBI UniVec | `univec_illumina` | always | `00.resources/adapters/` |
 | Tiberius `fungi` model | `tiberius_model` | Tiberius on, the default | `00.resources/tiberius/` |
 | ChroQueTas and its FungAMR database | `chroquetas_db` | AMR screen on | `00.resources/chroquetas/` |
 | antiSMASH databases (9.4 GB) | `antismash_db` | unless `directories.antismash_db` names your copy | `00.resources/antismash/` |
@@ -593,7 +598,7 @@ The memory and time a step asks for depend on the kind of step:
 |---|---|---|
 | the heavy steps: SPAdes (`illumina_assembly`), hifiasm or Flye (`long_read_assembly`), Medaka (`long_read_consensus`), Polypolish (`short_read_correction`), the read mappings with BAM sorting (`map_contigs`, `map_guide_contigs`), BLAST (`blast_contigs`, `blast_guide_contigs`), BUSCO (`completeness`), `repeat_masking`, Tiberius (`tiberius_prediction`), funannotate predict and annotate, InterProScan, eggNOG-mapper, antiSMASH, SignalP 6, and in `hybrid` Filtlong (`filter_long_reads`), guided or not | `ram_gb` | `runtime_hours` |
 | Qualimap (`map_evaluation`, `map_guide_evaluation`) | its Java heap (`ram_gb`, at most 64 GB) plus 4 GB, never more than `ram_gb` | `runtime_hours` |
-| the long steps that hold little in memory: the PhiX filter (`map_phix`), the read selection of `hybrid` (`map_sel_contigs`), Filtlong in `longread` (`filter_long_reads`) | nothing | `runtime_hours` |
+| the long steps that hold little in memory: the PhiX filter (`map_phix`), the read selection of `hybrid` (`map_sel_contigs`), Filtlong in `longread` (`filter_long_reads`), the ONT adapter scan, trimming and check (`find_ont_adapter`, `trim_ont_adapters`, `check_ont_trimming`) | nothing | `runtime_hours` |
 | every other step (seconds to minutes, a few GB at most) | nothing | nothing |
 
 Set `threads`, `ram_gb` and `runtime_hours` so that one job fits one node and one partition. The

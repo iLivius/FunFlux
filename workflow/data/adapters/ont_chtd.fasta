@@ -1,0 +1,392 @@
+>ONT_adapter_top Ligation Adapter (LA), Native Adapter (NA) and Rapid Adapter (RA) top strand | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 15
+CCTGTACTTCGTTCAGTTACGTATTGCT
+>ONT_LA_bottom Ligation Adapter (LA) bottom strand | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 15
+GCAATACGTAACTGAACGAAGTACAGG
+>ONT_NA_bottom Native Adapter (NA) bottom strand | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 15
+ACGTAACTGAACGAAGTACAGG
+>ONT_rapid_barcode_3prime_flank 3' flanking sequence of the rapid barcodes | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_native_barcode_NB01 native barcode NB01 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACACAAAGACACCGACAACTTTCTTCAGCACCT
+>ONT_native_barcode_NB02 native barcode NB02 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAACAGACGACTACAAACGGAATCGACAGCACCT
+>ONT_native_barcode_NB03 native barcode NB03 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACCTGGTAACTGGGACACAAGACTCCAGCACCT
+>ONT_native_barcode_NB04 native barcode NB04 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATAGGGAAACACGATAGAATCCGAACAGCACCT
+>ONT_native_barcode_NB05 native barcode NB05 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAAGGTTACACAAACCCTGGACAAGCAGCACCT
+>ONT_native_barcode_NB06 native barcode NB06 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGACTACTTTCTGCCTTTGCGAGAACAGCACCT
+>ONT_native_barcode_NB07 native barcode NB07 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAAGGATTCATTCCCACGGTAACACCAGCACCT
+>ONT_native_barcode_NB08 native barcode NB08 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAACGTAACTTGGTTTGTTCCCTGAACAGCACCT
+>ONT_native_barcode_NB09 native barcode NB09 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAACCAAGACTCGCTGTGCCTAGTTCAGCACCT
+>ONT_native_barcode_NB10 native barcode NB10 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGAGAGGACAAAGGTTTCAACGCTTCAGCACCT
+>ONT_native_barcode_NB11 native barcode NB11 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATCCATTCCCTCCGATAGATGAAACCAGCACCT
+>ONT_native_barcode_NB12 native barcode NB12 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATCCGATTCTGCTTCTTTCTACCTGCAGCACCT
+>ONT_native_barcode_NB13 native barcode NB13 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAGAACGACTTCCATACTCGTGTGACAGCACCT
+>ONT_native_barcode_NB14 native barcode NB14 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAACGAGTCTCTTGGGACCCATAGACAGCACCT
+>ONT_native_barcode_NB15 native barcode NB15 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAGGTCTACCTCGCTAACACCACTGCAGCACCT
+>ONT_native_barcode_NB16 native barcode NB16 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACGTCAACTGACAGTGGTTCGTACTCAGCACCT
+>ONT_native_barcode_NB17 native barcode NB17 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAACCCTCCAGGAAAGTACCTCTGATCAGCACCT
+>ONT_native_barcode_NB18 native barcode NB18 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACCAAACCCAACAACCTAGATAGGCCAGCACCT
+>ONT_native_barcode_NB19 native barcode NB19 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGTTCCTCGTGCAGTGTCAAGAGATCAGCACCT
+>ONT_native_barcode_NB20 native barcode NB20 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATTGCGTCCTGTTACGAGAACTCATCAGCACCT
+>ONT_native_barcode_NB21 native barcode NB21 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGAGCCTCTCATTGTCCGTTCTCTACAGCACCT
+>ONT_native_barcode_NB22 native barcode NB22 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAACCACTGCCATGTATCAAAGTACGCAGCACCT
+>ONT_native_barcode_NB23 native barcode NB23 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACTTACTACCCAGTGAACCTCCTCGCAGCACCT
+>ONT_native_barcode_NB24 native barcode NB24 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGCATAGTTCTGCATGATGGGTTAGCAGCACCT
+>ONT_native_barcode_NB25 native barcode NB25 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGTAAGTTGGGTATGCAACGCAATGCAGCACCT
+>ONT_native_barcode_NB26 native barcode NB26 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACATACAGCGACTACGCATTCTCATCAGCACCT
+>ONT_native_barcode_NB27 native barcode NB27 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACGACGGTTAGATTCACCTCTTACACAGCACCT
+>ONT_native_barcode_NB28 native barcode NB28 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATGAAACCTAAGAAGGCACCGTATCCAGCACCT
+>ONT_native_barcode_NB29 native barcode NB29 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACTAGACACCTTGGGTTGACAGACCCAGCACCT
+>ONT_native_barcode_NB30 native barcode NB30 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATCAGTGAGGATCTACTTCGACCCACAGCACCT
+>ONT_native_barcode_NB31 native barcode NB31 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATGCGTACAGCAATCAGTTACATTGCAGCACCT
+>ONT_native_barcode_NB32 native barcode NB32 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACCAGTAGAAGTCCGACAACGTCATCAGCACCT
+>ONT_native_barcode_NB33 native barcode NB33 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACAGACTTGGTACGGTTGGGTAACTCAGCACCT
+>ONT_native_barcode_NB34 native barcode NB34 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGGACGAAGAACTCAAGTCAAAGGCCAGCACCT
+>ONT_native_barcode_NB35 native barcode NB35 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACTACTTACGAAGCTGAGGGACTGCCAGCACCT
+>ONT_native_barcode_NB36 native barcode NB36 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAATGTCCCAGTTAGAGGAGGAAACACAGCACCT
+>ONT_native_barcode_NB37 native barcode NB37 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGCTTGCGATTGATGCTTAGTATCACAGCACCT
+>ONT_native_barcode_NB38 native barcode NB38 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAACCACAGGAGGACGATACAGAGAACAGCACCT
+>ONT_native_barcode_NB39 native barcode NB39 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACCACAGTGTCAACTAGAGCCTCTCCAGCACCT
+>ONT_native_barcode_NB40 native barcode NB40 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATAGTTTGGATGACCAAGGATAGCCCAGCACCT
+>ONT_native_barcode_NB41 native barcode NB41 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGGAGTTCGTCCAGAGAAGTACACGCAGCACCT
+>ONT_native_barcode_NB42 native barcode NB42 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACTACGTGTAAGGCATACCTGCCAGCAGCACCT
+>ONT_native_barcode_NB43 native barcode NB43 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACTTTCGTTGTTGACTCGACGGTAGCAGCACCT
+>ONT_native_barcode_NB44 native barcode NB44 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAGTAGAAAGGGTTCCTTCCCACTCCAGCACCT
+>ONT_native_barcode_NB45 native barcode NB45 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGATCCAACAGAGATGCCTTCAGTGCAGCACCT
+>ONT_native_barcode_NB46 native barcode NB46 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGCTGTGTTCCACTTCATTCTCCTGCAGCACCT
+>ONT_native_barcode_NB47 native barcode NB47 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGTGCAACTTTCCCACAGGTAGTTCCAGCACCT
+>ONT_native_barcode_NB48 native barcode NB48 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACATCTGGAACGTGGTACACCTGTACAGCACCT
+>ONT_native_barcode_NB49 native barcode NB49 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAACTGGTGCAGCTTTGAACATCTAGCAGCACCT
+>ONT_native_barcode_NB50 native barcode NB50 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAATGGACTTTGGTAACTTCCTGCGTCAGCACCT
+>ONT_native_barcode_NB51 native barcode NB51 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGTTGAATGAGCCTACTGGGTCCTCCAGCACCT
+>ONT_native_barcode_NB52 native barcode NB52 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATGAGAGACAAGATTGTTCGTGGACCAGCACCT
+>ONT_native_barcode_NB53 native barcode NB53 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAGATTCAGACCGTCTCATGCAAAGCAGCACCT
+>ONT_native_barcode_NB54 native barcode NB54 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACAAGAGCTTTGACTAAGGAGCATGCAGCACCT
+>ONT_native_barcode_NB55 native barcode NB55 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATGGAAGATGAGACCCTGATCTACGCAGCACCT
+>ONT_native_barcode_NB56 native barcode NB56 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATCACTACTCAACAGGTGGCATGAACAGCACCT
+>ONT_native_barcode_NB57 native barcode NB57 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGCTAGGTCAATCTCCTTCGGAAGTCAGCACCT
+>ONT_native_barcode_NB58 native barcode NB58 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACAGGTTACTCCTCCGTGAGTCTGACAGCACCT
+>ONT_native_barcode_NB59 native barcode NB59 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATCAATCAAGAAGGGAAAGCAAGGTCAGCACCT
+>ONT_native_barcode_NB60 native barcode NB60 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACATGTTCAACCAAGGCTTCTATGGCAGCACCT
+>ONT_native_barcode_NB61 native barcode NB61 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAGAGGGTACTATGTGCCTCAGCACCAGCACCT
+>ONT_native_barcode_NB62 native barcode NB62 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACACCCACACTTACTTCAGGACGTACAGCACCT
+>ONT_native_barcode_NB63 native barcode NB63 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATTCTGAAGTTCCTGGGTCTTGAACCAGCACCT
+>ONT_native_barcode_NB64 native barcode NB64 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGACAGACACCGTTCATCGACTTTCCAGCACCT
+>ONT_native_barcode_NB65 native barcode NB65 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATTCTCAGTCTTCCTCCAGACAAGGCAGCACCT
+>ONT_native_barcode_NB66 native barcode NB66 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACCGATCCTTGTGGCTTCTAACTTCCAGCACCT
+>ONT_native_barcode_NB67 native barcode NB67 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGTTTGTCATACTCGTGTGCTCACCCAGCACCT
+>ONT_native_barcode_NB68 native barcode NB68 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGAATCTAAGCAAACACGAAGGTGGCAGCACCT
+>ONT_native_barcode_NB69 native barcode NB69 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATACAGTCCGAGCCTCATGTGATCTCAGCACCT
+>ONT_native_barcode_NB70 native barcode NB70 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAACCGAGATCCTACGAATGGAGTGTCAGCACCT
+>ONT_native_barcode_NB71 native barcode NB71 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACCTGGGAGCATCAGGTAGTAACAGCAGCACCT
+>ONT_native_barcode_NB72 native barcode NB72 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATAGCTGACTGTCTTCCATACCGACCAGCACCT
+>ONT_native_barcode_NB73 native barcode NB73 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAAGAAACAGGATGACAGAACCCTCCAGCACCT
+>ONT_native_barcode_NB74 native barcode NB74 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATACAAGCATCCCAACACTTCCACTCAGCACCT
+>ONT_native_barcode_NB75 native barcode NB75 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGACCATTGTGATGAACCCTGTTGTCAGCACCT
+>ONT_native_barcode_NB76 native barcode NB76 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAATGCTTGTTACATCAACCCTGGACCAGCACCT
+>ONT_native_barcode_NB77 native barcode NB77 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACGACCTGTTTCTCAGGGATACAACCAGCACCT
+>ONT_native_barcode_NB78 native barcode NB78 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAACAACCGAACCTTTGAATCAGAACAGCACCT
+>ONT_native_barcode_NB79 native barcode NB79 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATCTCGGAGATAGTTCTCACTGCTGCAGCACCT
+>ONT_native_barcode_NB80 native barcode NB80 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACGGATGAACATAGGATAGCGATTCCAGCACCT
+>ONT_native_barcode_NB81 native barcode NB81 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACCTCATCTTGTGAAGTTGTTTCGGCAGCACCT
+>ONT_native_barcode_NB82 native barcode NB82 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAACGGTATGTCGAGTTCCAGGACTACAGCACCT
+>ONT_native_barcode_NB83 native barcode NB83 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATGGCTTGATCTAGGTAAGGTCGAACAGCACCT
+>ONT_native_barcode_NB84 native barcode NB84 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGTAGTGGACCTAGAACCTGTGCCACAGCACCT
+>ONT_native_barcode_NB85 native barcode NB85 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAACGGAGGAGTTAGTTGGATGATCCAGCACCT
+>ONT_native_barcode_NB86 native barcode NB86 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAGGTGATCCCAACAAGCGTAAGTACAGCACCT
+>ONT_native_barcode_NB87 native barcode NB87 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATACATGCTCCTGTTGTTAGGGAGGCAGCACCT
+>ONT_native_barcode_NB88 native barcode NB88 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATCTTCTACTACCGATCCGAAGCAGCAGCACCT
+>ONT_native_barcode_NB89 native barcode NB89 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAACAGCATCAATGTTTGGCTAGTTGCAGCACCT
+>ONT_native_barcode_NB90 native barcode NB90 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGATGTAGAGGGTACGGTTTGAGGCCAGCACCT
+>ONT_native_barcode_NB91 native barcode NB91 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGGCTCCATAGGAACTCACGCTACTCAGCACCT
+>ONT_native_barcode_NB92 native barcode NB92 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAATTGTGAGTGGAAAGATACAGGACCCAGCACCT
+>ONT_native_barcode_NB93 native barcode NB93 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAAGTTTCCATCACTTCAGACTTGGGCAGCACCT
+>ONT_native_barcode_NB94 native barcode NB94 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAAGATTGTCCTCAAACTGCCACCTACCAGCACCT
+>ONT_native_barcode_NB95 native barcode NB95 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACCTGTCTGGAAGAAGAATGGACTTCAGCACCT
+>ONT_native_barcode_NB96 native barcode NB96 with its flanks (AAGGTTAA-barcode-CAGCACCT) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+AAGGTTAACTGAACGGTCATAGAGTCCACCATCAGCACCT
+>ONT_rapid_barcode_RB01 rapid barcode RB01 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAAGAAAGTTGTCGGTGTCTTTGTGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB02 rapid barcode RB02 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTCGATTCCGTTTGTAGTCGTCTGTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB03 rapid barcode RB03 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGAGTCTTGTGTCCCAGTTACCAGGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB04 rapid barcode RB04 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTTCGGATTCTATCGTGTTTCCCTAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB05 rapid barcode RB05 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCTTGTCCAGGGTTTGTGTAACCTTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB06 rapid barcode RB06 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTTCTCGCAAAGGCAGAAAGTAGTCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB07 rapid barcode RB07 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGTGTTACCGTGGGAATGAATCCTTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB08 rapid barcode RB08 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTTCAGGGAACAAACCAAGTTACGTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB09 rapid barcode RB09 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAACTAGGCACAGCGAGTCTTGGTTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB10 rapid barcode RB10 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAAGCGTTGAAACCTTTGTCCTCTCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB11 rapid barcode RB11 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGTTTCATCTATCGGAGGGAATGGAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB12 rapid barcode RB12 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCAGGTAGAAAGAAGCAGAATCGGAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB13 rapid barcode RB13 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAGAACGACTTCCATACTCGTGTGAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB14 rapid barcode RB14 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAACGAGTCTCTTGGGACCCATAGAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB15 rapid barcode RB15 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAGGTCTACCTCGCTAACACCACTGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB16 rapid barcode RB16 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCGTCAACTGACAGTGGTTCGTACTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB17 rapid barcode RB17 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCACCCTCCAGGAAAGTACCTCTGATGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB18 rapid barcode RB18 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCCAAACCCAACAACCTAGATAGGCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB19 rapid barcode RB19 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGTTCCTCGTGCAGTGTCAAGAGATGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB20 rapid barcode RB20 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTTGCGTCCTGTTACGAGAACTCATGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB21 rapid barcode RB21 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGAGCCTCTCATTGTCCGTTCTCTAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB22 rapid barcode RB22 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCACCACTGCCATGTATCAAAGTACGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB23 rapid barcode RB23 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCTTACTACCCAGTGAACCTCCTCGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB24 rapid barcode RB24 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGCATAGTTCTGCATGATGGGTTAGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB25 rapid barcode RB25 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGTAAGTTGGGTATGCAACGCAATGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB26 rapid barcode RB26 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCATACAGCGACTACGCATTCTCATGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB27 rapid barcode RB27 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCGACGGTTAGATTCACCTCTTACAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB28 rapid barcode RB28 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTGAAACCTAAGAAGGCACCGTATCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB29 rapid barcode RB29 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCTAGACACCTTGGGTTGACAGACCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB30 rapid barcode RB30 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTCAGTGAGGATCTACTTCGACCCAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB31 rapid barcode RB31 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTGCGTACAGCAATCAGTTACATTGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB32 rapid barcode RB32 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCCAGTAGAAGTCCGACAACGTCATGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB33 rapid barcode RB33 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCAGACTTGGTACGGTTGGGTAACTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB34 rapid barcode RB34 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGGACGAAGAACTCAAGTCAAAGGCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB35 rapid barcode RB35 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCTACTTACGAAGCTGAGGGACTGCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB36 rapid barcode RB36 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCATGTCCCAGTTAGAGGAGGAAACAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB37 rapid barcode RB37 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGCTTGCGATTGATGCTTAGTATCAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB38 rapid barcode RB38 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCACCACAGGAGGACGATACAGAGAAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB39 rapid barcode RB39 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCCACAGTGTCAACTAGAGCCTCTCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB40 rapid barcode RB40 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTAGTTTGGATGACCAAGGATAGCCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB41 rapid barcode RB41 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGGAGTTCGTCCAGAGAAGTACACGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB42 rapid barcode RB42 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCTACGTGTAAGGCATACCTGCCAGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB43 rapid barcode RB43 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCTTTCGTTGTTGACTCGACGGTAGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB44 rapid barcode RB44 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAGTAGAAAGGGTTCCTTCCCACTCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB45 rapid barcode RB45 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGATCCAACAGAGATGCCTTCAGTGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB46 rapid barcode RB46 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGCTGTGTTCCACTTCATTCTCCTGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB47 rapid barcode RB47 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGTGCAACTTTCCCACAGGTAGTTCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB48 rapid barcode RB48 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCATCTGGAACGTGGTACACCTGTAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB49 rapid barcode RB49 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCACTGGTGCAGCTTTGAACATCTAGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB50 rapid barcode RB50 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCATGGACTTTGGTAACTTCCTGCGTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB51 rapid barcode RB51 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGTTGAATGAGCCTACTGGGTCCTCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB52 rapid barcode RB52 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTGAGAGACAAGATTGTTCGTGGACGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB53 rapid barcode RB53 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAGATTCAGACCGTCTCATGCAAAGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB54 rapid barcode RB54 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCAAGAGCTTTGACTAAGGAGCATGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB55 rapid barcode RB55 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTGGAAGATGAGACCCTGATCTACGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB56 rapid barcode RB56 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTCACTACTCAACAGGTGGCATGAAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB57 rapid barcode RB57 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGCTAGGTCAATCTCCTTCGGAAGTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB58 rapid barcode RB58 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCAGGTTACTCCTCCGTGAGTCTGAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB59 rapid barcode RB59 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTCAATCAAGAAGGGAAAGCAAGGTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB60 rapid barcode RB60 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCATGTTCAACCAAGGCTTCTATGGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB61 rapid barcode RB61 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAGAGGGTACTATGTGCCTCAGCACGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB62 rapid barcode RB62 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCACCCACACTTACTTCAGGACGTAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB63 rapid barcode RB63 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTTCTGAAGTTCCTGGGTCTTGAACGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB64 rapid barcode RB64 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGACAGACACCGTTCATCGACTTTCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB65 rapid barcode RB65 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTTCTCAGTCTTCCTCCAGACAAGGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB66 rapid barcode RB66 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCCGATCCTTGTGGCTTCTAACTTCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB67 rapid barcode RB67 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGTTTGTCATACTCGTGTGCTCACCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB68 rapid barcode RB68 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGAATCTAAGCAAACACGAAGGTGGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB69 rapid barcode RB69 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTACAGTCCGAGCCTCATGTGATCTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB70 rapid barcode RB70 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCACCGAGATCCTACGAATGGAGTGTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB71 rapid barcode RB71 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCCTGGGAGCATCAGGTAGTAACAGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB72 rapid barcode RB72 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTAGCTGACTGTCTTCCATACCGACGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB73 rapid barcode RB73 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAAGAAACAGGATGACAGAACCCTCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB74 rapid barcode RB74 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTACAAGCATCCCAACACTTCCACTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB75 rapid barcode RB75 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGACCATTGTGATGAACCCTGTTGTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB76 rapid barcode RB76 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCATGCTTGTTACATCAACCCTGGACGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB77 rapid barcode RB77 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCGACCTGTTTCTCAGGGATACAACGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB78 rapid barcode RB78 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAACAACCGAACCTTTGAATCAGAAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB79 rapid barcode RB79 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTCTCGGAGATAGTTCTCACTGCTGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB80 rapid barcode RB80 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCGGATGAACATAGGATAGCGATTCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB81 rapid barcode RB81 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCCTCATCTTGTGAAGTTGTTTCGGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB82 rapid barcode RB82 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCACGGTATGTCGAGTTCCAGGACTAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB83 rapid barcode RB83 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTGGCTTGATCTAGGTAAGGTCGAAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB84 rapid barcode RB84 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGTAGTGGACCTAGAACCTGTGCCAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB85 rapid barcode RB85 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAACGGAGGAGTTAGTTGGATGATCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB86 rapid barcode RB86 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAGGTGATCCCAACAAGCGTAAGTAGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB87 rapid barcode RB87 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTACATGCTCCTGTTGTTAGGGAGGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB88 rapid barcode RB88 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTCTTCTACTACCGATCCGAAGCAGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB89 rapid barcode RB89 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCACAGCATCAATGTTTGGCTAGTTGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB90 rapid barcode RB90 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGATGTAGAGGGTACGGTTTGAGGCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB91 rapid barcode RB91 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGGCTCCATAGGAACTCACGCTACTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB92 rapid barcode RB92 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCTTGTGAGTGGAAAGATACAGGACCGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB93 rapid barcode RB93 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCAGTTTCCATCACTTCAGACTTGGGGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB94 rapid barcode RB94 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCGATTGTCCTCAAACTGCCACCTACGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB95 rapid barcode RB95 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCCTGTCTGGAAGAAGAATGGACTTGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA
+>ONT_rapid_barcode_RB96 rapid barcode RB96 with its flanks (GCTTGGGTGTTTAACC-barcode-3' flank; ONT gives the barcode only in part) | source: ONT Chemistry Technical Document CHTD_500_v1_revAV_24July2026, section 14
+GCTTGGGTGTTTAACCCTGAACGGTCATAGAGTCCACCATGTTTTCGCATTTATCGTGAAACGCTTTCGCGTTTTTCGTGCGCCGCTTCA

@@ -21,6 +21,7 @@ provides the data, its version and its size.
 | [antiSMASH databases](#antismash) | `directories.antismash_db` | no | the workflow, once per output folder; or your copy | as downloaded by antiSMASH 8.0.4 | 9.4 GB |
 | [Tiberius model](#tiberius-model) | `links.tiberius_model_link`, `parameters.tiberius.model_sha256` | the link, unless `parameters.tiberius.mode` is `off` | the workflow, once per output folder | the `fungi` model of 8 February 2026 | 30 MB download, 31 MB unpacked |
 | [Telomere repeat database](#telomere-db) | `links.telomere_db_link`, `parameters.contig_summary.telomere_db_sha256` | yes | the workflow, once per output folder | `telo_database_v2.tsv` of tidk, at the commit the template link names | 0.6 MB |
+| [UniVec, for the adapter screen](#univec) | `links.univec_link`, `parameters.contig_summary.univec_sha256` | no (the template address is used when the key is missing) | the workflow, once per output folder | NCBI UniVec build 10.1; the 151 Illumina records are kept | 1.7 MB download, about 31 kB kept |
 | [ChroQueTas and the FungAMR database](#chroquetas) | `links.chroquetas_link`, `parameters.amr.chroquetas_script_sha256`, `parameters.amr.chroquetas_db_sha256` | only with `parameters.amr.chroquetas: on` (off by default) | the workflow, once per output folder | ChroQueTas 1.0.1 and its database `db-v20250811` (57 species) | 29 kB script, 137 kB archive; 2.5 MB unpacked |
 | [BUSCO lineage datasets](#busco) | `parameters.busco.lineage` | no (default `auto`) | BUSCO, in every BUSCO job with `auto`; the workflow, once per output folder, for a named lineage | odb12 | per archive, e.g. eukaryota_odb12 29 MB, hypocreales_odb12 275 MB |
 | [PhiX genome](#phix) | `links.phix_link` | in `illumina` and `hybrid` | the workflow, once per output folder (`download_phix`) | GCF_000819615.1 | 2 kB |
@@ -484,6 +485,24 @@ sample. There is no local-copy key: the file is 0.6 MB, and a run needs network 
 FunFlux neither ships the database nor mirrors it. It is downloaded on your machine at run time,
 as the Tiberius model is. Cite it through the tidk paper and the address, as listed on
 [Citation and references](../about/citation.md).
+
+## UniVec, for the adapter screen { #univec }
+
+The contig adapter screen searches every draft assembly for adapter sequence
+([Adapter trimming and the adapter screen](../methods/adapter-trimming.md#the-contig-adapter-screen)).
+FunFlux ships the Oxford Nanopore adapters and barcodes and the PacBio and MGI adapters in
+`workflow/data/adapters/`. The Illumina adapters and primers come from NCBI's UniVec, whose
+records note that Illumina's oligonucleotide sequences are copyrighted, so FunFlux downloads them
+instead of shipping them.
+
+Rule `univec_illumina` downloads UniVec build 10.1 from `links.univec_link`, by default
+`https://ftp.ncbi.nlm.nih.gov/pub/UniVec/archive/10.1/UniVec`, once per output folder. It checks the
+file against `parameters.contig_summary.univec_sha256` with `sha256sum -c`, keeps the 151 records
+whose description names Illumina as `00.resources/adapters/univec_illumina.fasta`, and writes a
+`PROVENANCE.txt` beside it with the source URL, the date, the checksum and the record count. The
+address points into NCBI's archive, so the file behind it does not change. A file that does not
+match the checksum stops the run with `[FunFlux] univec_illumina: ...`, and the download is kept
+with the suffix `.failed`.
 
 ## ChroQueTas and the FungAMR database { #chroquetas }
 

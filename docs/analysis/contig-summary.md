@@ -87,6 +87,7 @@ annotation, and the other columns hold the evidence:
 | `genes` | mRNA features of the annotation on the scaffold the contig became | the contig has no scaffold in `contigs_sort.fasta`: dropped by `funannotate clean`, split off as the mitochondrion, or removed by the screen |
 | `genus` | `assigned_genus` of `contig_taxonomy_decisions.tsv` | no screen |
 | `screen` | `kept (<reason>)`, `removed (<reason>)` or `mitochondrion (<reason>)`, with the reason of the contig selector or, for a mitochondrion, of the mitochondrion screen; a `mitochondrial_candidate`, `circular_unclassified` or `high_coverage_unclassified` class of the mitochondrion screen is appended after `;` | no screen |
+| `adapter` | what the contig adapter screen found: `none`, `at_end` (adapter or barcode within 100 bp of a contig end), `internal` (a whole adapter inside the contig) or `at_end+internal`; it changes no verdict ([The contig adapter screen](../methods/adapter-trimming.md#the-contig-adapter-screen)) | never |
 | `annotated_as` | `scaffold_N`, the name of the contig in every annotation file; or `dropped by funannotate clean`, `not annotated (mitochondrion)`, `not annotated (removed by the screen)` | never |
 | `verdict` | one of the ten verdicts ([The verdict](#the-verdict)): `mitochondrion`, `contaminant`, `rDNA_array`, `chromosome`, `chromosome_arm`, `low_depth`, `repeat`, `nuclear_contig`, `nuclear_fragment`, `unclassified` | never |
 | `reason` | the evidence behind the verdict, in words, for example `telomere repeats at both ends (17 and 19 copies); depth 1.00x the median; 543 genes, 131 BUSCO markers` | never |
@@ -589,7 +590,7 @@ For the report, `02.assembly/{sample}/eval/contig_summary_mqc.tsv` holds the sam
 for MultiQC, with the rows named `{sample}: {contig}` and a description that names the telomere
 unit of the sample. MultiQC shows the tables of all samples of the run as one table in the section
 **Contig summary** of `06.report/multiqc_report.html`. It writes the numbers to
-`06.report/multiqc_data/multiqc_contig_summary.txt`. The table has all 20 columns, `telomere_unit`
+`06.report/multiqc_data/multiqc_contig_summary.txt`. The table has all 21 columns, `telomere_unit`
 among them, so samples of different species keep their units apart. The column settings of the
 table show or hide columns.
 
@@ -610,6 +611,8 @@ Each change in the left column re-runs the contig summary steps on the right:
 | `links.telomere_db_link` or `telomere_db_sha256` | `telomere_db`, then `telomere_units` of every sample and the steps after it |
 | a new telomere unit or ends table | `contig_summary` |
 | `min_rdna_units` | `contig_summary` |
+| `links.univec_link` or `univec_sha256` | `univec_illumina`, then `blast_adapters`, `screen_adapters` and `contig_summary` of every sample |
+| a new adapter screen result | `contig_summary` |
 | a new screen result, a new `busco.lineage` (the BUSCO markers are counted per contig), new ITS windows or a new annotation | `contig_summary` |
 
 A re-run of these steps costs seconds to a minute and never touches the annotation. MultiQC

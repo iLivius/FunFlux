@@ -236,6 +236,7 @@ that is not written:
 | `contigs_mitochondrial.fasta` | | confirmed mitochondrial contigs; empty file when none |
 | `eval/quast/`, `eval/busco/` | yes | yes |
 | `eval/telomere_candidates.tsv`, `eval/telomere_unit.txt`, `eval/telomere_ends.tsv` | yes | yes |
+| `eval/adapter_screen.tsv`, `eval/adapter_screen_mqc.tsv` | yes: the adapter screen of your assembly | yes |
 | `eval/contig_summary.tsv`, `eval/contig_summary_mqc.tsv` | yes; the depth and screen columns are `NA` | yes; the depth columns are `NA` (the self-mapping gives no read depth), the screen columns are filled |
 
 `01.reads/` is not created, and `03.taxonomy` to `06.report` are the same in every mode, as listed

@@ -94,8 +94,9 @@ screened. The last step writes the nuclear genome, which QC, the ITS search and 
 | Mapping QC | `map_evaluation` | Qualimap 2.3 | `eval/qualimap/` |
 | Screen | `blast_contigs`, `blob_json`, `blob_table`, `screen_mitochondria`, `select_contigs` | BLAST+ 2.16.0, BlobTools 1.1.1 | `contaminants/`, `mitochondria/` |
 | Genome files | `finalize_assembly`, `separate_mitochondria` | | `contigs_all.fasta`, `contigs_final.fasta`, `contigs_mitochondrial.fasta` |
+| Adapter screen of the draft | `blast_adapters`, `screen_adapters` | BLAST+ 2.16.0, FunFlux script | `eval/adapter_screen.tsv` |
 
-Paths without a stage prefix are under `02.assembly/{sample}/`. One sample plans 43 jobs, 45 with
+Paths without a stage prefix are under `02.assembly/{sample}/`. One sample plans 46 jobs, 48 with
 the AMR screen on ([Dry run](../reference/running.md#dry-run)). The threads of each step are
 listed on [CPU cores and threads](../reference/running.md#cpu-cores-and-threads).
 
@@ -248,11 +249,12 @@ Up to `02.assembly`, the output folder of this mode looks like this:
     ├── contigs_all.fasta                 screened assembly, mitochondrion included
     ├── contigs_final.fasta               nuclear genome: QUAST, BUSCO, ITS and annotation read this
     ├── contigs_mitochondrial.fasta       confirmed mitochondrial contigs
-    └── eval/quast/  eval/busco/  eval/qualimap/  eval/telomere_*  eval/contig_summary*.tsv
+    └── eval/quast/  eval/busco/  eval/qualimap/  eval/telomere_*  eval/adapter_*  eval/contig_summary*.tsv
 ```
 
 In the MultiQC report a sample has the rows `fastp read QC | {sample}`, `mapping QC | {sample}`,
 `QUAST assembly QC | {sample}` and its BUSCO rows. It also has one row per contig,
-`{sample}: {contig}`, in the contig summary table ([Report](../analysis/report.md)).
+`{sample}: {contig}`, in the contig summary table, and one row, `{sample}`, in the Adapters table
+([Report](../analysis/report.md)).
 `03.taxonomy` to `06.report` are the same in every mode: see
 [Output files](../reference/output.md).

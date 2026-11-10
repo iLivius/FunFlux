@@ -40,13 +40,13 @@ the four modes step by step, and each column heading links to the page of its mo
 | Input folder and file names | `input.illumina_dir`: `{sample}_R1.<ext>`, `{sample}_R2.<ext>` | `input.longread_dir`: `{sample}_ont.<ext>` or `{sample}_pacbio.<ext>` | both folders (may be the same one) and both sets of names | `input.contigs_dir`: `{sample}.fasta`, `.fa` or `.fna` |
 | Other required keys | `directories.blast_db`, `links.phix_link` | `directories.blast_db` | `directories.blast_db`, `links.phix_link` | `directories.blast_db`, only with the screen |
 | Mode settings | `parameters.spades_kmers` | `parameters.longread` | `parameters.hybrid`, `parameters.spades_kmers` | `parameters.contigs` |
-| Read processing | PhiX removal (bowtie2), fastp | Filtlong; NanoPlot before and after | PhiX removal, fastp; Filtlong (ONT reads scored against the Illumina pairs only if you switch it on); NanoPlot | none |
+| Read processing | PhiX removal (bowtie2), fastp | ONT adapters removed (fastplong); Filtlong; NanoPlot before and after | PhiX removal, fastp; ONT adapters removed (fastplong); Filtlong (ONT reads scored against the Illumina pairs only if you switch it on); NanoPlot | none |
 | Assembly | SPAdes `--isolate` | hifiasm (default) or Flye | SPAdes guide assembly, then hifiasm or Flye | none |
 | Contig filter | at least 500 bp and 2x coverage | none | guide assembly only: at least 500 bp and 2x | SPAdes headers: at least 500 bp and 2x; other headers: none |
 | Polishing | none | Medaka, ONT samples | Medaka (ONT samples), then Polypolish with the Illumina pairs | none |
 | Mapping QC | Qualimap | Qualimap | Qualimap, guide and long-read assembly | none |
 | `contigs_all.fasta` is | the screened contigs | the Medaka consensus (ONT) or the screened assembly (PacBio HiFi, or Medaka off) | the Polypolish output | the screened FASTA; written only with the screen |
-| Not run | long-read steps | PhiX removal, fastp, SPAdes, Polypolish; Medaka for PacBio HiFi | Medaka and Filtlong guidance for PacBio HiFi | read processing, assembly, polishing, mapping QC; the screen unless `parameters.contigs.screen: true` |
+| Not run | long-read steps | PhiX removal, fastp, SPAdes, Polypolish; adapter trimming and Medaka for PacBio HiFi | adapter trimming, Medaka and Filtlong guidance for PacBio HiFi | read processing, assembly, polishing, mapping QC; the screen unless `parameters.contigs.screen: true` |
 
 `contigs` mode skips every read and assembly step and runs the screen only with
 `parameters.contigs.screen: true`. `hybrid` mode combines the other two read-based modes. Its

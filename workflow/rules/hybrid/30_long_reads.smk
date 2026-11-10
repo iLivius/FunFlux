@@ -23,8 +23,12 @@
 # input.longread_dir; the suffix decides the technology); everything made from it lies
 # under 01.reads/{sample}/long/ in the output folder.
 #
-#   {sample}_ont.fastq.gz  + {sample}_selected_R1.fastq, _R2  (SEL_R1/R2, rule map_sel_contigs
-#                                                              in rules/hybrid/25_guide.smk)
+#   {sample}_ont.fastq.gz
+#     --find_ont_adapter, --trim_ont_adapters--> {sample}_trimmed.fastq.gz (TRIMMED_LONG,
+#       temporary; rules/shared/05_ont_adapters.smk): the ONT adapter and the barcode after it
+#       removed from the read ends (unless parameters.hybrid.ont_adapter is off)
+#   {sample}_trimmed.fastq.gz  + {sample}_selected_R1.fastq, _R2  (SEL_R1/R2, rule map_sel_contigs
+#                                                                 in rules/hybrid/25_guide.smk)
 #     --filter_long_reads (Filtlong -1 -2 [--trim --split N] ...)--> {sample}_filtered.fastq  (FILTERED_LONG, kept)
 #   {sample}_pacbio.fastq.gz  (PacBio HiFi: never guided)
 #     --filter_long_reads (Filtlong, the longread mode's command)--> {sample}_filtered.fastq  (FILTERED_LONG, kept)
@@ -58,7 +62,8 @@
 # Everything referenced here is defined once in 00_common.smk: FILTERED_LONG,
 # NANOPLOT_RAW_DIR, NANOPLOT_FILTERED_DIR, FILTLONG_MIN_LENGTH, FILTLONG_KEEP_PERCENT,
 # FILTLONG_LENGTH_WEIGHT, FILTLONG_TARGET_ARG, LOGS and CPUS, and the functions
-# raw_long_fastq() (the sample's raw long-read file), filtlong_guidance() (the sample's
+# raw_long_fastq() (the sample's raw long-read file), filtlong_input() (the file Filtlong
+# starts from: the trimmed reads of an ONT sample, the raw file otherwise), filtlong_guidance() (the sample's
 # guidance options, or nothing), filtlong_guide_reads() (the selected pairs those options
 # name, or nothing) and capped_cpus().
 #
@@ -75,9 +80,11 @@
 
 
 # ───────────── filter_long_reads — Filtlong, with the Illumina pairs as the yardstick ─────────────
-# Takes in:    the sample's RAW long-read FASTQ (raw_long_fastq), plain or gzip-compressed;
-#              Filtlong reads both. No rule makes this file: sample discovery found it by
-#              listing input.longread_dir. And, for a guided ONT sample, the sample's own
+# Takes in:    filtlong_input: for an ONT sample, the reads fastplong trimmed (TRIMMED_LONG,
+#              rule trim_ont_adapters in rules/shared/05_ont_adapters.smk); for a PacBio
+#              sample, or with parameters.hybrid.ont_adapter off, the sample's RAW long-read
+#              FASTQ, found by sample discovery in input.longread_dir. Plain or
+#              gzip-compressed; Filtlong reads both. And, for a guided ONT sample, the sample's own
 #              selected Illumina pairs SEL_R1 and SEL_R2 (rule map_sel_contigs in
 #              rules/hybrid/25_guide.smk), through filtlong_guide_reads() in 00_common.smk:
 #              the files the -1 and -2 below name, listed as inputs so that Filtlong waits
@@ -138,7 +145,7 @@
 # filter_reads_{sample}.log).
 rule filter_long_reads:
     input:
-        reads = raw_long_fastq,
+        reads = filtlong_input,
         guide_reads = filtlong_guide_reads,
     output:
         reads = FILTERED_LONG,

@@ -296,10 +296,10 @@ The table lists each environment, the tools in it and the runs that build it.
 | `vsearch` | VSEARCH 2.30.0, Python 3.12.15 | always |
 | `tidk` | tidk 0.3.0, Python 3.12 | always |
 | `download` | curl 8.22.0, tar 1.35, gzip 1.14, for the download steps; 120 MB | always |
-| `python` | Python 3.12.15 and nothing else, for the FunFlux scripts whose rule has no tool environment: the contig selector, the mitochondrion screen and split, the assembler's evidence table, the repair of the funannotate database paths, the AUGUSTUS model check | always |
+| `python` | Python 3.12.15 and nothing else, for the FunFlux scripts whose rule has no tool environment: the contig selector, the mitochondrion screen and split, the assembler's evidence table, the repair of the funannotate database paths, the AUGUSTUS model check, the ONT adapter scan and the adapter screen report | always |
 | `repeatmasking` | tantan 51, RepeatModeler 2.0.8, RepeatMasker 4.2.3 | always |
 | `multiqc` | MultiQC 1.33 | always |
-| `blast` | BLAST+ 2.16.0 | the screen |
+| `blast` | BLAST+ 2.16.0 | always (the contig adapter screen; also the contamination screen) |
 | `blobtools` | BlobTools 1.1.1 | the screen |
 | `minimap` | minimap2 2.30, samtools 1.21 | the screen in `contigs`, `longread` and `hybrid` mode (`illumina` maps with bowtie2) |
 | `signalp6` | Python 3.10, PyTorch 1.13.1 (CPU); SignalP 6 itself comes from your archive | `parameters.signalp6.mode` not `off` |
@@ -308,6 +308,7 @@ The table lists each environment, the tools in it and the runs that build it.
 | `fastp` | fastp 1.0.1 | `illumina`, `hybrid` |
 | `spades` | SPAdes 4.2.0, Python 3.14.6 | `illumina`, `hybrid` |
 | `qualimap` | Qualimap 2.3, OpenJDK 25.0.2, Python 3.14.6 | `illumina`, `longread`, `hybrid` |
+| `fastplong` | fastplong 0.7.1 | `longread`, `hybrid`: ONT samples, unless `ont_adapter: off` |
 | `filtlong` | Filtlong 0.3.1 | `longread`, `hybrid` |
 | `nanoplot` | NanoPlot 1.46.2, Python 3.13.14 | `longread`, `hybrid` |
 | `hifiasm` | hifiasm 0.25.0 | `longread`, `hybrid` with `assembler: hifiasm`, the default |
@@ -316,16 +317,16 @@ The table lists each environment, the tools in it and the runs that build it.
 | `polypolish` | Polypolish 0.6.1, BWA 0.7.19 | `hybrid` |
 | `chroquetas` | miniprot 0.14, BLAST+ 2.16.0, MAFFT 7.525, SeqKit 2.1.0, EMBOSS 6.6.0 (the versions the ChroQueTas authors pin in their own conda package), Python 3.12.15; ChroQueTas itself is downloaded by rule `chroquetas_db`; about 2 GB | `parameters.amr.chroquetas: on` |
 
-By default every mode builds the same 14 environments, the `always` rows and tiberius, most of
+By default every mode builds the same 15 environments, the `always` rows and tiberius, most of
 them for the steps after the assembly. The screen and the read-based front ends add theirs to
-these 14, up to 26 in `hybrid`:
+these 15, up to 27 in `hybrid`:
 
 | Mode | Added | Environments |
 |---|---|---|
-| `contigs` with the screen | blast, blobtools, minimap | 17 |
-| `illumina` | blast, blobtools, bowtie, fastp, spades, qualimap | 20 |
-| `longread` | blast, blobtools, minimap, filtlong, nanoplot, qualimap, hifiasm or flye; medaka for ONT samples with Medaka | 21 or 22 |
-| `hybrid` | the `longread` set plus bowtie, fastp, spades, polypolish | 25 or 26 |
+| `contigs` with the screen | blobtools, minimap | 17 |
+| `illumina` | blobtools, bowtie, fastp, spades, qualimap | 20 |
+| `longread` | blobtools, minimap, filtlong, nanoplot, qualimap, hifiasm or flye; fastplong for ONT samples (unless `ont_adapter: off`); medaka for ONT samples with Medaka | 21 to 23 |
+| `hybrid` | the `longread` set plus bowtie, fastp, spades, polypolish | 25 to 27 |
 
 In every mode, SignalP 6 adds signalp6 and the AMR screen adds chroquetas, while switching
 Tiberius off removes tiberius.

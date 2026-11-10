@@ -76,9 +76,10 @@ the read-based modes.
 |  | `illumina` | `longread` | `hybrid` | `contigs` |
 |---|---|---|---|---|
 | **Input** | Illumina paired-end reads, `{sample}_R1.<ext>` and `{sample}_R2.<ext>` | ONT reads `{sample}_ont.<ext>` or PacBio HiFi reads `{sample}_pacbio.<ext>`; one batch may hold both | Illumina pairs and ONT or PacBio HiFi reads for every sample | one assembly per sample, `{sample}.fasta`, `.fa` or `.fna` |
-| **Read QC** | PhiX removal (bowtie2), then fastp | NanoPlot before and after Filtlong | both of the above | none |
+| **Read QC** | PhiX removal (bowtie2), then fastp | ONT adapters removed (fastplong); NanoPlot before and after Filtlong | both of the above | none |
 | **Assembly** | SPAdes | hifiasm (default) or Flye | an Illumina guide assembly (SPAdes) to select the isolate's read pairs, then hifiasm or Flye on the long reads | no assembler |
 | **Contig filter** | ≥ 500 bp and ≥ 2× coverage, read off SPAdes' own headers | none | the same cut-offs, on the guide assembly only | the same cut-offs when the headers are SPAdes-style; otherwise headers are cut at the first space or tab and nothing is removed |
+| **Adapter screen** | the draft contigs are searched for adapter and barcode sequence (BLAST+); reported, nothing removed | the same | the same | the same |
 | **Polishing** | none | Medaka, ONT samples\* | Medaka (ONT samples\*), then Polypolish with the Illumina pairs | none |
 | **Delivered genome** | the screened SPAdes contigs | the screened long-read assembly, polished with Medaka for ONT samples | the screened long-read assembly, corrected with the Illumina pairs | the input contigs, screened only with `parameters.contigs.screen: true` |
 

@@ -55,6 +55,7 @@ citation, share-alike. A dash means none of these.
 | fastp 1.0.1 (`illumina`, `hybrid`) | MIT | — | [GitHub](https://github.com/OpenGene/fastp) | 2026-10-08 |
 | SPAdes 4.2.0 (`illumina`, `hybrid`) | GPL-2.0 | Share-alike | [GitHub](https://github.com/ablab/spades) | 2026-10-08 |
 | Qualimap 2.3 (`illumina`, `longread`, `hybrid`) | GPL-2.0 | Share-alike | [LICENSE in the Qualimap repository](https://bitbucket.org/kokonech/qualimap/raw/master/LICENSE) | 2026-10-08 |
+| fastplong 0.7.1 (ONT samples in `longread`, `hybrid`) | MIT | — | [GitHub](https://github.com/OpenGene/fastplong) | 2026-11-09 |
 | Filtlong 0.3.1 (`longread`, `hybrid`) | GPL-3.0 | Share-alike | [GitHub](https://github.com/rrwick/Filtlong) | 2026-10-08 |
 | NanoPlot 1.46.2 (`longread`, `hybrid`) | MIT | — | [GitHub](https://github.com/wdecoster/NanoPlot) | 2026-10-08 |
 | hifiasm 0.25.0 (`longread`, `hybrid`) | MIT | — | [GitHub](https://github.com/chhylp123/hifiasm) | 2026-10-08 |
@@ -66,6 +67,8 @@ citation, share-alike. A dash means none of these.
 | BLAST+ 2.16.0 | Public domain (United States Government Work) | "Please cite the author in any work or product based on this material." | public-domain notice shipped with BLAST+ (in `update_blastdb.pl`) | 2026-10-08 |
 | NCBI `core_nt`, the taxonomy files `taxdb` and `taxdump`, the PhiX genome | NCBI data policy | NCBI places no restrictions on use or distribution; some submitters of the original data may claim patent, copyright or other rights | [NCBI policies](https://www.ncbi.nlm.nih.gov/home/about/policies/) | 2026-10-08 |
 | BlobTools 1.1.1 | GPL-3.0 | Share-alike | [GitHub](https://github.com/DRL/blobtools) | 2026-10-08 |
+| Oxford Nanopore adapter and barcode sequences (shipped in `workflow/data/adapters/ont_chtd.fasta`) | no licence stated | Reproduced as Oxford Nanopore publishes them, with the source named in every record | [Chemistry Technical Document](https://nanoporetech.com/document/chemistry-technical-document) | 2026-11-09 |
+| NCBI UniVec: the PacBio and MGI records (shipped in `workflow/data/adapters/univec_pacbio_mgi.fasta`) and the Illumina records (downloaded by rule `univec_illumina`) | NCBI data policy (United States Government Work) | Illumina's oligonucleotide sequences are copyright Illumina, Inc.; FunFlux downloads them on your machine and does not redistribute them | [UniVec](https://ftp.ncbi.nlm.nih.gov/pub/UniVec/) | 2026-11-09 |
 | QUAST 5.3.0 | GPL-2.0 | Share-alike | [GitHub](https://github.com/ablab/quast) | 2026-10-08 |
 | BUSCO 6.0.0 | MIT | — | [busco.ezlab.org](https://busco.ezlab.org/) | 2026-10-08 |
 | BUSCO odb12 lineage datasets (BUSCO downloads them) | CC BY-ND 4.0 | Cite the odb12 paper ([Citation and references](citation.md)); modified datasets may not be shared | [busco.ezlab.org](https://busco.ezlab.org/) | 2026-10-08 |

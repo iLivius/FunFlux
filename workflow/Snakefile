@@ -125,15 +125,16 @@ _frontend_files = sorted(glob.glob(_frontend_pattern))
 for _smk in _frontend_files:
     include: _smk
 
-# 3) The shared rule files (10_decontam ... 50_amr), in numeric order. Found by
+# 3) The shared rule files (05_ont_adapters ... 50_amr), in numeric order. Found by
 #    listing the folder, not written out by hand, so that the workflow could be read
 #    before these files existed. 00_common is already included (step 1) and 90_report
 #    comes last (step 4), so both are skipped here.
 #    Some shared files define rules only in some runs: 10_decontam and 15_mitochondria
 #    only with the contamination screen (SCREEN), 41_genemark only with GeneMark-ES
 #    (GENEMARK_ENABLED), 45_signalp6 only with SignalP 6 (SIGNALP6_ENABLED), 50_amr only
-#    with the AMR screen (AMR_ENABLED), and 12_medaka_check only for ONT samples polished
-#    with Medaka (MEDAKA_SAMPLES). Each one wraps its rules in an `if` on its flag, so
+#    with the AMR screen (AMR_ENABLED), 12_medaka_check only for ONT samples polished
+#    with Medaka (MEDAKA_SAMPLES), and 05_ont_adapters only for ONT samples whose adapters
+#    are trimmed (ONT_TRIM_SAMPLES). Each one wraps its rules in an `if` on its flag, so
 #    including every file in every run defines nothing where a file does not apply. They
 #    sit in shared/ so that the modes that need them do not each keep a copy.
 _shared_pattern = os.path.join(workflow.basedir, "rules", "shared", "*.smk")
@@ -232,6 +233,7 @@ rule all:
 #     folder holds none yet, and the repair of the paths stored inside it;
 #   * the UNITE ITS reference, unless directories.unite_db names your own copy;
 #   * the telomere repeat database;
+#   * the Illumina adapter records of NCBI UniVec, for the contig adapter screen;
 #   * the Tiberius fungi model, when Tiberius is on;
 #   * ChroQueTas and its FungAMR database, when the AMR screen is on;
 #   * the antiSMASH database (about 9 GB), unless directories.antismash_db names your

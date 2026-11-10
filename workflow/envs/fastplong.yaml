@@ -1,0 +1,19 @@
+# The exact package builds of this environment are fixed by fastplong.linux-64.pin.txt next to this
+# file; Snakemake creates the environment from that list. It holds fastplong and nothing else.
+#
+# What it is for. fastplong (OpenGene, MIT licence) removes the Oxford Nanopore sequencing adapter, and
+# the barcode that follows it in barcoded libraries, from the ends of ONT reads before Filtlong and
+# the assembler see them. One rule uses it: trim_ont_adapters (rules/shared/05_ont_adapters.smk).
+# FunFlux always tells fastplong which sequence to remove; fastplong's own guess of the adapter is
+# never used, because on fungal reads it can take the telomere repeat for an adapter
+# (docs/methods/adapter-trimming.md).
+#
+# The list was made on 2026-11-09 (conda 26.9.4) with
+#   conda create -p <env> --override-channels -c conda-forge -c bioconda fastplong=0.7.1
+# and then conda list -p <env> --explicit wrote the list.
+name: fastplong
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - fastplong=0.7.1

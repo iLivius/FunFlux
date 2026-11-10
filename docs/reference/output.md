@@ -181,6 +181,9 @@ behind it change.
 | `telomeres/telo_database_v2.tsv` | the telomere repeat database of tidk, downloaded from `links.telomere_db_link` after its SHA-256 matched `parameters.contig_summary.telomere_db_sha256`: 4,051 rows, one per examined species, with the telomere repeat unit and its support (0.6 MB) | `telomere_db` | intermediate | all |
 | `telomeres/PROVENANCE.txt` | source URL, download date, SHA-256 and row count of that file | `telomere_db` | deliverable | all |
 | `telomeres/telo_database_v2.tsv.failed` | the downloaded file when its checksum did not match; absent otherwise | `telomere_db` | scratch | all |
+| `adapters/univec_illumina.fasta` | the 151 Illumina adapter and primer records of NCBI UniVec build 10.1, downloaded from `links.univec_link` after its SHA-256 matched `parameters.contig_summary.univec_sha256`; the contig adapter screen searches for them | `univec_illumina` | intermediate | all |
+| `adapters/PROVENANCE.txt` | source URL, download date, SHA-256 and the number of Illumina records kept | `univec_illumina` | deliverable | all |
+| `adapters/univec_illumina.fasta.download.failed` | the downloaded file when its checksum did not match; absent otherwise | `univec_illumina` | scratch | all |
 | `chroquetas/ChroQueTas.sh` | the ChroQueTas script, version 1.0.1, downloaded unchanged from `links.chroquetas_link` after its SHA-256 matched `parameters.amr.chroquetas_script_sha256` (29 kB) | `chroquetas_db` | intermediate | AMR |
 | `chroquetas/FungAMR_db/` | the FungAMR database of ChroQueTas: one folder per species (57), each with a `<target>.faa` (the reference protein) and a `<target>.txt` (its resistance positions) per target; unpacked from `db-v20250811.tgz` after its SHA-256 matched `parameters.amr.chroquetas_db_sha256` | `chroquetas_db` | intermediate | AMR |
 | `chroquetas/db-v20250811.tgz` | the downloaded database archive; deleted once unpacked | `chroquetas_db` | scratch | AMR |
@@ -207,6 +210,12 @@ type. It is not created in `contigs` mode.
 | `{sample}/illumina/{sample}_nophix_R1.fastq`, `_R2.fastq` | the read pairs that did not align to the PhiX genome, uncompressed | `map_phix` | temporary | illumina, hybrid |
 | `{sample}/illumina/{sample}_trim_R1.fastq`, `_R2.fastq` | the PhiX-free pairs after fastp: adapters and low-quality ends cut, reads under 75 bp dropped | `trim_adapters` | temporary | illumina, hybrid |
 | `{sample}/illumina/{sample}_fastp.html`, `{sample}_fastp.json` | fastp's read-QC report as a page and as numbers; MultiQC reads the JSON | `trim_adapters` | deliverable | illumina, hybrid |
+| `{sample}/long/adapters/{sample}_adapter_scan.tsv` | ONT samples: the reads that start with the ONT adapter, and those with a barcode block and no adapter, in every block of 10,000 reads | `find_ont_adapter` | deliverable | longread, hybrid |
+| `{sample}/long/adapters/{sample}_adapter_choice.tsv` | ONT samples: what fastplong removes and why, with the numbers behind the decision and ONT's published barcodes found in the reads | `find_ont_adapter` | deliverable | longread, hybrid |
+| `{sample}/long/adapters/{sample}_fastplong_options.txt`, `{sample}_adapter_sequence.fasta` | ONT samples: the options handed to fastplong, and every trimmed sequence in both orientations as FASTA (empty when nothing was trimmed); fastplong reads the FASTA with `-a`, and the contig adapter screen searches for those sequences too | `find_ont_adapter` | intermediate | longread, hybrid |
+| `{sample}/long/{sample}_trimmed.fastq.gz` | ONT samples: the reads after fastplong; Filtlong reads them | `trim_ont_adapters` | temporary | longread, hybrid |
+| `{sample}/long/adapters/{sample}_fastplong.html`, `{sample}_fastplong.json` | ONT samples: fastplong's report, as a page and as numbers (reads trimmed, reads split) | `trim_ont_adapters` | deliverable | longread, hybrid |
+| `{sample}/long/adapters/{sample}_adapter_check.tsv` | ONT samples: the trimmed reads that still start with the adapter | `check_ont_trimming` | deliverable | longread, hybrid |
 | `{sample}/long/{sample}_filtered.fastq` | the long reads Filtlong kept, uncompressed; the assembler, the coverage mapping and Medaka read it | `filter_long_reads` | intermediate | longread, hybrid |
 | `{sample}/long/raw_qc/`, `filtered_qc/` | NanoPlot on the raw and on the filtered reads: `{sample}_NanoStats.txt` (MultiQC reads it), an HTML report, the plots as HTML pages (no PNG, `--no_static`) | `raw_long_read_qc`, `filtered_long_read_qc` | deliverable | longread, hybrid |
 | `{sample}/selected/{sample}_selected_R1.fastq`, `_R2.fastq` | the trimmed Illumina pairs properly paired on the screened guide assembly; Polypolish reads them, and so does Filtlong for ONT samples with `short_read_guidance: true` | `map_sel_contigs` | intermediate | hybrid |
@@ -280,7 +289,7 @@ The columns, classes and reasons are explained on [Mitochondria](../analysis/mit
 ### eval/
 
 `eval/` holds the assembly QC: QUAST, BUSCO and, in the read-based modes, Qualimap, together with
-the telomere search and the contig summary.
+the telomere search, the adapter screen and the contig summary.
 
 | Path | Content | Written by | Status | Modes |
 |---|---|---|---|---|
@@ -295,7 +304,11 @@ the telomere search and the contig summary.
 | `telomere_candidates.tsv` | every telomere repeat unit weighed for the assembly, the units found at the contig ends and those of the tidk database and of the literature: copies, contig ends in the telomere orientation and in the opposite one, score, whether the unit is known, and which one was chosen | `telomere_units` | deliverable | all |
 | `telomere_unit.txt` | one line: the telomere repeat unit of the assembly in canonical form, or `none` | `telomere_units` | intermediate; `contig_summary` reads it | all |
 | `telomere_ends.tsv` | per contig end, tidk's call for the chosen unit: status, the array's coordinates and length, its distance from the end, its strand | `telomere_units` | deliverable; `contig_summary` reads it | all |
-| `contig_summary.tsv` | one row per contig of the draft assembly: length, GC, read depth and depth relative to the median, the assembler's depth and circularity, the telomere array at each end (copies) and its distance from the end, the telomere unit, rDNA units, BUSCO markers, genes, genus, the screens' calls, the `scaffold_N` name, the verdict and its reason; written after the annotation | `contig_summary` | deliverable | all |
+| `adapter_query.fasta` | the adapter and barcode sequences the screen searches for | `blast_adapters` | temporary | all |
+| `adapter_blast.tsv` | BLAST's hits of the adapter and barcode sequences on the draft contigs | `blast_adapters` | intermediate | all |
+| `adapter_screen.tsv` | one row per adapter locus on the draft contigs: contig, contig length, start and end of the locus, its distance to the nearer contig end, `end` or `internal`, the longest hit and its identity, and the adapters that matched; the header line alone when none was found | `screen_adapters` | deliverable; `contig_summary` reads it | all |
+| `adapter_screen_mqc.tsv` | the sample's row of the Adapters table of the report | `screen_adapters` | deliverable; MultiQC reads it | all |
+| `contig_summary.tsv` | one row per contig of the draft assembly: length, GC, read depth and depth relative to the median, the assembler's depth and circularity, the telomere array at each end (copies) and its distance from the end, the telomere unit, rDNA units, BUSCO markers, genes, genus, the screens' calls, the adapter loci, the `scaffold_N` name, the verdict and its reason; written after the annotation | `contig_summary` | deliverable | all |
 | `contig_summary_mqc.tsv` | the same table behind MultiQC's header lines, rows named `{sample}: {contig}` | `contig_summary` | deliverable; MultiQC reads it | all |
 
 The columns, the verdicts and how the telomere unit is chosen are explained on
@@ -419,6 +432,7 @@ for the whole run.
 | `busco_data.log` | `busco_data`: the download of a named BUSCO lineage |
 | `unite_identified.log` | `unite_identified`: the one-line summary of the filter and the two counts |
 | `telomere_db.log` | `telomere_db`: the download of the telomere repeat database and its checksum |
+| `univec_illumina.log` | `univec_illumina`: the download of UniVec, its checksum and the Illumina records kept |
 | `chroquetas_db.log` | `chroquetas_db`: the download of ChroQueTas and its database, the two checksums, the unpacking (AMR screen on) |
 | `tiberius_model.log` | `tiberius_model`: the download of the Tiberius `fungi` model, its checksum and the unpacking (Tiberius on) |
 | `antismash_db.log` or `antismash_db_local.log` | the antiSMASH database rule of the run |
@@ -455,6 +469,8 @@ only while the run goes on.
 |---|---|
 | `01.reads/{sample}/illumina/{sample}_nophix_R1.fastq`, `_R2.fastq` | illumina, hybrid |
 | `01.reads/{sample}/illumina/{sample}_trim_R1.fastq`, `_R2.fastq` | illumina, hybrid |
+| `01.reads/{sample}/long/{sample}_trimmed.fastq.gz` | longread, hybrid (ONT samples) |
+| `02.assembly/{sample}/eval/adapter_query.fasta` | all |
 | `02.assembly/{sample}/contaminants/{sample}_map.bam` and `.bai` | contigs + screen (kept in the read-based modes) |
 | `02.assembly/{sample}/contaminants/contigs.*.bt2` | illumina |
 | `02.assembly/{sample}/contaminants/blob.blobDB.json`, `blob.{sample}_map.bam.cov` | screen |

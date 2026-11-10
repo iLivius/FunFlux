@@ -15,18 +15,26 @@
 # this, spread over half a dozen files. The rules in this file gather it into one row per
 # contig and give every contig a verdict with its reasons: chromosome, chromosome_arm,
 # mitochondrion, rDNA_array, low_depth, repeat, nuclear_contig, nuclear_fragment,
-# contaminant or unclassified. Three rules:
+# contaminant or unclassified. The same file holds the contig adapter screen, which looks for
+# sequencing adapters and barcodes left in the contigs. Six rules:
 #
 #   telomere_db      once per run: downloads the telomere repeat database of tidk and checks
 #                    its checksum.
+#   univec_illumina  once per run: downloads NCBI's UniVec, checks its checksum and keeps the
+#                    Illumina adapter records.
 #   telomere_units   once per sample: works out the telomere repeat unit of the assembly
 #                    with tidk, scores every candidate unit, and calls the telomere at both
 #                    ends of every contig for the chosen unit.
-#   contig_summary   once per sample: joins that call with the rest of the run's evidence
-#                    and writes the table.
+#   blast_adapters   once per sample: searches the draft contigs for adapter and barcode
+#                    sequences with BLAST.
+#   screen_adapters  once per sample: turns the hits into adapter loci at contig ends and
+#                    inside contigs, and writes the sample's row of the Adapters table of the
+#                    MultiQC report.
+#   contig_summary   once per sample: joins the telomere call and the adapter loci with the
+#                    rest of the run's evidence and writes the table.
 #
-# The two scripts that do the work, telomere_units.py and contig_summary.py (both in
-# scripts/25_contig_summary/), explain the method and the verdict rules in their opening
+# The scripts that do the work, telomere_units.py, adapter_screen.py and contig_summary.py
+# (all in scripts/25_contig_summary/), explain the method and the rules in their opening
 # text; this file says what goes in and what comes out, and how the telomere step works in
 # outline.
 #
@@ -63,6 +71,9 @@
 #                         be joined to the draft contigs by name: the script joins it by
 #                         sequence, through CONTIGS_SORT, the renamed genome that
 #                         funannotate_preprocess wrote (40_annotation.smk).
+#   adapter loci          ADAPTER_SCREEN (rule screen_adapters, below): adapter or barcode
+#                         sequence within 100 bp of a contig end, or a whole adapter inside a
+#                         contig. It fills the adapter column and changes no verdict.
 #   the two screens       CONTIG_DECISIONS (every contig kept or removed, with the genus the
 #                         BLAST hits gave it; rule select_contigs, 10_decontam.smk),
 #                         MITO_SCREEN_TSV (confirmed mitochondrial or not; rule
@@ -178,12 +189,18 @@
 # CONTIG_SUMMARY_MITO_SCREEN, CONTIG_SUMMARY_BLOB_TABLE, CONTIG_SUMMARY_ASSEMBLY_EVIDENCE,
 # CONTIG_SUMMARY, CONTIG_SUMMARY_MQC, CONTIG_SUMMARY_SCRIPT, CONTIG_SUMMARY_TELOMERE_MOTIF,
 # CONTIG_SUMMARY_TELOMERE_WINDOW, CONTIG_SUMMARY_MIN_TELOMERE_COPIES,
-# CONTIG_SUMMARY_MIN_RDNA_UNITS and LOGS, plus the function funannotate_gff3() (the GFF3
-# path of a sample). This file defines no name of its own.
+# CONTIG_SUMMARY_MIN_RDNA_UNITS, UNIVEC_URL, UNIVEC_SHA256, UNIVEC_ILLUMINA,
+# UNIVEC_PROVENANCE, ADAPTER_LIST_FILES, ADAPTER_QUERY, ADAPTER_BLAST, ADAPTER_SCREEN,
+# ADAPTER_SCREEN_MQC, ADAPTER_SCREEN_SCRIPT and LOGS, plus the functions funannotate_gff3()
+# (the GFF3 path of a sample) and trimmed_adapter_inputs(), trimmed_adapter_sequence(),
+# trimmed_adapter_choice() and trimmed_adapter_check() (the read-level files of a trimmed ONT
+# sample, or nothing). This file defines no name of its own.
 #
 # conda: environment paths are written relative to THIS file (workflow/rules/shared/), so
 # "../../envs/tidk.yaml" climbs shared/ -> rules/ -> workflow/ and then goes into envs/.
-# Three environments. telomere_units runs in the tidk environment (envs/tidk.yaml), which
+# Five environments. blast_adapters runs in the BLAST environment of the contamination screen
+# (envs/blast.yaml) and screen_adapters in envs/python.yaml (a pinned Python 3.12); univec_illumina
+# downloads with envs/download.yaml. telomere_units runs in the tidk environment (envs/tidk.yaml), which
 # holds tidk and a pinned Python 3.12, so the script and the tool it calls come from one
 # place. contig_summary uses only Python's standard library and runs in the vsearch
 # environment, which holds a pinned Python 3.12 (added for the ITS scripts of
@@ -263,6 +280,79 @@ rule telomere_db:
         """
 
 
+# ───────────── univec_illumina — download UniVec and keep its Illumina records ─────────────
+# Takes in:    nothing from other rules; the address links.univec_link (UNIVEC_URL, by default
+#              build 10.1 in NCBI's archive) and the checksum
+#              parameters.contig_summary.univec_sha256 (UNIVEC_SHA256).
+# Does:        downloads UniVec (about 1.7 MB) with curl, checks its SHA-256 checksum, keeps
+#              the records whose description names Illumina (151 in build 10.1: the TruSeq,
+#              Nextera and other adapters and primers) and deletes the rest. A file that fails
+#              the check is renamed with a .failed suffix and kept, and the run stops, as in
+#              rule telomere_db.
+# Produces:    UNIVEC_ILLUMINA, the Illumina records (FASTA), and UNIVEC_PROVENANCE, one item
+#              per line: the address, the date in UTC, the checksum and the number of records.
+#              Both in 00.resources/adapters/, kept.
+# Consumed by: blast_adapters, for every sample.
+#
+# Why downloaded and not shipped: UniVec notes on every Illumina record that the
+# oligonucleotide sequence is copyrighted by Illumina. The ONT, PacBio and MGI adapters are
+# shipped in workflow/data/adapters/ (the README there names their sources).
+#
+# Environment and where it runs: as rule telomere_db (curl from envs/download.yaml; sha256sum,
+# awk, grep and date from the computer; on the computer that runs Snakemake).
+#
+# How the shell works: the download goes to a file of its own (params download); after the
+# check, awk copies a record when its header line (starting with >) contains "Illumina": the
+# variable keep is set at every header line and every line is printed while it is true. awk also
+# renames the record, from UniVec's gnl|uv|NGB00747.1:1-70 to Illumina_UniVec_NGB00747.1:1-70, so
+# that the adapter screen's tables say at a glance that a hit is an Illumina adapter (the
+# bracket expressions [|] stand for a literal |). The doubled braces are Snakemake's way of
+# writing single braces in a shell command. grep -c ends with status 1 when it counts nothing,
+# which the strict shell would take for a failure; "|| true" keeps the count of 0, and a NOTE then
+# says that the screen searches for the shipped adapters only.
+rule univec_illumina:
+    localrule: True
+    output:
+        fasta = UNIVEC_ILLUMINA,
+        provenance = UNIVEC_PROVENANCE,
+    params:
+        url = UNIVEC_URL,
+        sha256 = UNIVEC_SHA256,
+        download = UNIVEC_ILLUMINA + ".download",
+    conda:
+        "../../envs/download.yaml"
+    log:
+        LOGS + "/univec_illumina.log"
+    shell:
+        """
+        set -euo pipefail
+        mkdir -p "$(dirname {output.fasta})"
+
+        echo "[univec_illumina] downloading {params.url}" > {log}
+        curl -L --fail -o "{params.download}" "{params.url}" >> {log} 2>&1
+
+        echo "[univec_illumina] checking the file against parameters.contig_summary.univec_sha256 ({params.sha256})" >> {log}
+        if ! echo "{params.sha256}  {params.download}" | sha256sum -c - >> {log} 2>&1; then
+            mv "{params.download}" "{params.download}.failed"
+            echo "[FunFlux] univec_illumina: the file downloaded from {params.url} does not match parameters.contig_summary.univec_sha256, so it was NOT used (details in {log}; the file is kept as {params.download}.failed). To accept it, put its checksum (sha256sum {params.download}.failed) into parameters.contig_summary.univec_sha256." | tee -a {log} >&2
+            exit 1
+        fi
+
+        awk '/^>/ {{ keep = /Illumina/; if (keep) sub(/^>gnl[|]uv[|]/, ">Illumina_UniVec_") }} keep' "{params.download}" > "{output.fasta}"
+        rm "{params.download}"
+        records=$(grep -c '^>' "{output.fasta}" || true)
+        if [ "$records" = 0 ]; then
+            echo "[FunFlux] NOTE univec_illumina: no record of {params.url} names Illumina, so the adapter screen searches for the adapters shipped with FunFlux (ONT, PacBio, MGI) only." | tee -a {log} >&2
+        fi
+
+        echo "source_url: {params.url}" > {output.provenance}
+        echo "downloaded_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> {output.provenance}
+        echo "sha256: {params.sha256}" >> {output.provenance}
+        echo "illumina_records: $records" >> {output.provenance}
+        echo "[univec_illumina] done: $records Illumina records" >> {log}
+        """
+
+
 # ───────────── telomere_units — the telomere repeat unit of one assembly ─────────────
 # Takes in:    DRAFT_CONTIGS, the draft assembly (made by the mode's front end: rule
 #              filter_contigs in contigs and illumina mode, rule long_read_assembly in
@@ -332,6 +422,100 @@ rule telomere_units:
         """
 
 
+# ───────────── blast_adapters — search the draft contigs for adapters and barcodes ─────────────
+# Takes in:    DRAFT_CONTIGS, the draft assembly (see rule telomere_units); the shipped adapter
+#              lists (ADAPTER_LIST_FILES: ONT adapters and barcodes, PacBio and MGI adapters);
+#              UNIVEC_ILLUMINA from rule univec_illumina; and, for an ONT sample whose reads
+#              were trimmed, ONT_ADAPTER_SEQUENCE, the very sequences fastplong removed (rule
+#              find_ont_adapter, 05_ont_adapters.smk). That last file catches a barcode that no
+#              published list holds; trimmed_adapter_sequence() gives it as a list of one file,
+#              or an empty list for any other sample.
+# Does:        joins the lists into one FASTA (ADAPTER_QUERY) with cat: an empty list of trimmed
+#              sequences is written as nothing at all, so cat then reads only the other files.
+#              It then runs blastn with the adapters
+#              as queries and the contigs as subjects: -task blastn-short is BLAST's setting for
+#              queries shorter than 50 bp (word size 7), and -evalue 1 keeps short matches,
+#              which adapter_screen.py then judges by length, identity and position. The search
+#              takes about half a minute on a 40 Mb genome.
+# Produces:    ADAPTER_QUERY (temporary) and ADAPTER_BLAST, the hits in BLAST's tabular format
+#              with the columns named after -outfmt 6 (kept).
+# Consumed by: screen_adapters.
+rule blast_adapters:
+    input:
+        contigs = DRAFT_CONTIGS,
+        shipped = ADAPTER_LIST_FILES,
+        illumina = UNIVEC_ILLUMINA,
+        trimmed = trimmed_adapter_sequence,
+    output:
+        query = temp(ADAPTER_QUERY),
+        hits = ADAPTER_BLAST,
+    conda:
+        "../../envs/blast.yaml"
+    log:
+        LOGS + "/blast_adapters_{sample}.log"
+    shell:
+        """
+        set -euo pipefail
+
+        cat {input.shipped:q} {input.illumina:q} {input.trimmed:q} > {output.query:q}
+
+        blastn -task blastn-short \
+            -query {output.query:q} \
+            -subject {input.contigs:q} \
+            -evalue 1 \
+            -outfmt "6 qseqid sseqid pident length qstart qend sstart send evalue bitscore qlen slen" \
+            -out {output.hits:q} 2> {log}
+        """
+
+
+# ───────────── screen_adapters — adapter loci at contig ends and inside contigs ─────────────
+# Takes in:    ADAPTER_BLAST from blast_adapters, DRAFT_CONTIGS (for the contig lengths) and,
+#              for a trimmed ONT sample, the choice and check files of 05_ont_adapters.smk
+#              (trimmed_adapter_choice() and trimmed_adapter_check() give their paths, or
+#              nothing).
+# Does:        python adapter_screen.py (ADAPTER_SCREEN_SCRIPT): keeps the hits of at least
+#              90 % identity that are at least 20 bp long within 100 bp of a contig end, or at
+#              least 28 bp long (a whole ONT adapter) inside a contig, merges overlapping hits
+#              into loci, and writes the report. The script's opening text gives the reasons
+#              for these rules. Its summary line is copied from the log to the console.
+# Produces:    ADAPTER_SCREEN, one row per locus (a header line alone when there is none), and
+#              ADAPTER_SCREEN_MQC, the sample's row of the Adapters table of the MultiQC
+#              report. Both kept.
+# Consumed by: contig_summary (the adapter column) and multiqc (90_report.smk). Rule all asks
+#              for ADAPTER_SCREEN.
+rule screen_adapters:
+    input:
+        hits = ADAPTER_BLAST,
+        contigs = DRAFT_CONTIGS,
+        read_files = trimmed_adapter_inputs,
+    output:
+        loci = ADAPTER_SCREEN,
+        mqc = ADAPTER_SCREEN_MQC,
+    params:
+        script = ADAPTER_SCREEN_SCRIPT,
+        read_choice = trimmed_adapter_choice,
+        read_check = trimmed_adapter_check,
+    conda:
+        "../../envs/python.yaml"
+    log:
+        LOGS + "/screen_adapters_{sample}.log"
+    shell:
+        """
+        set -euo pipefail
+
+        python {params.script:q} \
+            --blast {input.hits:q} \
+            --contigs {input.contigs:q} \
+            --sample {wildcards.sample:q} \
+            --read-choice {params.read_choice:q} \
+            --read-check {params.read_check:q} \
+            --out {output.loci:q} \
+            --out-mqc {output.mqc:q} > {log} 2>&1
+
+        grep -F '[FunFlux]' {log} >&2 || true
+        """
+
+
 # ───────────── contig_summary — one row per draft contig, with a verdict ─────────────
 # Takes in:    DRAFT_CONTIGS, the draft assembly (see rule telomere_units); TELOMERE_UNIT_FILE
 #              and TELOMERE_ENDS (rule telomere_units: the unit, and tidk's call at both
@@ -343,7 +527,8 @@ rule telomere_units:
 #              folder another rule declares as its output, so the marker is the input and
 #              the GFF3 path goes to the script through params); and
 #              CONTIG_SUMMARY_OPTIONAL_INPUTS, the files of the screen and the assembler
-#              that THIS mode makes (see the top of this file), so the job waits for them.
+#              that THIS mode makes (see the top of this file), so the job waits for them;
+#              and ADAPTER_SCREEN (rule screen_adapters), for the adapter column.
 # Does:        python contig_summary.py (CONTIG_SUMMARY_SCRIPT), once. The optional files
 #              are passed through params: in the modes without one, its param is empty
 #              and the :q leaves the option without a value, which the script reads as
@@ -357,7 +542,8 @@ rule telomere_units:
 #                                     circularity, the telomere copies at each end and
 #                                     their distance from the contig end, the telomere
 #                                     unit of the sample, rDNA units, BUSCO markers, genes,
-#                                     genus, the screens' verdicts, the scaffold name the
+#                                     genus, the screens' verdicts, the adapter loci
+#                                     (none, at_end, internal), the scaffold name the
 #                                     annotation gave the contig, the verdict and its
 #                                     reason). A column a mode cannot fill reads NA.
 #              CONTIG_SUMMARY_MQC     the same table with MultiQC's custom-content header
@@ -383,6 +569,7 @@ rule contig_summary:
         annotated_fasta = CONTIGS_SORT,
         annotation_complete = ANNOTATION_COMPLETE,
         optional_files = CONTIG_SUMMARY_OPTIONAL_INPUTS,
+        adapter_screen = ADAPTER_SCREEN,
     output:
         table = CONTIG_SUMMARY,
         mqc = CONTIG_SUMMARY_MQC,
@@ -417,6 +604,7 @@ rule contig_summary:
             --annotated-fasta {input.annotated_fasta:q} \
             --telomere-unit-file {input.telomere_unit:q} \
             --telomere-ends {input.telomere_ends:q} \
+            --adapter-screen {input.adapter_screen:q} \
             --min-telomere-copies {params.min_telomere_copies} \
             --min-rdna-units {params.min_rdna_units} \
             --sample {wildcards.sample:q} \

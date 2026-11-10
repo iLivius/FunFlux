@@ -14,6 +14,9 @@
 # the output folder.
 #
 #   {sample}_ont.fastq.gz (or _pacbio; plain .fastq is accepted too)
+#     [ONT only: --find_ont_adapter, --trim_ont_adapters--> {sample}_trimmed.fastq.gz
+#      (TRIMMED_LONG, temporary; rules/shared/05_ont_adapters.smk): the ONT adapter and the
+#      barcode after it removed from the read ends]
 #     --filter_long_reads--> {sample}_filtered.fastq  (FILTERED_LONG, kept)
 #       --> rule long_read_assembly (20_assembly.smk): the reads the genome is built from
 #       --> rule map_contigs (shared/10_decontam.smk): the reads aligned back to the draft,
@@ -39,8 +42,9 @@
 # Everything referenced here is defined once in 00_common.smk: FILTERED_LONG,
 # NANOPLOT_RAW_DIR, NANOPLOT_FILTERED_DIR, FILTLONG_MIN_LENGTH, FILTLONG_KEEP_PERCENT,
 # FILTLONG_LENGTH_WEIGHT, FILTLONG_TARGET_ARG, LOGS and CPUS, and the functions
-# raw_long_fastq() (the sample's raw long-read file, found by sample discovery) and
-# capped_cpus().
+# raw_long_fastq() (the sample's raw long-read file, found by sample discovery),
+# filtlong_input() (the file Filtlong starts from: the trimmed reads of an ONT sample, the raw
+# file otherwise) and capped_cpus().
 #
 # conda: environment paths are relative to THIS file (workflow/rules/longread/), so
 # "../../envs/filtlong.yaml" is workflow/envs/filtlong.yaml.
@@ -55,9 +59,11 @@
 
 
 # ───────────── filter_long_reads — Filtlong: keep the best reads ─────────────
-# Takes in:    the sample's RAW long-read FASTQ (raw_long_fastq), plain or gzip-compressed;
-#              Filtlong reads both. No rule makes this file: sample discovery found it by
-#              listing input.longread_dir, so a longread run enters the workflow here.
+# Takes in:    filtlong_input: for an ONT sample, the reads fastplong trimmed (TRIMMED_LONG,
+#              rule trim_ont_adapters in rules/shared/05_ont_adapters.smk); for a PacBio
+#              sample, or with parameters.longread.ont_adapter off, the sample's RAW long-read
+#              FASTQ, which no rule makes: sample discovery found it by listing
+#              input.longread_dir. Plain or gzip-compressed; Filtlong reads both.
 # Does:        filtlong with the settings of parameters.longread.filtlong:
 #                --min_length    reads shorter than this (bp) are dropped outright
 #                                (default 1000).
@@ -90,7 +96,7 @@
 # long-read folder, and the log is named after the rule.
 rule filter_long_reads:
     input:
-        reads = raw_long_fastq,
+        reads = filtlong_input,
     output:
         reads = FILTERED_LONG,
     params:

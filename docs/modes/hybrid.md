@@ -59,7 +59,9 @@ flowchart TD
     GS --> SEL[bowtie2: pairs properly paired<br/>on the screened guide]
     TR --> SEL
     SEL --> PAIRS([selected pairs])
-    LR([ONT or PacBio HiFi reads]) --> FL[Filtlong]
+    LR([ONT or PacBio HiFi reads]) -->|PacBio HiFi| FL[Filtlong]
+    LR -->|ONT reads| AT[adapter and barcode removed<br/>find_ont_adapter, fastplong]
+    AT --> FL
     PAIRS -.->|"ONT reads, only with short_read_guidance: true"| FL
     FL --> ASM[hifiasm or Flye]
     ASM --> LS[screen of assembly.fasta<br/>BLAST, BlobTools, mitochondrion with assembler evidence]
@@ -71,8 +73,9 @@ flowchart TD
 ```
 
 The Illumina half builds and screens a guide assembly and selects reads from it. The long-read
-half filters, assembles and screens the long reads and, for ONT samples, polishes the assembly
-with Medaka. Polypolish then corrects the long-read assembly with the selected Illumina pairs.
+half removes the ONT adapter and barcode from the ONT reads
+([Adapter trimming](../methods/adapter-trimming.md)), filters, assembles and screens the long
+reads and, for ONT samples, polishes the assembly with Medaka. Polypolish then corrects the long-read assembly with the selected Illumina pairs.
 
 ## Steps
 
@@ -82,6 +85,7 @@ with Medaka. Polypolish then corrects the long-read assembly with the selected I
 | Guide assembly and filter | `illumina_assembly`, `filter_contigs` | SPAdes 4.2.0, awk | `guide/spades/`, `guide/contigs_filt.fasta` |
 | Guide screen | `index_guide_contigs`, `map_guide_contigs`, `map_guide_evaluation`, `blast_guide_contigs`, `blob_guide_json`, `blob_guide_table`, `screen_guide_mitochondria`, `select_guide_contigs` | bowtie2 2.5.4, samtools 1.21, Qualimap 2.3, BLAST+ 2.16.0, BlobTools 1.1.1 | `guide/contaminants/`, `guide/mitochondria/`, `guide/eval/qualimap/` |
 | Read selection | `index_selected_contigs`, `map_sel_contigs` | bowtie2 2.5.4, samtools 1.21 | `01.reads/{sample}/selected/` |
+| Adapter trimming (ONT) | `find_ont_adapter`, `trim_ont_adapters`, `check_ont_trimming` | FunFlux script, fastplong 0.7.1 | `01.reads/{sample}/long/adapters/` |
 | Long-read filter | `filter_long_reads` | Filtlong 0.3.1 | `01.reads/{sample}/long/{sample}_filtered.fastq` |
 | Long-read QC | `raw_long_read_qc`, `filtered_long_read_qc` | NanoPlot 1.46.2 | `01.reads/{sample}/long/raw_qc/`, `filtered_qc/` |
 | Model check (ONT with Medaka) | `check_medaka_model` | Medaka 2.2.2 | `{sample}_medaka_model.txt` |
@@ -91,9 +95,10 @@ with Medaka. Polypolish then corrects the long-read assembly with the selected I
 | Long-read polishing (ONT with Medaka) | `long_read_consensus` | Medaka 2.2.2 | `medaka/consensus.fasta` |
 | Short-read polishing | `short_read_correction` | Polypolish 0.6.1, bwa 0.7.19 | `polypolish/polished.fasta` |
 | Genome files | `finalize_assembly`, `separate_mitochondria` | | `contigs_all.fasta`, `contigs_final.fasta`, `contigs_mitochondrial.fasta` |
+| Adapter screen of the long-read draft | `blast_adapters`, `screen_adapters` | BLAST+ 2.16.0, FunFlux script | `eval/adapter_screen.tsv` |
 
-Paths without a stage prefix are under `02.assembly/{sample}/`. One sample plans 58 jobs, 60 for
-an ONT sample with Medaka, and the resistance-mutation screen adds 2
+Paths without a stage prefix are under `02.assembly/{sample}/`. One PacBio HiFi sample plans 61
+jobs, an ONT sample with Medaka 66, and the resistance-mutation screen adds 2
 ([Dry run](../reference/running.md#dry-run)). The threads of each step are listed on
 [CPU cores and threads](../reference/running.md#cpu-cores-and-threads).
 
@@ -141,7 +146,7 @@ filtered guide, among them the pairs of contigs under 500 bp or 2x coverage.
 With the defaults, `filter_long_reads` gives every sample the plain filter of `longread` mode:
 
 ```text
-filtlong --min_length 1000 --keep_percent 90 --length_weight 10 [--target_bases <size>] <raw long reads>
+filtlong --min_length 1000 --keep_percent 90 --length_weight 10 [--target_bases <size>] <long reads>
 ```
 
 With `short_read_guidance: true`, the ONT samples are also scored against the selected Illumina
@@ -149,7 +154,7 @@ pairs:
 
 ```text
 filtlong -1 <selected R1> -2 <selected R2> --trim --split 1000 \
-    --min_length 1000 --keep_percent 90 --length_weight 10 [--target_bases <size>] <raw ONT reads>
+    --min_length 1000 --keep_percent 90 --length_weight 10 [--target_bases <size>] <trimmed ONT reads>
 ```
 
 With `-1` and `-2`, "read quality will be determined using these instead of from the Phred scores"
@@ -181,7 +186,7 @@ with `filtlong.target_bases` ([Flye](longread.md#flye)).
 The dry run prints the decision for each sample. With the guidance on, it reads:
 
 ```text
-[FunFlux] SAM1: ont reads -> Filtlong guided by the Illumina reads, hifiasm --ont, minimap2 map-ont, Medaka.
+[FunFlux] SAM1: ont reads -> adapter check + fastplong, Filtlong guided by the Illumina reads, hifiasm --ont, minimap2 map-ont, Medaka.
 [FunFlux] SAM2: pacbio reads -> Filtlong not guided, hifiasm, minimap2 map-hifi, no Medaka.
 ```
 
@@ -269,6 +274,7 @@ parameters:
     flye_input_mode: auto
     medaka_model: auto               # ONT samples: auto | a model name | false
     medaka_model_fallback_auto: false
+    ont_adapter: detect               # ONT samples: detect | off | the sequence to trim
     filtlong: {min_length: 1000, keep_percent: 90, length_weight: 10, target_bases: null}
     hifiasm: {genome_size: null, bloom_filter_bits: 0, purge_dups: auto, homozygous_coverage: auto, telomere_motif: null}
     short_read_guidance: false       # true: ONT reads scored against the selected Illumina pairs
@@ -288,7 +294,7 @@ stops the run. `links.phix_link` and `directories.blast_db` are required. Every 
 ├── 01.reads/{sample}/
 │   ├── illumina/                         fastp HTML and JSON (kept); PhiX-free and trimmed reads (temporary)
 │   ├── selected/                         {sample}_selected_R1.fastq, _R2.fastq (kept)
-│   └── long/                             {sample}_filtered.fastq (kept), raw_qc/, filtered_qc/
+│   └── long/                             {sample}_filtered.fastq (kept), adapters/ (ONT samples), raw_qc/, filtered_qc/
 └── 02.assembly/{sample}/
     ├── guide/                            spades/, contigs_filt.fasta, contaminants/ (BAM kept, indexes temporary), mitochondria/, eval/qualimap/
     ├── hifiasm/ or flye/                 the assembler's own files
@@ -298,15 +304,15 @@ stops the run. `links.phix_link` and `directories.blast_db` are required. Every 
     ├── medaka/consensus.fasta            ONT samples with Medaka
     ├── polypolish/polished.fasta         working files temporary
     ├── contigs_all.fasta  contigs_final.fasta  contigs_mitochondrial.fasta
-    └── eval/quast/  eval/busco/  eval/qualimap/  eval/telomere_*  eval/contig_summary*.tsv
+    └── eval/quast/  eval/busco/  eval/qualimap/  eval/telomere_*  eval/adapter_*  eval/contig_summary*.tsv
 ```
 
 In the MultiQC report a sample has the rows `fastp read QC | {sample}`,
 `NanoPlot raw read QC | {sample}`, `NanoPlot filtered read QC | {sample}`,
 `mapping Illumina QC | {sample}` (the guide), `mapping QC | {sample}` (the long-read draft),
 `QUAST guide assembly QC | {sample}`, `QUAST assembly QC | {sample}` and its BUSCO rows, and one
-row per contig of the long-read draft, `{sample}: {contig}`, in the contig summary table
-([Report](../analysis/report.md)). `03.taxonomy` to `06.report` are the same in every mode: see
+row per contig of the long-read draft, `{sample}: {contig}`, in the contig summary table, and one
+row, `{sample}`, in the Adapters table ([Report](../analysis/report.md)). `03.taxonomy` to `06.report` are the same in every mode: see
 [Output files](../reference/output.md).
 
 ## Tested so far

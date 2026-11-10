@@ -653,7 +653,7 @@ def test_with_only_the_contigs_and_the_telomere_files_every_other_column_is_na(t
     table = read_table(paths.out)
 
     for column in ["depth", "depth_x_median", "assembler_depth", "circular", "rdna_units",
-                   "busco_markers", "genes", "genus", "screen", "annotated_as"]:
+                   "busco_markers", "genes", "genus", "screen", "adapter", "annotated_as"]:
         assert table["plain"][column] == "NA", column
     assert table["chrom_both"]["verdict"] == "chromosome"
     assert "depth unknown" in table["chrom_both"]["reason"]
@@ -681,6 +681,29 @@ def test_a_bare_optional_flag_counts_as_not_given(tmp_path):
     assert table["lowdepth"]["verdict"] == "nuclear_fragment"
     assert table["repeat_deep"]["verdict"] == "nuclear_fragment"
     assert "depth unknown" in table["repeat_deep"]["reason"]
+
+
+def test_the_adapter_column_shows_the_adapter_loci_and_changes_no_verdict(tmp_path):
+    """The contig adapter screen fills the adapter column: none, at_end, internal or both."""
+    paths = make_inputs(tmp_path)
+    contig_summary.main(full_argv(paths))
+    verdicts_without = {contig: row["verdict"] for contig, row in read_table(paths.out).items()}
+
+    adapter_screen = os.path.join(tmp_path, "adapter_screen.tsv")
+    write_tsv(adapter_screen, ["contig", "contig_length", "start", "end", "distance_to_end", "position",
+                               "longest_hit", "identity", "adapters"], [
+        ["chrom_both", 100, 1, 40, 0, "end", 40, "100.0", "ONT_native_barcode_NB24"],
+        ["plain", 100, 50, 77, 23, "internal", 28, "100.0", "ONT_adapter_top"],
+        ["arm_one", 100, 1, 30, 0, "end", 30, "100.0", "ONT_adapter_top"],
+        ["arm_one", 100, 40, 67, 33, "internal", 28, "100.0", "ONT_adapter_top"],
+    ])
+    contig_summary.main(full_argv(paths, **{"--adapter-screen": adapter_screen}))
+    table = read_table(paths.out)
+    assert table["chrom_both"]["adapter"] == "at_end"
+    assert table["plain"]["adapter"] == "internal"
+    assert table["arm_one"]["adapter"] == "at_end+internal"
+    assert table["mito"]["adapter"] == "none"
+    assert {contig: row["verdict"] for contig, row in table.items()} == verdicts_without
 
 
 def test_mito_fasta_alone_marks_the_mitochondrion(tmp_path):

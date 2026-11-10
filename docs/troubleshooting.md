@@ -37,7 +37,7 @@ Three kinds of log are kept:
 | Log of | Where |
 |---|---|
 | every per-sample rule | `<output_dir>/logs/<rule>_{sample}.log` |
-| the rules that run once for all samples | `<output_dir>/logs/`, without a sample name: `funannotate_db.log`, `normalize_funannotate_db.log`, `unite_db.log`, `unite_identified.log`, `antismash_db.log` or `antismash_db_local.log`, `tiberius_model.log`, `telomere_db.log`, `busco_data.log` (a named BUSCO lineage), `download_phix.log`, `build_phix.log`, `install_signalp6.log`, `chroquetas_db.log`, `multiqc.log` |
+| the rules that run once for all samples | `<output_dir>/logs/`, without a sample name: `funannotate_db.log`, `normalize_funannotate_db.log`, `unite_db.log`, `unite_identified.log`, `antismash_db.log` or `antismash_db_local.log`, `tiberius_model.log`, `telomere_db.log`, `univec_illumina.log`, `busco_data.log` (a named BUSCO lineage), `download_phix.log`, `build_phix.log`, `install_signalp6.log`, `chroquetas_db.log`, `multiqc.log` |
 | Snakemake itself | `.snakemake/log/` in the launch folder, one file per run, named after its start time |
 
 `--show-failed-logs` makes Snakemake print the log of every failed job at the end of the run.
@@ -222,6 +222,8 @@ is checked in `illumina` and `hybrid` mode.
 | `[FunFlux] parameters.<mode>.filtlong.target_bases: must be empty or a size such as 1500000000 or 1.5g (got: <value>)` | | |
 | `[FunFlux] parameters.<mode>.hifiasm.genome_size: must be empty or a size such as 40000000 or 40m (got: <value>)` | | |
 | `[FunFlux] parameters.<mode>.hifiasm.telomere_motif: must be empty or a DNA/IUPAC motif (got: <value>)` | | |
+| `[FunFlux] parameters.<mode>.ont_adapter: write detect, off, or the sequence to trim (20 to 200 bases of A, C, G and T; got: <value>)` | Another word, a sequence with other letters, or one shorter than 20 or longer than 200 bases. | Write `detect`, `off` or the sequence. |
+| `[FunFlux] parameters.<mode>.ont_adapter: <sequence> is a short unit repeated end to end (a telomere repeat, for example), not an adapter. ...` | The sequence repeats a unit of 10 bp or less, as a telomere does. Trimming it would cut real genome from the read ends. | Write the adapter sequence, or `detect`. |
 
 ### Notes that announce a later failure
 
@@ -362,6 +364,16 @@ chooses the telomere unit of each sample.
 | `curl: (6) Could not resolve host` or another `curl` error | `telomere_db.log` | No network access to `raw.githubusercontent.com` (see [Network access](getting-started/installation.md#network)). |
 | `[FunFlux] telomere_units: error: ...` | `telomere_units_{sample}.log` | The script stopped on a missing input, a malformed database file or a tidk failure, and tidk's own message follows. A database file that does not parse means that the file at the link has changed. Delete `00.resources/telomeres/telo_database_v2.tsv` and run again, and the checksum then says whether it is still the expected file. |
 
+### UniVec and the adapter screen
+
+Rule `univec_illumina` downloads NCBI's UniVec for the contig adapter screen; rules `blast_adapters`
+and `screen_adapters` run the screen for every sample.
+
+| Message | Log | Cause and fix |
+|---|---|---|
+| `[FunFlux] univec_illumina: the file downloaded from <link> does not match parameters.contig_summary.univec_sha256, so it was NOT used ...` | `univec_illumina.log` | The download was cut short, or the link and the checksum do not belong together. The download is kept as `00.resources/adapters/univec_illumina.fasta.download.failed`. Run again for a fresh download, or set the link and its checksum together (see [UniVec](getting-started/databases.md#univec)). |
+| `curl: (6) Could not resolve host` or another `curl` error | `univec_illumina.log` | No network access to `ftp.ncbi.nlm.nih.gov` (see [Network access](getting-started/installation.md#network)). |
+
 ### ChroQueTas (AMR screen)
 
 With the AMR screen on, rule `chroquetas_db` downloads ChroQueTas and the FungAMR database, and
@@ -485,6 +497,11 @@ says where each message is written.
 | `[FunFlux] telomere_units <sample>: no telomere repeat identified (best candidate <UNIT>: <n> ends in the telomere orientation, <m> opposite)` | `telomere_units_{sample}.log`, and the console | No unit reached 2 contig ends in the telomere orientation with more than twice as many as in the opposite one. `telomere_unit.txt` reads `none`, the telomere columns of the contig summary read `0`, and chromosomes come out as `nuclear_contig`. This is usual in a fragmented assembly or in a yeast with irregular telomeres. Set `parameters.contig_summary.telomere_motif` when the repeat is known (see [Telomeres](analysis/contig-summary.md#telomeres)). |
 | `[FunFlux] NOTE telomere_units <sample>: ...` | `telomere_units_{sample}.log`, and the console | The chosen telomere unit is unknown to the literature and to the tidk database, or the unit set in `parameters.contig_summary.telomere_motif` is not the unit the data favour. `eval/telomere_candidates.tsv` shows every unit with its score. |
 | `[FunFlux] NOTE amr_chroquetas <sample>: ...` | `amr_chroquetas_{sample}.log`, and the console | The species in column 2 of the annotation table matches no folder of the FungAMR database, so the sample is not screened. The NOTE names the folders of the same genus, if any. Correct the name when it is misspelt (see [The species](analysis/amr.md#species)). `00.resources/chroquetas/species.txt` lists the folders. Column 2 is also funannotate's species. A corrected name re-runs `augustus_model_check`, `funannotate_prediction` and everything after them, and it goes into the GenBank and GFF files and their names. Change it only when the new name is the right one for the annotation as well. |
+| `[FunFlux] NOTE find_ont_adapter <sample>: the reads carry <n> barcodes in at least 10% of the reads with the adapter (...); all of them are trimmed. ...` | `find_ont_adapter_{sample}.log`, and the console | The ONT reads of the sample carry two or more of ONT's published barcodes in quantity, and every one of them was trimmed. If they belong to different samples, demultiplex the reads and run each sample on its own (see [Adapter trimming](methods/adapter-trimming.md)). |
+| `[FunFlux] NOTE find_ont_adapter <sample>: the barcode after the adapter is not in ONT's published list; it is trimmed as found in the reads.` | `find_ont_adapter_{sample}.log`, and the console | The reads carry barcode flanks around a barcode ONT does not publish (a custom or new kit). It is trimmed as found; nothing needs fixing unless the barcode should be known. |
+| `[FunFlux] NOTE find_ont_adapter <sample>: the reads continue with several different sequences after the adapter that are not published ONT barcodes ...` | `find_ont_adapter_{sample}.log`, and the console | Only the part the sequences share was trimmed, so they stay in the reads, and the adapter screen reports them. Write the whole sequence into `parameters.<mode>.ont_adapter` to trim it. |
+| `[FunFlux] NOTE check_ont_trimming <sample>: more than 1% of the reads kept after trimming still start with the ONT adapter. ...` | `check_ont_trimming_{sample}.log`, and the console | The adapter of these reads may differ from the one FunFlux looks for. The Adapters table of the report and the `adapter` column of the contig summary show whether adapter reached the assembly. |
+| `[FunFlux] screen_adapters <sample>: adapter at <n> contig ends ...` | `screen_adapters_{sample}.log`, and the console | Adapter or barcode sequence lies within 100 bp of these contig ends. `02.assembly/{sample}/eval/adapter_screen.tsv` gives the positions. For ONT reads, check that `ont_adapter` is not `off`; for an assembly made elsewhere, trim the contig ends before submission. NCBI's FCS-adaptor gives the final check before a GenBank submission. |
 | `WARNING: N genera each hold at least 5% of this assembly (...)` | `select_contigs_{sample}.log` | A mixed culture, or one genome split across related genera by BLAST. Read `contig_taxonomy_decisions.tsv` before trusting the assembly. |
 | `WARNING: decontamination is discarding X% of the assembly (...)` | `select_contigs_{sample}.log` | More than 20 % of the bases were removed. If the kept assembly looks incomplete but not contaminated, the contig selector most likely removed genome. |
 | `GeneMark-ES stopped on the test slice (exit status N) but not because of its licence or installation; ...` | `genemark_check_{sample}.log` | Gene prediction itself then decides whether GeneMark-ES suits the genome. |
