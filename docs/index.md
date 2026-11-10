@@ -36,8 +36,8 @@ pipelines.
 
 ## The workflow at a glance
 
-![Detailed metro map of FunFlux v2.0.0. Blue (illumina), green (longread), purple (hybrid) and gold (contigs) lines run through read QC, assembly, the Illumina guide of hybrid, the contamination and mitochondrion screen and polishing to contigs_final.fasta, and then together through assembly QC, ITS taxonomy, gene prediction, functional annotation and the contig summary to the MultiQC report. Where the lines split into parallel tracks, the steps run side by side; open rings are steps the configuration can switch on or off. A dashed red branch, the optional resistance-mutation screen, reads the final genome and the mitochondrial contigs and ends in the report.](assets/funflux_metro.png#only-light)
-![Detailed metro map of FunFlux v2.0.0. Blue (illumina), green (longread), purple (hybrid) and gold (contigs) lines run through read QC, assembly, the Illumina guide of hybrid, the contamination and mitochondrion screen and polishing to contigs_final.fasta, and then together through assembly QC, ITS taxonomy, gene prediction, functional annotation and the contig summary to the MultiQC report. Where the lines split into parallel tracks, the steps run side by side; open rings are steps the configuration can switch on or off. A dashed red branch, the optional resistance-mutation screen, reads the final genome and the mitochondrial contigs and ends in the report.](assets/funflux_metro_dark.png#only-dark)
+![Detailed metro map of FunFlux v2.1.0. Blue (illumina), green (longread), purple (hybrid) and gold (contigs) lines run through read QC, where ONT reads are also trimmed of the sequencing adapter, assembly, the Illumina guide of hybrid, the contamination and mitochondrion screen and polishing to contigs_final.fasta, and then together through assembly QC, ITS taxonomy, gene prediction, functional annotation and the contig summary, which also screens the draft for adapter sequence, to the MultiQC report. Where the lines split into parallel tracks, the steps run side by side; open rings are steps the configuration can switch on or off. A dashed red branch, the optional resistance-mutation screen, reads the final genome and the mitochondrial contigs and ends in the report.](assets/funflux_metro.png#only-light)
+![Detailed metro map of FunFlux v2.1.0. Blue (illumina), green (longread), purple (hybrid) and gold (contigs) lines run through read QC, where ONT reads are also trimmed of the sequencing adapter, assembly, the Illumina guide of hybrid, the contamination and mitochondrion screen and polishing to contigs_final.fasta, and then together through assembly QC, ITS taxonomy, gene prediction, functional annotation and the contig summary, which also screens the draft for adapter sequence, to the MultiQC report. Where the lines split into parallel tracks, the steps run side by side; open rings are steps the configuration can switch on or off. A dashed red branch, the optional resistance-mutation screen, reads the final genome and the mitochondrial contigs and ends in the report.](assets/funflux_metro_dark.png#only-dark)
 
 Each coloured line is one mode: follow yours from its input to the report. The four lines take
 their own routes to `contigs_final.fasta`, the genome every mode delivers, and from there run on
@@ -48,8 +48,10 @@ straight to `contigs_final.fasta`; the dashed gold path is the contamination and
 screen, which the configuration can switch on. Where the lines split into parallel tracks, the
 steps run side by side. Analysis groups after the final genome may run in parallel. The order
 along the line is a reading order, not the order in which the steps must run. An open ring marks a
-step the configuration switches on or off; the two Medaka steps apply to ONT samples only. Thin
-lines are extra inputs, and the dashed red line is the optional resistance-mutation screen.
+step the configuration switches on or off. The Medaka model check, fastplong (adapter trimming)
+and Medaka apply to ONT samples only; HiFi reads pass them by. GeneMark-ES, marked beside
+funannotate predict, runs inside it when it is switched on. Thin lines are extra inputs, and the
+dashed red line is the optional resistance-mutation screen.
 Select the map to open it larger; select it again to see it at full size, and close it with × or Esc.
 
 The stages, their tools and when they run:
@@ -60,7 +62,7 @@ The stages, their tools and when they run:
 | Contamination screen | BLAST against NCBI core_nt, BlobTools | always; in `contigs` mode only when the screen is switched on |
 | Mitochondrion screen | BLAST, with the assembler's evidence in the long-read modes | with the contamination screen |
 | Assembly QC | QUAST, BUSCO | always |
-| Contig summary | tidk finds the telomeres; one table per sample gives every contig of the draft a verdict ([Contig summary](analysis/contig-summary.md)) | always |
+| Contig summary | tidk finds the telomeres and BLAST+ screens for adapter sequence; one table per sample gives every contig of the draft a verdict ([Contig summary](analysis/contig-summary.md)) | always |
 | ITS taxonomy | ITSx, SINTAX against UNITE | always |
 | Repeat masking | tantan, or RepeatModeler and RepeatMasker | always |
 | Gene prediction | funannotate with its own gene finders, Tiberius (on by default) and GeneMark-ES (with a licence) | always |
