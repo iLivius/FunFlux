@@ -63,7 +63,7 @@ Snakemake plans any job, so a dry run takes seconds:
 |---|---|
 | a wrong mode, a missing input folder, a bad sample name, a missing row in the annotation table, a mistyped key; when the contamination and mitochondrion screen runs, a decontamination table that is missing or malformed, or a sample in `include` mode without a genus | the first failed check prints a `[FunFlux]` message and stops ([Troubleshooting](../troubleshooting.md#stops-before-any-job-runs)) |
 | a missing eggNOG or InterProScan path (these are only tested for existence) | prints a `[FunFlux] NOTE:`; the run fails later, in that rule |
-| a missing `directories.blast_db`, with the screen on | prints the same NOTE, then stops with `MissingInputException in rule blob_json`: the screen needs `nodes.dmp` and `names.dmp` from that folder |
+| a missing `directories.blast_db`, with the screen on | prints the same NOTE, then stops with `MissingInputException in rule blob_json` (`blob_guide_json` in `hybrid` mode): the screen needs `nodes.dmp` and `names.dmp` from that folder |
 
 !!! warning "A missing eggNOG or InterProScan path does not stop the dry run"
 
@@ -102,9 +102,9 @@ resistance-mutation screen) off, the first run of one sample plans:
 
 | Mode | Per sample | Once per run | First run, one sample |
 |---|---|---|---|
-| `illumina` | 34 | 12 | 46 |
-| `longread` | 34, plus `find_ont_adapter`, `trim_ont_adapters` and `check_ont_trimming` for an ONT sample (unless `ont_adapter` is `off`), and `check_medaka_model` and `long_read_consensus` for an ONT sample with Medaka | 10 | 44 (PacBio HiFi) or 49 (ONT with Medaka) |
-| `hybrid` | 49, plus the same five for an ONT sample | 12 | 61 (PacBio HiFi) or 66 (ONT with Medaka) |
+| `illumina` | 35 | 12 | 47 |
+| `longread` | 35, plus `find_ont_adapter`, `trim_ont_adapters` and `check_ont_trimming` for an ONT sample (unless `ont_adapter` is `off`), and `check_medaka_model` and `long_read_consensus` for an ONT sample with Medaka | 10 | 45 (PacBio HiFi) or 50 (ONT with Medaka) |
+| `hybrid` | 50, plus the same five for an ONT sample | 12 | 62 (PacBio HiFi) or 67 (ONT with Medaka) |
 | `contigs` | 21; the screen adds 8 | 10 | 31; 39 with the screen |
 
 `illumina` and `hybrid` add `download_phix` and `build_phix` to the jobs that run once per run.
@@ -136,9 +136,9 @@ The optional steps change these counts in every mode:
 | `parameters.<mode>.ont_adapter: off` (ONT samples in `longread` and `hybrid`) | 3 fewer | |
 
 For example, the first run of one `contigs` sample without the screen plans 31 jobs, and 33 with
-the AMR screen on. The two-sample examples of `config/config_test_examples.yaml` plan 83 jobs in
-`longread` mode, with one ONT and one PacBio sample, and 115 in `hybrid` mode. With the AMR screen
-on, they plan 86 and 118. On a finished output folder, a dry run prints
+the AMR screen on. The two-sample examples of `config/config_test_examples.yaml` plan 85 jobs in
+`longread` mode, with one ONT and one PacBio sample, and 117 in `hybrid` mode. With the AMR screen
+on, they plan 88 and 120. On a finished output folder, a dry run prints
 `Nothing to be done (all requested files are present and up to date).`
 
 ## CPU cores and threads
@@ -258,16 +258,17 @@ beside InterProScan with `--cores` 22 or more. With fewer, one of the two waits 
 read-based modes add read processing and assembly before this chain, and polishing where it runs
 (`hybrid`, and ONT samples with Medaka in `longread`).
 
-Whole runs from reads, one sample each, took 6.6 to 11.5 hours on 16 to 32 cores, on two public
-genomes ([Validation on public genomes](../about/validation.md)):
+Whole runs from reads, one sample each, took 6.6 to 11.1 hours on 16 to 32 cores, on two public
+genomes ([Validation on public genomes](../about/validation.md)). The four runs with ONT reads were
+made with FunFlux 2.1.0, the other four with FunFlux 2.0.0:
 
 | Genome | Mode and reads | Assembler | Cores | Run time (h) |
 |---|---|---|---|---|
 | *Botrytis cinerea* B05.10, 42.6 Mb | `illumina`, Illumina 79x | SPAdes | 24 | 7.9 |
-| | `longread`, ONT 136x | hifiasm | 28 | 8.9 |
-| | `longread`, ONT 136x | Flye | 20 | 8.4 |
+| | `longread`, ONT 136x | hifiasm | 28 | 10.6 |
+| | `longread`, ONT 136x | Flye | 20 | 9.8 |
 | | `longread`, ONT 42x, with Medaka | hifiasm | 16 | 9.2 |
-| | `hybrid`, ONT 136x plus Illumina 79x | hifiasm | 32 | 11.5 |
+| | `hybrid`, ONT 136x plus Illumina 79x | hifiasm | 32 | 11.1 |
 | *Cordyceps cateniannulata* GXU-8616, 32.7 Mb | `longread`, PacBio HiFi 85x | hifiasm | 24 | 6.6 |
 | | `longread`, PacBio HiFi 85x | Flye | 20 | 7.3 |
 | | `hybrid`, PacBio HiFi 85x plus MGISEQ short reads 2 x 150 bp, 151x | hifiasm | 24 | 7.8 |
@@ -602,8 +603,9 @@ The memory and time a step asks for depend on the kind of step:
 | every other step (seconds to minutes, a few GB at most) | nothing | nothing |
 
 Set `threads`, `ram_gb` and `runtime_hours` so that one job fits one node and one partition. The
-largest memory peaks measured on the 42.6 Mb genome of B05.10 were 17 GB for hifiasm, about 16 GB
-for Tiberius, about 15 GB for SPAdes and 11 GB for Flye. The other heavy steps were not measured.
+largest memory peaks measured on the 42.6 Mb genome of B05.10 were about 19 GB for SPAdes with 32
+threads (about 15 GB with 24), 17 GB for hifiasm, about 16 GB for Tiberius and 12 GB for Flye.
+The other heavy steps were not measured.
 A `ram_gb` well below the node's memory lets several heavy jobs share a node.
 
 - A step that asks for nothing gets Slurm's defaults, often a GB or two per CPU and the
@@ -623,7 +625,7 @@ Run B treats the allocated node like a single computer:
 | Configure | `resources.threads: N`, the number of cores you request |
 | Prepare | when the node has no internet: the [preparation](#cluster-preparation) above, on the login node, with the folder and `--conda-prefix` of the batch script |
 | Launch | inside the job, from the same folder, the usual command with `--cores N` ([script below](#a-batch-script)) |
-| Time limit | allow for the run times [above](#run-time), 6.6 to 11.5 hours from reads, plus the building of the environments and the downloads when they were not prepared. After a job is stopped at its time limit, submit the same script again ([Resuming after an interruption](#resuming-after-an-interruption)); if Snakemake asks for `--unlock`, run the command once with it first |
+| Time limit | allow for the run times [above](#run-time), 6.6 to 11.1 hours from reads, plus the building of the environments and the downloads when they were not prepared. After a job is stopped at its time limit, submit the same script again ([Resuming after an interruption](#resuming-after-an-interruption)); if Snakemake asks for `--unlock`, run the command once with it first |
 
 On one node, Snakemake counts only threads, so `resources.ram_gb` is only the memory cap of SPAdes
 and the heap of Qualimap, and `runtime_hours` is ignored.

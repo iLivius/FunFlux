@@ -32,7 +32,7 @@ as described in [ChroQueTas and the FungAMR database](databases.md#chroquetas).
     | **Sec/SPI** | signal peptides of the Sec pathway, cleaved by signal peptidase I; with `--organism eukarya`, SignalP 6 predicts only these |
     | **pin file** | the file `<name>.linux-64.pin.txt` beside each environment file: the exact package builds FunFlux v2 was tested with, installed without solving dependencies |
     | **`--conda-prefix`** | the Snakemake option naming the folder the conda environments are built in, instead of `.snakemake/conda/` in the launch folder; several clones or users can share it |
-    | **lookup service** | the EBI online service that returns InterProScan matches already computed for known proteins; it receives checksums, not sequences, and saves run time |
+    | **lookup service** | the EBI online service that returns InterProScan matches already computed for known proteins; it receives checksums, not sequences. It did not answer InterProScan 5 in November 2026, and FunFlux does not ask it |
 
 ## GeneMark-ES { #genemark-es }
 
@@ -254,6 +254,10 @@ The InterProScan documentation gives two test commands, run in the installation 
 ./interproscan.sh -i test_all_appl.fasta -f tsv       # also contacts EBI's lookup service
 ```
 
+FunFlux runs InterProScan as in the first command, with `-dp`. The second command also asks EBI's
+lookup service, which did not answer InterProScan 5 in November 2026; InterProScan then printed an
+error before it computed every match itself.
+
 Then point `files.iprscan` at the `interproscan.sh` of the installation:
 
 ```yaml
@@ -267,24 +271,27 @@ Rule `iprscan_annotation` runs InterProScan once per sample, on the protein FAST
 predict:
 
 ```text
-interproscan.sh -i <proteins> -f XML -goterms -pa -cpu <threads>
+interproscan.sh -i <proteins> -f XML -goterms -pa -dp -cpu <threads>
                 -T 04.annotation/{sample}/iprscan/tmp
                 -o 04.annotation/{sample}/iprscan/interproscan_out.xml
 ```
 
 - **Threads and run time.** InterProScan is capped at 10 threads (`-cpu`), because it gains little
   from more. Snakemake reserves the 10 threads for the whole job, and with `--cores 24`
-  eggNOG-mapper (12 threads) runs beside it. InterProScan takes 1 to 5 hours for a fungal
-  proteome, depending on how many of its proteins EBI's lookup service already knows. The XML can
-  be a few GB.
+  eggNOG-mapper (12 threads) runs beside it. InterProScan takes several hours for a fungal
+  proteome, because it computes every match itself: 4.0 to 6.6 hours for about 11,800 proteins of
+  *B. cinerea* B05.10 in the [validation runs](../about/validation.md#assembly) made with
+  FunFlux 2.1.0. The XML can be a few GB.
 - **The XML check.** FunFlux calls InterProScan directly, not through `funannotate iprscan`. Before
   funannotate annotate reads the XML, FunFlux checks that it parses and has the root element
   `protein-matches`. If it does not, the rule stops with
   `InterProScan XML validation failed for ...`.
-- **The lookup service.** InterProScan asks EBI's lookup service for matches already computed for
-  known proteins. The address of the service is set by `precalculated.match.lookup.service.url`
-  in `interproscan.properties`. Without the service, InterProScan computes every match itself, which
-  takes longer. See [Functional annotation](../analysis/functional-annotation.md#interproscan).
+- **The lookup service.** FunFlux passes `-dp`, so InterProScan does not ask EBI's lookup service
+  for matches already computed for known proteins. The service did not answer InterProScan 5 in
+  November 2026: run without `-dp`, InterProScan failed its version check and wrote an error into
+  its log. With `-dp`, InterProScan needs no internet, and
+  `precalculated.match.lookup.service.url` in `interproscan.properties` does not matter to
+  FunFlux. See [Functional annotation](../analysis/functional-annotation.md#interproscan).
 - **Licensed analyses.** Phobius, SignalP and TMHMM are switched off in the InterProScan download
   because they contain licensed components. FunFlux does not switch them on, and SignalP 6 is its
   own optional step.

@@ -22,7 +22,7 @@ config:
 flowchart TD
     IL([Illumina pairs]) --> G[SPAdes guide assembly<br/>and its screen]
     G --> SEL([selected pairs<br/>properly paired<br/>on the screened guide])
-    ONT([raw ONT reads]) --> F[Filtlong]
+    ONT([ONT reads, adapter trimmed<br/>by fastplong]) --> F[Filtlong]
     SEL -.->|"only with<br/>short_read_guidance: true"| F
     F --> OUT([filtered ONT reads<br/>to hifiasm or Flye])
 ```
@@ -53,11 +53,13 @@ Three sources weigh against making the guidance the default:
   repetitive one with the deepest Illumina reads.
 - **Measured on a fungal genome.** On *Botrytis cinerea* B05.10, with the same 136x ONT reads,
   the guided `hybrid` run and the unguided `longread` run gave almost the same assembly. The
-  guided run has 33 contigs and the unguided run 32, and in both, each of the 18 chromosomes is in
-  one contig ([Assembly per mode](../about/validation.md#assembly)). The mitochondrion differed:
-  the guided run gave it as one contig of about two copies (175,274 bp), while a later `hybrid`
-  run with the guidance off gave one circular contig of 82,375 bp, close to the published
-  82,212 bp ([Other results](../about/validation.md#other-results)).
+  guided run has 34 contigs and the unguided run 33, and in both, each of the 18 chromosomes is in
+  one contig ([Assembly per mode](../about/validation.md#assembly)). Neither run gave the
+  mitochondrion as one circular contig. The guided run gave about one and a half copies
+  (122,980 bp), and the unguided run a 139,240-bp contig flagged as a concatemer. On these reads
+  the mitochondrion changes with small changes in the input, such as the adapter trimming, so the
+  difference cannot be put down to the guidance
+  ([Other results](../about/validation.md#other-results)).
 
 !!! warning "Guidance can break an assembly apart at repeats"
 
@@ -80,13 +82,15 @@ the length and quality filter that every sample gets:
 
 With the guidance on, Filtlong first scores an ONT read by how much of it the Illumina reads
 confirm, then trims and splits it at its unconfirmed stretches. What remains is filtered with the
-same `filtlong` settings. Rule `filter_long_reads` runs this command for a guided ONT sample:
+same `filtlong` settings. Rule `filter_long_reads` runs this command for a guided ONT sample, on
+the reads that fastplong trimmed first ([Adapter trimming and the adapter screen](adapter-trimming.md);
+with `ont_adapter: off`, on the raw reads):
 
 ```
 filtlong -1 01.reads/{sample}/selected/{sample}_selected_R1.fastq \
     -2 01.reads/{sample}/selected/{sample}_selected_R2.fastq \
     --trim --split 1000 --min_length 1000 --keep_percent 90 --length_weight 10 \
-    /path/to/longread_dir/{sample}_ont.fastq.gz > 01.reads/{sample}/long/{sample}_filtered.fastq
+    01.reads/{sample}/long/{sample}_trimmed.fastq.gz > 01.reads/{sample}/long/{sample}_filtered.fastq
 ```
 
 When the workflow starts, it prints the decision for every sample. With the guidance on, for

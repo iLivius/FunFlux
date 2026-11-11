@@ -36,7 +36,7 @@ modes that write it.
 | `02.assembly/{sample}/contaminants/contig_taxonomy_decisions.tsv` | Genus, keep or remove, and the reason, for every contig. | screen |
 | `02.assembly/{sample}/eval/busco/short_summary.specific.<lineage>.{sample}.txt` | Completeness of the genome. | all |
 | `02.assembly/{sample}/eval/quast/report.tsv` | Contig count, total length, N50, GC content. | all |
-| `02.assembly/{sample}/eval/contig_summary.tsv` | What each contig of the draft assembly is (chromosome, chromosome arm, mitochondrion, rDNA array, low-depth piece, collapsed repeat, nuclear contig or fragment, contaminant, unclassified), with the evidence; it also links each contig to its `scaffold_N` name in the annotation. | all |
+| `02.assembly/{sample}/eval/contig_summary.tsv` | What each contig of the draft assembly is (chromosome, chromosome arm, mitochondrion, rDNA array, low-depth piece, collapsed repeat, nuclear contig or fragment, contaminant, another organism's mitochondrial DNA, unclassified), with the evidence; it also links each contig to its `scaffold_N` name in the annotation. | all |
 | `03.taxonomy/{sample}/{sample}_ITS1_taxonomy.txt`, `{sample}_ITS2_taxonomy.txt` | UNITE classification of the ITS barcode. | all |
 | `03.taxonomy/{sample}/{sample}_ITS_copies.txt` | How many rDNA units were found, and which records the length guard rejected. | all |
 | `04.annotation/{sample}/funannotate/annotate_results/` | The annotated genome: GenBank, GFF3, proteins, transcripts, and `.annotations.txt`, the functional annotation with one row per transcript. | all |
@@ -102,7 +102,8 @@ One sample in `contigs` mode takes in the order of 10 GB. The table shows where 
 | `00.resources/` | the telomere repeat database | 0.6 MB |
 
 In the long-read modes, the kept long reads are the largest single item. Apart from them, the
-annotation takes most of a sample's space, mainly because the InterProScan XML is kept twice. Of
+annotation and the assembly folder take most of a sample's space. The first keeps the
+InterProScan XML twice, the second the read-mapping BAM and the assembler's working files. Of
 the material shared by the run, the antiSMASH database is the largest item. With
 `directories.antismash_db` set, `00.resources/` holds only links to your copy.
 
@@ -132,27 +133,28 @@ in the `--conda-prefix` folder, as listed under
 
 The sizes below were measured on two public genomes, with one sample per run, and are given as
 `du -sh` prints them. The runs are described on
-[Validation on public genomes](../about/validation.md).
+[Validation on public genomes](../about/validation.md). The four B05.10 runs with ONT reads were
+made with FunFlux 2.1.0, the others with FunFlux 2.0.0.
 
 | Genome | Run | `01.reads/` | `02.assembly/` | Whole output folder |
 |---|---|---|---|---|
 | *Botrytis cinerea* B05.10, 42.6 Mb | `illumina`, Illumina 79x | 0.6 MB | 3.7 GB | 13 GB |
 | | `longread`, ONT 42x, hifiasm, Medaka | 3.1 GB | 7.1 GB | 20 GB |
 | | `longread`, ONT 136x, hifiasm | 9.8 GB | 12 GB | 31 GB |
-| | `longread`, ONT 136x, Flye | 9.8 GB | 6.7 GB | 26 GB |
-| | `hybrid`, ONT 136x plus Illumina 79x, hifiasm | 16 GB | 14 GB | 39 GB |
+| | `longread`, ONT 136x, Flye | 9.8 GB | 6.6 GB | 26 GB |
+| | `hybrid`, ONT 136x plus Illumina 79x, hifiasm | 16 GB | 14 GB | 38 GB |
 | *Cordyceps cateniannulata* GXU-8616, 32.7 Mb | `longread`, PacBio HiFi 85x, hifiasm | 4.7 GB | 3.1 GB | 17 GB |
 | | `longread`, PacBio HiFi 85x, Flye | 4.7 GB | 2.3 GB | 16 GB |
 | | `hybrid`, PacBio HiFi 85x plus MGISEQ short reads 151x, hifiasm | 14 GB | 5.7 GB | 29 GB |
 
-A whole sample took 13 to 39 GB in these runs, and the kept long reads were the largest single
-file of every run with long reads. Their size follows the bases sequenced: 9.8 GB from the
+A whole sample took 13 to 38 GB in these runs, and the kept long reads were the largest single
+file of every run with long reads. Their size follows the bases sequenced: 9.7 GB from the
 5.8 Gb of ONT reads of B05.10, 4.7 GB from the 2.8 Gb of HiFi reads of GXU-8616.
 
 - In `hybrid`, `01.reads/` also holds the selected pairs, uncompressed: 9.3 GB of the 14 GB for
   GXU-8616.
 - `02.assembly/` was smaller with Flye than with hifiasm on both genomes, because hifiasm keeps
-  larger working files: `hifiasm/` took 5.5 GB on B05.10 and 1.5 GB on GXU-8616, `flye/` 858 MB
+  larger working files: `hifiasm/` took 5.5 GB on B05.10 and 1.5 GB on GXU-8616, `flye/` 860 MB
   and 570 MB.
 - The whole output folder of every run includes about 2 GB of `00.resources/`, most of it the
   SignalP 6 package. It does not include the antiSMASH database, because these runs set
@@ -230,7 +232,7 @@ folder holds only `contigs_final.fasta` and `eval/`.
 |---|---|---|---|---|
 | `contigs_final.fasta` | the nuclear genome | `filter_contigs` (no screen) or `separate_mitochondria` | deliverable | all |
 | `contigs_all.fasta` | the screened genome, mitochondrion included | `finalize_assembly` | deliverable | screen |
-| `contigs_mitochondrial.fasta` | the confirmed mitochondrial contigs, headers unchanged; an empty file when none was confirmed or `parameters.mitochondria.mode` is `off` or `report` | `separate_mitochondria` | deliverable | screen |
+| `contigs_mitochondrial.fasta` | the confirmed mitochondrial contigs, headers unchanged; an empty file when none was confirmed or `parameters.mitochondria.mode` is `off` or `report`. A contig whose best mitochondrial BLAST hit is an animal's or a plant's, such as a contig of human mitochondrial DNA, is classed `foreign_mitochondrial` and is not confirmed: it stays in the assembly, where the contamination screen keeps or removes it like any other contig | `separate_mitochondria` | deliverable | screen |
 | `contigs_filt.fasta` | the draft the screen examines: your FASTA after the contig filter (`contigs`), or the SPAdes contigs of at least 500 bp and 2x coverage (`illumina`) | `filter_contigs` | intermediate | contigs + screen, illumina |
 | `spades/` | SPAdes' working folder: the unfiltered `contigs.fasta`, `scaffolds.fasta`, the assembly graph, one `K<k>/` folder per k-mer size, `spades.log`; emptied whenever SPAdes runs again | `illumina_assembly` | intermediate | illumina |
 | `hifiasm/` or `flye/` | the assembler's own files: hifiasm's graphs (`hifiasm.p_ctg.gfa`, the primary contigs; `hifiasm.a_ctg.gfa`) and `.bin` files, or Flye's `assembly.fasta`, `assembly_info.txt`, graph and working files; emptied whenever the assembler runs again | `long_read_assembly` | intermediate | longread, hybrid |
@@ -257,7 +259,9 @@ the first space or tab of its headers. See [Pre-assembled contigs](../modes/cont
 ### contaminants/
 
 `contaminants/` holds the contamination part of the screen: the BLAST hits, the BlobTools table,
-the decisions of the contig selector (`select_contigs`) and the coverage track.
+the decisions of the contig selector (`select_contigs`) and the coverage track. In the read-based
+modes it also holds the read depth of every contig, measured from the coverage track, for the
+contig summary.
 
 | Path | Content | Written by | Status |
 |---|---|---|---|
@@ -267,7 +271,8 @@ the decisions of the contig selector (`select_contigs`) and the coverage track.
 | `{sample}_composition.txt` | share of the DNA and of the contigs per genus, over every contig, kept or not | `select_contigs` | deliverable |
 | `contigs.list` | IDs of the kept contigs | `select_contigs` | deliverable |
 | `contigs_decontam.fasta` | the kept contigs | `select_contigs` | intermediate |
-| `{sample}_map.bam`, `{sample}_map.bam.bai` | the coverage track: the trimmed Illumina pairs (`illumina`, bowtie2) or the filtered long reads (`longread`, `hybrid`, minimap2) aligned to the draft; in `contigs` mode the contigs mapped to themselves, only because BlobTools needs a BAM, and the coverage BlobTools derives from it means nothing | `map_contigs` | kept in the read-based modes (Qualimap reads it too); temporary in `contigs` mode |
+| `{sample}_map.bam`, `{sample}_map.bam.bai` | the coverage track: the trimmed Illumina pairs (`illumina`, bowtie2) or the filtered long reads (`longread`, `hybrid`, minimap2) aligned to the draft; in `contigs` mode the contigs mapped to themselves, only because BlobTools needs a BAM, and the coverage BlobTools derives from it means nothing | `map_contigs` | kept in the read-based modes (Qualimap and `contig_depth` read it too); temporary in `contigs` mode |
+| `{sample}_depth.tsv` | the read depth of every contig, measured by `samtools coverage` from `{sample}_map.bam`: `#rname` (the contig), `startpos`, `endpos`, `numreads`, `covbases`, `coverage` (the percentage of the contig covered), `meandepth` (the mean read depth), `meanbaseq`, `meanmapq`. The depth in the contig summary is `meandepth`; FunFlux 2.0.0 took it from the coverage column of the BlobTools table, an estimate that can be several times too low with long reads. Not made in `contigs` mode, where no depth is measured | `contig_depth` | intermediate; `contig_summary` reads it |
 | `contigs.*.bt2` (six files) | the bowtie2 index of the draft | `index_contigs` | temporary (`illumina`) |
 | `blob.blobDB.json`, `blob.{sample}_map.bam.cov` | BlobTools database and coverage file | `blob_json` | temporary |
 
@@ -281,7 +286,7 @@ explained on [Decontamination](../analysis/decontamination.md).
 
 | Path | Content | Written by | Status |
 |---|---|---|---|
-| `mitochondrial_screen.tsv` | one row per contig: class, reason, best organelle hit and its query cover, the assembler columns, `concatemer_flag` | `screen_mitochondria` | deliverable |
+| `mitochondrial_screen.tsv` | one row per contig: class, reason, best organelle hit and its query cover, the assembler columns, `concatemer_flag`, and `best_mito_kingdom` (the kingdom of the organism of the best hit: `Fungi`, `Metazoa` or `Viridiplantae`; empty when that cannot be told) | `screen_mitochondria` | deliverable |
 | `confirmed_mitochondrial.ids` | the confirmed contig IDs, one per line; empty unless `mitochondria.mode: separate_confirmed` | `screen_mitochondria` | intermediate |
 
 The columns, classes and reasons are explained on [Mitochondria](../analysis/mitochondria.md).

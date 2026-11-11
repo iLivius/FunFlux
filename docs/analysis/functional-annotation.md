@@ -43,16 +43,16 @@ The table lists the rules that run for each sample, with the files each one read
 | `cleanup` | `rm` | `.annotation_complete.txt` | `.cleanup_complete.txt` | 1 |
 
 InterProScan is the longest step, usually a few hours for a fungal proteome, while the other tools
-take minutes to about an hour each. The eggNOG-mapper rule is capped at 12 threads so that, with
-`--cores` 22 or more, it runs beside InterProScan instead of waiting for it. The run time of a
-whole sample is given on [Run time](../reference/running.md#run-time).
+usually take minutes to about an hour each. The eggNOG-mapper rule is capped at 12 threads so
+that, with `--cores` 22 or more, it runs beside InterProScan instead of waiting for it. The run
+time of a whole sample is given on [Run time](../reference/running.md#run-time).
 
 !!! abstract "Terms used on this page"
 
     | | |
     |---|---|
     | **`<stem>`** | the shared start of funannotate's file names, `<Genus_species>_{sample}`, such as `Fusarium_graminearum_SAMPLE1`; the species comes from the annotation parameter table |
-    | **lookup service** | the EBI online service that returns InterProScan matches already computed for known proteins; it receives checksums, not sequences, and saves run time |
+    | **lookup service** | the EBI online service that returns InterProScan matches already computed for known proteins; it receives checksums, not sequences. It did not answer InterProScan 5 in November 2026, and FunFlux does not ask it |
     | **NOTE** | a line starting `[FunFlux] NOTE` that reports something to check without stopping the run; read them after every dry run |
     | **`scaffold_N`** | the name `funannotate sort` gives each contig, `scaffold_1` being the longest; nothing is joined, and the gene models refer to these names |
     | **secretome** | the predicted secreted proteins, which funannotate annotate lists from the SignalP 6 result in `annotations.secretome.txt` and the `Secreted` column; none without SignalP 6 |
@@ -65,11 +65,12 @@ InterProScan looks for known protein families and domains in every predicted pro
 `iprscan_annotation` runs it as follows:
 
 ```bash
-/path/to/interproscan-5.78-109.0/interproscan.sh -i <stem>.proteins.fa -f XML -goterms -pa \
+/path/to/interproscan-5.78-109.0/interproscan.sh -i <stem>.proteins.fa -f XML -goterms -pa -dp \
   -cpu {threads} -T iprscan/tmp -o iprscan/interproscan_out.xml
 ```
 
-`-goterms` adds the Gene Ontology terms of the matches, and `-pa` the pathway annotation.
+`-goterms` adds the Gene Ontology terms of the matches, and `-pa` the pathway annotation. `-dp`
+makes InterProScan compute every match itself, as described below.
 
 InterProScan is not on bioconda and takes about 50 GB once set up, so you install it yourself and
 name its `interproscan.sh` in `files.iprscan`. The rule runs it in a conda environment that
@@ -103,32 +104,38 @@ The command selects no analyses (no `-appl`), so every analysis of the installat
 
 Signal peptides come instead from [SignalP 6](#signalp-6-optional), when it is switched on.
 
-InterProScan first asks EBI's precalculated match lookup service for the matches EBI has already
-computed for known proteins, sending it checksums of the protein sequences, not the sequences. The
-service answers only the newest release, 5.78-109.0, the last InterProScan 5, and refuses older
-ones (`you cannot use this match lookup service`).
-
-The lookup is a shortcut, not a requirement. When the service answers, InterProScan computes only
-the proteins the service does not know. When the computer has no internet, or the service refuses
-the installation, InterProScan prints
-`Pre-calculated match lookup service failed - analysis proceeding to run locally` and computes
+FunFlux passes InterProScan's `-dp`, so that InterProScan does not ask EBI's precalculated match
+lookup service for the matches EBI has already computed for known proteins. Without `-dp`,
+InterProScan sends that service checksums of the protein sequences, not the sequences. As checked
+in October 2026, the service answered only the newest release, 5.78-109.0, the last
+InterProScan 5, and refused older ones (`you cannot use this match lookup service`). In November
+2026 it did not answer 5.78-109.0 either: its address returned the InterPro web site. Run without
+`-dp`, InterProScan then failed its version check (`Could not determine server version`), wrote
+an error with a Java stack trace into its log, printed
+`Pre-calculated match lookup service failed - analysis proceeding to run locally` and computed
 every match itself.
 
-With or without the service, the matches are the same, but without it the run takes longer. The
-service returns EBI's e-values, which for the same match can differ from locally computed ones,
-and very small ones come back as `0.0`. FunFlux leaves the service on, by not passing
-InterProScan's `-dp`.
+With `-dp`, InterProScan computes every match itself from the start. The matches are the same as
+with the service, no request is sent to EBI, InterProScan needs no internet, and every run gets
+the same locally computed e-values. The service returned EBI's e-values instead, which for the
+same match can differ from locally computed ones, and very small ones came back as `0.0`.
+InterProScan computed every match itself in the four runs of
+[Validation on public genomes](../about/validation.md#assembly) made with FunFlux 2.1.0, and took
+4.0 to 6.6 hours on 10 threads for about 11,800 proteins of *B. cinerea* B05.10. FunFlux 2.0.0
+left the service on. The setting `precalculated.match.lookup.service.url` in
+`interproscan.properties` no longer matters to FunFlux.
 
-!!! note "The lookup service saves less time for a new isolate"
+!!! note "The lookup service saved less time for a new isolate"
 
-    On *B. cinerea* B05.10, with 11,728 distinct proteins and 10 threads, InterProScan took about
-    1 hour with the service and 5 hours without. In a check made in October 2026, 500 distinct
-    proteins were drawn at random from the annotation of B05.10, and 500 from that of
+    While the service still answered, in October 2026, InterProScan took about 1 hour with it and
+    5 hours without on *B. cinerea* B05.10, with 11,728 distinct proteins and 10 threads. In a
+    check made the same month, 500 distinct proteins were drawn at random from the annotation of
+    B05.10, and 500 from that of
     [*Cordyceps cateniannulata* GXU-8616](../about/validation.md#pacbio-hifi-reads-cordyceps-cateniannulata-gxu-8616).
     The annotation of GXU-8616 has 10,924 predicted proteins, 10,888 of them distinct. The service
     already knew 471 of the 500 from B05.10 (94 %), but only 5 of the 500 from GXU-8616 (1 %).
     B05.10's proteins are public, so the service knew most of them, and for a new isolate the gain
-    is smaller.
+    was smaller.
 
 ## eggNOG-mapper
 

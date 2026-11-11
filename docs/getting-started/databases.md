@@ -35,7 +35,7 @@ with a local antiSMASH copy, and 264 GB of that is `core_nt`, which only the scr
 
     | | |
     |---|---|
-    | **taxonomy files** | the files `taxdb.btd` and `taxdb.bti`, which give BLAST its organism names, and `nodes.dmp` and `names.dmp`, the NCBI taxonomy BlobTools reads; all beside `core_nt` |
+    | **taxonomy files** | the files `taxdb.btd` and `taxdb.bti`, which give BLAST its organism names, and `nodes.dmp` and `names.dmp`, the NCBI taxonomy that BlobTools and the mitochondrion screen read; all beside `core_nt` |
     | **NOTE** | a line starting `[FunFlux] NOTE` that reports something to check without stopping the run; read them after every dry run |
     | **funannotate database** | the frozen snapshot of funannotate's data, such as Swiss-Prot, Pfam, the BUSCO set and stored AUGUSTUS models, downloaded once from Zenodo into `directories.funannotate_db` |
     | **stored AUGUSTUS model** | the AUGUSTUS parameters trained earlier for one species, kept in `trained_species/` of the funannotate database; named in column 4 of the annotation parameter table, they are used as they are |
@@ -54,7 +54,7 @@ folder (rule `blob_json`), so `directories.blast_db` must hold three kinds of fi
 |---|---|---|
 | `core_nt.nal`, `core_nt.00.*`, `core_nt.01.*`, ... | `update_blastdb.pl core_nt` | the search; `parameters.nt_version` (default `core_nt`) is the database name |
 | `taxdb.btd`, `taxdb.bti` | `taxdb.tar.gz` | organism names in the BLAST table; without them the name columns read `N/A` |
-| `nodes.dmp`, `names.dmp` | `taxdump.tar.gz` | the taxonomy tree and names BlobTools uses to assign a taxon to each contig |
+| `nodes.dmp`, `names.dmp` | `taxdump.tar.gz` | the taxonomy tree and names BlobTools uses to assign a taxon to each contig; the mitochondrion screen also reads `nodes.dmp`, to tell whether its best mitochondrial hit is a fungus, an animal or a plant |
 
 `parameters.nt_version: nt` selects the full `nt` database instead, if that is what the folder
 holds. These commands download `core_nt` and the taxonomy files:
@@ -93,7 +93,8 @@ Date: Jul 11, 2026  1:17 AM	Longest sequence: 98,200,793 bases
 
     A missing folder is noticed before any job starts, with a NOTE. A missing `nodes.dmp` or
     `names.dmp` is noticed in a dry run with the screen on, which stops with
-    `MissingInputException in rule blob_json` because both files are inputs of `blob_json`.
+    `MissingInputException in rule blob_json` (`blob_guide_json` in `hybrid` mode) because both files
+    are inputs of those rules.
     Missing volumes or a missing `taxdb` are noticed only when BLAST runs, which first reads them.
 
 ## eggNOG-mapper data { #eggnog }

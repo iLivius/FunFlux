@@ -10,7 +10,7 @@ assembler to choose is discussed under [hifiasm or Flye](#hifiasm-or-flye).
     | | |
     |---|---|
     | **HiFi** | PacBio's accurate long reads, each the consensus of several passes over one molecule (CCS) |
-    | **coverage track** | the filtered reads aligned back to `assembly.fasta`, kept as `contaminants/{sample}_map.bam`; BlobTools takes each contig's coverage from it and Qualimap its report |
+    | **coverage track** | the filtered reads aligned back to `assembly.fasta`, kept as `contaminants/{sample}_map.bam`; BlobTools takes each contig's coverage from it, `samtools coverage` the read depth for the contig summary, and Qualimap its report |
     | **assembler evidence** | what hifiasm or Flye report for each contig, above all read depth and circularity, written to `assembly_evidence.tsv` for the mitochondrion screen |
     | **basecaller tag** | the `basecall_model_version_id=` field in ONT read headers, which names the basecaller model; with `medaka_model: auto`, Medaka reads it from the first 100 reads |
     | **purge level** | how strongly hifiasm removes haplotigs from its primary contigs (`-l`, 0 to 3), set by `hifiasm.purge_dups`; `auto` passes nothing and keeps hifiasm's default |
@@ -129,13 +129,14 @@ it writes the genome files.
 | Assembler evidence | `assembly_evidence` | FunFlux script, Python 3.12 | `assembly_evidence.tsv` |
 | Coverage track | `map_contigs` | minimap2 2.30, samtools 1.21 | `contaminants/{sample}_map.bam` |
 | Mapping QC | `map_evaluation` | Qualimap 2.3 | `eval/qualimap/` |
+| Read depth per contig | `contig_depth` | samtools 1.21 | `contaminants/{sample}_depth.tsv` |
 | Screen | `blast_contigs`, `blob_json`, `blob_table`, `screen_mitochondria`, `select_contigs` | BLAST+ 2.16.0, BlobTools 1.1.1 | `contaminants/`, `mitochondria/` |
 | Polishing (ONT with Medaka) | `long_read_consensus` | Medaka 2.2.2 | `medaka/consensus.fasta` |
 | Genome files | `finalize_assembly`, `separate_mitochondria` | | `contigs_all.fasta`, `contigs_final.fasta`, `contigs_mitochondrial.fasta` |
 | Adapter screen of the draft | `blast_adapters`, `screen_adapters` | BLAST+ 2.16.0, FunFlux script | `eval/adapter_screen.tsv` |
 
-Paths without a stage prefix are under `02.assembly/{sample}/`. One PacBio HiFi sample plans 44
-jobs, an ONT sample with Medaka 49, and the AMR screen adds 2
+Paths without a stage prefix are under `02.assembly/{sample}/`. One PacBio HiFi sample plans 45
+jobs, an ONT sample with Medaka 50, and the AMR screen adds 2
 ([Dry run](../reference/running.md#dry-run)). The threads of each step are listed on
 [CPU cores and threads](../reference/running.md#cpu-cores-and-threads).
 
@@ -148,7 +149,8 @@ are already trimmed. fastplong then removes exactly that sequence from both read
 `check_ont_trimming` counts what is left. fastplong never guesses the adapter itself: on fungal
 reads its guess can be the telomere repeat. `ont_adapter: off` switches the step off, and a
 sequence written there is trimmed as given. [Adapter trimming](../methods/adapter-trimming.md)
-explains the method and what it changed in the *Botrytis cinerea* B05.10 assembly.
+explains the method, and [Validation on public genomes](../about/validation.md#adapter-trimming)
+shows what it changed in the *Botrytis cinerea* B05.10 runs.
 
 ## Read filter
 
@@ -307,9 +309,9 @@ from the assembler and the number of cores. The runs are described on
 
 | Reads | Assembler | Contigs | Of them, rDNA pieces | N50 (Mb) | Contigs with telomeres at both ends |
 |---|---|---|---|---|---|
-| *Botrytis cinerea* B05.10, ONT 136x | hifiasm | 32 | 13 | 2.58 | 15 |
-| | Flye | 25 | 0 | 2.58 | 6 |
-| *Cordyceps cateniannulata* GXU-8616, PacBio HiFi 85x | hifiasm | 18 | 7 | 4.79 | 7 |
+| *Botrytis cinerea* B05.10, ONT 136x (FunFlux 2.1.0) | hifiasm | 33 | 13 | 2.58 | 15 |
+| | Flye | 21 | 0 | 2.58 | 6 |
+| *Cordyceps cateniannulata* GXU-8616, PacBio HiFi 85x (FunFlux 2.0.0) | hifiasm | 18 | 7 | 4.79 | 7 |
 | | Flye | 12 | 0 | 4.79 | 6 |
 
 In these runs the N50 was the same with both assemblers, and hifiasm gave more contigs with
@@ -318,7 +320,7 @@ telomeres at both ends, most clearly on the ONT reads (15 against 6).
 - **Contigs** are those of `contigs_final.fasta`, the nuclear genome, as QUAST counts them.
 - **rDNA pieces** are the contigs to which the [contig summary](../analysis/contig-summary.md)
   gives the verdict `rDNA_array`. hifiasm's extra contigs are such pieces of the rDNA array, which
-  Flye did not produce. Without them, hifiasm has fewer contigs than Flye: 19 against 25 on B05.10
+  Flye did not produce. Without them, hifiasm has fewer contigs than Flye: 20 against 21 on B05.10
   and 11 against 12 on GXU-8616.
 - **Telomeres** come from the contig summary too: the last column counts the contigs with a
   telomere array at both ends. On the ONT reads, 11 Flye contigs carry a telomere array at one end
@@ -332,6 +334,10 @@ The filtered reads are mapped to `assembly.fasta` with `minimap2 -ax map-ont` or
 alignments, `contaminants/{sample}_map.bam`, are kept. BlobTools reads them for the read coverage
 of each contig, and Qualimap (`map_evaluation`) reports on them in `eval/qualimap/`. A Qualimap
 failure does not stop the run ([Assembly QC](../analysis/assembly-qc.md#qualimap-read-modes)).
+From the same alignments, `contig_depth` measures the mean read depth of each contig with
+`samtools coverage` and writes it to `contaminants/{sample}_depth.tsv`. The
+[contig summary](../analysis/contig-summary.md) takes its depth from that table, not from
+BlobTools.
 
 The screen runs on `assembly.fasta` with BLAST (10 subjects and 5 alignments per subject),
 BlobTools and the contig selector. The mitochondrion screen also reads `assembly_evidence.tsv`,
@@ -344,8 +350,10 @@ and decides as follows whether a contig is confirmed:
 | at least `min_direct_blast_qcov` percent of it (35) | a circle that is not a repeat or an alternative copy of another contig | confirmed |
 | no hit | circularity or depth | never confirmed |
 
-A BLAST hit is always needed, and the assembler's evidence lets a partial hit count. See
-[Mitochondria](../analysis/mitochondria.md).
+A BLAST hit is always needed, and the assembler's evidence lets a partial hit count. A contig
+whose best mitochondrial hit is an animal's or a plant's, such as a contig of human mitochondrial
+DNA from the sequencing library, is never confirmed: it gets the class `foreign_mitochondrial` and
+stays in the assembly, where the contig selector treats it like any other contig. See [Mitochondria](../analysis/mitochondria.md).
 
 `long_read_consensus` polishes `contaminants/contigs_decontam.fasta`, the contigs the contig
 selector kept, with the filtered reads:
@@ -414,7 +422,7 @@ Each sample has its reads in `01.reads` and its assembly in `02.assembly`:
     ├── hifiasm/ or flye/                 the assembler's own files
     ├── assembly.fasta  assembly_evidence.tsv  assembly_provenance.tsv
     ├── {sample}_medaka_model.txt         ONT samples with Medaka
-    ├── contaminants/                     BAM, BLAST table, BlobTools table, decisions, contigs_decontam.fasta
+    ├── contaminants/                     BAM, depth table, BLAST table, BlobTools table, decisions, contigs_decontam.fasta
     ├── mitochondria/                     mitochondrial_screen.tsv, confirmed_mitochondrial.ids
     ├── medaka/consensus.fasta            ONT samples with Medaka
     ├── contigs_all.fasta  contigs_final.fasta  contigs_mitochondrial.fasta

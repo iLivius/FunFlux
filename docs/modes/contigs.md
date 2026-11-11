@@ -148,7 +148,7 @@ what the run costs:
 | A mitochondrial genome in your FASTA | goes through the nuclear gene predictor, although fungal mitochondria use a different genetic code (code 4 in most fungi, code 3 in *Saccharomyces cerevisiae* and related yeasts) | confirmed by BLAST and, with the default `separate_confirmed`, split off into `contigs_mitochondrial.fasta` |
 | Contaminants | not looked for | every contig gets a keep or remove decision; contigs are removed only when `parameters.decontamination.mode` is not `off` |
 | Jobs added per sample | none | 8 |
-| Time added | none | nearly all of it BLAST, which took 40 to 51 minutes on 24 threads for the 42.6 Mb genome of the [validation runs](../about/validation.md); the self-mapping takes seconds |
+| Time added | none | nearly all of it BLAST, which took 33 to 51 minutes on 24 threads for the 42.6 Mb genome of the [validation runs](../about/validation.md); the self-mapping takes seconds |
 | `directories.blast_db` | not needed | required |
 
 !!! warning "An assembly made elsewhere usually still contains the mitochondrial genome"
@@ -166,8 +166,8 @@ per sample are added:
 | `map_contigs` | maps the contigs to themselves with minimap2, because BlobTools needs a BAM file |
 | `blast_contigs` | megablast against NCBI core_nt, up to 10 subjects and 5 alignments per subject |
 | `blob_json`, `blob_table` | BlobTools: one taxon per contig from the BLAST hits |
-| `screen_mitochondria` | a contig is confirmed mitochondrial when a BLAST hit to a mitochondrial genome in core_nt covers at least `parameters.mitochondria.min_direct_blast_qcov` percent of it (35); BLAST is the only evidence in this mode |
-| `select_contigs` | applies `parameters.decontamination` (default `off`: every contig kept) and writes a decision for every contig; with the default `parameters.mitochondria.mode: separate_confirmed`, confirmed mitochondrial contigs are always kept |
+| `screen_mitochondria` | a contig is confirmed mitochondrial when a BLAST hit to a mitochondrial genome in core_nt covers at least `parameters.mitochondria.min_direct_blast_qcov` percent of it (35); BLAST is the only evidence in this mode. A contig whose best mitochondrial hit is an animal's or a plant's, such as a contig of human mitochondrial DNA, is classed `foreign_mitochondrial` instead: it is not confirmed and not split off |
+| `select_contigs` | applies `parameters.decontamination` (default `off`: every contig kept) and writes a decision for every contig; with the default `parameters.mitochondria.mode: separate_confirmed`, confirmed mitochondrial contigs are always kept, while a `foreign_mitochondrial` contig is kept or removed like any other contig |
 | `finalize_assembly` | copies `contaminants/contigs_decontam.fasta` to `contigs_all.fasta` |
 | `separate_mitochondria` | splits `contigs_all.fasta` into `contigs_final.fasta` (nuclear) and `contigs_mitochondrial.fasta` |
 

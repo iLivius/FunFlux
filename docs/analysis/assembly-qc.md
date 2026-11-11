@@ -32,7 +32,7 @@ BUSCO markers on each contig and is written after the annotation
     | **draft assembly (the draft)** | the assembly the screen examines, before any contig is removed: `contigs_filt.fasta` in `illumina` mode and in `contigs` mode with the screen, `assembly.fasta` in `longread` and `hybrid` |
     | **guide assembly** | in `hybrid` mode, the SPAdes assembly of the Illumina reads; it is screened, and only the pairs that map to it go on |
     | **read-based modes (read modes)** | the modes `illumina`, `longread` and `hybrid`, which start from reads, as against `contigs` |
-    | **coverage track** | the reads aligned back to the draft, `contaminants/{sample}_map.bam`; BlobTools takes each contig's coverage from it and Qualimap its report; in `contigs` mode, the contigs aligned to themselves |
+    | **coverage track** | the reads aligned back to the draft, `contaminants/{sample}_map.bam`; BlobTools takes each contig's coverage from it, the contig summary its read depth and Qualimap its report; in `contigs` mode, the contigs aligned to themselves |
     | **lineage dataset** | the BUSCO gene set of one taxonomic group, such as `hypocreales_odb12`, for the completeness check; with `lineage: auto`, BUSCO chooses one by placing the genome |
     | **contig summary** | the table `02.assembly/{sample}/eval/contig_summary.tsv`: one row per contig of the draft, with its evidence (telomeres, depth, rDNA units, genes) and a verdict |
 

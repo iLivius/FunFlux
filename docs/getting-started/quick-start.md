@@ -271,9 +271,9 @@ the assembly, the polishing and the mapping QC:
 | Mode | Jobs in the first run of one sample |
 |---|---|
 | `contigs`, the example | 31 |
-| `illumina` | 46 |
-| `longread` | 44 (PacBio HiFi) or 49 (ONT with Medaka) |
-| `hybrid` | 61 (PacBio HiFi) or 66 (ONT with Medaka) |
+| `illumina` | 47 |
+| `longread` | 45 (PacBio HiFi) or 50 (ONT with Medaka) |
+| `hybrid` | 62 (PacBio HiFi) or 67 (ONT with Medaka) |
 
 How these counts are made up is explained on [Running FunFlux](../reference/running.md#dry-run).
 
@@ -285,7 +285,7 @@ How these counts are made up is explained on [Running FunFlux](../reference/runn
     |---|---|---|
     | `directories.eggnog_db`, `files.iprscan` | existence only | a missing `eggnog_db` folder or `iprscan` file prints a NOTE (`... does not exist on this machine; the eggNOG step will fail without it.`) and the dry run goes on; wrong content there goes unnoticed until eggNOG-mapper or InterProScan fails, after gene prediction, hours into the run |
     | `directories.antismash_db`, `directories.unite_db` | `clusterblast/` and `unite_its_sintax.fasta` | the dry run stops without them |
-    | `directories.blast_db`, with the screen on | `nodes.dmp` and `names.dmp` | a folder without either stops the dry run with `MissingInputException in rule blob_json`; a folder without core_nt passes the dry run and fails when `blast_contigs` starts |
+    | `directories.blast_db`, with the screen on | `nodes.dmp` and `names.dmp` | a folder without either stops the dry run with `MissingInputException in rule blob_json` (`blob_guide_json` in `hybrid` mode); a folder without core_nt passes the dry run and fails when `blast_contigs` starts |
 
 ## 8. Run
 
@@ -339,7 +339,9 @@ For the UNITE file, `00.resources/unite/PROVENANCE.txt` records the URL, downloa
 size. For the telomere repeat database, `00.resources/telomeres/PROVENANCE.txt` records the URL,
 download date, checksum and row count.
 
-InterProScan also asks EBI's lookup service for matches already computed, which only saves time
+InterProScan computes every match itself and needs no internet: EBI's lookup service, which
+returned matches already computed, did not answer InterProScan 5 in November 2026, so FunFlux does
+not ask it
 (see [Functional annotation](../analysis/functional-annotation.md#interproscan)). The read-based
 modes also download the PhiX genome (`illumina`, `hybrid`) and the Medaka model for ONT samples.
 

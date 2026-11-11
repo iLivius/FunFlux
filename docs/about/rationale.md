@@ -13,7 +13,7 @@ same.
     | **the screen** | the contamination and mitochondrion screen of the draft: BLAST against core_nt, BlobTools, the mitochondrion screen and the contig selector; in `contigs` mode only with `parameters.contigs.screen: true` |
     | **draft assembly (the draft)** | the assembly the screen examines, before any contig is removed: `contigs_filt.fasta` in `illumina` mode and in `contigs` mode with the screen, `assembly.fasta` in `longread` and `hybrid` |
     | **guide assembly** | in `hybrid` mode, the SPAdes assembly of the Illumina reads; it is screened, and only the pairs that map to it go on |
-    | **coverage track** | the reads aligned back to the draft, `contaminants/{sample}_map.bam`, from which BlobTools takes each contig's coverage; in `contigs` mode, the contigs aligned to themselves |
+    | **coverage track** | the reads aligned back to the draft, `contaminants/{sample}_map.bam`, from which BlobTools takes each contig's coverage and the contig summary its read depth; in `contigs` mode, the contigs aligned to themselves |
     | **genus filter** | the setting `parameters.decontamination.mode: include` or `exclude`, under which the contig selector keeps or removes contigs by the genus BlobTools gave them |
     | **confirmed mitochondrial contig** | a contig the mitochondrion screen classes `confirmed_mitochondrial`; with the default `separate_confirmed`, it is kept whatever its genus and moved to `contigs_mitochondrial.fasta` |
     | **nuclear genome** | the delivered genome without the confirmed mitochondrial contigs, `contigs_final.fasta`; it holds every contig when nothing is split off (no screen, or `parameters.mitochondria.mode` `off` or `report`) |

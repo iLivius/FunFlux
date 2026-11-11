@@ -162,7 +162,8 @@ splits off the confirmed mitochondrion. The screen adds 8 jobs per sample.
 
 Without reads, the contigs are mapped against themselves only because BlobTools needs a BAM file.
 That coverage carries no information, and a contig is confirmed as mitochondrial by BLAST alone,
-when a mitochondrial genome covers at least `min_direct_blast_qcov` (35 %) of it. See
+when a mitochondrial genome covers at least `min_direct_blast_qcov` (35 %) of it, unless that
+genome is an animal's or a plant's (class `foreign_mitochondrial`). See
 [Decontamination](../analysis/decontamination.md) and [Mitochondria](../analysis/mitochondria.md).
 
 ## What a wrong mode does

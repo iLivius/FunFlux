@@ -1,9 +1,10 @@
 # Mitochondria
 
 A fungal mitochondrial genome, usually some tens of kb and present in many copies per cell,
-assembles as one more contig. This page describes how FunFlux recognises that contig, sets it
-apart from the nuclear genome and reports each call. Read it to interpret
-`mitochondria/mitochondrial_screen.tsv` or to find out why no mitochondrion was split off.
+assembles as one more contig, or sometimes as two or more. This page describes how FunFlux
+recognises these contigs, sets them apart from the nuclear genome and reports each call. Read it
+to interpret `mitochondria/mitochondrial_screen.tsv` or to find out why no mitochondrion was split
+off.
 
 With the default `parameters.mitochondria.mode: separate_confirmed`, FunFlux finds the
 mitochondrial contig with BLAST, protects it from removal by the contig selector and writes it to
@@ -20,7 +21,7 @@ as a stop codon and calls false genes on a mitochondrial contig.
     | | |
     |---|---|
     | **the screen** | the contamination and mitochondrion screen of the draft: BLAST against NCBI core_nt, BlobTools, the mitochondrion screen and the contig selector |
-    | **mitochondrion screen** | rule `screen_mitochondria`, part of the screen: it confirms mitochondrial contigs from BLAST hits to mitochondrial genomes and, in the long-read modes, the assembler evidence |
+    | **mitochondrion screen** | rule `screen_mitochondria`, part of the screen: it confirms mitochondrial contigs from BLAST hits to mitochondrial genomes that are not an animal's or a plant's and, in the long-read modes, the assembler evidence |
     | **draft assembly (the draft)** | the assembly the screen examines, before any contig is removed: `contigs_filt.fasta` in `illumina` mode and in `contigs` mode with the screen, `assembly.fasta` in `longread` and `hybrid` |
     | **contig selector** | rule `select_contigs`, the last step of the screen: it keeps or removes each contig by genus, as `parameters.decontamination` says; the default, `off`, keeps every contig |
     | **genus filter** | the setting `parameters.decontamination.mode: include` or `exclude`, under which the contig selector keeps or removes contigs by the genus BlobTools gave them |
@@ -48,7 +49,7 @@ polishing. The steps, in order:
 | Step | Rule | Reads | Writes, in `02.assembly/{sample}/` |
 |---|---|---|---|
 | 1 | `blast_contigs` | the draft contigs | `contaminants/blastout` |
-| 2 | `screen_mitochondria` | `blastout`, the draft contigs; in `longread` and `hybrid` also `assembly_evidence.tsv`, from `assembly_evidence` ([below](#with-assembler-evidence-longread-hybrid)) | `mitochondria/mitochondrial_screen.tsv`, `mitochondria/confirmed_mitochondrial.ids` |
+| 2 | `screen_mitochondria` | `blastout`, the draft contigs, the NCBI taxonomy file `nodes.dmp` of the BLAST database folder; in `longread` and `hybrid` also `assembly_evidence.tsv`, from `assembly_evidence` ([below](#with-assembler-evidence-longread-hybrid)) | `mitochondria/mitochondrial_screen.tsv`, `mitochondria/confirmed_mitochondrial.ids` |
 | 3 | `select_contigs` | the confirmed IDs, among others | `contaminants/contigs_decontam.fasta`, with the confirmed contigs kept whatever their genus |
 | 4 | polishing (long-read modes, where it runs), then `finalize_assembly` | the kept contigs | `contigs_all.fasta` |
 | 5 | `separate_mitochondria` | `contigs_all.fasta`, the confirmed IDs | `contigs_final.fasta`, `contigs_mitochondrial.fasta` |
@@ -60,7 +61,9 @@ In the long-read modes, `longread` and `hybrid`, Medaka (ONT samples, unless
 ## Classification
 
 The mitochondrion screen gives every contig of the draft a class and a reason. BLAST is the
-evidence in every mode, and the long-read modes add the assembler's evidence.
+evidence in every mode, and the long-read modes add the assembler's evidence. A last check, on the
+organism of the best direct hit, keeps the mitochondrial DNA of other organisms from being
+confirmed ([below](#foreign-mitochondrial)).
 
 ### BLAST evidence
 
@@ -138,6 +141,41 @@ tests run in this order:
 Circularity or depth alone never confirms a contig. Only `confirmed_mitochondrial` contigs are
 protected and split off, and the other classes change nothing in the assembly.
 
+### Mitochondrial DNA of another organism { #foreign-mitochondrial }
+
+A direct hit shows that a contig matches a mitochondrial genome, but not whose. A few human reads
+in an Illumina library, for example, can assemble into short contigs of human mitochondrial DNA,
+which match human mitochondrial genomes over their whole length and pass the tests above. Wherever
+the screen runs, the guide's screen of `hybrid` mode included, the mitochondrion screen therefore
+checks the organism of the best direct hit. It takes the hit's taxonomy ID from `blastout` and
+works out from `nodes.dmp`, the NCBI taxonomy file in the BLAST database folder that BlobTools also
+reads, whether that organism is a fungus, an animal or a plant. A contig whose best direct hit is
+an animal's or a plant's mitochondrial genome gets this class instead of `confirmed_mitochondrial`
+or `mitochondrial_candidate`:
+
+| Best direct hit | Class | Reason |
+|---|---|---|
+| an animal (Metazoa) or a plant (Viridiplantae) | `foreign_mitochondrial` | `best_direct_hit_animal_or_plant` |
+
+Such a contig is not confirmed, not split off and not protected from the genus filter. It stays in
+the assembly, where the contig selector treats it like any other contig, so with the default
+`parameters.decontamination.mode: off` it is kept
+([Protected mitochondrial contigs](decontamination.md#protected-mitochondrial-contigs)), and the
+[contig summary](contig-summary.md) gives it the verdict `foreign_mitochondrion`. Any other answer
+leaves the class as the tables above give it: a fungus, but also an organism that the taxonomy
+places in none of the three kingdoms, such as an environmental record filed under Eukaryota only,
+or an oomycete, which NCBI does not count among the fungi. So does a hit without a usable taxonomy
+ID (`0`, when the BLAST database carries none). The column `best_mito_kingdom` of the screen table
+records the answer.
+
+FunFlux 2.0.0 had no such check. In the `illumina` run of the
+[validation page](../about/validation.md#other-results), it confirmed three contigs of human
+mitochondrial DNA, of 572 to 1,139 bp, and put them in `contigs_mitochondrial.fasta` beside the
+fungal mitochondrion. The `hybrid` run assembles the same three contigs from the same Illumina
+reads, in its guide assembly, and there the screen of FunFlux 2.1.0 calls them
+`foreign_mitochondrial`. The check left the fungal mitochondria of the four runs with ONT reads
+confirmed as before.
+
 ## Settings
 
 The mitochondrion screen has four settings, under `parameters.mitochondria`. Two act wherever the
@@ -188,7 +226,9 @@ a finished sample has the same set of files. `mitochondria.mode: off` does not s
 because the rest of the screen still needs it.
 
 The log of `screen_mitochondria` counts confirmed and selected contigs:
-`Mitochondrial screen: N confirmed call(s); M selected for separation (mode=...).`
+`Mitochondrial screen: N confirmed call(s); M selected for separation (mode=...).` When the screen
+finds mitochondrial DNA of another organism, a second line names those contigs:
+`Mitochondrial screen: N contig(s) of another organism's mitochondrial DNA (foreign_mitochondrial), not set apart: ...`
 
 ## The screen table
 
@@ -213,6 +253,7 @@ The log of `screen_mitochondria` counts confirmed and selected contigs:
 | `best_mito_slen` | length of the best hit's subject, the reference mitochondrial genome (bp) |
 | `length_ratio` | `length` / `best_mito_slen`, two decimals |
 | `concatemer_flag` | `Y` when `length_ratio` is above 1.5 and the contig is not recorded as circular, otherwise `N`; information only |
+| `best_mito_kingdom` | `Fungi`, `Metazoa` or `Viridiplantae`: the kingdom of the organism of the best direct hit ([Mitochondrial DNA of another organism](#foreign-mitochondrial)); empty without a direct hit, when the hit has no usable taxonomy ID (`0`, or an ID missing from `nodes.dmp`), or when the taxonomy places it in none of the three |
 
 The six `assembler_*` columns are empty in `contigs` and `illumina` mode.
 
@@ -254,10 +295,10 @@ the reference over its whole length and is confirmed. The screen table shows it:
 | about 2 | two copies joined end to end | `Y` (above 1.5) |
 | above 1.5, and the assembler reported the contig as circular | a closed circle longer than the reference: a larger genome, or two copies that the assembler joined into one circle (hifiasm did so with the HiFi reads of the [validation page](../about/validation.md#hifi-assembly): 49,194 bp against 24,712 bp) | `N` |
 
-`Y` marks a likely double copy, but only on a confirmed row. The reason is that the flag is
-computed for every contig with a direct hit, and a long nuclear contig with a short
-mitochondrion-like stretch also has a high ratio. In `contigs` and `illumina` mode circularity is
-unknown, and the flag depends on the ratio alone.
+`Y` marks a contig that likely holds more than one copy, but only on a confirmed row. The reason
+is that the flag is computed for every contig with a direct hit, and a long nuclear contig with a
+short mitochondrion-like stretch also has a high ratio. In `contigs` and `illumina` mode
+circularity is unknown, and the flag depends on the ratio alone.
 
 !!! warning "FunFlux does not trim a concatemer to one copy"
 
@@ -271,6 +312,7 @@ unknown, and the flag depends on the ratio alone.
 | Finding | Meaning | What to do |
 |---|---|---|
 | a `mitochondrial_candidate` row with reason `weak_direct_blast` | a direct hit covers less than `min_direct_blast_qcov` of the contig | if the length (usually some tens of kb) and the title fit, set `min_direct_blast_qcov` to the row's `best_mito_qcovs` or lower and run again. Or set `blast_max_target_seqs: 50`: BLAST applies that limit during the search, so 10 subjects can miss mitochondrial genomes that score higher and cover more of the contig |
+| a `foreign_mitochondrial` row | the best direct hit is the mitochondrial genome of an animal or a plant (`best_mito_kingdom` is `Metazoa` or `Viridiplantae`) | read `best_mito_title`: a contig of another organism's mitochondrial DNA, such as human DNA from the library, is rightly left out of `contigs_mitochondrial.fasta`; no setting changes this check |
 | no row with a direct hit | core_nt holds no mitochondrial genome close enough; or the subjects BLAST kept for the contig (10 by default) are records of single mitochondrial genes, such as cox1, which do not count; or a mitochondrial genome's title uses none of the wordings above | read the titles of the contig's hits, the last column of `contaminants/blastout` (a table without a header line). If they are single-gene records, set `blast_max_target_seqs: 50` and run again. Otherwise nothing can be set in `contigs` and `illumina` mode; in the long-read modes depth and circularity can only give a candidate or `..._unclassified` row |
 | `blast_max_hsps` below 5 | `qcovs` counts only the alignments BLAST kept per subject, with 1 the best one alone | set `blast_max_hsps: 5` |
 

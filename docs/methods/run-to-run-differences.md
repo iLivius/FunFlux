@@ -35,6 +35,9 @@ for byte, it differs only in a path, a start time or the order of its lines, as 
 | Step | Rule | What was compared | Remark |
 |---|---|---|---|
 | Contig filtering | `filter_contigs` | the FASTA, byte for byte | |
+| ONT adapter trimming and Filtlong | `find_ont_adapter`, `trim_ont_adapters`, `filter_long_reads` | the filtered reads, byte for byte | checked once, on the public B05.10 ONT reads |
+| hifiasm | `long_read_assembly` | the assembly, byte for byte | checked once, on the same reads |
+| Medaka | `long_read_consensus` | the consensus, through its alignment to the reference | Medaka writes the contigs in another order in each run, so the files differ |
 | funannotate clean and sort | `funannotate_preprocess` | the FASTA files, byte for byte | the result does not depend on the number of CPUs |
 | tantan masking | `repeat_masking` with `masking_method: tantan` | the masked genome, byte for byte | |
 | QUAST | `genome_assembly_evaluation` | the report files, byte for byte | |
@@ -70,8 +73,7 @@ gives what differs, the cause where it was traced, and what FunFlux does about i
 
 ## Not checked yet
 
-- The read-based front ends of v2 (`illumina`, `longread`, `hybrid`): read filtering, SPAdes,
-  hifiasm, Medaka and Polypolish.
+- The short-read steps of `illumina` and `hybrid` mode: read filtering, SPAdes and Polypolish.
 - The gene prediction without GeneMark-ES, and the effect of the number of threads on its own
   (the B05.10 runs above differ in the threads as well).
 - Tiberius on other genomes, and with a graphics card (FunFlux runs it on the CPU).

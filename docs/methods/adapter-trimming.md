@@ -115,7 +115,7 @@ everything outside it. FunFlux adds:
 |---|---|
 | `--trimming_extension 0` | fastplong's default cuts 10 more bases past the sequence, which after a whole adapter and barcode are genome: on B05.10 it shortened every read that starts in a telomere |
 | `-Q -L` | fastplong's quality and length filters stay off: Filtlong, the next step, is the read filter of the workflow |
-| `--disable_chimera_splitting`, when a sequence to trim is shorter than 50 bp | fastplong also cuts a read where it finds the sequence in the middle (a chimeric read). With the 28 bp adapter alone, that split 1,041 B05.10 reads, and 1,001 of them were not chimeric; with the 68 bp adapter and barcode it split 73, all of them genuine joins |
+| `--disable_chimera_splitting`, when a sequence to trim is shorter than 50 bp | fastplong also cuts a read where it finds the sequence in the middle (a chimeric read). With the 28 bp adapter alone, that split 1,041 B05.10 reads, and 1,001 of them were not chimeric; with the 68 bp adapter and barcode it split 72, and the 57 of them that could be checked were all genuine joins |
 
 Rule `check_ont_trimming` then counts the reads that still start with the adapter, among the reads
 kept after fastplong and Filtlong (the reads the assembler gets). Above 1 % it prints a NOTE; the
@@ -164,7 +164,16 @@ trimming:
 |---|---|---|---|---|---|
 | as delivered | 18 of 18 | 34 | 15 | 78 bp | 28 |
 | adapter only trimmed (28 bp) | 18 of 18 | 35 | 17 | 72 bp | 27 |
-| adapter and barcode trimmed (68 bp, the sequence FunFlux finds) | 18 of 18 | 36 | 17 | 0 bp | 0 |
+| adapter and barcode trimmed (68 bp, the sequence FunFlux finds) | 18 of 18 | 34 | 15 | 0 bp | 0 |
+
+Trimming the adapter and barcode removed them from every contig end and brought most telomeres to
+the very end of their contig. The telomere counts changed by no more than two. The last row is the
+FunFlux 2.1.0 validation run
+([Validation on public genomes](../about/validation.md#adapter-trimming)). The first two are FunFlux
+2.0.0 runs, on the reads as delivered and on reads trimmed beforehand with fastplong. Trimming also
+changed the mitochondrion: from the trimmed reads, hifiasm assembled it as a longer contig of more
+than one copy instead of the circle of 82,351 bp
+([Other results](../about/validation.md#other-results)).
 
 With Flye, the reads as delivered left adapter or barcode at 17 of 54 contig ends, and the trimmed
 reads at none. The public reference genome of B05.10 (ASM14353v4) gives no hit in the screen.

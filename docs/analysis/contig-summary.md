@@ -13,7 +13,7 @@ telomere repeat unit is chosen, and to set the unit yourself when the data canno
     |---|---|
     | **draft assembly (the draft)** | the assembly before the screen removes any contig, such as `contigs_filt.fasta` or `assembly.fasta`; the contig summary describes it |
     | **the screen** | the contamination and mitochondrion screen of the draft: BLAST against core_nt, BlobTools, the mitochondrion screen and the contig selector; in `contigs` mode only with `parameters.contigs.screen: true` |
-    | **verdict** | the label the contig summary gives each draft contig, one of ten such as `chromosome`, `chromosome_arm`, `rDNA_array` or `mitochondrion`, with its reasons |
+    | **verdict** | the label the contig summary gives each draft contig, one of eleven such as `chromosome`, `chromosome_arm`, `rDNA_array` or `mitochondrion`, with its reasons |
     | **telomere repeat unit (telomere unit)** | the short sequence repeated in tandem at chromosome ends, `TTAGGG` in most filamentous fungi; FunFlux chooses it from each assembly unless `parameters.contig_summary.telomere_motif` names one |
     | **telomere array** | tandem copies of the telomere repeat unit at a contig end; by default a telomere needs 5 or more copies within 25,000 bp of the end |
     | **canonical form** | the spelling tidk gives a repeat unit: the alphabetically first of its rotations and those of its reverse complement, so `TTAGGG` is written `AACCCT` |
@@ -33,10 +33,11 @@ strand, and the right end reads `TTAGGG`.
 |---|---|---|---|---|
 | **whole chromosome**, telomere to telomere | at both ends | the depth of the bulk of the genome | along its whole length | size says nothing: an accessory chromosome or a minichromosome of 200 to 300 kb is a chromosome like a 4-Mb one |
 | **chromosome arm** | at one end only; the other end is where the assembler stopped, usually at a repeat it could not resolve: the rDNA array, a centromere | as a chromosome | as a chromosome | |
-| **mitochondrion**, a small genome (82 kb in *Botrytis cinerea* B05.10, the [worked example](#worked-example)) present in many copies per cell | | several times the nuclear depth | | a long-read assembler usually closes it into a circle and flags it as circular |
+| **mitochondrion**, a small genome (82 kb in *Botrytis cinerea* B05.10, the [worked example](#worked-example)) present in many copies per cell | | several times the nuclear depth | | a long-read assembler may close it into a circle and flag it as circular, but it may also join copies of it end to end or leave it in pieces ([Concatemers](mitochondria.md#concatemers)) |
 | **piece of the rDNA array** | can carry one at one end, when the array sits at a chromosome end | says little: the reads of all the copies are shared out over however many pieces the assembler made of the array | no BUSCO marker; few or no protein-coding genes | several 5.8S genes in a row (the ITS windows of the taxonomy step, one per rDNA unit) |
 | **alternative copy of a region, or noise**: a second haplotype assembled on its own, a stretch assembled twice, or a leftover of the assembly graph | | well below the genome's, because the reads of the region were split between two copies, or were few | | |
 | **contaminant**: a contig from another organism | | its own, not the genome's | | its own GC content; the screen labelled it with a genus from its BLAST hits and removed it |
+| **another organism's mitochondrial DNA**, most often human DNA from the library | | its own, usually low | | its best mitochondrial BLAST hit is an animal's or a plant's; the mitochondrion screen calls it `foreign_mitochondrial` ([Mitochondria](mitochondria.md#foreign-mitochondrial)) |
 | **collapsed repeat** (short-read assemblies) | | well above the genome's: the reads of all the copies pile up on it | no BUSCO marker, at most a gene call or two (predictors call open reading frames inside transposons) | several genome copies of a transposon, a satellite or another repeat family, assembled into one contig because short reads cannot tell the copies apart |
 | **short piece of the nuclear genome** (short-read assemblies) | | the depth of the genome | none, because it is too short to carry a gene | hundreds to a few thousand bases; nuclear sequence all the same, left over where the assembly broke |
 
@@ -46,9 +47,10 @@ collapsed repeats and alternative copies apart from the nuclear genome. Genes an
 tell nuclear sequence from rDNA and debris. A few points the table cannot hold:
 
 - With the default settings, the mitochondrion screen confirms the mitochondrion from a BLAST hit
-  to a mitochondrial genome that covers at least 35 % of the contig. In `contigs` and `illumina`
-  mode, and on the Illumina guide assembly of `hybrid` mode, that hit is enough. On the long-read
-  assembly of `longread` and `hybrid` mode, the hit must also be backed by the assembler's
+  to a mitochondrial genome that covers at least 35 % of the contig, unless that genome is an
+  animal's or a plant's. In `contigs` and
+  `illumina` mode, and on the Illumina guide assembly of `hybrid` mode, that hit is enough. On the
+  long-read assembly of `longread` and `hybrid` mode, the hit must also be backed by the assembler's
   evidence, unless it covers 70 % or more. That support is an assembler depth of at least 3 times
   the median of all contigs, or a clean circle: a contig recorded as circular, not a repeat and in
   no alternative group. By default, the confirmed mitochondrion is then split off before the
@@ -75,7 +77,7 @@ annotation, and the other columns hold the evidence:
 | `contig` | the name in the draft assembly: the first word of the FASTA header, as the screen tables use it | never |
 | `length` | bp | never |
 | `gc` | GC fraction, 3 decimals | never |
-| `depth` | read depth from the BlobTools table (`bam0`), 2 decimals | `contigs` mode; a contig without a row in the table |
+| `depth` | mean read depth, measured with samtools coverage (`meandepth` of `contaminants/{sample}_depth.tsv`), 2 decimals | `contigs` mode; a contig without a row in the table |
 | `depth_x_median` | `depth` divided by the median depth of the nuclear genome, 2 decimals ([the median](#median-depth)) | `depth` is `NA` |
 | `assembler_depth` | the assembler's own depth, 1 decimal | `illumina` and `contigs` mode; an empty cell in `assembly_evidence.tsv` |
 | `circular` | `Y` or `N`, the assembler's flag | `illumina` and `contigs` mode |
@@ -86,10 +88,10 @@ annotation, and the other columns hold the evidence:
 | `busco_markers` | complete BUSCO markers on the contig (status `Complete` or `Duplicated`; a duplicated marker counts where each copy lies) | never (`0` when none) |
 | `genes` | mRNA features of the annotation on the scaffold the contig became | the contig has no scaffold in `contigs_sort.fasta`: dropped by `funannotate clean`, split off as the mitochondrion, or removed by the screen |
 | `genus` | `assigned_genus` of `contig_taxonomy_decisions.tsv` | no screen |
-| `screen` | `kept (<reason>)`, `removed (<reason>)` or `mitochondrion (<reason>)`, with the reason of the contig selector or, for a mitochondrion, of the mitochondrion screen; a `mitochondrial_candidate`, `circular_unclassified` or `high_coverage_unclassified` class of the mitochondrion screen is appended after `;` | no screen |
+| `screen` | `kept (<reason>)`, `removed (<reason>)` or `mitochondrion (<reason>)`, with the reason of the contig selector or, for a mitochondrion, of the mitochondrion screen; a `mitochondrial_candidate`, `foreign_mitochondrial`, `circular_unclassified` or `high_coverage_unclassified` class of the mitochondrion screen is appended after `;` | no screen |
 | `adapter` | what the contig adapter screen found: `none`, `at_end` (adapter or barcode within 100 bp of a contig end), `internal` (a whole adapter inside the contig) or `at_end+internal`; it changes no verdict ([The contig adapter screen](../methods/adapter-trimming.md#the-contig-adapter-screen)) | never |
 | `annotated_as` | `scaffold_N`, the name of the contig in every annotation file; or `dropped by funannotate clean`, `not annotated (mitochondrion)`, `not annotated (removed by the screen)` | never |
-| `verdict` | one of the ten verdicts ([The verdict](#the-verdict)): `mitochondrion`, `contaminant`, `rDNA_array`, `chromosome`, `chromosome_arm`, `low_depth`, `repeat`, `nuclear_contig`, `nuclear_fragment`, `unclassified` | never |
+| `verdict` | one of the eleven verdicts ([The verdict](#the-verdict)): `mitochondrion`, `contaminant`, `foreign_mitochondrion`, `rDNA_array`, `chromosome`, `chromosome_arm`, `low_depth`, `repeat`, `nuclear_contig`, `nuclear_fragment`, `unclassified` | never |
 | `reason` | the evidence behind the verdict, in words, for example `telomere repeats at both ends (17 and 19 copies); depth 1.00x the median; 543 genes, 131 BUSCO markers` | never |
 
 The table describes the draft assembly, which is `contigs_final.fasta` only in `contigs` mode
@@ -109,7 +111,7 @@ without the screen. Which file is the draft depends on the mode:
 
 ## The verdict
 
-Ten verdict rules give each contig its verdict. They are tried in the order of the table below, and
+Eleven verdict rules give each contig its verdict. They are tried in the order of the table below, and
 the first that applies decides. Evidence a mode cannot produce is unknown (`NA` in the table) and
 is not tested, so "depth within 0.5 to 1.5 times the median when known" passes when the depth is
 unknown. A telomere is a contig end where tidk found an array of the telomere unit of at least
@@ -119,22 +121,23 @@ unknown. A telomere is a contig end where tidk found an array of the telomere un
 |---|---|---|---|
 | 1 | `mitochondrion` | the class `confirmed_mitochondrial` from the mitochondrion screen, or a place in `contigs_mitochondrial.fasta` | the mitochondrial genome |
 | 2 | `contaminant` | the action `remove` from the screen; the reason names the genus | a contig of another organism |
-| 3 | `rDNA_array` | at least `parameters.contig_summary.min_rdna_units` rDNA units (3 by default), and fewer predicted genes than rDNA units, or no gene count | a piece of the rDNA array |
-| 4 | `chromosome` | telomere repeats at both ends; depth within 0.5 to 1.5 times the median when known; at least one gene when known | a whole chromosome; size plays no part, so a small accessory chromosome qualifies |
-| 5 | `chromosome_arm` | telomere repeats at one end; the rest as in rule 4 | a chromosome arm |
-| 6 | `low_depth` | depth below 0.5 times the median | an alternative copy of a region (a second haplotype, a stretch assembled twice) or noise |
-| 7 | `repeat` | no BUSCO marker; at most two predicted genes; depth above 1.5 times the median (when the depth is unknown this rule does not fire) | a collapsed repeat: several genome copies of a transposon, a satellite or another repeat family assembled into one contig, so the reads of all the copies pile up on it |
-| 8 | `nuclear_contig` | at least one gene or BUSCO marker; depth within 0.5 to 1.5 times the median when known; no telomere repeat | a fragment of a chromosome |
-| 9 | `nuclear_fragment` | no gene and no BUSCO marker; no telomere repeat; depth within 0.5 to 1.5 times the median, or unknown | a piece of the nuclear genome too short to carry a gene; a short-read assembly ends in many of them |
-| 10 | `unclassified` | anything else | the reason says what was and was not seen |
+| 3 | `foreign_mitochondrion` | the class `foreign_mitochondrial` from the mitochondrion screen, and a place in the assembly (the contig selector kept it; with the default `decontamination.mode: off` it keeps every contig) | mitochondrial DNA of an animal or a plant, most often human DNA from the library |
+| 4 | `rDNA_array` | at least `parameters.contig_summary.min_rdna_units` rDNA units (3 by default), and fewer predicted genes than rDNA units, or no gene count | a piece of the rDNA array |
+| 5 | `chromosome` | telomere repeats at both ends; depth within 0.5 to 1.5 times the median when known; at least one gene when known | a whole chromosome; size plays no part, so a small accessory chromosome qualifies |
+| 6 | `chromosome_arm` | telomere repeats at one end; the rest as in rule 5 | a chromosome arm |
+| 7 | `low_depth` | depth below 0.5 times the median | an alternative copy of a region (a second haplotype, a stretch assembled twice) or noise |
+| 8 | `repeat` | no BUSCO marker; at most two predicted genes; depth above 1.5 times the median (when the depth is unknown this rule does not fire) | a collapsed repeat: several genome copies of a transposon, a satellite or another repeat family assembled into one contig, so the reads of all the copies pile up on it |
+| 9 | `nuclear_contig` | at least one gene or BUSCO marker; depth within 0.5 to 1.5 times the median when known; no telomere repeat | a fragment of a chromosome |
+| 10 | `nuclear_fragment` | no gene and no BUSCO marker; no telomere repeat; depth within 0.5 to 1.5 times the median, or unknown | a piece of the nuclear genome too short to carry a gene; a short-read assembly ends in many of them |
+| 11 | `unclassified` | anything else | the reason says what was and was not seen |
 
 The screen decides first, then the rDNA count, then the telomeres, and depth and genes sort out
-the rest. Two verdict rules allow a gene call where none is expected. In verdict rule 3, a pure
+the rest. Two verdict rules allow a gene call where none is expected. In verdict rule 4, a pure
 rDNA array holds no protein-coding gene, but the gene predictor now and then calls a gene inside
-an rDNA unit. A contig with more rDNA units than genes is still mostly rDNA. In verdict rule 7, a
+an rDNA unit. A contig with more rDNA units than genes is still mostly rDNA. In verdict rule 8, a
 gene call or two is allowed because gene predictors call open reading frames inside transposons.
 
-"No BUSCO marker" (verdict rule 7) and "no gene and no BUSCO marker" (verdict rule 9) apply only
+"No BUSCO marker" (verdict rule 8) and "no gene and no BUSCO marker" (verdict rule 10) apply only
 when at least one of the two counts is known, and then every known count they name must be `0`.
 In a run both are always counted, because BUSCO and
 funannotate run in every mode. Only a contig without a scaffold in `contigs_sort.fasta` lacks its
@@ -156,13 +159,15 @@ the depth of the bulk of the genome.
 
 ### Where it runs
 
-Three steps make the table, in every mode. The telomere unit is chosen as soon as the draft
-exists, and the table itself waits for the annotation:
+Three steps make the table, in every mode, and in the read-based modes a fourth measures the read
+depth. The telomere unit is chosen as soon as the draft exists, and the table itself waits for the
+annotation:
 
 | Step | Runs | Does | Writes |
 |---|---|---|---|
 | `telomere_db` | once per output folder | downloads the tidk telomere repeat database and checks its SHA-256 ([Reference databases](../getting-started/databases.md#telomere-db)) | `00.resources/telomeres/telo_database_v2.tsv`, `PROVENANCE.txt` |
 | `telomere_units` | once per sample, as soon as the draft exists | runs tidk on the draft and chooses the telomere repeat unit of the assembly ([Telomeres](#telomeres)); its own conda environment (tidk 0.3.0 with Python 3.12); seconds to a minute | `eval/telomere_candidates.tsv`, `telomere_unit.txt`, `telomere_ends.tsv` |
+| `contig_depth` | once per sample, in the read-based modes, as soon as the reads are aligned to the draft | measures the mean read depth of every contig with samtools coverage, from the alignment of the sample's reads to the draft that the screen makes ([Coverage track](decontamination.md#coverage-track)) | `contaminants/{sample}_depth.tsv` |
 | `contig_summary` | once per sample, after the annotation; one of the last jobs of a sample | gathers the evidence into the table | `eval/contig_summary.tsv`, `contig_summary_mqc.tsv` |
 
 The MultiQC report reads the `_mqc` copy of the table, and no other step reads it.
@@ -177,7 +182,7 @@ files:
 | Evidence | What it says | Taken from | Modes |
 |---|---|---|---|
 | telomere arrays at the contig ends | at both ends: a whole chromosome; at one end: a chromosome arm | `eval/telomere_unit.txt` and `eval/telomere_ends.tsv`: tidk on the draft sequence itself ([Telomeres](#telomeres)) | all |
-| read depth | the nuclear contigs share one depth; the mitochondrion is several times deeper; an alternative copy of a region, or noise, is much shallower | `contaminants/bestscore.blob.blobDB.table.txt`, column `bam0`: the sample's reads on the draft ([Coverage track](decontamination.md#coverage-track)) | `illumina`, `longread`, `hybrid` |
+| read depth | the nuclear contigs share one depth; the mitochondrion is several times deeper; an alternative copy of a region, or noise, is much shallower | `contaminants/{sample}_depth.tsv`, column `meandepth`: samtools coverage of the sample's reads on the draft ([Coverage track](decontamination.md#coverage-track)) | `illumina`, `longread`, `hybrid` |
 | assembler depth and circularity | a circular contig at a high depth is the usual shape of a mitochondrion | `assembly_evidence.tsv`, columns `coverage` and `circular` | `longread`, `hybrid` |
 | rDNA units | a contig made of rDNA units is a piece of the rDNA array, not a chromosome | `03.taxonomy/{sample}/its_windows.tsv`, one row per 5.8S gene found ([ITS taxonomy](its-taxonomy.md#step-1-one-window-per-rdna-copy)) | all |
 | BUSCO markers | genuine nuclear sequence, as against rDNA and debris | `eval/busco/run_<lineage>/full_table.tsv` of the specific lineage, the markers with status `Complete` or `Duplicated` ([BUSCO](assembly-qc.md#busco)) | all |
@@ -187,10 +192,28 @@ files:
 Paths without a stage prefix are under `02.assembly/{sample}/`. In `hybrid` mode the screen files
 are those of the long-read draft, not of the Illumina guide.
 
-In `contigs` mode the screen maps the contigs to themselves, so the depth in the BlobTools table
-reflects contig length and nothing else ([Coverage track](decontamination.md#coverage-track)). The
-contig summary therefore does not read it there, and the depth columns are `NA` in `contigs` mode,
-with or without the screen.
+In `contigs` mode the screen maps the contigs to themselves, so a depth would reflect the
+self-alignment and nothing else ([Coverage track](decontamination.md#coverage-track)). The depth
+is therefore not measured there, and the depth columns are `NA` in `contigs` mode, with or without
+the screen.
+
+!!! note "The read depth comes from samtools coverage, not from BlobTools"
+
+    FunFlux 2.0.0 took the read depth from the coverage column of the BlobTools table (`bam0`).
+    BlobTools estimates that column as the number of reads whose main (primary) alignment lies on
+    the contig, times the mean length of all alignments in the BAM file, divided by the contig
+    length. In that mean, secondary alignments, the other places where a read could also align,
+    count as length 0 because they carry no sequence, and supplementary alignments, the further
+    pieces of a read that aligns in parts, count only their aligned part. On long reads the
+    estimate can therefore run low. On the *B. cinerea* B05.10 ONT reads of the
+    [worked example](#worked-example), it came out almost five times too low on the untrimmed
+    reads and 12 % too low on trimmed ones. A contig that reads reach only through supplementary
+    alignments, such as a short piece of a mitochondrion, got a depth of 0. samtools coverage
+    instead adds up the aligned bases at every position of the contig, with supplementary
+    alignments counted and secondary ones left out. Run again with this change on their own
+    files, the four 2.1.0 runs with ONT reads of the [validation page](../about/validation.md)
+    kept every verdict. The BlobTools table is still made, and the contamination screen still
+    takes its genus calls from it.
 
 ### Telomeres
 
@@ -440,14 +463,23 @@ which none of the other result files does.
 
 ## A worked example: *Botrytis cinerea* B05.10 { #worked-example }
 
-The public benchmark genome, *Botrytis cinerea* B05.10 (RefSeq assembly GCF_000143535.2), shows
-how the table reads on a real assembly. It has 18 chromosomes: 16 core chromosomes of 2.0 to
+The genome of the [validation runs](../about/validation.md), the public *Botrytis cinerea* B05.10
+(RefSeq assembly GCF_000143535.2), shows how the table reads on a real assembly. It has 18 chromosomes: 16 core chromosomes of 2.0 to
 4.1 Mb and two minichromosomes of 247 and 209 kb. Its mitochondrial genome is 82 kb, and the
 reference assembly carries telomere repeats at 27 of its 36 chromosome ends.
 
 A `longread` run of public ONT reads of the strain (about 136x), assembled with hifiasm, gave 33
 contigs: 32 in the nuclear genome and the mitochondrion.
-[Validation on public genomes](../about/validation.md) describes the runs. The telomere unit
+This run was made with FunFlux 2.0.0. FunFlux 2.1.0, which trims the ONT adapter from the
+reads first, gives the same verdict counts on these reads with one more `low_depth` contig. That
+run has a mitochondrial contig of 139,240 bp that is not circular
+([Validation on public genomes](../about/validation.md)). The absolute depths of this example,
+such as the median of 24.5, are FunFlux 2.0.0's BlobTools estimate, which ran almost five times
+too low on these untrimmed reads. The ratios to the median, which the verdicts use, change much
+less: measured with samtools coverage on the same reads, as FunFlux 2.1.0 does, the median is
+about 117, the mitochondrion is at 6.5 instead of 7.4 times the median and the two
+minichromosomes at 0.82, and no verdict changes
+([Where the evidence comes from](#where-the-evidence-comes-from)). The telomere unit
 chosen from the data is `AACCCT`, that is `TTAGGG`, with arrays of 102 to 126 bp (17 to 21
 copies) at 34 of the 66 contig ends. Every one of these arrays points the way a telomere points,
 with the C-rich strand at every contig start and the G-rich strand at every contig end, so there
@@ -483,7 +515,7 @@ What the rows show:
 
 - **The core chromosomes.** The 16 contigs of 2.0 to 4.1 Mb are the 16 core chromosomes. Of
   these, 13 are `chromosome` and 3 are `chromosome_arm`, each with one end without a telomere
-  array. `ptg000014l` carries 6 rDNA units and 701 genes, so verdict rule 3 does not apply and it
+  array. `ptg000014l` carries 6 rDNA units and 701 genes, so verdict rule 4 does not apply and it
   stays a chromosome arm. The start array of `ptg000007l` begins 2,814 bp inside the contig, and
   its reason says so:
   `telomere repeats at the start only (18 copies) (the start array is 2814 bp from the end)`.
@@ -501,7 +533,7 @@ What the rows show:
   minichromosomes, 0.79 and 0.77 times the median, are within the normal range.
 - **The rDNA pieces.** `ptg000030l` is a 176-kb rDNA array with a telomere at its start (18
   copies), 20 rDNA units and one predicted gene, a gene call inside an rDNA unit. With fewer genes
-  than rDNA units, it is an `rDNA_array` by verdict rule 3, with the telomere named in the reason.
+  than rDNA units, it is an `rDNA_array` by verdict rule 4, with the telomere named in the reason.
   The 13 `rDNA_array` contigs are 36 to 176 kb of rDNA units at 0.16 to 1.15 times the median:
   the array is assembled in pieces and partly collapsed. Two of them, `ptg000015l` and
   `ptg000024l`, were dropped by `funannotate clean` as duplicates, so their `genes` cell is `NA`
@@ -605,7 +637,7 @@ Each change in the left column re-runs the contig summary steps on the right:
 
 | Change | Re-runs |
 |---|---|
-| a new draft | `telomere_units` and `contig_summary` |
+| a new draft | `telomere_units`, `contig_depth` (read-based modes) and `contig_summary` |
 | a new database file | `telomere_units` |
 | `parameters.contig_summary.telomere_motif`, `telomere_window` or `min_telomere_copies` | `telomere_units` and `contig_summary` |
 | `links.telomere_db_link` or `telomere_db_sha256` | `telomere_db`, then `telomere_units` of every sample and the steps after it |
@@ -633,7 +665,7 @@ lists these situations and what the contig summary does in each:
 | an array further inside a contig than `telomere_window` | it is not seen; the [worked example](#worked-example) shows the trade-off of a wider window |
 | an array of the chosen unit pointing the other way at a contig end (`wrong_strand`) | not a telomere call; the reason names it, and the verdict rests on the rest |
 | a contig that ends at a centromere | centromeres are not detected: it is a `chromosome_arm` like any other |
-| `contigs` mode, where depth is unknown (it is known only in the read-based modes) | verdict rules 6 and 7 never apply; a mitochondrion that the screen did not confirm, or a contig at twice the depth of the genome, is judged on the other evidence alone: a gene-less contig at twice the depth is then a `nuclear_fragment`, not a `repeat` |
+| `contigs` mode, where depth is unknown (it is known only in the read-based modes) | verdict rules 7 and 8 never apply; a mitochondrion that the screen did not confirm, or a contig at twice the depth of the genome, is judged on the other evidence alone: a gene-less contig at twice the depth is then a `nuclear_fragment`, not a `repeat` |
 | `parameters.mitochondria.mode: off`, read-based modes | the screen confirms nothing, and the mitochondrion is judged on the rest of its evidence: its depth, several times the median, keeps it out of every verdict but `repeat` (when no gene was predicted on it) or `unclassified` |
 | `parameters.mitochondria.mode: off`, `contigs` mode | without a depth, the mitochondrion is a `nuclear_contig` when genes were predicted on it |
 | `parameters.mitochondria.mode: report` | the confirmed contig stays in the nuclear genome and is annotated; the table still calls it `mitochondrion` (verdict rule 1, from the screen's class), and its `annotated_as` cell names the `scaffold_N` under which funannotate annotated it, with its `genes` cell filled ([Mitochondria](mitochondria.md#modes)) |
@@ -658,10 +690,12 @@ Every file is kept, and `contig_summary.tsv` is the one to read:
 | `02.assembly/{sample}/eval/telomere_candidates.tsv` | every candidate telomere unit with its counts ([The three telomere files](#telomere-files)) |
 | `02.assembly/{sample}/eval/telomere_unit.txt` | the telomere unit of the assembly, or `none` |
 | `02.assembly/{sample}/eval/telomere_ends.tsv` | the arrays of that unit at every contig end |
+| `02.assembly/{sample}/contaminants/{sample}_depth.tsv` | the read depth of every contig, from samtools coverage; read-based modes only |
 | `02.assembly/{sample}/eval/contig_summary.tsv` | the table, one row per contig of the draft |
 | `02.assembly/{sample}/eval/contig_summary_mqc.tsv` | the same table for MultiQC |
 | `logs/telomere_db.log` | the database download |
 | `logs/telomere_units_{sample}.log` | the count line of the script, the one-line summary and the NOTE when there is one; tidk's own messages only when tidk fails |
+| `logs/contig_depth_{sample}.log` | samtools' own messages; empty when the step succeeds |
 | `logs/contig_summary_{sample}.log` | the one-line summary |
 
 Each step writes its files only when every input was read without error. The job stops on a

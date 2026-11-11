@@ -19,7 +19,7 @@ every contig, so you can read them before you choose a filter. The
     | **the screen** | the contamination and mitochondrion screen of the draft: BLAST against core_nt, BlobTools, the mitochondrion screen and the contig selector |
     | **draft assembly (the draft)** | the assembly the screen examines, before any contig is removed: `contigs_filt.fasta` in `illumina` mode and in `contigs` mode with the screen, `assembly.fasta` in `longread` and `hybrid` |
     | **read-based modes** | the modes `illumina`, `longread` and `hybrid`, which start from reads, as against `contigs` |
-    | **coverage track** | the reads aligned back to the draft, `contaminants/{sample}_map.bam`, from which BlobTools takes each contig's coverage; in `contigs` mode, the contigs aligned to themselves |
+    | **coverage track** | the reads aligned back to the draft, `contaminants/{sample}_map.bam`, from which BlobTools takes each contig's coverage and the contig summary its read depth (`contig_depth`, read-based modes); in `contigs` mode, the contigs aligned to themselves |
     | **contig selector** | rule `select_contigs`: it keeps or removes each contig by genus, as `parameters.decontamination` says; the default, `off`, keeps every contig |
     | **genus filter** | the setting `parameters.decontamination.mode: include` or `exclude`, under which the contig selector keeps or removes contigs by the genus BlobTools gave them |
     | **confirmed mitochondrial contig** | a contig the mitochondrion screen classes `confirmed_mitochondrial`; with the default `separate_confirmed`, it is kept whatever its genus and moved to `contigs_mitochondrial.fasta` |
@@ -56,7 +56,9 @@ same in every mode, except for the coverage track ([below](#coverage-track)).
 ## Steps and files
 
 Two steps gather the evidence, `map_contigs` and `blast_contigs`. Two BlobTools steps join it into
-one row per contig, and the contig selector, `select_contigs`, decides.
+one row per contig, and the contig selector, `select_contigs`, decides. In the read-based modes,
+`contig_depth` also measures the read depth of every contig, for the
+[contig summary](contig-summary.md).
 
 ```text
 draft contigs
@@ -75,6 +77,7 @@ draft contigs
 | `blob_json` | BlobTools 1.1.1 | joins the BLAST hits and the coverage | `blob.blobDB.json`, `blob.{sample}_map.bam.cov` |
 | `blob_table` | BlobTools 1.1.1 | gives each contig one taxon per rank | `bestscore.blob.blobDB.table.txt` |
 | `select_contigs` | `select_contigs_by_taxonomy.py` (Python standard library), with the pinned Python 3.12 of the `python` conda environment | keeps or removes each contig by its genus | `contig_taxonomy_decisions.tsv`, `{sample}_composition.txt`, `contigs.list`, `contigs_decontam.fasta` |
+| `contig_depth` | samtools 1.21 | read-based modes only: measures the mean read depth of every contig from the coverage track, for the contig summary; the screen does not use it | `{sample}_depth.tsv` |
 
 The step names are those Snakemake prints on the console, and each step writes
 `logs/<step>_{sample}.log`. BLAST uses at most 24 threads and the mapping `resources.threads`,
@@ -254,6 +257,12 @@ example, can be labelled with a better-sequenced relative, while its mitochondri
 reference genome is in core_nt, carries the true genus. Without the protection, `include` with the
 relative alone would then remove the mitochondrion.
 
+A contig whose best mitochondrial hit is an animal's or a plant's, such as a short contig of human
+mitochondrial DNA from the library, is not confirmed (class `foreign_mitochondrial`) and so not
+protected. The contig selector treats it like any other
+contig: with the default `mode: off` it is kept, and with a genus filter its genus decides
+([Mitochondria](mitochondria.md#foreign-mitochondrial)).
+
 A protected contig that has no BlobTools row is kept with the genus `no-taxonomy`. A protected ID
 that is not in the draft FASTA stops the step
 (`Protected mitochondrial contig(s) were not found in FASTA: ...`), which means that the list and
@@ -403,12 +412,15 @@ give a real coverage track.
 | Mode | Reads aligned to the draft | Aligner | BAM after the run |
 |---|---|---|---|
 | `contigs` | none: the contigs are aligned to themselves | `minimap2 -a`, no preset | deleted once BlobTools has read it |
-| `illumina` | the trimmed read pairs | bowtie2 | kept; Qualimap reads it |
-| `longread`, `hybrid` | the filtered long reads | minimap2, `map-ont` or `map-hifi` per sample | kept; Qualimap reads it |
+| `illumina` | the trimmed read pairs | bowtie2 | kept; Qualimap and `contig_depth` read it |
+| `longread`, `hybrid` | the filtered long reads | minimap2, `map-ont` or `map-hifi` per sample | kept; Qualimap and `contig_depth` read it |
 
 In the read-based modes, bowtie2 runs in its default end-to-end mode and minimap2 with the
 sample's preset. Qualimap's report on the kept BAM is described on
-[Assembly QC](assembly-qc.md#qualimap-read-modes).
+[Assembly QC](assembly-qc.md#qualimap-read-modes). From the same BAM, `contig_depth` measures the
+mean read depth of every contig with samtools coverage, for the
+[contig summary](contig-summary.md#where-the-evidence-comes-from), because the coverage column of
+the BlobTools table is an estimate that can run low on long reads.
 
 !!! note "In `contigs` mode the coverage values mean nothing"
 
@@ -440,7 +452,7 @@ sensitive `blastn` task. `directories.blast_db` must hold the files below.
 |---|---|---|
 | the BLAST database named by `parameters.nt_version` (default `core_nt`) | blastn | BLAST fails |
 | `taxdb.btd`, `taxdb.bti` | blastn, for the organism-name columns | those columns read `N/A` |
-| `nodes.dmp`, `names.dmp` (NCBI taxdump) | BlobTools | the dry run stops with `MissingInputException in rule blob_json` |
+| `nodes.dmp`, `names.dmp` (NCBI taxdump) | BlobTools; `nodes.dmp` also the mitochondrion screen, for the organism of the best mitochondrial hit | the dry run stops with `MissingInputException in rule blob_json` (`blob_guide_json` in `hybrid` mode) |
 
 Without `taxdb` the run goes on, with `N/A` for the organism names. The downloads are described on
 [Reference databases](../getting-started/databases.md).
@@ -471,7 +483,7 @@ lose evidence, and much larger ones skew the genus calls.
 The evidence behind these defaults, and the effect of the hit depth on the genus calls, are
 described on [BLAST hit depth](../methods/blast-hit-depth.md).
 
-BLAST is the slow step of the screen. On 24 threads it took 40 to 51 minutes for the 42.6 Mb
+BLAST is the slow step of the screen. On 24 threads it took 33 to 51 minutes for the 42.6 Mb
 *Botrytis cinerea* B05.10 assemblies of the [validation runs](../about/validation.md). In
 `contigs` mode, every other step of the screen takes seconds.
 
@@ -511,7 +523,8 @@ deleted.
 | `{sample}_composition.txt` | yes | share of bases and contigs per genus |
 | `contigs.list` | yes | names of the kept contigs |
 | `contigs_decontam.fasta` | yes | kept contigs with their original headers, 80 bases per line |
-| `{sample}_map.bam`, `{sample}_map.bam.bai` | `contigs` mode: no; read-based modes: yes | coverage track; in the read-based modes Qualimap reads it too |
+| `{sample}_map.bam`, `{sample}_map.bam.bai` | `contigs` mode: no; read-based modes: yes | coverage track; in the read-based modes Qualimap and `contig_depth` read it too |
+| `{sample}_depth.tsv` | yes (read-based modes only) | the read depth of every contig, one line per contig, measured by samtools coverage from the coverage track: `#rname` (the contig), `startpos`, `endpos`, `numreads`, `covbases`, `coverage` (the percentage of the contig covered), `meandepth` (the mean read depth, which the [contig summary](contig-summary.md) reports), `meanbaseq`, `meanmapq` |
 | `blob.blobDB.json`, `blob.{sample}_map.bam.cov` | no | BlobTools intermediates |
 
 The full output tree is on [Output files](../reference/output.md).

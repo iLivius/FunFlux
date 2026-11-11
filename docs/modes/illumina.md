@@ -92,11 +92,12 @@ screened. The last step writes the nuclear genome, which QC, the ITS search and 
 | Contig filter | `filter_contigs` | awk | `contigs_filt.fasta` |
 | Coverage track | `index_contigs`, `map_contigs` | bowtie2 2.5.4, samtools 1.21 | `contaminants/{sample}_map.bam` |
 | Mapping QC | `map_evaluation` | Qualimap 2.3 | `eval/qualimap/` |
+| Read depth per contig | `contig_depth` | samtools 1.21 | `contaminants/{sample}_depth.tsv` |
 | Screen | `blast_contigs`, `blob_json`, `blob_table`, `screen_mitochondria`, `select_contigs` | BLAST+ 2.16.0, BlobTools 1.1.1 | `contaminants/`, `mitochondria/` |
 | Genome files | `finalize_assembly`, `separate_mitochondria` | | `contigs_all.fasta`, `contigs_final.fasta`, `contigs_mitochondrial.fasta` |
 | Adapter screen of the draft | `blast_adapters`, `screen_adapters` | BLAST+ 2.16.0, FunFlux script | `eval/adapter_screen.tsv` |
 
-Paths without a stage prefix are under `02.assembly/{sample}/`. One sample plans 46 jobs, 48 with
+Paths without a stage prefix are under `02.assembly/{sample}/`. One sample plans 47 jobs, 49 with
 the AMR screen on ([Dry run](../reference/running.md#dry-run)). The threads of each step are
 listed on [CPU cores and threads](../reference/running.md#cpu-cores-and-threads).
 
@@ -180,9 +181,11 @@ of handing an empty draft to BLAST.
 
 One mapping serves both the screen and the mapping QC. The trimmed pairs are mapped back to
 `contigs_filt.fasta` with bowtie2, and the alignments, `contaminants/{sample}_map.bam`, are kept.
-BlobTools takes the read coverage of every contig from this BAM. Qualimap (`map_evaluation`)
-reads it for the mapping report in `eval/qualimap/`, with the share of mapped reads, the insert
-sizes and the depth per contig.
+BlobTools takes the read coverage of every contig from this BAM, and samtools coverage
+(`contig_depth`) measures from it the read depth that the
+[contig summary](../analysis/contig-summary.md) reports. Qualimap (`map_evaluation`) reads it for
+the mapping report in `eval/qualimap/`, with the share of mapped reads, the insert sizes and the
+depth per contig.
 
 !!! note "A Qualimap failure does not stop the run"
 
@@ -244,7 +247,7 @@ Up to `02.assembly`, the output folder of this mode looks like this:
 └── 02.assembly/{sample}/
     ├── spades/                           SPAdes output, including the unfiltered contigs.fasta
     ├── contigs_filt.fasta                after the 500 bp / 2x filter
-    ├── contaminants/                     BAM, BLAST table, BlobTools table, decisions, contigs_decontam.fasta
+    ├── contaminants/                     BAM, depth table, BLAST table, BlobTools table, decisions, contigs_decontam.fasta
     ├── mitochondria/                     mitochondrial_screen.tsv, confirmed_mitochondrial.ids
     ├── contigs_all.fasta                 screened assembly, mitochondrion included
     ├── contigs_final.fasta               nuclear genome: QUAST, BUSCO, ITS and annotation read this

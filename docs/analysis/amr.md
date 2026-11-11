@@ -585,16 +585,16 @@ reasons for running a step again are listed under
 
 ## A worked example: *Botrytis cinerea* B05.10 { #worked-example }
 
-The public benchmark genome, *Botrytis cinerea* B05.10, was run in `hybrid` mode. Public ONT reads
-of the strain were assembled with hifiasm, and Polypolish corrected the assembly with the strain's
-public Illumina pairs. `contigs_final.fasta` holds 33 contigs, and `contigs_mitochondrial.fasta`
+The genome of the [validation runs](../about/validation.md), the public *Botrytis cinerea* B05.10,
+was run in `hybrid` mode. Public ONT reads of the strain were assembled with hifiasm, and
+Polypolish corrected the assembly with the strain's public Illumina pairs. `contigs_final.fasta` holds 34 contigs, and `contigs_mitochondrial.fasta`
 the one mitochondrial contig. Column 2 of the annotation table reads `Botrytis cinerea`, which
 matches the folder `Botrytis_cinerea` at the first try. The folder holds three proteins under four
 target names. `Beta-tubulin`, and `Bos1` and `OS1`, two entries of one histidine kinase, are in the
 nucleus, and `Cytochrome_b` is in the mitochondrion.
 
-The nuclear run, with the standard code ChroQueTas chose, took 4.0 s and 0.58 GB of memory. The
-mitochondrial run, with code 4 (`auto` for this species), took 1.0 s. `amr_summary.tsv` reads, in
+The nuclear run, with the standard code ChroQueTas chose, took 4.2 s and about 0.5 GB of memory. The
+mitochondrial run, with code 4 (`auto` for this species), took 0.9 s. `amr_summary.tsv` reads, in
 part:
 
 | `target` | `compartment` | `status` | `positions_checked` | `verdict` | `fungamr_mutations` | `resistance_to` | `no_resistance_to` |

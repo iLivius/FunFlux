@@ -15,7 +15,7 @@ writes. Read it to find a sample's row in the report or the file behind a number
     | **draft assembly (the draft)** | the assembly before the contamination and mitochondrion screen removes any contig, such as `contigs_filt.fasta` or `assembly.fasta`; the contig summary describes it |
     | **guide assembly** | the SPAdes assembly of the Illumina reads; it is screened, and only the pairs that map to it go on |
     | **contig summary** | the table `02.assembly/{sample}/eval/contig_summary.tsv`: one row per contig of the draft, with its evidence (telomeres, depth, rDNA units, genes) and a verdict |
-    | **verdict (contig summary)** | the label the contig summary gives each draft contig, one of ten such as `chromosome`, `chromosome_arm`, `rDNA_array` or `mitochondrion`, with its reasons |
+    | **verdict (contig summary)** | the label the contig summary gives each draft contig, one of eleven such as `chromosome`, `chromosome_arm`, `rDNA_array` or `mitochondrion`, with its reasons |
     | **AMR screen** | the optional step, off by default (`parameters.amr.chroquetas`), in which ChroQueTas looks in each genome for the changes FungAMR lists for the species; results in `05.amr/` |
     | **target protein** | a protein whose FungAMR positions ChroQueTas checks, such as `Beta-tubulin` or `Cyp51` |
     | **verdict (AMR screen)** | the reading of FungAMR's evidence for a change or a target: `resistance`, `conflicting`, `no resistance`, `unknown`, `wild type`, or `not compared` for a position |

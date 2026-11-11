@@ -168,7 +168,7 @@ directories:
 | Key | Default | Allowed values | Modes | What it does |
 |---|---|---|---|---|
 | `output_dir` | required | any path | all | Root of every result and log, created by the first job. Later runs with the same `output_dir` reuse the databases and the SignalP 6 installation stored in `00.resources/`. Two things are written elsewhere: the funannotate database, in `directories.funannotate_db`, and Snakemake's `.snakemake/` folder, in the launch folder. The `.snakemake/` folder holds Snakemake's records of the run, the run logs and, unless `--conda-prefix` is given, the conda environments. |
-| `blast_db` | required with the screen | a folder | screen | The NCBI nucleotide BLAST database. The folder holds the files named after `parameters.nt_version` (for `core_nt`, `core_nt.nal` and the `core_nt.NN.*` volumes), the BLAST taxonomy files `taxdb.btd` and `taxdb.bti`, and the NCBI taxonomy files `nodes.dmp` and `names.dmp`. FunFlux prints a NOTE when the folder does not exist. Without the two `.dmp` files the dry run stops with Snakemake's `MissingInputException in rule blob_json`, and without `taxdb.*` the organism names in the BLAST table read `N/A`. |
+| `blast_db` | required with the screen | a folder | screen | The NCBI nucleotide BLAST database. The folder holds the files named after `parameters.nt_version` (for `core_nt`, `core_nt.nal` and the `core_nt.NN.*` volumes), the BLAST taxonomy files `taxdb.btd` and `taxdb.bti`, and the NCBI taxonomy files `nodes.dmp` and `names.dmp`. FunFlux prints a NOTE when the folder does not exist. Without the two `.dmp` files the dry run stops with Snakemake's `MissingInputException in rule blob_json` (`blob_guide_json` in `hybrid` mode), and without `taxdb.*` the organism names in the BLAST table read `N/A`. |
 | `eggnog_db` | required | a folder | all | The eggNOG-mapper data (`eggnog.db`, `eggnog_proteins.dmnd`), passed to `emapper.py --data_dir`. FunFlux prints a NOTE when the folder does not exist. |
 | `funannotate_db` | required | a folder, which may not exist yet | all | The funannotate database. When the folder holds no `funannotate-db-info.txt`, the archive named in `links.funannotate_link` is downloaded into it, checked against its `.sha256` file and unpacked. The absolute paths stored inside the database are rewritten to this location once per output folder. |
 | `genemark_dir` | empty: no GeneMark-ES | absolute path of the folder holding an executable `gmes_petap.pl` | all | With `parameters.genemark.mode: auto`, funannotate predict runs GeneMark-ES from here. The licence key `~/.gm_key` of the user who runs Snakemake must then exist, or the run stops. |
@@ -330,7 +330,9 @@ taxon with the highest summed BLAST bit score) and keeps or removes the contig. 
 `off` included, it writes `contaminants/contig_taxonomy_decisions.tsv`, one line per contig with
 its genus, `keep` or `remove`, and the reason. With `mitochondria.mode: separate_confirmed` (the
 default), the contig selector always keeps the contigs that the mitochondrion screen confirmed (reason
-`protected_confirmed_mitochondrial`). With `report` or `off`, nothing is protected.
+`protected_confirmed_mitochondrial`). With `report` or `off`, nothing is protected. A contig of an
+animal's or a plant's mitochondrial DNA, such as human mitochondrial DNA from the library, is not
+confirmed, so even `separate_confirmed` does not protect it ([`mitochondria`](#mitochondria)).
 
 | Key | Default | Allowed values | Modes | What it does |
 |---|---|---|---|---|
@@ -415,8 +417,20 @@ percentage of the contig that its best direct hit covers.
 The assembler evidence comes from the hifiasm or Flye assembly of `longread` and `hybrid` mode.
 `illumina` and `contigs` mode, and the guide screen of `hybrid`, give the screen none, so the last
 two keys change nothing there.
-Neither circularity nor high depth confirms a contig without a direct hit. See
-[Mitochondria](../analysis/mitochondria.md).
+Neither circularity nor high depth confirms a contig without a direct hit.
+
+Since FunFlux 2.1.0, the screen also looks up the organism of the best direct hit in the NCBI
+taxonomy (`nodes.dmp` in `directories.blast_db`). When that organism is an animal or a plant, as
+it is for human mitochondrial DNA from the library, a contig that the keys above would confirm, or
+make a `mitochondrial_candidate`, is classed `foreign_mitochondrial` instead (reason
+`best_direct_hit_animal_or_plant`). It is not protected from the contig selector and not written to
+`contigs_mitochondrial.fasta`. It stays in the assembly, where the `decontamination` keys treat it
+like any other contig, so with the default `decontamination.mode: off` it is kept. FunFlux 2.0.0
+confirmed such contigs. The last column of `mitochondrial_screen.tsv`, `best_mito_kingdom`, names
+the kingdom (`Fungi`, `Metazoa` or `Viridiplantae`), and is empty when the contig has no direct hit,
+when that hit has no usable taxonomy ID, or when the taxonomy places it in none of the three; the
+class is then left as the keys above give it.
+No key changes this check. See [Mitochondria](../analysis/mitochondria.md#foreign-mitochondrial).
 
 ### `busco`
 
@@ -440,8 +454,8 @@ Where the lineage data come from depends on the setting:
 
 The dry run checks only the form of the name. A name BUSCO does not offer stops `busco_data` with a
 `[FunFlux] busco_data:` message. A dataset archive takes tens to hundreds of MB (274.6 MB for
-`hypocreales_odb12`), and with `auto` the BUSCO folder of one sample holds several hundred MB. See
-[Assembly QC](../analysis/assembly-qc.md).
+`hypocreales_odb12`), and with `auto` the BUSCO folder of one sample held 0.65 to 1.8 GB at the
+end of a run ([Disk use](output.md#disk-use)). See [Assembly QC](../analysis/assembly-qc.md).
 
 ### `contig_summary`
 
@@ -463,9 +477,9 @@ It has one row per contig of the draft assembly, with the evidence the run produ
 verdict. The evidence consists of the telomere arrays at the contig ends, read depth, the
 assembler's depth and circularity flag, rDNA units, BUSCO markers, predicted genes and the calls of
 the contamination and mitochondrion screen, and the `adapter` column says whether the contig
-adapter screen found adapter sequence on the contig. The verdict is one of `chromosome`, `chromosome_arm`,
-`mitochondrion`, `rDNA_array`, `low_depth`, `repeat`, `nuclear_contig`, `nuclear_fragment`,
-`contaminant` or `unclassified`.
+adapter screen found adapter sequence on the contig. The verdict is one of `chromosome`,
+`chromosome_arm`, `mitochondrion`, `rDNA_array`, `low_depth`, `repeat`, `nuclear_contig`,
+`nuclear_fragment`, `contaminant`, `foreign_mitochondrion` or `unclassified`.
 
 The telomere arrays are the one piece of evidence worked out from the sequence itself. Their repeat
 unit differs between fungal groups, so rule `telomere_units` chooses it from the assembly with tidk.

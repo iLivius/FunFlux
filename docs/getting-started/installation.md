@@ -41,7 +41,7 @@ Check that the computer meets these requirements before you install FunFlux:
 | Commands | `bash` and the GNU base commands (`sha256sum`, `md5sum` and the rest of coreutils, `find`, `grep`, `sed`, `awk`) on the machine's own `PATH`, outside conda. With the AMR screen on, also a `grep` that knows `-P` (GNU grep). No `python`, `perl`, `curl`, `tar` or `gzip` is needed. See [Commands outside the conda environments](#host-commands). |
 | CPU | the number in `resources.threads` (template: 24), given again as `--cores` |
 | Memory | about 16 GB for Tiberius, on by default, and more than 14 GB for SignalP 6 in `slow` mode. See [Memory](#memory). |
-| Disk | about 380 GB of databases. The conda environments take 20 to 25 GB for a `contigs` run, 25 GB with the screen and SignalP 6, and the read-based modes add 4 to 9 environments, not measured. The output takes in the order of 10 GB per sample in `contigs` mode, plus the reads and assembly files of the read-based modes. See [Disk](#disk). |
+| Disk | about 380 GB of databases. The conda environments take 20 to 25 GB for a `contigs` run, 25 GB with the screen and SignalP 6, and the read-based modes add 4 to 10 environments, not measured. The output takes in the order of 10 GB per sample in `contigs` mode, plus the reads and assembly files of the read-based modes. See [Disk](#disk). |
 | Network | conda packages and several database downloads, on the computer that runs Snakemake; inside the jobs, only BUSCO with the automatic lineage. See [Network access](#network). |
 
 ### Memory { #memory }
@@ -86,10 +86,10 @@ it.
 | antiSMASH 8.0.4 databases | 9.4 GB | `00.resources/` of every output folder, or once in `directories.antismash_db` |
 | funannotate database, unpacked, archive included | 8.1 GB | `directories.funannotate_db` |
 | conda environments: the 18 of a `contigs` run with the screen, Tiberius and SignalP 6 | about 25 GB; the `download` environment among them takes 120 MB | `.snakemake/conda/`, or the folder given to `--conda-prefix` |
-| conda environments added by the read-based modes: 4 in `illumina`, 4 or 5 in `longread`, 8 or 9 in `hybrid`, listed under [`--sdm conda`](#sdm-conda) | not measured | the same folder |
+| conda environments added by the read-based modes: 4 in `illumina`, 4 to 6 in `longread`, 8 to 10 in `hybrid` (fastplong for ONT samples, Medaka for ONT samples with Medaka), listed under [`--sdm conda`](#sdm-conda) | not measured | the same folder |
 | conda environment of the AMR screen (`chroquetas`), when it is on | about 2 GB | the same folder |
 | output of one sample, `contigs` mode | in the order of 10 GB | `directories.output_dir` |
-| output of one sample, read-based modes: the kept reads (`01.reads/`), the assembler's working folder, the read-mapping BAM, the polishing files | whole sample: 13 GB in `illumina`, 20 to 31 GB in `longread` and 39 GB in `hybrid` on the 42.6 Mb genome of *Botrytis cinerea* B05.10; 16 to 17 GB in `longread` and 29 GB in `hybrid` on the 32.7 Mb genome of *Cordyceps cateniannulata* GXU-8616, with PacBio HiFi reads | `directories.output_dir` |
+| output of one sample, read-based modes: the kept reads (`01.reads/`), the assembler's working folder, the read-mapping BAM, the polishing files | whole sample: 13 GB in `illumina`, 20 to 31 GB in `longread` and 38 GB in `hybrid` on the 42.6 Mb genome of *Botrytis cinerea* B05.10; 16 to 17 GB in `longread` and 29 GB in `hybrid` on the 32.7 Mb genome of *Cordyceps cateniannulata* GXU-8616, with PacBio HiFi reads | `directories.output_dir` |
 
 In the output of the read-based modes, the filtered long reads are kept uncompressed, and so are
 the selected Illumina pairs of `hybrid`.
@@ -105,8 +105,8 @@ Each measured run is listed under [Disk use per run](../reference/output.md#disk
 
 Most downloads happen on the computer that runs Snakemake. The download steps are local rules, so
 they run on that computer and never on a compute node of a cluster. Snakemake builds the conda
-environments there too. Only three things reach the network from inside a job: BUSCO with the
-automatic lineage, and two lookups that the results do not need.
+environments there too. Only two things reach the network from inside a job: BUSCO with the
+automatic lineage, and a version check that the results do not need.
 
 | Host | What | When | Runs on |
 |---|---|---|---|
@@ -120,7 +120,6 @@ automatic lineage, and two lookups that the results do not need.
 | chosen by Medaka (GitHub) | model weights | the model check of an ONT sample with Medaka, the first time a model is used (`check_medaka_model`), before the assembly | the computer that runs Snakemake |
 | `busco-data.ezlab.org` | BUSCO lineage datasets | with a named lineage, once per output folder (`busco_data`) | the computer that runs Snakemake |
 | `busco-data.ezlab.org` | BUSCO lineage datasets | with `parameters.busco.lineage: auto`, the default: every BUSCO job (`completeness`) | the job |
-| `www.ebi.ac.uk` | InterProScan's lookup service, a shortcut: without it, InterProScan computes every match itself ([Functional annotation](../analysis/functional-annotation.md#interproscan)) | every InterProScan job | the job |
 | `api.multiqc.info` | MultiQC's check for a newer version | the report (`multiqc`) | the job |
 
 FunFlux runs BUSCO 6.0.0 with `--opt-out-run-stats`. Without it, BUSCO ends each job by looking up
@@ -132,9 +131,8 @@ When the jobs have no internet, BUSCO, InterProScan and MultiQC behave as follow
 - **BUSCO**, with `lineage: auto`, cannot download its lineage data, and the BUSCO job fails. Name
   a lineage instead, as described under
   [BUSCO on compute nodes without internet](../reference/running.md#cluster-busco).
-- **InterProScan** prints
-  `Pre-calculated match lookup service failed - analysis proceeding to run locally` and computes
-  every match itself. The matches are the same, and the run is longer
+- **InterProScan** runs as it does with internet: FunFlux runs it with `-dp`, so it computes every
+  match itself and never asks EBI's lookup service
   ([Functional annotation](../analysis/functional-annotation.md#interproscan)).
 - **MultiQC** gives up its version check after about 2 seconds, and the report is the same.
 
@@ -301,10 +299,10 @@ The table lists each environment, the tools in it and the runs that build it.
 | `multiqc` | MultiQC 1.33 | always |
 | `blast` | BLAST+ 2.16.0 | always (the contig adapter screen; also the contamination screen) |
 | `blobtools` | BlobTools 1.1.1 | the screen |
-| `minimap` | minimap2 2.30, samtools 1.21 | the screen in `contigs`, `longread` and `hybrid` mode (`illumina` maps with bowtie2) |
+| `minimap` | minimap2 2.30, samtools 1.21 | the screen in `contigs`, `longread` and `hybrid` mode (`illumina` maps with bowtie2); in `longread` and `hybrid` its samtools also measures the read depth for the contig summary (`contig_depth`) |
 | `signalp6` | Python 3.10, PyTorch 1.13.1 (CPU); SignalP 6 itself comes from your archive | `parameters.signalp6.mode` not `off` |
 | `tiberius` | Tiberius 1.1.8, TensorFlow 2.17.0 (CPU build), Python 3.12.15; about 2 GB | `parameters.tiberius.mode` `on`, the default |
-| `bowtie` | bowtie2 2.5.4, samtools 1.21, Python 3.14.6 | `illumina`, `hybrid` (PhiX removal, read mapping, read selection) |
+| `bowtie` | bowtie2 2.5.4, samtools 1.21, Python 3.14.6 | `illumina`, `hybrid` (PhiX removal, read mapping, read selection; in `illumina` also the read depth for the contig summary, `contig_depth`) |
 | `fastp` | fastp 1.0.1 | `illumina`, `hybrid` |
 | `spades` | SPAdes 4.2.0, Python 3.14.6 | `illumina`, `hybrid` |
 | `qualimap` | Qualimap 2.3, OpenJDK 25.0.2, Python 3.14.6 | `illumina`, `longread`, `hybrid` |

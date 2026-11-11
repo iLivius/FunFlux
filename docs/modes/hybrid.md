@@ -92,13 +92,14 @@ reads and, for ONT samples, polishes the assembly with Medaka. Polypolish then c
 | Long-read assembly | `long_read_assembly` | hifiasm 0.25.0 or Flye 2.9.6 | `hifiasm/` or `flye/`, `assembly.fasta`, `assembly_provenance.tsv` |
 | Assembler evidence | `assembly_evidence` | FunFlux script, Python 3.12 | `assembly_evidence.tsv` |
 | Screen | `map_contigs`, `map_evaluation`, `blast_contigs`, `blob_json`, `blob_table`, `screen_mitochondria`, `select_contigs` | minimap2 2.30, Qualimap 2.3, BLAST+ 2.16.0, BlobTools 1.1.1 | `contaminants/`, `mitochondria/`, `eval/qualimap/` |
+| Read depth per contig (long-read draft) | `contig_depth` | samtools 1.21 | `contaminants/{sample}_depth.tsv` |
 | Long-read polishing (ONT with Medaka) | `long_read_consensus` | Medaka 2.2.2 | `medaka/consensus.fasta` |
 | Short-read polishing | `short_read_correction` | Polypolish 0.6.1, bwa 0.7.19 | `polypolish/polished.fasta` |
 | Genome files | `finalize_assembly`, `separate_mitochondria` | | `contigs_all.fasta`, `contigs_final.fasta`, `contigs_mitochondrial.fasta` |
 | Adapter screen of the long-read draft | `blast_adapters`, `screen_adapters` | BLAST+ 2.16.0, FunFlux script | `eval/adapter_screen.tsv` |
 
-Paths without a stage prefix are under `02.assembly/{sample}/`. One PacBio HiFi sample plans 61
-jobs, an ONT sample with Medaka 66, and the resistance-mutation screen adds 2
+Paths without a stage prefix are under `02.assembly/{sample}/`. One PacBio HiFi sample plans 62
+jobs, an ONT sample with Medaka 67, and the resistance-mutation screen adds 2
 ([Dry run](../reference/running.md#dry-run)). The threads of each step are listed on
 [CPU cores and threads](../reference/running.md#cpu-cores-and-threads).
 
@@ -213,7 +214,7 @@ The guide and the long-read assembly are screened independently, with the same
 |---|---|---|
 | Draft examined | `guide/contigs_filt.fasta` | `assembly.fasta` |
 | Decides | which Illumina pairs are used | which contigs are delivered |
-| Reads mapped for the BlobTools coverage and Qualimap | trimmed Illumina pairs, bowtie2 | filtered long reads, minimap2 |
+| Reads mapped for the BlobTools coverage and Qualimap (on the long-read draft, also the contig summary's read depth) | trimmed Illumina pairs, bowtie2 | filtered long reads, minimap2 |
 | Evidence for the mitochondrion | BLAST only | BLAST plus the assembler's evidence |
 | Qualimap rule and folder | `map_guide_evaluation`, `guide/eval/qualimap/` | `map_evaluation`, `eval/qualimap/` |
 | MultiQC row of the Qualimap report | `mapping Illumina QC | {sample}` | `mapping QC | {sample}` |
