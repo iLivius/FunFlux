@@ -740,6 +740,9 @@ rule funannotate_prediction:
 #   * The search for the proteins, the removal of the old XML and the XML check are unchanged.
 #     Within the check, chr(125) is the closing curly brace; writing it that way keeps Snakemake's
 #     own brace-based string formatting from mistaking it for a placeholder.
+#   * NEW: -dp (v1 and FunFlux 2.0.0 ran without it). InterProScan computes every match
+#     itself instead of asking EBI's lookup service, which did not answer InterProScan 5
+#     in November 2026 (see the comment at the command).
 #   * NEW: retries: 1. A failed InterProScan job is started once more before the run reports
 #     it. InterProScan keeps an internal database of its progress in the scratch folder, and on
 #     a busy computer it has been seen to lose one of that database's files and stop ("Could not
@@ -812,11 +815,19 @@ rule iprscan_annotation:
         # Run InterProScan directly, not through the funannotate iprscan wrapper, which has
         # problems putting the XML together with newer InterProScan releases. This writes the
         # XML funannotate annotate expects. -goterms and -pa add the GO terms and pathways.
+        # -dp (short for --disable-precalc) stops InterProScan from asking EBI's lookup
+        # service for the matches EBI has already computed for known proteins. In November
+        # 2026 that service did not answer InterProScan 5: its address returned the InterPro
+        # web site instead, and InterProScan wrote a long Java error ("Lookup version check
+        # failed") into the log and then computed every match itself anyway. With -dp it
+        # computes every match itself from the start: the same matches, no error in the log,
+        # and no internet connection needed.
         "{params.iprscan}" \
             -i "$proteins" \
             -f XML \
             -goterms \
             -pa \
+            -dp \
             -cpu {threads} \
             -T "{params.scratch_dir}" \
             -o "$iprscan_xml" >> {log} 2>&1

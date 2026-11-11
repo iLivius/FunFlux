@@ -1326,6 +1326,7 @@ def main():
            f"--decisions {out_hybrid}/02.assembly/SAM1/contaminants/contig_taxonomy_decisions.tsv",
            f"--blob-table {out_hybrid}/02.assembly/SAM1/contaminants/bestscore.blob.blobDB.table.txt "
            f"--assembly-evidence {out_hybrid}/02.assembly/SAM1/assembly_evidence.tsv",
+           "-goterms -pa -dp -cpu",
            f"mitochondria.py evidence-hifiasm --gfa {out_hybrid}/02.assembly/SAM1/hifiasm/hifiasm.p_ctg.gfa "
            f"--output {out_hybrid}/02.assembly/SAM1/assembly_evidence.tsv > ", done],
           ["SAM2_selected_R2.fastq --trim", "SAM2_medaka_model.txt", "rule index_contigs:",
