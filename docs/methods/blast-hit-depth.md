@@ -166,12 +166,17 @@ settings.
   FunFlux 2.0.0 had given four of them the strain's genus.
 - **The mitochondrion screen** confirmed the same mitochondrial contigs, with the same coverage,
   under both settings. Both strains' own mitochondrial genomes are in core_nt, and their
-  mitochondrial contigs match them best. One contig of 32 kb was a `mitochondrial_candidate` with
+  mitochondrial contigs match them best. These runs were made before the species check was added:
+  the three small contigs of human mitochondrial DNA in the B05.10 Illumina draft were confirmed
+  under both settings too, and FunFlux 2.1.0 calls them `foreign_mitochondrial`
+  ([Validation](../about/validation.md#other-results)).
+  One contig of 32 kb was a `mitochondrial_candidate` with
   50 subjects and not with 10: its direct hits, to mitochondrial genomes that each covered 1 % of
   it or less, were no longer among the 10 subjects. A candidate stays in the nuclear genome, so no
   genome file changed; only that row of `mitochondrial_screen.tsv` did.
-- **Without the strain's own species in core_nt**, as for a new species, the three mitochondrial
-  contigs were searched again with that species left out. With it, their best direct hit covered
+- **Without the strain's own species in core_nt**, as for a new species, the fungal mitochondrial
+  contigs of the B05.10 Illumina draft and of both GXU-8616 drafts were searched again with that
+  species left out. With it, their best direct hit covered
   99 to 100 % of them. Without it, all three were still confirmed, with the same best coverage
   under both settings: 89 % for the B05.10 mitochondrion, and 50 % (HiFi draft, where the contig
   holds two copies of the mitochondrial genome end to end) and 72 % (MGISEQ draft) for GXU-8616.
@@ -205,6 +210,12 @@ fungus.
   a new clone or another launch folder, Snakemake has no record of the old command and keeps the
   2.0.0 BLAST table; add `--forcerun blast_contigs` (in `hybrid` also `blast_guide_contigs`) to
   search again. To keep finished 2.0.0 results as they are, leave that folder to FunFlux 2.0.0.
+- **ONT samples in such a folder start again from the reads.** FunFlux 2.1.0 trims the ONT
+  adapter from the reads before Filtlong ([Adapter trimming](adapter-trimming.md)), so each ONT
+  sample is trimmed, filtered and assembled again, and its genome can differ from the 2.0.0 one:
+  on B05.10, trimming changed the mitochondrial contig
+  ([Validation](../about/validation.md#adapter-trimming)). With `ont_adapter: off` in
+  `parameters.longread` or `parameters.hybrid`, the reads are assembled untrimmed, as in 2.0.0.
 - **A genus filter chosen from a 2.0.0 run** may no longer fit, because some contigs change genus.
   Read the new `contig_taxonomy_decisions.tsv` before you filter again
   ([Decontamination](../analysis/decontamination.md)).

@@ -115,7 +115,9 @@ The guide is screened like an Illumina assembly:
 - the trimmed pairs are mapped to it with bowtie2, for the BlobTools coverage and for Qualimap
   (`guide/eval/qualimap/`); the BAM, `guide/contaminants/{sample}_map.bam`, is kept;
 - BLAST and BlobTools assign a taxon to each contig;
-- the mitochondrion screen confirms mitochondrial contigs from BLAST alone;
+- the mitochondrion screen confirms mitochondrial contigs from BLAST alone, except a contig whose
+  best mitochondrial hit is an animal's or a plant's (human mitochondrial DNA from the library, for
+  example), which it classes `foreign_mitochondrial`;
 - the contig selector applies `parameters.decontamination` and writes
   `guide/contaminants/contigs_decontam.fasta`.
 

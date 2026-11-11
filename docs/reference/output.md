@@ -76,7 +76,7 @@ label covers only `qualimap/`. A line without a label is written in every mode, 
 │   ├── hifiasm/ or flye/, assembly.fasta, assembly_evidence.tsv, assembly_provenance.tsv   [longread, hybrid]
 │   ├── {sample}_medaka_model.txt, medaka/            [longread, hybrid: ONT samples with Medaka]
 │   ├── polypolish/, guide/                                                        [hybrid]
-│   └── eval/                            quast/, busco/, telomere_*, contig_summary*.tsv; qualimap/ [illumina, longread, hybrid]
+│   └── eval/                            quast/, busco/, telomere_*, adapter_*, contig_summary*.tsv; qualimap/ [illumina, longread, hybrid]
 ├── 03.taxonomy/{sample}/                ITS windows, ITS sequences, UNITE classification
 ├── 04.annotation/{sample}/              masking, gene prediction, functional annotation
 ├── 05.amr/{sample}/                     antifungal resistance mutations (ChroQueTas)   [AMR]
@@ -413,8 +413,8 @@ sample. The method, the target statuses and the columns are explained on
 
 | Path | Content | Status |
 |---|---|---|
-| `multiqc_report.html` | QUAST and BUSCO results and the contig summary table of every sample of the run, and the AMR table with the AMR screen on; in the read-based modes also fastp (`illumina`, `hybrid`), NanoPlot (`longread`, `hybrid`) and Qualimap | deliverable |
-| `multiqc_data/` | the tables behind the plots, for example `multiqc_general_stats.txt`, `multiqc_busco.txt`, `multiqc_quast.txt`, `multiqc_contig_summary.txt` | deliverable |
+| `multiqc_report.html` | QUAST and BUSCO results, the contig summary table and the Adapters table of every sample of the run, and the AMR table with the AMR screen on; in the read-based modes also fastp (`illumina`, `hybrid`), NanoPlot (`longread`, `hybrid`) and Qualimap | deliverable |
+| `multiqc_data/` | the tables behind the plots, for example `multiqc_general_stats.txt`, `multiqc_busco.txt`, `multiqc_quast.txt`, `multiqc_contig_summary.txt`, `multiqc_adapter_screen.txt` | deliverable |
 | `multiqc_config.yaml` | the MultiQC configuration of the run, with the sample-name rules | intermediate |
 
 Rows are named after the tool and the sample, for example `QUAST assembly QC | <sample>` and

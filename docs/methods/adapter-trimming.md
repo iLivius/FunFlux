@@ -22,9 +22,10 @@ config:
 flowchart TD
     R([raw ONT reads]) --> S[find the adapter and the block after it<br/>find_ont_adapter<br/>all reads]
     S --> T[fastplong removes exactly that sequence<br/>trim_ont_adapters]
-    T --> F[Filtlong, then hifiasm or Flye]
-    T --> C[count the adapters left<br/>check_ont_trimming]
-    F --> A([draft assembly])
+    T --> F[Filtlong]
+    F --> C[count the adapters left<br/>check_ont_trimming]
+    F --> H[hifiasm or Flye]
+    H --> A([draft assembly])
     A --> B[search the contigs for adapters and barcodes<br/>blast_adapters, screen_adapters]
     S -.->|the trimmed sequence| B
     B --> Q([adapter column of the contig summary<br/>Adapters table of the MultiQC report])
@@ -96,9 +97,10 @@ B05.10 file this took about two minutes.
     is trimmed, with a NOTE: those sequences then stay in the reads, and the adapter screen
     reports them. Write the whole sequence into `ont_adapter` to trim it.
 
-The file `adapters/{sample}_adapter_scan.tsv` counts the reads with the adapter in every block of
-10,000 reads. A batch of already-trimmed reads in an otherwise untrimmed file shows up there: in
-the public B05.10 file, reads 1 to about 95,000 carry no adapter, and most of the reads after them
+The file `01.reads/{sample}/long/adapters/{sample}_adapter_scan.tsv`
+([Output files](../reference/output.md#01reads)) counts the reads with the adapter in every block
+of 10,000 reads. A batch of already-trimmed reads in an otherwise untrimmed file shows up there: in
+the public B05.10 file, reads 1 to about 95,000 carry almost no adapter, and most of the reads after them
 do.
 
 ## What fastplong does with it
@@ -179,8 +181,8 @@ With Flye, the reads as delivered left adapter or barcode at 17 of 54 contig end
 reads at none. The public reference genome of B05.10 (ASM14353v4) gives no hit in the screen.
 
 These numbers come from one strain, one native-barcoding kit and one barcode. Four public runs of
-the Rapid Barcoding Kit V14, one of them a yeast (*Diutina catenulata*, ERR17348184), had been
-trimmed at basecalling: the scan left three unchanged, and with the yeast reads FunFlux produced
+the Rapid Barcoding Kit V14, one of them a yeast (*Diutina catenulata*, ERR17348184), had their
+adapters trimmed at basecalling: the scan left three unchanged, and with the yeast reads FunFlux produced
 the same assembly with trimming on and off. In the fourth (*Bacillus cereus*, ERR16717241) it found
 rapid barcode RB10 left at the start of 1.4 % of the reads and trimmed it. Untrimmed reads of a
 rapid or ligation kit have not been tested yet.

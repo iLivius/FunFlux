@@ -91,8 +91,8 @@ information and BLAST alone decides.
 ## What `01.reads` and `02.assembly` contain
 
 The table shows which folders and files each mode writes to `01.reads` and `02.assembly`.
-`contigs_final.fasta`, QUAST, BUSCO, the telomere files and the contig summary are there in every
-mode. The other rows depend on each mode's reads, assembler, screen and polisher.
+`contigs_final.fasta`, QUAST, BUSCO, the telomere files, the adapter screen and the contig summary
+are there in every mode. The other rows depend on each mode's reads, assembler, screen and polisher.
 Rows without a stage prefix are under `02.assembly/{sample}/`, and `01.reads/` is not created in
 `contigs` mode.
 
@@ -100,6 +100,7 @@ Rows without a stage prefix are under `02.assembly/{sample}/`, and `01.reads/` i
 |---|---|---|---|---|
 | `01.reads/{sample}/illumina/`: fastp reports (kept), PhiX-free and trimmed reads (temporary) | yes | | yes | |
 | `01.reads/{sample}/long/`: `{sample}_filtered.fastq`, NanoPlot `raw_qc/` and `filtered_qc/` | | yes | yes | |
+| `01.reads/{sample}/long/adapters/`: the adapter scan, fastplong's report and the check of the trimmed reads | | ONT samples, unless `ont_adapter: off` | ONT samples, unless `ont_adapter: off` | |
 | `01.reads/{sample}/selected/`: Illumina pairs that map to the screened guide assembly | | | yes | |
 | `02.assembly/{sample}/spades/` | yes | | | |
 | `02.assembly/{sample}/guide/`: the Illumina guide assembly, its screen and Qualimap report | | | yes | |
@@ -113,6 +114,7 @@ Rows without a stage prefix are under `02.assembly/{sample}/`, and `01.reads/` i
 | `eval/quast/`, `eval/busco/` | yes | yes | yes | yes |
 | `eval/telomere_candidates.tsv`, `telomere_unit.txt`, `telomere_ends.tsv`: the telomere repeat unit of the assembly and the arrays at the contig ends | yes | yes | yes | yes |
 | `eval/contig_summary.tsv`, `_mqc.tsv`: what each contig of the draft is | yes | yes | yes | yes |
+| `eval/adapter_screen.tsv`, `adapter_screen_mqc.tsv`: adapter and barcode sequence left in the draft | yes | yes | yes | yes |
 | `eval/qualimap/` | yes | yes | yes | |
 
 Every file is described on [Output files](../reference/output.md).

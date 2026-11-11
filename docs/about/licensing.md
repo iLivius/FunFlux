@@ -4,9 +4,10 @@ FunFlux is released under the [MIT License](https://github.com/iLivius/FunFlux/b
 The tools and databases it uses carry their own licences, and some of them restrict commercial
 use. This page lists those licences as they were read on the dates given, with the source of each.
 
-The repository contains code and download addresses, and no third-party data. Every database is
-either one you downloaded yourself or one the workflow downloads on your machine, from an address
-in the `links` block of the configuration or with the tool's own download command.
+The repository contains code, download addresses and two small files of adapter sequences, from
+Oxford Nanopore and NCBI UniVec (their terms are in the table below), and no databases. Every
+database is either one you downloaded yourself or one the workflow downloads on your machine, from
+an address in the `links` block of the configuration or with the tool's own download command.
 
 !!! abstract "Terms used on this page"
 
@@ -34,8 +35,8 @@ screen can each be left out with one setting, but PROSITE and SMART are searched
 
 Of the terms that could be checked, those in the table above are the only ones that limit who may
 use a component. No terms could be found for dbCAN, the eggNOG 5.0.2 data, the Tiberius `fungi`
-model and the tidk telomere repeat database, and MIBiG's licence
-comes only from a registry entry. The terms of the databases antiSMASH downloads, and of the member
+model, the tidk telomere repeat database and the Oxford Nanopore adapter sequences, and MIBiG's
+licence comes only from a registry entry. The terms of the databases antiSMASH downloads, and of the member
 databases InterProScan searches other than Pfam, PROSITE and SMART, were not checked.
 
 The next table gives the licences of the tools and databases FunFlux uses. The Conditions column
@@ -125,6 +126,7 @@ citation, share-alike. A dash means none of these.
     | the UNITE reference | when the workflow downloaded it | CC BY 4.0: credit the release |
     | the antiSMASH databases | when the workflow downloaded them | not checked |
     | the telomere repeat database of tidk | when the workflow downloaded it | no licence stated |
+    | `00.resources/adapters/univec_illumina.fasta`: the Illumina records of NCBI UniVec | always, from the first run on the output folder | copyright Illumina, Inc., and FunFlux does not redistribute them: remove the file |
     | `00.resources/tiberius/model/`: the Tiberius `fungi` model | while Tiberius is on, the default | no licence stated |
     | `00.resources/busco/`: the BUSCO lineage dataset | when `parameters.busco.lineage` names a lineage | CC BY-ND 4.0: modified datasets may not be shared |
     | `00.resources/chroquetas/`: ChroQueTas and its FungAMR database | with the AMR screen on | CC BY-NC-ND 4.0: pass them on only unchanged, for non-commercial purposes and with credit |

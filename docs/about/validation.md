@@ -132,8 +132,8 @@ the five comparison runs are the annotations in `contigs` mode. The table lists 
 differ from the configuration template, apart from paths: the input and output folders, the
 databases, the annotation table, InterProScan and the SignalP 6 archive. Keys missing from the run
 configurations took their defaults. Each run used the template of its own version. Apart from the
-address of a database download, the two templates differ in two settings, which the table leaves
-out: `blast_max_target_seqs`, 50 in FunFlux 2.0.0 and 10 in 2.1.0, and `ont_adapter`, new in
+new UniVec download address and its checksum, the two templates differ in two settings, which the
+table leaves out: `blast_max_target_seqs`, 50 in FunFlux 2.0.0 and 10 in 2.1.0, and `ont_adapter`, new in
 2.1.0. The four runs with ONT reads kept its default, `detect`, so FunFlux worked out from the
 reads what to trim, if anything.
 

@@ -325,19 +325,22 @@ data are fetched again in every BUSCO job.
 | UNITE SINTAX reference, release 19.02.2025, all eukaryotes | `00.resources/unite/unite_its_sintax.fasta` | 35.7 MB download, 207 MB unpacked | unless `directories.unite_db` is set |
 | Tiberius `fungi` model | `00.resources/tiberius/model/` | 30 MB download, 31 MB unpacked | while `parameters.tiberius.mode` is `on`, the default |
 | telomere repeat database of tidk | `00.resources/telomeres/telo_database_v2.tsv` | 0.6 MB | always |
+| Illumina records of NCBI UniVec, build 10.1 | `00.resources/adapters/univec_illumina.fasta` | 1.7 MB download, about 31 kB kept (151 records) | always |
 | BUSCO lineage datasets | `02.assembly/{sample}/eval/busco/busco_tmp/`, deleted after the job | eukaryota_odb12 29 MB, compressed, plus 8 MB of placement files for the automatic lineage step and the lineage dataset BUSCO places the genome in | every BUSCO job, for every sample, with `parameters.busco.lineage: auto`; a named lineage is fetched once per output folder into `00.resources/busco/` |
 
-Three of these downloads are checked with `sha256sum -c` before they are used:
+Four of these downloads are checked with `sha256sum -c` before they are used:
 
 | Download | Checked against |
 |---|---|
 | funannotate archive | its `.sha256` file; a mismatch stops the run with the instruction to delete both files and start again |
 | Tiberius model | `parameters.tiberius.model_sha256` |
 | telomere repeat database | `parameters.contig_summary.telomere_db_sha256` |
+| UniVec | `parameters.contig_summary.univec_sha256` |
 
 For the UNITE file, `00.resources/unite/PROVENANCE.txt` records the URL, download date, md5 and
 size. For the telomere repeat database, `00.resources/telomeres/PROVENANCE.txt` records the URL,
-download date, checksum and row count.
+download date, checksum and row count. For UniVec, `00.resources/adapters/PROVENANCE.txt` records
+the URL, download date, checksum and the number of Illumina records kept.
 
 InterProScan computes every match itself and needs no internet: EBI's lookup service, which
 returned matches already computed, did not answer InterProScan 5 in November 2026, so FunFlux does
@@ -386,7 +389,7 @@ Tiberius.
 | Output folder of one sample | in the order of 10 GB |
 | A downloaded antiSMASH database | about 9.4 GB more in `00.resources/` |
 | funannotate database, outside the output folder | 8.1 GB |
-| conda environments, outside the output folder | about 20 GB for the 14 of the example, 22 GB with SignalP 6 |
+| conda environments, outside the output folder | about 20 GB for the 15 of the example, 22 GB with SignalP 6 |
 
 How long the steps take is described on [Run time](../reference/running.md#run-time), and where
 the space goes on [Disk use](../reference/output.md#disk-use).

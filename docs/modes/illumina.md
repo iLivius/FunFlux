@@ -202,7 +202,9 @@ The screen runs on `contigs_filt.fasta`, in four steps:
    `parameters.blast_max_hsps`.
 2. `screen_mitochondria` decides from BLAST alone, because Illumina reads give no assembler
    evidence. A contig is confirmed mitochondrial when a hit to a mitochondrial genome covers at
-   least `parameters.mitochondria.min_direct_blast_qcov` percent of it (default 35).
+   least `parameters.mitochondria.min_direct_blast_qcov` percent of it (default 35). A contig whose
+   best mitochondrial hit is an animal's or a plant's, such as a contig of human mitochondrial DNA,
+   is classed `foreign_mitochondrial` instead: it is not confirmed and not split off.
 3. `blob_json` and `blob_table` run BlobTools, which joins the BLAST hits, the coverage and the
    contigs and assigns a taxon to each contig.
 4. `select_contigs`, the contig selector, applies `parameters.decontamination`. Its default,

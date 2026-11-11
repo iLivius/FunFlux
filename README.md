@@ -208,9 +208,10 @@ the v2 rewrite would not have been realistic without it.
 
 ## Licence
 
-FunFlux is released under the [MIT License](LICENSE). The repository ships code and download
-addresses and no third-party data: every database is either one you already hold or one the
-workflow fetches from its publisher, under that publisher's terms. The tools and databases
+FunFlux is released under the [MIT License](LICENSE). The repository ships code, download
+addresses and two small files of adapter sequences (from Oxford Nanopore and NCBI UniVec), and no
+databases: every database is either one you already hold or one the workflow fetches from its
+publisher, under that publisher's terms. The tools and databases
 FunFlux runs carry their own licences, listed with their conditions on
 [Licensing](https://iLivius.github.io/FunFlux/about/licensing/). GeneMark-ES, SignalP 6, Medaka,
 ChroQueTas with its FungAMR database (the resistance-mutation screen, off by default), and the

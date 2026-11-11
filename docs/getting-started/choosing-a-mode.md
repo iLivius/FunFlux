@@ -89,7 +89,7 @@ whole run, and others for each sample.
 |---|---|
 | The assembler (`parameters.<mode>.assembler`) | once for the whole run |
 | The Filtlong settings | once for the whole run, for both technologies; their defaults are sized for ONT reads |
-| The assembler's flags, the minimap2 preset, Medaka and, in `hybrid`, the Filtlong guidance when it is on | per sample, from the suffix; the dry run prints the decision for every sample ([One technology per sample](../modes/longread.md#one-technology-per-sample)) |
+| ONT adapter trimming, the assembler's flags, the minimap2 preset, Medaka and, in `hybrid`, the Filtlong guidance when it is on | per sample, from the suffix; the dry run prints the decision for every sample ([One technology per sample](../modes/longread.md#one-technology-per-sample)) |
 | Everything after polishing (`contigs_all.fasta`) | the same for both technologies |
 
 One batch can therefore mix the two technologies, and only the steps up to polishing treat them

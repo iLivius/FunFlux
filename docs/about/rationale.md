@@ -31,7 +31,7 @@ Only the front end differs between the modes:
 | Part | Steps |
 |---|---|
 | Front end: differs by mode | read QC, read filtering, assembly and the contig filter before the screen, and polishing after it; in `hybrid` also the Illumina guide assembly, its own screen, and the selection of the Illumina read pairs for Polypolish and, only with `short_read_guidance: true` (off by default), for Filtlong on ONT samples |
-| Shared: the same in every mode | the contamination and mitochondrion screen, the split into `contigs_final.fasta` and `contigs_mitochondrial.fasta`, QUAST and BUSCO, the contig summary, the ITS extraction and classification, repeat masking, gene prediction, functional annotation, the AMR screen and the MultiQC report |
+| Shared: the same in every mode | the contamination and mitochondrion screen, the split into `contigs_final.fasta` and `contigs_mitochondrial.fasta`, QUAST and BUSCO, the adapter screen, the contig summary, the ITS extraction and classification, repeat masking, gene prediction, functional annotation, the AMR screen and the MultiQC report |
 
 From the screen on, every mode runs the same code, and only polishing differs between the
 read-based modes. The stage folders, `02.assembly` to `06.report`, have the same names in every

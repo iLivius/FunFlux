@@ -65,10 +65,12 @@ the files they come from and the modes that have them:
 | `QUAST assembly QC | <sample>` | `eval/quast/report.tsv` | all |
 | `BUSCO completeness QC (<lineage>) | <sample>` | `eval/busco/short_summary.generic.<lineage>.{sample}.txt` or `short_summary.specific.<lineage>.{sample}.txt` | all |
 | `<sample>: <contig>` | `eval/contig_summary_mqc.tsv`, one row per contig of the draft assembly | all |
+| `<sample>` | `eval/adapter_screen_mqc.tsv`: the sample's row of the Adapters table | all |
 | `<sample>: <target>` | `05.amr/{sample}/amr_summary_mqc.tsv`, one row per target protein | all, AMR screen on |
 
 These names were checked in finished runs of the three read-based modes on one public genome, and
-of `longread` and `hybrid` with PacBio HiFi reads on a second. The runs are described on
+of `longread` and `hybrid` with PacBio HiFi reads on a second; the Adapters row was checked in the
+FunFlux 2.1.0 runs, in `longread` and `hybrid` mode. The runs are described on
 [Validation on public genomes](../about/validation.md). A row whose name does not come out as
 above shows the raw folder path instead. Its numbers are not affected.
 

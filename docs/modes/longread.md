@@ -178,7 +178,8 @@ long reads. The total is not capped unless `target_bases` is set.
 ## Read QC
 
 NanoPlot reports on the raw reads (`raw_qc/`) and on the filtered reads (`filtered_qc/`), with read
-lengths on a log scale, so that the two reports show what Filtlong removed. A NanoPlot failure
+lengths on a log scale, so that the two reports show what trimming (ONT samples) and Filtlong
+removed. A NanoPlot failure
 leaves a `[FunFlux]` line in the log and does not stop the run. The MultiQC page then has no
 read-QC row for the sample.
 

@@ -160,21 +160,25 @@ the depth of the bulk of the genome.
 ### Where it runs
 
 Three steps make the table, in every mode, and in the read-based modes a fourth measures the read
-depth. The telomere unit is chosen as soon as the draft exists, and the table itself waits for the
-annotation:
+depth. Its `adapter` column comes from the contig adapter screen, three more steps that also run
+in every mode ([The contig adapter screen](../methods/adapter-trimming.md#the-contig-adapter-screen)). The telomere unit is chosen as
+soon as the draft exists, and the table itself waits for the annotation:
 
 | Step | Runs | Does | Writes |
 |---|---|---|---|
 | `telomere_db` | once per output folder | downloads the tidk telomere repeat database and checks its SHA-256 ([Reference databases](../getting-started/databases.md#telomere-db)) | `00.resources/telomeres/telo_database_v2.tsv`, `PROVENANCE.txt` |
+| `univec_illumina` | once per output folder | downloads NCBI UniVec, checks its SHA-256 and keeps the Illumina adapter records ([Settings](#settings)) | `00.resources/adapters/univec_illumina.fasta`, `PROVENANCE.txt` |
 | `telomere_units` | once per sample, as soon as the draft exists | runs tidk on the draft and chooses the telomere repeat unit of the assembly ([Telomeres](#telomeres)); its own conda environment (tidk 0.3.0 with Python 3.12); seconds to a minute | `eval/telomere_candidates.tsv`, `telomere_unit.txt`, `telomere_ends.tsv` |
+| `blast_adapters` | once per sample, as soon as the draft exists | searches the draft for adapter and barcode sequences with BLAST | `eval/adapter_blast.tsv` |
+| `screen_adapters` | once per sample, after `blast_adapters` | turns the hits into adapter loci and writes the sample's row of the Adapters table of the MultiQC report | `eval/adapter_screen.tsv`, `adapter_screen_mqc.tsv` |
 | `contig_depth` | once per sample, in the read-based modes, as soon as the reads are aligned to the draft | measures the mean read depth of every contig with samtools coverage, from the alignment of the sample's reads to the draft that the screen makes ([Coverage track](decontamination.md#coverage-track)) | `contaminants/{sample}_depth.tsv` |
 | `contig_summary` | once per sample, after the annotation; one of the last jobs of a sample | gathers the evidence into the table | `eval/contig_summary.tsv`, `contig_summary_mqc.tsv` |
 
-The MultiQC report reads the `_mqc` copy of the table, and no other step reads it.
+The MultiQC report reads the two `_mqc` files, and no other step reads them.
 
 ### Where the evidence comes from
 
-Telomeres, rDNA units, BUSCO markers and genes are known in every mode. The read depth is known
+Telomeres, rDNA units, BUSCO markers, genes and adapter loci are known in every mode. The read depth is known
 only in the read-based modes, the assembler's depth and circularity only in the long-read modes,
 and the calls of the screen only where the screen runs. Each piece of evidence is read from these
 files:
@@ -188,6 +192,7 @@ files:
 | BUSCO markers | genuine nuclear sequence, as against rDNA and debris | `eval/busco/run_<lineage>/full_table.tsv` of the specific lineage, the markers with status `Complete` or `Duplicated` ([BUSCO](assembly-qc.md#busco)) | all |
 | predicted genes | the same | the mRNA features of `04.annotation/{sample}/funannotate/annotate_results/<Genus_species>_{sample}.gff3`, joined to the draft contig through `04.annotation/{sample}/contigs_sort.fasta` ([the join](#genes)) | all |
 | the screen | removed as a contaminant, with its genus; confirmed mitochondrial | `contaminants/contig_taxonomy_decisions.tsv`, `mitochondria/mitochondrial_screen.tsv`, `contigs_mitochondrial.fasta` | screen |
+| adapter loci | adapter or barcode sequence left within 100 bp of a contig end or inside the contig; reported, never used for the verdict | `eval/adapter_screen.tsv` ([The contig adapter screen](../methods/adapter-trimming.md#the-contig-adapter-screen)) | all |
 
 Paths without a stage prefix are under `02.assembly/{sample}/`. In `hybrid` mode the screen files
 are those of the long-read draft, not of the Illumina guide.
@@ -565,7 +570,9 @@ fungal species in the database. The log of `telomere_units` ends with the summar
 [above](#telomere-note) and has no NOTE.
 
 A short-read assembly of the same strain chooses the same unit from thinner evidence. It was made
-with SPAdes from public Illumina reads and has 413 contigs, 4 of them mitochondrial:
+with SPAdes from public Illumina reads, by FunFlux 2.0.0, and has 413 contigs, 4 of them
+mitochondrial (three of the four are human mitochondrial DNA, which FunFlux 2.1.0 calls
+`foreign_mitochondrion`; see [Validation](../about/validation.md#other-results)):
 
 | Unit | Copies at the contig ends | Ends in the telomere orientation | Opposite ends | Score | Outcome |
 |---|---|---|---|---|---|
@@ -586,8 +593,9 @@ count is an independent check of the run as a whole. The table itself reads no r
 
 ## Settings { #settings }
 
-The contig summary has five settings in `parameters.contig_summary`, and the address of the
-telomere database in `links`:
+`parameters.contig_summary` holds the five settings of the contig summary and `univec_sha256`, the
+checksum of the UniVec download of the adapter screen. `links` holds the addresses of the two
+downloads; without `univec_link`, the address shown is used:
 
 ```yaml
 parameters:
@@ -597,8 +605,10 @@ parameters:
     telomere_window: 25000
     min_telomere_copies: 5
     min_rdna_units: 3
+    univec_sha256: 687d8aa872d4ee215c9e0b3b004d0ee709fb243436d36d159a3f0ac5c25b5e36
 links:
   telomere_db_link: https://raw.githubusercontent.com/tolkit/a-telomeric-repeat-database/73c635c7b80e5ab369b4c7ec67d23db32dcaa1b8/data/telo_database_v2.tsv
+  univec_link: https://ftp.ncbi.nlm.nih.gov/pub/UniVec/archive/10.1/UniVec
 ```
 
 | Key | Default | Allowed values | What it does |
@@ -608,8 +618,9 @@ links:
 | `telomere_window` | 25000 | an integer from 500 to 100000 | The terminal window: the bases at each contig end in which the candidate units are collected, and how far from the end `tidk ends` accepts an array. The array can sit some kb inside a contig end when the assembler ran past the telomere, so the window must cover that; the offset columns show where each array lies. |
 | `min_telomere_copies` | 5 | an integer ≥ 2 | Copies of the unit an array needs: `tidk ends` requires this many unit lengths (30 bp for a 6-bp unit), and `tidk explore` lists a unit only when it forms a tandem run of this many copies. |
 | `min_rdna_units` | 3 | an integer ≥ 1 | rDNA units (ITS windows) from which a contig can be an `rDNA_array`. |
+| `univec_sha256` | the checksum of UniVec build 10.1 at the template address | 64 hexadecimal characters | The SHA-256 the downloaded UniVec file must have. Change it together with `links.univec_link`. The file feeds the adapter screen, not the verdicts ([The contig adapter screen](../methods/adapter-trimming.md#the-contig-adapter-screen)). |
 
-The five values are checked before any job starts, like the other blocks
+The six values are checked before any job starts, like the other blocks
 ([Configuration](../reference/configuration.md#contig_summary)). A value outside the range stops
 the run with a `[FunFlux] parameters.contig_summary.<key>: ...` message. Every dry run prints the
 settings in one line:

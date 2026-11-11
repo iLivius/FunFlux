@@ -97,7 +97,7 @@ When the workflow starts, it prints the decision for every sample. With the guid
 example:
 
 ```
-[FunFlux] SAMPLE1: ont reads -> Filtlong guided by the Illumina reads, hifiasm --ont, minimap2 map-ont, Medaka.
+[FunFlux] SAMPLE1: ont reads -> adapter check + fastplong, Filtlong guided by the Illumina reads, hifiasm --ont, minimap2 map-ont, Medaka.
 [FunFlux] SAMPLE2: pacbio reads -> Filtlong not guided, hifiasm, minimap2 map-hifi, no Medaka.
 ```
 

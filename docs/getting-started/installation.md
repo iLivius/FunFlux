@@ -117,6 +117,7 @@ automatic lineage, and a version check that the results do not need.
 | `bioinf.uni-greifswald.de` | the Tiberius `fungi` model | first run in an output folder, unless `parameters.tiberius.mode` is `off` (`tiberius_model`) | the computer that runs Snakemake |
 | `raw.githubusercontent.com` | the telomere repeat database of tidk; ChroQueTas and its FungAMR database | first run in an output folder (`telomere_db`; with the AMR screen on also `chroquetas_db`) | the computer that runs Snakemake |
 | `ftp.ncbi.nlm.nih.gov` | PhiX genome | first run in an output folder, `illumina` and `hybrid` (`download_phix`) | the computer that runs Snakemake |
+| `ftp.ncbi.nlm.nih.gov` | UniVec, for the Illumina adapter records of the contig adapter screen | first run in an output folder, every mode (`univec_illumina`) | the computer that runs Snakemake |
 | chosen by Medaka (GitHub) | model weights | the model check of an ONT sample with Medaka, the first time a model is used (`check_medaka_model`), before the assembly | the computer that runs Snakemake |
 | `busco-data.ezlab.org` | BUSCO lineage datasets | with a named lineage, once per output folder (`busco_data`) | the computer that runs Snakemake |
 | `busco-data.ezlab.org` | BUSCO lineage datasets | with `parameters.busco.lineage: auto`, the default: every BUSCO job (`completeness`) | the job |
@@ -153,7 +154,7 @@ environments, not the computer's own. Behind an institute proxy or mirror that r
 an in-house certificate, they therefore fail with `SSL certificate problem` or
 `CERTIFICATE_VERIFY_FAILED`.
 
-`curl`, in the six download steps that use it, and Medaka read `CURL_CA_BUNDLE`, while BUSCO and
+`curl`, in the seven download steps that use it, and Medaka read `CURL_CA_BUNDLE`, while BUSCO and
 antiSMASH read `SSL_CERT_FILE`. Point both variables at the computer's list before you start
 Snakemake:
 
@@ -231,7 +232,7 @@ install them. Two kinds of rule take commands from outside a tool environment:
 | Command | Used for |
 |---|---|
 | `bash` | every rule: Snakemake runs the shell lines of each rule with bash |
-| `sha256sum`, `md5sum` | checking the downloads: the funannotate database, the Tiberius model, the telomere repeat database and ChroQueTas (`sha256sum`), UNITE (`md5sum`) |
+| `sha256sum`, `md5sum` | checking the downloads: the funannotate database, the Tiberius model, the telomere repeat database, UniVec and ChroQueTas (`sha256sum`), UNITE (`md5sum`) |
 | `awk`, `grep`, `sed`, `find`, and basic commands such as `head`, `cat`, `cp`, `ln`, `mkdir`, `rm` | the contig filter, copies, links to local databases, and the shell lines around the tool in most rules (`awk` and `grep` in `its_windows` and `signalp6_annotation`, `grep` in `genemark_check`, `sed` in `eggnog_annotation`, `find` in `completeness` and `iprscan_annotation`; in the read-based modes `awk` turns hifiasm's graph into FASTA and cuts the Polypolish headers, `grep` counts the SPAdes contigs the filter kept, `cat` reads the Medaka model file) |
 | `grep` with `-P` (GNU grep), `sed`, and basic commands such as `cut`, `paste`, `tr` | ChroQueTas (rule `amr_chroquetas`, AMR screen on), a bash script that runs inside the chroquetas environment; the environment holds the tools it calls, not these commands |
 
@@ -240,7 +241,7 @@ These commands come from conda instead, so the machine does not need them:
 | Command | Comes from |
 |---|---|
 | `python` | the pinned Python of each rule's environment ([Which Python runs the helper scripts](../architecture.md#which-python-runs-the-helper-scripts)) |
-| `curl`, `tar`, `gzip` | the `download` environment of the six download steps that use them (`download_phix`, `funannotate_db`, `unite_db`, `telomere_db`, `tiberius_model`, `chroquetas_db`) |
+| `curl`, `tar`, `gzip` | the `download` environment of the seven download steps that use them (`download_phix`, `funannotate_db`, `unite_db`, `telomere_db`, `univec_illumina`, `tiberius_model`, `chroquetas_db`) |
 | `perl` | the `interproscan` environment, for InterProScan's SUPERFAMILY analysis and PROSITE patterns; the `funannotate` environment for GeneMark-ES, once its scripts start the first `perl` on the `PATH` ([GeneMark-ES](external-tools.md#genemark-es)) |
 
 Check the machine's commands with no conda environment active:

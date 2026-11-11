@@ -136,9 +136,8 @@ The optional steps change these counts in every mode:
 | `parameters.<mode>.ont_adapter: off` (ONT samples in `longread` and `hybrid`) | 3 fewer | |
 
 For example, the first run of one `contigs` sample without the screen plans 31 jobs, and 33 with
-the AMR screen on. The two-sample examples of `config/config_test_examples.yaml` plan 85 jobs in
-`longread` mode, with one ONT and one PacBio sample, and 117 in `hybrid` mode. With the AMR screen
-on, they plan 88 and 120. On a finished output folder, a dry run prints
+the AMR screen on. A batch of one ONT sample, with Medaka, and one PacBio sample plans 85 jobs in
+`longread` mode and 117 in `hybrid` mode, and 88 and 120 with the AMR screen on. On a finished output folder, a dry run prints
 `Nothing to be done (all requested files are present and up to date).`
 
 ## CPU cores and threads
@@ -404,10 +403,10 @@ rebuilt. The final results are the files every run makes sure exist:
 
 | Mode | Final results |
 |---|---|
-| every mode | `eval/quast/`, `eval/busco/`, `eval/contig_summary.tsv`, the seven ITS files, `contigs_clean.fasta`, `contigs_sort.fasta`, `contigs_mask.fasta`, `funannotate/`, `iprscan/interproscan_out.xml`, `eggnog/`, `antismash/`, `signalp6/prediction_results.txt` (SignalP 6 on) and `.cleanup_complete.txt` of every sample, `05.amr/{sample}/amr_summary.tsv` (AMR screen on), plus `00.resources/funannotate_db_paths.normalized.json` and `06.report/multiqc_report.html` |
+| every mode | `eval/quast/`, `eval/busco/`, `eval/contig_summary.tsv`, `eval/adapter_screen.tsv`, the seven ITS files, `contigs_clean.fasta`, `contigs_sort.fasta`, `contigs_mask.fasta`, `funannotate/`, `iprscan/interproscan_out.xml`, `eggnog/`, `antismash/`, `signalp6/prediction_results.txt` (SignalP 6 on) and `.cleanup_complete.txt` of every sample, `05.amr/{sample}/amr_summary.tsv` (AMR screen on), plus `00.resources/funannotate_db_paths.normalized.json` and `06.report/multiqc_report.html` |
 | `contigs` | also `contigs_final.fasta`; with the screen also `contigs_mitochondrial.fasta` and `mitochondria/mitochondrial_screen.tsv` |
 | `illumina` | also the three genome files, always (`contigs_final.fasta`, `contigs_mitochondrial.fasta`, `mitochondria/mitochondrial_screen.tsv`); `01.reads/{sample}/illumina/{sample}_fastp.json` and `eval/qualimap/` |
-| `longread` | also the three genome files; `01.reads/{sample}/long/{sample}_filtered.fastq`, `raw_qc/`, `filtered_qc/`, `assembly_provenance.tsv`, `eval/qualimap/` and, for ONT samples with Medaka, `medaka/consensus.fasta` |
+| `longread` | also the three genome files; `01.reads/{sample}/long/{sample}_filtered.fastq`, `raw_qc/`, `filtered_qc/`, for ONT samples `adapters/{sample}_adapter_check.tsv` (unless `ont_adapter: off`), `assembly_provenance.tsv`, `eval/qualimap/` and, for ONT samples with Medaka, `medaka/consensus.fasta` |
 | `hybrid` | also the three genome files; all of the `longread` files plus the fastp JSON, the two selected read files, `polypolish/polished.fasta` and `guide/eval/qualimap/` |
 
 `--list-changes params` (or `code`, `input`) lists the output files whose parameters, code or
