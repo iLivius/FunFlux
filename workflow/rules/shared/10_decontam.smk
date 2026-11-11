@@ -30,6 +30,9 @@
 #                    database file.
 #   blob_table     : BlobTools writes that database out as a flat table: one row per
 #                    contig, one taxonomic call per rank.
+#   contig_depth   : samtools coverage of the same BAM: the read depth of every contig, for
+#                    the contig summary (25_contig_summary.smk). Read-based modes only; the
+#                    selector does not use it.
 #   select_contigs : applies the policy, writes the kept contigs and the audit table.
 #
 # The mitochondrion screen has its own file (shared/15_mitochondria.smk), and its first rule,
@@ -52,6 +55,8 @@
 #                    (shared/15_mitochondria.smk)
 #
 # DRAFT_CONTIGS also goes straight into blob_json, screen_mitochondria and select_contigs.
+# In the read-based modes the BAM of map_contigs also goes to contig_depth, whose depth
+# table only the contig summary reads.
 #
 # Where the screen sits in each mode. DRAFT_CONTIGS is what gets screened, and each mode's
 # front end declares the rule that makes it: rule filter_contigs in contigs and illumina
@@ -85,8 +90,8 @@
 #
 # These names come from 00_common.smk, where each is defined once and never worked out
 # again: SCREEN, DECONTAM_READS, DRAFT_CONTIGS, TRIM_R1, TRIM_R2, FILTERED_LONG,
-# DECONTAM_INDEX_PREFIX, DECONTAM_BAM, BLASTOUT, BLOB_PREFIX, BLOB_JSON, BLOB_COV,
-# BLOB_TABLE_PREFIX, BLOB_TABLE, COMPOSITION, CONTIG_LIST, CONTIG_DECISIONS,
+# DECONTAM_INDEX_PREFIX, DECONTAM_BAM, CONTIG_DEPTH, BLASTOUT, BLOB_PREFIX, BLOB_JSON,
+# BLOB_COV, BLOB_TABLE_PREFIX, BLOB_TABLE, COMPOSITION, CONTIG_LIST, CONTIG_DECISIONS,
 # DECONTAM_CONTIGS, CONFIRMED_MITO_IDS, BLASTDB, NT_VERSION, BLAST_MAX_TARGET_SEQS,
 # BLAST_MAX_HSPS, DECONTAMINATION, SELECT_TAXONOMY_SCRIPT, LOGS and CPUS. So are the
 # functions capped_cpus() and minimap_preset() (the minimap2 preset of a long-read sample).
@@ -262,7 +267,8 @@ if SCREEN:
         #              BlobTools read the same BAM, and when a later step is re-run (a changed
         #              BLAST depth re-runs blob_json, for instance) a temporary BAM would have
         #              to be rebuilt by aligning tens of millions of reads again.
-        # Consumed by: blob_json (the coverage) and map_evaluation (the mapping statistics).
+        # Consumed by: blob_json (the coverage), contig_depth (the read depth for the contig
+        #              summary) and map_evaluation (the mapping statistics).
         #
         # Threads: all CPUS, for bowtie2 (-p) and the three samtools commands (-@).
         #
@@ -338,8 +344,9 @@ if SCREEN:
         #              two versions above.
         # Produces:    DECONTAM_BAM and its index, both KEPT (Qualimap reads the BAM too; the
         #              illumina version above says why a temporary BAM would not do).
-        # Consumed by: blob_json (the coverage) and rule map_evaluation in shared/20_qc.smk
-        #              (the mapping statistics).
+        # Consumed by: blob_json (the coverage), contig_depth (the read depth for the contig
+        #              summary) and rule map_evaluation in shared/20_qc.smk (the mapping
+        #              statistics).
         #
         # Threads: all CPUS, for minimap2 (-t) and the three samtools commands (-@). The
         # contigs-mode self-map above keeps minimap2's default of 3 threads on purpose, because
@@ -589,6 +596,71 @@ if SCREEN:
               --taxrule bestsum \
               --rank all \
               --hits > {log} 2>&1
+            """
+
+    # ───────────────── Read depth for the contig summary: contig_depth ─────────────────
+    # The contig summary (25_contig_summary.smk) needs each contig's read depth: the nuclear
+    # contigs share one depth, the mitochondrion lies several times deeper, and a second copy
+    # of a region, or debris, much shallower. BlobTools' coverage column cannot be used for
+    # that. BlobTools estimates it as (reads whose main, primary alignment lies on the
+    # contig) x (mean length of the read sequence stored with each alignment in the BAM) /
+    # (contig length), and both of the first two numbers go wrong with long reads:
+    #   * The mean length is taken over every alignment in the BAM. That includes the
+    #     secondary alignments (other possible places of a read; minimap2 writes them
+    #     without the read sequence, so they count as length 0) and the supplementary ones
+    #     (the further pieces of a read that aligns in parts, each stored with its aligned
+    #     part only). Both kinds pull the mean down, and with it the depth of every contig.
+    #     In the public Botrytis cinerea B05.10 ONT reads with the sequencing adapter still
+    #     on, the adapter at the read ends also aligned to the adapter that the assembler
+    #     had left at many contig ends. The BAM held about three secondary alignments per
+    #     read, most of them short and near a contig end, and the depths came out almost
+    #     five times too low (a median of 24.5 instead of 117, as the contig summary computes
+    #     its median). With the trimmed reads they were still 12 % too low.
+    #   * Only primary alignments are counted. A short contig whose reads all have their
+    #     primary alignment on another contig, and reach it only with a supplementary piece,
+    #     gets a depth of 0 (for example a 2.8-kb piece of a mitochondrion that the
+    #     assembler wrote as two linear contigs).
+    # samtools coverage instead counts, at every position of the contig, the read bases
+    # aligned there, adds these counts up and divides by the contig length: the mean depth.
+    # It uses every alignment except the secondary ones (other possible places of a read
+    # that is already counted at its primary place) and reads flagged as unmapped, failed
+    # or duplicate. Supplementary alignments count, as the bases they cover were sequenced.
+    #
+    # Takes in:    DECONTAM_BAM and its index (from map_contigs): the sample's reads aligned to
+    #              the draft. Only the read-based modes ask for the table this rule writes
+    #              (00_common.smk, CONTIG_SUMMARY_DEPTH_TABLE); in contigs mode the BAM holds
+    #              the contigs aligned to themselves, and the rule does not run.
+    # Does:        samtools coverage, one line per contig.
+    # Produces:    CONTIG_DEPTH, a tab-separated table with a header line that starts with
+    #              "#rname"; the columns are the contig name, its start and end, the number of
+    #              reads, the covered bases, the percent covered, the mean depth (meandepth),
+    #              the mean base quality and the mean mapping quality.
+    # Consumed by: contig_summary (25_contig_summary.smk), which reads the name and meandepth.
+    #
+    # conda: samtools comes from the environment of the aligner that made the BAM, so that
+    # no mode builds an environment for this rule alone: bowtie2's (envs/bowtie.yaml) in
+    # illumina mode, minimap2's (envs/minimap.yaml) in longread and hybrid mode. Both pin
+    # samtools 1.21; no aligner runs here.
+    #
+    # New in FunFlux 2.1.0. FunFlux 2.0.0 took the contig summary's depth from BlobTools.
+    if DECONTAM_READS == "illumina":
+        _DEPTH_ENV = "../../envs/bowtie.yaml"
+    else:
+        _DEPTH_ENV = "../../envs/minimap.yaml"
+
+    rule contig_depth:
+        input:
+            bam = DECONTAM_BAM,
+            bai = DECONTAM_BAM + ".bai",
+        output:
+            depth = CONTIG_DEPTH,
+        conda:
+            _DEPTH_ENV
+        log:
+            LOGS + "/contig_depth_{sample}.log"
+        shell:
+            """
+            samtools coverage {input.bam} > {output.depth} 2> {log}
             """
 
 

@@ -849,7 +849,8 @@ CONTIG_LIST      = DECONTAM_DIR + "/contigs.list"               # the IDs of the
 CONTIG_DECISIONS = DECONTAM_DIR + "/contig_taxonomy_decisions.tsv"  # the audit table: every contig, kept or dropped, and why
 
 # The read alignment that gives BlobTools its coverage track (rule map_contigs makes
-# it, rule blob_json reads it). In contigs mode map_contigs marks it temporary
+# it, rule blob_json reads it, and so does rule contig_depth, which measures the read
+# depth of every contig from it). In contigs mode map_contigs marks it temporary
 # (10_decontam.smk says why). In the read-based modes it is kept: Qualimap (rule
 # map_evaluation in 20_qc.smk) reads it too, and a re-run of BlobTools after a BLAST
 # change should not have to map 40 million reads again.
@@ -865,6 +866,9 @@ CONTIG_DECISIONS = DECONTAM_DIR + "/contig_taxonomy_decisions.tsv"  # the audit 
 # blob_table writes BLOB_TABLE, the per-contig taxonomy that select_contigs reads.
 DECONTAM_INDEX_PREFIX = DECONTAM_DIR + "/contigs"
 DECONTAM_BAM      = DECONTAM_DIR + "/{sample}_map.bam"
+# The read depth of every contig, measured from the same BAM by samtools coverage (rule
+# contig_depth in 10_decontam.smk); the contig summary reads its meandepth column.
+CONTIG_DEPTH      = DECONTAM_DIR + "/{sample}_depth.tsv"
 BLOB_PREFIX       = DECONTAM_DIR + "/blob"
 BLOB_JSON         = BLOB_PREFIX + ".blobDB.json"
 BLOB_COV          = BLOB_PREFIX + "." + os.path.basename(DECONTAM_BAM) + ".cov"
@@ -2222,15 +2226,15 @@ print(
 #                                   CONTIG_DECISIONS (every contig kept or removed, with its
 #                                   genus) and MITO_SCREEN_TSV (the mitochondrion screen's
 #                                   report): every run with the screen (SCREEN).
-#   the BlobTools table             BLOB_TABLE, the read depth of every contig: only where
-#                                   real reads were mapped to the draft (HAS_READS). In
-#                                   contigs mode the screen maps the contigs to THEMSELVES
-#                                   and the depth it reports reflects contig length and
-#                                   nothing else (the contigs-mode rule map_contigs in
-#                                   10_decontam.smk says why), so there the table is left
-#                                   out even when the screen runs: given to the script, it
-#                                   would make the longest contigs look shallow and call
-#                                   them low-depth debris.
+#   the depth table                 CONTIG_DEPTH, the read depth of every contig (samtools
+#                                   coverage of the screen's BAM): only where real reads
+#                                   were mapped to the draft (HAS_READS). In contigs mode
+#                                   the screen maps the contigs to THEMSELVES, so a depth
+#                                   would reflect nothing but the self-alignment (the
+#                                   contigs-mode rule map_contigs in 10_decontam.smk says
+#                                   why), and the table is left out even when the screen
+#                                   runs: given to the script, it would make every contig
+#                                   look alike and the depth verdicts meaningless.
 #   the assembler's evidence table  ASSEMBLY_EVIDENCE, the assembler's own depth and
 #                                   circularity flag: the long-read modes (HAS_LONG_READS).
 # Each of the five names below holds the file's path (still with the {sample} wildcard)
@@ -2248,9 +2252,9 @@ else:
     CONTIG_SUMMARY_DECISIONS    = ""
     CONTIG_SUMMARY_MITO_SCREEN  = ""
 if HAS_READS:
-    CONTIG_SUMMARY_BLOB_TABLE = BLOB_TABLE
+    CONTIG_SUMMARY_DEPTH_TABLE = CONTIG_DEPTH
 else:
-    CONTIG_SUMMARY_BLOB_TABLE = ""
+    CONTIG_SUMMARY_DEPTH_TABLE = ""
 if HAS_LONG_READS:
     CONTIG_SUMMARY_ASSEMBLY_EVIDENCE = ASSEMBLY_EVIDENCE
 else:
@@ -2258,7 +2262,7 @@ else:
 CONTIG_SUMMARY_OPTIONAL_INPUTS = []
 for _optional_path in (
     CONTIG_SUMMARY_MITO_CONTIGS, CONTIG_SUMMARY_DECISIONS, CONTIG_SUMMARY_MITO_SCREEN,
-    CONTIG_SUMMARY_BLOB_TABLE, CONTIG_SUMMARY_ASSEMBLY_EVIDENCE,
+    CONTIG_SUMMARY_DEPTH_TABLE, CONTIG_SUMMARY_ASSEMBLY_EVIDENCE,
 ):
     if _optional_path:
         CONTIG_SUMMARY_OPTIONAL_INPUTS.append(_optional_path)

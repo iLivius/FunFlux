@@ -47,15 +47,15 @@
 #                         telomere_units works it out from the assembly itself (the next
 #                         section) and hands rule contig_summary tidk's call for both ends
 #                         of every contig (TELOMERE_ENDS) and the unit (TELOMERE_UNIT_FILE).
-#   read depth            the BlobTools table of the contamination screen (BLOB_TABLE), the
-#                         sample's reads mapped to the draft: the nuclear contigs share one
-#                         depth, the mitochondrion is several times deeper, an alternative
-#                         copy of a region or noise is much shallower. Read-based modes only:
-#                         in contigs mode the screen maps the contigs to THEMSELVES, and the
-#                         depth it reports reflects contig length and nothing else
-#                         (10_decontam.smk explains it at its contigs-mode rule map_contigs),
-#                         so the table is not given to the script there and the depth columns
-#                         read NA.
+#   read depth            CONTIG_DEPTH, the mean read depth of every contig. Rule
+#                         contig_depth (10_decontam.smk) measures it with samtools coverage
+#                         on the screen's alignment of the sample's reads to the draft. The
+#                         nuclear contigs share one depth, the mitochondrion is several
+#                         times deeper, an alternative copy of a region or noise is much
+#                         shallower. Read-based modes only: in contigs mode the screen maps
+#                         the contigs to THEMSELVES (10_decontam.smk explains it at its
+#                         contigs-mode rule map_contigs), so no depth is measured there and
+#                         the depth columns read NA.
 #   assembler depth and   ASSEMBLY_EVIDENCE, the assembler's own per-contig table (longread
 #   circularity           and hybrid mode): a circular contig at a high depth is the usual
 #                         shape of a mitochondrion.
@@ -186,7 +186,7 @@
 # DRAFT_CONTIGS, TELOMERE_CANDIDATES, TELOMERE_UNIT_FILE, TELOMERE_ENDS,
 # TELOMERE_UNITS_SCRIPT, ITS_WINDOW_TABLE, BUSCO_DIR, CONTIGS_SORT, ANNOTATION_COMPLETE,
 # CONTIG_SUMMARY_OPTIONAL_INPUTS, CONTIG_SUMMARY_MITO_CONTIGS, CONTIG_SUMMARY_DECISIONS,
-# CONTIG_SUMMARY_MITO_SCREEN, CONTIG_SUMMARY_BLOB_TABLE, CONTIG_SUMMARY_ASSEMBLY_EVIDENCE,
+# CONTIG_SUMMARY_MITO_SCREEN, CONTIG_SUMMARY_DEPTH_TABLE, CONTIG_SUMMARY_ASSEMBLY_EVIDENCE,
 # CONTIG_SUMMARY, CONTIG_SUMMARY_MQC, CONTIG_SUMMARY_SCRIPT, CONTIG_SUMMARY_TELOMERE_MOTIF,
 # CONTIG_SUMMARY_TELOMERE_WINDOW, CONTIG_SUMMARY_MIN_TELOMERE_COPIES,
 # CONTIG_SUMMARY_MIN_RDNA_UNITS, UNIVEC_URL, UNIVEC_SHA256, UNIVEC_ILLUMINA,
@@ -578,7 +578,7 @@ rule contig_summary:
         mito_contigs = CONTIG_SUMMARY_MITO_CONTIGS,
         decisions = CONTIG_SUMMARY_DECISIONS,
         mito_screen = CONTIG_SUMMARY_MITO_SCREEN,
-        blob_table = CONTIG_SUMMARY_BLOB_TABLE,
+        depth_table = CONTIG_SUMMARY_DEPTH_TABLE,
         assembly_evidence = CONTIG_SUMMARY_ASSEMBLY_EVIDENCE,
         gff3 = funannotate_gff3,
         min_telomere_copies = CONTIG_SUMMARY_MIN_TELOMERE_COPIES,
@@ -596,7 +596,7 @@ rule contig_summary:
             --mito-contigs {params.mito_contigs:q} \
             --decisions {params.decisions:q} \
             --mito-screen {params.mito_screen:q} \
-            --blob-table {params.blob_table:q} \
+            --depth-table {params.depth_table:q} \
             --assembly-evidence {params.assembly_evidence:q} \
             --its-windows {input.its_windows:q} \
             --busco-dir {input.busco_dir:q} \

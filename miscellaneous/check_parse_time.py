@@ -925,7 +925,7 @@ def main():
     # the annotated genome with its GFF3, named after the species and the sample as
     # funannotate names it, the telomere unit and the telomere ends table) and none of the
     # five that depend on the mode: without the screen there are no screen files, and
-    # without reads no BlobTools table and no assembler table. Snakemake prints each command
+    # without reads no depth table and no assembler table. Snakemake prints each command
     # on one line, so the five empty options stand next to each other.
     # BUSCO in its default auto mode downloads its lineage data inside the job, into the
     # sample's own busco_tmp folder, so there is no busco_data job. With SignalP 6 off,
@@ -938,7 +938,7 @@ def main():
            "rule telomere_units:", "rule contig_summary:",
            f"--telomere-db {out_contigs}/00.resources/telomeres/telo_database_v2.tsv",
            f"--contigs {out_contigs}/02.assembly/SAM1/contigs_final.fasta",
-           "--mito-contigs --decisions --mito-screen --blob-table --assembly-evidence --its-windows",
+           "--mito-contigs --decisions --mito-screen --depth-table --assembly-evidence --its-windows",
            f"--busco-dir {out_contigs}/02.assembly/SAM1/eval/busco",
            f"--gff3 {out_contigs}/04.annotation/SAM1/funannotate/annotate_results/Fusarium_graminearum_SAM1.gff3",
            f"--annotated-fasta {out_contigs}/04.annotation/SAM1/contigs_sort.fasta",
@@ -952,7 +952,7 @@ def main():
     # The contigs example has no BLAST database path, so the screen case adds the stand-in
     # folder that holds nodes.dmp and names.dmp (see build_stubs). With the screen, the contig
     # summary reads the draft (contigs_filt.fasta) and gets the three screen files, but still
-    # no BlobTools table: in contigs mode the screen maps the contigs to themselves, and that
+    # no depth table: in contigs mode the screen maps the contigs to themselves, and that
     # depth means nothing (the rule's comment in 00_common.smk, section 9h).
     check("the screen adds the screen rules (39 jobs)", variant("mode = contigs",
           [("parameters.contigs", {"screen": True}), ("directories.blast_db", base + "/ref/blastdb")]), True,
@@ -962,7 +962,7 @@ def main():
            f"--mito-contigs {out_contigs}/02.assembly/SAM1/contigs_mitochondrial.fasta",
            f"--decisions {out_contigs}/02.assembly/SAM1/contaminants/contig_taxonomy_decisions.tsv",
            f"--mito-screen {out_contigs}/02.assembly/SAM1/mitochondria/mitochondrial_screen.tsv "
-           "--blob-table --assembly-evidence --its-windows", done],
+           "--depth-table --assembly-evidence --its-windows", done],
           expect_jobs={"total": 39, "map_contigs": 1, "blast_contigs": 1, "blob_json": 1, "blob_table": 1,
                        "screen_mitochondria": 1, "select_contigs": 1, "finalize_assembly": 1,
                        "separate_mitochondria": 1, "telomere_units": 1, "contig_summary": 1})
@@ -1111,46 +1111,48 @@ def main():
     out_longread = base + "/out/longread"
     out_hybrid = base + "/out/hybrid"
 
-    # illumina: 12 once-per-run jobs + 34 for the one sample = 46. The chain is the PhiX
+    # illumina: 12 once-per-run jobs + 35 for the one sample = 47. The chain is the PhiX
     # removal (download, index, bowtie2 with the alignments sent to /dev/null), fastp,
     # SPAdes with the memory limit of resources.ram_gb (32 in the example), the contig
     # filter, bowtie2 of the trimmed pairs on the draft (the coverage track of the
-    # screen), Qualimap on that BAM with a Java heap of the same 32 GB, the screen, the
+    # screen), Qualimap on that BAM with a Java heap of the same 32 GB, samtools coverage of
+    # that BAM (rule contig_depth, the read depth for the contig summary), the screen, the
     # telomere repeat search on the draft, and no long-read rule at all. The contig summary
-    # of this mode gets the three screen files and the BlobTools table (real reads were
+    # of this mode gets the three screen files and the depth table (real reads were
     # mapped), but no assembler table (SPAdes writes none): its --assembly-evidence stands
     # empty before --its-windows.
-    check("illumina example plans the whole chain (one sample: 46 jobs)", blocks["mode = illumina"], True,
+    check("illumina example plans the whole chain (one sample: 47 jobs)", blocks["mode = illumina"], True,
           ["rule download_phix:", "rule build_phix:", "rule map_phix:", "rule trim_adapters:",
            "rule illumina_assembly:", "rule filter_contigs:", "rule index_contigs:", "rule map_contigs:",
            "rule map_evaluation:", "rule screen_mitochondria:", "rule select_contigs:",
            "rule finalize_assembly:", "rule separate_mitochondria:", "rule telomere_db:",
-           "rule telomere_units:", "rule contig_summary:",
+           "rule telomere_units:", "rule contig_summary:", "rule contig_depth:",
            "-S /dev/null --local", "spades.py -k 21,33,55,77,99,127 --isolate", " -m 32 ",
            "--java-mem-size=32G",
            f"--contigs {out_illumina}/02.assembly/SAM1/contigs_filt.fasta",
-           f"--blob-table {out_illumina}/02.assembly/SAM1/contaminants/bestscore.blob.blobDB.table.txt "
+           f"--depth-table {out_illumina}/02.assembly/SAM1/contaminants/SAM1_depth.tsv "
            "--assembly-evidence --its-windows", done],
           ["check_medaka_model", "long_read_consensus", "filter_long_reads", "minimap2"],
-          expect_jobs={"total": 46, "download_phix": 1, "build_phix": 1, "map_phix": 1, "trim_adapters": 1,
+          expect_jobs={"total": 47, "download_phix": 1, "build_phix": 1, "map_phix": 1, "trim_adapters": 1,
                        "illumina_assembly": 1, "filter_contigs": 1, "index_contigs": 1, "map_contigs": 1,
                        "map_evaluation": 1, "blast_contigs": 1, "blob_json": 1, "blob_table": 1,
                        "screen_mitochondria": 1, "select_contigs": 1, "finalize_assembly": 1,
                        "separate_mitochondria": 1, "genome_assembly_evaluation": 1, "completeness": 1,
-                       "telomere_db": 1, "telomere_units": 1, "contig_summary": 1, "multiqc": 1,
-                       "chroquetas_db": 0, "amr_chroquetas": 0})
-    # A second sample doubles the per-sample jobs and nothing else: 12 + 2 x 34 = 80.
-    check("illumina with two samples (80 jobs)", variant("mode = illumina", [],
+                       "telomere_db": 1, "telomere_units": 1, "contig_summary": 1, "contig_depth": 1,
+                       "multiqc": 1, "chroquetas_db": 0, "amr_chroquetas": 0})
+    # A second sample doubles the per-sample jobs and nothing else: 12 + 2 x 35 = 82.
+    check("illumina with two samples (82 jobs)", variant("mode = illumina", [],
           {"illumina_dir": ["SAM1_R1.fastq.gz", "SAM1_R2.fastq.gz", "SAM2_R1.fastq.gz", "SAM2_R2.fastq.gz"]}), True,
           ["Sample SAM1 will be processed.", "Sample SAM2 will be processed.", done],
-          expect_jobs={"total": 80, "download_phix": 1, "build_phix": 1, "map_phix": 2, "illumina_assembly": 2,
-                       "telomere_db": 1, "telomere_units": 2, "contig_summary": 2, "multiqc": 1})
-    check("illumina with Tiberius off (43 jobs)", variant("mode = illumina", [("parameters.tiberius", {"mode": "off"})]), True,
+          expect_jobs={"total": 82, "download_phix": 1, "build_phix": 1, "map_phix": 2, "illumina_assembly": 2,
+                       "telomere_db": 1, "telomere_units": 2, "contig_summary": 2, "contig_depth": 2,
+                       "multiqc": 1})
+    check("illumina with Tiberius off (44 jobs)", variant("mode = illumina", [("parameters.tiberius", {"mode": "off"})]), True,
           ["Tiberius: off.", done],
-          expect_jobs={"total": 43, "tiberius_model": 0, "tiberius_prediction": 0, "tiberius_gff3": 0})
+          expect_jobs={"total": 44, "tiberius_model": 0, "tiberius_prediction": 0, "tiberius_gff3": 0})
 
-    # longread: 10 once-per-run jobs + 2 x 34 per-sample jobs + the two Medaka jobs and the
-    # three adapter-trimming jobs of SAM1 = 83. The example names the Medaka model, so the check script gets it as it is
+    # longread: 10 once-per-run jobs + 2 x 35 per-sample jobs + the two Medaka jobs and the
+    # three adapter-trimming jobs of SAM1 = 85. The example names the Medaka model, so the check script gets it as it is
     # (--model "...") and may not fall back to working the model out from the reads
     # (--fallback-to-auto false, the default). Each sample's minimap2 preset and hifiasm
     # flag follow its reads: map-ont and --ont for SAM1, map-hifi and no flag for SAM2.
@@ -1164,7 +1166,7 @@ def main():
     # assembler's own command runs no Python (no "python" after its assembly.fasta). Both
     # NanoPlot reports of each sample are drawn without static PNG plots (--no_static), which
     # would need a Chrome browser on the computer.
-    check("longread example: mixed batch with a named Medaka model (83 jobs)", blocks["mode = longread"], True,
+    check("longread example: mixed batch with a named Medaka model (85 jobs)", blocks["mode = longread"], True,
           ["rule filter_long_reads:", "rule raw_long_read_qc:", "rule filtered_long_read_qc:",
            "rule check_medaka_model:", "rule long_read_assembly:", "rule assembly_evidence:",
            "rule long_read_consensus:",
@@ -1178,7 +1180,7 @@ def main():
            f"cp {out_longread}/02.assembly/SAM1/medaka/consensus.fasta",
            f"cp {out_longread}/02.assembly/SAM2/contaminants/contigs_decontam.fasta",
            f"--contigs {out_longread}/02.assembly/SAM1/assembly.fasta",
-           f"--blob-table {out_longread}/02.assembly/SAM1/contaminants/bestscore.blob.blobDB.table.txt "
+           f"--depth-table {out_longread}/02.assembly/SAM1/contaminants/SAM1_depth.tsv "
            f"--assembly-evidence {out_longread}/02.assembly/SAM1/assembly_evidence.tsv",
            f"mitochondria.py evidence-hifiasm --gfa {out_longread}/02.assembly/SAM1/hifiasm/hifiasm.p_ctg.gfa "
            f"--output {out_longread}/02.assembly/SAM1/assembly_evidence.tsv > ",
@@ -1186,55 +1188,56 @@ def main():
            f"--output {out_longread}/02.assembly/SAM2/assembly_evidence.tsv > ", done],
           ["SAM2_medaka_model.txt", "rule index_contigs:", "rule illumina_assembly:", "rule short_read_correction:",
            "download_phix", "--detect_adapter_for_pe", "spades.py", "assembly.fasta python"],
-          expect_jobs={"total": 83, "filter_long_reads": 2, "raw_long_read_qc": 2, "filtered_long_read_qc": 2,
+          expect_jobs={"total": 85, "filter_long_reads": 2, "raw_long_read_qc": 2, "filtered_long_read_qc": 2,
                        "long_read_assembly": 2, "assembly_evidence": 2, "check_medaka_model": 1,
                        "long_read_consensus": 1,
                        "map_contigs": 2, "map_evaluation": 2, "blast_contigs": 2, "blob_json": 2,
                        "screen_mitochondria": 2, "select_contigs": 2, "finalize_assembly": 2,
                        "separate_mitochondria": 2, "genome_assembly_evaluation": 2, "completeness": 2,
-                       "telomere_db": 1, "telomere_units": 2, "contig_summary": 2, "multiqc": 1,
+                       "telomere_db": 1, "telomere_units": 2, "contig_summary": 2, "contig_depth": 2,
+                       "multiqc": 1,
                        "index_contigs": 0, "illumina_assembly": 0, "short_read_correction": 0,
                        "chroquetas_db": 0, "amr_chroquetas": 0})
     # Without a model name Medaka is still on: the check script works the model out from
     # the FASTQ headers (--model ""). The job count does not change.
-    check("longread with the Medaka model worked out from the reads (83 jobs)", variant("mode = longread",
+    check("longread with the Medaka model worked out from the reads (85 jobs)", variant("mode = longread",
           [("parameters.longread.medaka_model", DELETE)]), True,
           ["Medaka model will be worked out from the FASTQ headers (checked before assembly).", '--model ""', done],
           ['--model "r1041'],
-          expect_jobs={"total": 83, "check_medaka_model": 1, "long_read_consensus": 1})
+          expect_jobs={"total": 85, "check_medaka_model": 1, "long_read_consensus": 1})
     # medaka_model_fallback_auto reaches the check script as --fallback-to-auto true.
     check("longread with the fallback to auto switched on", variant("mode = longread",
           [("parameters.longread.medaka_model_fallback_auto", True)]), True,
           ['--model "r1041_e82_400bps_sup_v4.3.0"', "--fallback-to-auto true", done])
     # Medaka off: no model check, no consensus, and SAM1's contigs_all.fasta is a copy of
-    # the decontaminated assembly like SAM2's: 83 - 2 = 81.
-    check("longread with Medaka off (81 jobs)", variant("mode = longread", [("parameters.longread.medaka_model", False)]), True,
+    # the decontaminated assembly like SAM2's: 85 - 2 = 83.
+    check("longread with Medaka off (83 jobs)", variant("mode = longread", [("parameters.longread.medaka_model", False)]), True,
           ["Medaka disabled in the config. Skipping consensus polishing.",
            f"cp {out_longread}/02.assembly/SAM1/contaminants/contigs_decontam.fasta", done],
           ["check_medaka_model", "long_read_consensus", "medaka_consensus", "medaka_model_check.py"],
-          expect_jobs={"total": 81, "check_medaka_model": 0, "long_read_consensus": 0})
+          expect_jobs={"total": 83, "check_medaka_model": 0, "long_read_consensus": 0})
     # A PacBio-only batch (SAM2 alone): the named model is ignored with a line that says
-    # so, no Medaka rule and no adapter-trimming rule exists, and the one sample gives 10 + 34 = 44 jobs. The annotation
+    # so, no Medaka rule and no adapter-trimming rule exists, and the one sample gives 10 + 35 = 45 jobs. The annotation
     # table still has its SAM1 row; a row for a sample that is not in the batch is fine.
-    check("longread with a PacBio-only batch: no Medaka rules (44 jobs)", variant("mode = longread", [],
+    check("longread with a PacBio-only batch: no Medaka rules (45 jobs)", variant("mode = longread", [],
           {"longread_dir": ["SAM2_pacbio.fastq.gz"]}), True,
           ["Sample SAM2 will be processed.", "No ONT samples in this batch: any medaka_model setting is ignored.",
            "-ax map-hifi", done],
           ["Sample SAM1 will be processed.", "check_medaka_model", "long_read_consensus", "medaka_consensus",
            "-ax map-ont", "hifiasm -i --primary -f 0 --ont"],
-          expect_jobs={"total": 44, "check_medaka_model": 0, "long_read_consensus": 0, "long_read_assembly": 1,
+          expect_jobs={"total": 45, "check_medaka_model": 0, "long_read_consensus": 0, "long_read_assembly": 1,
                        "assembly_evidence": 1})
     # Flye instead of hifiasm: the same jobs (one assembly rule either way), with Flye's
     # read mode per sample in the command: --nano-hq for ONT reads (the default model
     # means recent, high-accuracy reads), --pacbio-hifi for PacBio HiFi reads. The
     # evidence job runs evidence-flye on Flye's assembly_info.txt instead.
-    check("longread with Flye (83 jobs)", variant("mode = longread",
+    check("longread with Flye (85 jobs)", variant("mode = longread",
           [("parameters.longread.assembler", "flye"), ("parameters.longread.medaka_model", DELETE)]), True,
           ["flye --nano-hq", "flye --pacbio-hifi", "--iterations 5",
            f"mitochondria.py evidence-flye --flye-info {out_longread}/02.assembly/SAM1/flye/assembly_info.txt "
            f"--output {out_longread}/02.assembly/SAM1/assembly_evidence.tsv > ", done],
           ["hifiasm -i", "evidence-hifiasm", "assembly.fasta python"],
-          expect_jobs={"total": 83, "long_read_assembly": 2, "assembly_evidence": 2, "check_medaka_model": 1,
+          expect_jobs={"total": 85, "long_read_assembly": 2, "assembly_evidence": 2, "check_medaka_model": 1,
                        "long_read_consensus": 1})
 
     # ONT adapter trimming (parameters.<mode>.ont_adapter; rules/shared/05_ont_adapters.smk).
@@ -1257,12 +1260,12 @@ def main():
           ["SAM2_trimmed.fastq.gz", "SAM2_adapter_scan.tsv", "SAM2_adapter_sequence.fasta"],
           expect_jobs={"find_ont_adapter": 1, "trim_ont_adapters": 1, "check_ont_trimming": 1,
                        "univec_illumina": 1, "blast_adapters": 2, "screen_adapters": 2})
-    # off: no trimming job, and Filtlong reads the raw reads, as in v2.0.0: 83 - 3 = 80.
-    check("ONT adapter trimming off: no trimming jobs (80 jobs)", variant("mode = longread",
+    # off: no trimming job, and Filtlong reads the raw reads, as in v2.0.0: 85 - 3 = 82.
+    check("ONT adapter trimming off: no trimming jobs (82 jobs)", variant("mode = longread",
           [("parameters.longread.ont_adapter", "off")]), True,
           ["[FunFlux] SAM1: ont reads -> hifiasm --ont, minimap2 map-ont, Medaka.", done],
           ["rule find_ont_adapter:", "rule trim_ont_adapters:", "SAM1_trimmed.fastq.gz"],
-          expect_jobs={"total": 80, "find_ont_adapter": 0, "trim_ont_adapters": 0, "check_ont_trimming": 0,
+          expect_jobs={"total": 82, "find_ont_adapter": 0, "trim_ont_adapters": 0, "check_ont_trimming": 0,
                        "blast_adapters": 2, "screen_adapters": 2})
     # A sequence is trimmed as given, in capitals; 68 bp is long enough for fastplong's read
     # splitting, so there is no NOTE.
@@ -1292,8 +1295,8 @@ def main():
           ["rule trim_ont_adapters:"],
           expect_jobs={"find_ont_adapter": 0, "trim_ont_adapters": 0, "check_ont_trimming": 0})
 
-    # hybrid: 12 once-per-run jobs + 2 x 49 per-sample jobs + the two Medaka jobs and the
-    # three adapter-trimming jobs of SAM1 = 115. Each sample's Illumina reads are cleaned and assembled into a guide (SPAdes).
+    # hybrid: 12 once-per-run jobs + 2 x 50 per-sample jobs + the two Medaka jobs and the
+    # three adapter-trimming jobs of SAM1 = 117. Each sample's Illumina reads are cleaned and assembled into a guide (SPAdes).
     # The guide is screened by its own rules (named *_guide_*), and the Illumina pairs
     # that map to the screened guide are selected (rule map_sel_contigs). The example switches
     # the Illumina guidance on (it is off by default), so Filtlong scores SAM1's ONT reads
@@ -1308,7 +1311,7 @@ def main():
     # mode, medaka_consensus gets -x right after the draft (-d): it rebuilds the draft's
     # alignment index on every run. As in longread mode, the evidence table is made by
     # rule assembly_evidence, a job of its own per sample.
-    check("hybrid example plans the whole chain (115 jobs)", blocks["mode = hybrid"], True,
+    check("hybrid example plans the whole chain (117 jobs)", blocks["mode = hybrid"], True,
           ["rule download_phix:", "rule trim_adapters:", "rule illumina_assembly:", "rule filter_contigs:",
            "rule index_guide_contigs:", "rule map_guide_contigs:", "rule map_guide_evaluation:",
            "rule blast_guide_contigs:", "rule blob_guide_json:", "rule blob_guide_table:",
@@ -1324,15 +1327,15 @@ def main():
            "polypolish polish", "--labels SAM1_guide,SAM1", "--labels SAM2_guide,SAM2",
            f"--contigs {out_hybrid}/02.assembly/SAM1/assembly.fasta",
            f"--decisions {out_hybrid}/02.assembly/SAM1/contaminants/contig_taxonomy_decisions.tsv",
-           f"--blob-table {out_hybrid}/02.assembly/SAM1/contaminants/bestscore.blob.blobDB.table.txt "
+           f"--depth-table {out_hybrid}/02.assembly/SAM1/contaminants/SAM1_depth.tsv "
            f"--assembly-evidence {out_hybrid}/02.assembly/SAM1/assembly_evidence.tsv",
            "-goterms -pa -dp -cpu",
            f"mitochondria.py evidence-hifiasm --gfa {out_hybrid}/02.assembly/SAM1/hifiasm/hifiasm.p_ctg.gfa "
            f"--output {out_hybrid}/02.assembly/SAM1/assembly_evidence.tsv > ", done],
           ["SAM2_selected_R2.fastq --trim", "SAM2_medaka_model.txt", "rule index_contigs:",
-           f"--mito-screen {out_hybrid}/02.assembly/SAM1/guide/", f"--blob-table {out_hybrid}/02.assembly/SAM1/guide/",
+           f"--mito-screen {out_hybrid}/02.assembly/SAM1/guide/", f"--depth-table {out_hybrid}/02.assembly/SAM1/guide/",
            "assembly.fasta python"],
-          expect_jobs={"total": 115, "download_phix": 1, "build_phix": 1, "map_phix": 2, "trim_adapters": 2,
+          expect_jobs={"total": 117, "download_phix": 1, "build_phix": 1, "map_phix": 2, "trim_adapters": 2,
                        "illumina_assembly": 2, "filter_contigs": 2, "index_guide_contigs": 2,
                        "map_guide_contigs": 2, "map_guide_evaluation": 2, "blast_guide_contigs": 2,
                        "blob_guide_json": 2, "blob_guide_table": 2, "screen_guide_mitochondria": 2,
@@ -1343,69 +1346,70 @@ def main():
                        "blast_contigs": 2, "screen_mitochondria": 2, "select_contigs": 2,
                        "long_read_consensus": 1, "short_read_correction": 2, "finalize_assembly": 2,
                        "genome_assembly_evaluation": 2, "completeness": 2, "telomere_db": 1, "telomere_units": 2,
-                       "contig_summary": 2, "multiqc": 1, "index_contigs": 0, "chroquetas_db": 0, "amr_chroquetas": 0})
+                       "contig_summary": 2, "contig_depth": 2, "multiqc": 1, "index_contigs": 0,
+                       "chroquetas_db": 0, "amr_chroquetas": 0})
     # Guidance off: Filtlong gets no Illumina pairs for any sample, but the pairs are still
-    # selected, because Polypolish needs them. The same 115 jobs.
-    check("hybrid with guidance off still selects the Illumina pairs (115 jobs)", variant("mode = hybrid",
+    # selected, because Polypolish needs them. The same 117 jobs.
+    check("hybrid with guidance off still selects the Illumina pairs (117 jobs)", variant("mode = hybrid",
           [("parameters.hybrid.short_read_guidance", False)]), True,
           ["[FunFlux] SAM1: ont reads -> adapter check + fastplong, Filtlong not guided, hifiasm --ont", done],
           ["--trim ", "--split"],
-          expect_jobs={"total": 115, "map_sel_contigs": 2, "short_read_correction": 2})
+          expect_jobs={"total": 117, "map_sel_contigs": 2, "short_read_correction": 2})
     # filtlong_split left empty (null): SAM1's Filtlong is guided by the pairs (-1, -2)
     # but neither trims nor splits the reads, so the next option after the pairs is
     # --min_length.
-    check("hybrid with filtlong_split null: guided without --trim and --split (115 jobs)", variant("mode = hybrid",
+    check("hybrid with filtlong_split null: guided without --trim and --split (117 jobs)", variant("mode = hybrid",
           [("parameters.hybrid.filtlong_split", None)]), True,
           ["[FunFlux] SAM1: ont reads -> adapter check + fastplong, Filtlong guided by the Illumina reads, hifiasm --ont",
            "SAM1_selected_R2.fastq --min_length 1000", done],
           ["--trim ", "--split"],
-          expect_jobs={"total": 115, "filter_long_reads": 2})
-    # Medaka off in hybrid mode: 115 - 2 = 113, and Polypolish starts from the
+          expect_jobs={"total": 117, "filter_long_reads": 2})
+    # Medaka off in hybrid mode: 117 - 2 = 115, and Polypolish starts from the
     # decontaminated assembly for both samples.
-    check("hybrid with Medaka off (113 jobs)", variant("mode = hybrid", [("parameters.hybrid.medaka_model", False)]), True,
+    check("hybrid with Medaka off (115 jobs)", variant("mode = hybrid", [("parameters.hybrid.medaka_model", False)]), True,
           ["Medaka disabled in the config. Skipping consensus polishing.",
            f"cp {out_hybrid}/02.assembly/SAM1/contaminants/contigs_decontam.fasta", done],
           ["check_medaka_model", "long_read_consensus", "medaka_consensus"],
-          expect_jobs={"total": 113, "check_medaka_model": 0, "long_read_consensus": 0, "short_read_correction": 2})
-    check("hybrid with a named Medaka model (115 jobs)", variant("mode = hybrid",
+          expect_jobs={"total": 115, "check_medaka_model": 0, "long_read_consensus": 0, "short_read_correction": 2})
+    check("hybrid with a named Medaka model (117 jobs)", variant("mode = hybrid",
           [("parameters.hybrid.medaka_model", "r1041_e82_400bps_sup_v4.3.0")]), True,
           ["Medaka model: r1041_e82_400bps_sup_v4.3.0.", '--model "r1041_e82_400bps_sup_v4.3.0"', done],
           ['--model ""'],
-          expect_jobs={"total": 115, "check_medaka_model": 1, "long_read_consensus": 1})
-    check("hybrid with Flye (115 jobs)", variant("mode = hybrid", [("parameters.hybrid.assembler", "flye")]), True,
+          expect_jobs={"total": 117, "check_medaka_model": 1, "long_read_consensus": 1})
+    check("hybrid with Flye (117 jobs)", variant("mode = hybrid", [("parameters.hybrid.assembler", "flye")]), True,
           ["flye --nano-hq", "flye --pacbio-hifi",
            f"mitochondria.py evidence-flye --flye-info {out_hybrid}/02.assembly/SAM2/flye/assembly_info.txt "
            f"--output {out_hybrid}/02.assembly/SAM2/assembly_evidence.tsv > ", done],
           ["hifiasm -i", "evidence-hifiasm", "assembly.fasta python"],
-          expect_jobs={"total": 115, "long_read_assembly": 2, "assembly_evidence": 2})
+          expect_jobs={"total": 117, "long_read_assembly": 2, "assembly_evidence": 2})
 
     # The AMR screen switched on in each read-based mode: the download once per run and one
-    # ChroQueTas job per sample, so 46 + 2 = 48 (illumina, one sample), 83 + 3 = 86 (longread)
-    # and 115 + 3 = 118 (hybrid, two samples each). The screen always runs in these modes and
+    # ChroQueTas job per sample, so 47 + 2 = 49 (illumina, one sample), 85 + 3 = 88 (longread)
+    # and 117 + 3 = 120 (hybrid, two samples each). The screen always runs in these modes and
     # splits the mitochondrion off (mitochondria mode separate_confirmed, the default), so
     # every job hands the mitochondrial run the sample's contigs_mitochondrial.fasta, and
     # MultiQC reads every sample's AMR table. The report folder is 06.report.
-    check("illumina with the AMR screen on (48 jobs)", variant("mode = illumina", amr_on), True,
+    check("illumina with the AMR screen on (49 jobs)", variant("mode = illumina", amr_on), True,
           ["rule chroquetas_db:", "rule amr_chroquetas:",
            f"--genome {out_illumina}/02.assembly/SAM1/contigs_final.fasta "
            f"--mito-contigs {out_illumina}/02.assembly/SAM1/contigs_mitochondrial.fasta",
            "05.amr/SAM1/amr_summary_mqc.tsv", f'--outdir "{out_illumina}/06.report"', done],
           ["05.report"],
-          expect_jobs={"total": 48, "chroquetas_db": 1, "amr_chroquetas": 1, "multiqc": 1})
-    check("longread with the AMR screen on (86 jobs)", variant("mode = longread", amr_on), True,
+          expect_jobs={"total": 49, "chroquetas_db": 1, "amr_chroquetas": 1, "multiqc": 1})
+    check("longread with the AMR screen on (88 jobs)", variant("mode = longread", amr_on), True,
           [f"--mito-contigs {out_longread}/02.assembly/SAM1/contigs_mitochondrial.fasta",
            f"--mito-contigs {out_longread}/02.assembly/SAM2/contigs_mitochondrial.fasta",
            "05.amr/SAM1/amr_summary_mqc.tsv 05.amr/SAM2/amr_summary_mqc.tsv",
            f'--outdir "{out_longread}/06.report"', done],
           ["05.report"],
-          expect_jobs={"total": 86, "chroquetas_db": 1, "amr_chroquetas": 2, "multiqc": 1})
-    check("hybrid with the AMR screen on (118 jobs)", variant("mode = hybrid", amr_on), True,
+          expect_jobs={"total": 88, "chroquetas_db": 1, "amr_chroquetas": 2, "multiqc": 1})
+    check("hybrid with the AMR screen on (120 jobs)", variant("mode = hybrid", amr_on), True,
           [f"--mito-contigs {out_hybrid}/02.assembly/SAM1/contigs_mitochondrial.fasta",
            f"--mito-contigs {out_hybrid}/02.assembly/SAM2/contigs_mitochondrial.fasta",
            "05.amr/SAM1/amr_summary_mqc.tsv 05.amr/SAM2/amr_summary_mqc.tsv",
            f'--outdir "{out_hybrid}/06.report"', done],
           ["05.report"],
-          expect_jobs={"total": 118, "chroquetas_db": 1, "amr_chroquetas": 2, "multiqc": 1})
+          expect_jobs={"total": 120, "chroquetas_db": 1, "amr_chroquetas": 2, "multiqc": 1})
 
     print("=== download_all plans the download steps, and nothing else ===")
     # Rule download_all (workflow/Snakefile) asks for the files of every download step

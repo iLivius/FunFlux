@@ -25,9 +25,9 @@ The evidence, and what each piece says:
   * telomere repeats at the contig ends, called by tidk with the repeat unit that the
     telomere step chose for the sample: a telomere at both ends means a whole
     chromosome, at one end a chromosome arm;
-  * read depth (BlobTools' coverage column, the sample's reads mapped to the draft):
-    the nuclear contigs share one depth; the mitochondrion is several times deeper;
-    an alternative copy of a region, or noise, is much shallower;
+  * read depth (the mean depth that samtools coverage measures from the sample's reads
+    mapped to the draft): the nuclear contigs share one depth; the mitochondrion is
+    several times deeper; an alternative copy of a region, or noise, is much shallower;
   * the assembler's own depth and its circularity flag (long-read modes);
   * rDNA units: the ITS windows that the taxonomy step cut, one per 5.8S gene found;
   * complete BUSCO markers and predicted protein-coding genes, which tell genuine
@@ -185,10 +185,9 @@ INPUTS
                          columns contig, assigned_genus, action (keep/remove), reason.
     --mito-screen        MITO_SCREEN_TSV, the mitochondrion screen's report: columns
                          contig, classification, reason (and more, not read).
-    --blob-table         BLOB_TABLE, the BlobTools table: lines starting with # are
-                         the header; the line starting with "# name" names the
-                         columns, and the read depth is the column bam0 (the fifth
-                         column when that header line is missing).
+    --depth-table        CONTIG_DEPTH, the samtools coverage table of rule
+                         contig_depth: a header line starting with "#rname", then one
+                         line per contig; the read depth is the column meandepth.
     --assembly-evidence  ASSEMBLY_EVIDENCE (long-read modes): columns contig, source,
                          circular (Y/N), coverage, repeat, alt_group; only contig,
                          circular and coverage are read.
@@ -588,7 +587,7 @@ def number_from_cell(text, path, column):
 
     Takes in:  the cell text, plus the file and column names for the message.
     Produces:  a float. An empty cell gives None (the value was not recorded).
-    Used by:   read_telomere_ends(), read_blob_depths() and read_assembly_evidence().
+    Used by:   read_telomere_ends(), read_depths() and read_assembly_evidence().
     """
     text = (text or "").strip()
     if text == "":
@@ -640,48 +639,60 @@ def read_mito_screen(path):
     return screen
 
 
-def read_blob_depths(path):
-    """Read the read depth of every contig from the BlobTools table.
+def read_depths(path):
+    """Read the mean read depth of every contig from the samtools coverage table.
 
-    Takes in:  --blob-table (bestscore.blob.blobDB.table.txt). Lines starting with ##
-               describe the run; the line starting with "# name" names the columns
-               (name, length, GC, N, bam0, then the taxonomy columns); every other
-               line is one contig. The depth is the column bam0: the reads of the
-               sample mapped to the draft, as BlobTools measured them from the BAM.
-    Does:      finds the bam0 column in the header line (the fifth column when the
-               header line is missing) and reads one number per contig.
+    Takes in:  --depth-table (CONTIG_DEPTH, {sample}_depth.tsv of rule contig_depth): the
+               output of samtools coverage on the screen's alignment of the sample's reads
+               to the draft. Its first line names the columns and starts with "#rname";
+               every other line is one contig. The depth is the column meandepth: the
+               read bases aligned to the contig, added up over all its positions and
+               divided by its length (supplementary alignments counted, secondary ones
+               left out).
+    Does:      finds the columns rname and meandepth in the header line and reads one
+               number per contig.
     Produces:  {contig: depth}.
     Used by:   run(), for the depth column and the median.
-    Stops with a clear error when a depth is not a number, when a contig line is too
-    short, or when the table holds no contig at all.
+    Stops with a clear error when the header line lacks either column, when a depth is
+    not a number, when a contig line is too short, or when the table holds no contig.
     """
     depths = {}
-    depth_column = 4   # bam0 is the fifth column of a table with one coverage file
+    name_column = None
+    depth_column = None
     with open(path, "r", encoding="utf-8", errors="replace") as table:
         for line_number, line in enumerate(table, start=1):
             text = line.rstrip("\n")
             if text.strip() == "":
                 continue
             if text.startswith("#"):
-                # The column header line names the columns; the others describe the run.
-                if text.startswith("# name"):
-                    columns = text[2:].split("\t")
-                    if "bam0" in columns:
-                        depth_column = columns.index("bam0")
+                # The header line: "#rname startpos endpos numreads ... meandepth ...".
+                # The # is dropped so that the first column name reads rname.
+                columns = text[1:].split("\t")
+                if "rname" not in columns or "meandepth" not in columns:
+                    raise ValueError(
+                        f"{path}, line {line_number}: expected the samtools coverage "
+                        "header with the columns rname and meandepth"
+                    )
+                name_column = columns.index("rname")
+                depth_column = columns.index("meandepth")
                 continue
+            if depth_column is None:
+                raise ValueError(f"{path}, line {line_number}: a contig line before the header line")
             fields = text.split("\t")
-            if len(fields) <= depth_column:
+            # A contig line must reach at least as far as the later of the two columns.
+            needed_columns = max(name_column, depth_column) + 1
+            if len(fields) < needed_columns:
                 raise ValueError(
-                    f"{path}, line {line_number}: expected at least {depth_column + 1} "
-                    f"columns but found {len(fields)}"
+                    f"{path}, line {line_number}: expected at least "
+                    f"{needed_columns} columns but found {len(fields)}"
                 )
-            contig = fields[0].strip()
-            depth = number_from_cell(fields[depth_column], path, "bam0 depth")
+            contig = fields[name_column].strip()
+            depth = number_from_cell(fields[depth_column], path, "meandepth")
             if depth is None:
-                raise ValueError(f"{path}, line {line_number}: the bam0 depth of {contig} is empty")
+                raise ValueError(f"{path}, line {line_number}: the meandepth of {contig} is empty")
             depths[contig] = depth
     if len(depths) == 0:
-        raise ValueError(f"{path}: no contig row found in the BlobTools table")
+        raise ValueError(f"{path}: no contig row found in the depth table")
     return depths
 
 
@@ -1363,7 +1374,7 @@ def run(args):
     mito_names = read_fasta_names(args.mito_contigs) if args.mito_contigs else set()
     decisions = read_decisions(args.decisions) if args.decisions else None
     mito_screen = read_mito_screen(args.mito_screen) if args.mito_screen else None
-    depths = read_blob_depths(args.blob_table) if args.blob_table else None
+    depths = read_depths(args.depth_table) if args.depth_table else None
     evidence = read_assembly_evidence(args.assembly_evidence) if args.assembly_evidence else None
     rdna_counts = read_its_window_counts(args.its_windows) if args.its_windows else None
     busco_counts = None
@@ -1562,8 +1573,9 @@ def parse_arguments(argv):
         ("--mito-contigs", "the mitochondrial contigs FASTA written by the split step"),
         ("--decisions", "contig_taxonomy_decisions.tsv of the contamination screen"),
         ("--mito-screen", "mitochondrial_screen.tsv of the mitochondrion screen"),
-        ("--blob-table", "the BlobTools table (read depth in column bam0); not in contigs mode, "
-                         "where the coverage is a self-mapping artefact"),
+        ("--depth-table", "the samtools coverage table of the reads mapped to the draft "
+                          "(read depth in column meandepth); not in contigs mode, where no "
+                          "reads are mapped"),
         ("--assembly-evidence", "assembly_evidence.tsv (long-read modes)"),
         ("--its-windows", "its_windows.tsv, one row per rDNA unit found"),
         ("--busco-dir", "the BUSCO output folder of the sample"),

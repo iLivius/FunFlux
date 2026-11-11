@@ -36,8 +36,9 @@
 #     flye/00-assembly ... 40-polishing       Flye's stage folders; assembly.fasta,
 #                                             assembly_info.txt and the graphs stay
 #     contaminants/{sample}_map.bam, .bai     the reads mapped to the draft (also in
-#                                             guide/contaminants/ in hybrid); BlobTools and
-#                                             Qualimap have used them, and their results stay
+#                                             guide/contaminants/ in hybrid); BlobTools,
+#                                             Qualimap and contig_depth have used them, and
+#                                             their results stay
 #     contaminants/contigs_decontam.fasta     the index files Medaka's aligner writes next to
 #       .fai, .*.mmi                          the draft it polishes
 #     medaka/calls_to_draft.bam, .bai,        Medaka's read alignment and the per-base scores

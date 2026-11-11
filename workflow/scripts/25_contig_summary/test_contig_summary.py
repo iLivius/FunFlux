@@ -28,7 +28,7 @@ A small assembly of nine contigs, each built to trigger one verdict rule:
                  it: a collapsed repeat.
   * fragment     1.5 kb of random sequence at normal depth, with a scaffold but no
                  gene and no BUSCO marker: a piece too short to carry a gene.
-The tables around them (decisions, mitochondrion screen, BlobTools table, assembler
+The tables around them (decisions, mitochondrion screen, depth table, assembler
 evidence, ITS windows, BUSCO folder, GFF3, annotated genome) are written in the exact
 layouts the workflow produces, and so are the two files of the telomere step: a
 telomere_unit.txt holding AACCCT (the canonical form of TTAGGG) and a
@@ -97,7 +97,7 @@ CONTIGS = {
     "fragment": random_dna(1500, 71),
 }
 
-# Read depth per contig, as the BlobTools table reports it. The length-weighted
+# Read depth per contig, as the samtools coverage table reports it. The length-weighted
 # median over the nuclear, kept contigs (all shorter than 100 kb, so all count) is
 # 23.0: sorted by depth, lowdepth (5,000 bases), rdna (10,000) and fragment (1,500)
 # add up to 16,500, and plain (7,000) carries the sum past half of the 45,040 bases.
@@ -139,13 +139,17 @@ def write_tsv(path, header, rows):
             table.write("\t".join(str(value) for value in row) + "\n")
 
 
-def write_blob_table(path, depths):
-    """Write a BlobTools table in the real layout: ## lines, a # name header, one row per contig."""
+def write_depth_table(path, depths):
+    """Write a samtools coverage table in the real layout: a #rname header, one row per contig.
+
+    Only rname and meandepth are read by the script; the other numbers are stand-ins.
+    """
     with open(path, "w") as table:
-        table.write("## 1.1.1\n## assembly\t: assembly.fasta\n## taxrule\t: bestsum\n##\n")
-        table.write("# name\tlength\tGC\tN\tbam0\tsuperkingdom.t.6%s\tsuperkingdom.s.7%s\n")
+        table.write("#rname\tstartpos\tendpos\tnumreads\tcovbases\tcoverage\tmeandepth"
+                    "\tmeanbaseq\tmeanmapq\n")
         for contig, depth in depths.items():
-            table.write(f"{contig}\t{len(CONTIGS[contig])}\t0.4\t0\t{depth}\tEukaryota\t100.0\n")
+            length = len(CONTIGS[contig])
+            table.write(f"{contig}\t1\t{length}\t10\t{length}\t100\t{depth}\t30\t60\n")
 
 
 def write_busco_dir(folder):
@@ -271,8 +275,8 @@ def make_inputs(folder):
             screen_rows.append([contig, len(CONTIGS[contig]), "not_mitochondrial", "no_mitochondrial_evidence", ""])
     write_tsv(paths.mito_screen, ["contig", "length", "classification", "reason", "best_mito_qcovs"], screen_rows)
 
-    paths.blob_table = os.path.join(folder, "bestscore.blob.blobDB.table.txt")
-    write_blob_table(paths.blob_table, DEPTHS)
+    paths.depth_table = os.path.join(folder, f"{SAMPLE}_depth.tsv")
+    write_depth_table(paths.depth_table, DEPTHS)
 
     paths.assembly_evidence = os.path.join(folder, "assembly_evidence.tsv")
     evidence_rows = []
@@ -313,7 +317,7 @@ def full_argv(paths, **changes):
         "--mito-contigs": paths.mito_contigs,
         "--decisions": paths.decisions,
         "--mito-screen": paths.mito_screen,
-        "--blob-table": paths.blob_table,
+        "--depth-table": paths.depth_table,
         "--assembly-evidence": paths.assembly_evidence,
         "--its-windows": paths.its_windows,
         "--busco-dir": paths.busco_dir,
@@ -667,10 +671,10 @@ def test_with_only_the_contigs_and_the_telomere_files_every_other_column_is_na(t
 
 
 def test_a_bare_optional_flag_counts_as_not_given(tmp_path):
-    """Snakemake writes an empty value as nothing, so '--blob-table' alone must mean 'no table'."""
+    """Snakemake writes an empty value as nothing, so '--depth-table' alone must mean 'no table'."""
     paths = make_inputs(tmp_path)
-    argv = full_argv(paths, **{"--blob-table": None, "--assembly-evidence": None})
-    argv += ["--blob-table", "--assembly-evidence"]      # both flags bare, at the very end
+    argv = full_argv(paths, **{"--depth-table": None, "--assembly-evidence": None})
+    argv += ["--depth-table", "--assembly-evidence"]      # both flags bare, at the very end
     contig_summary.main(argv)
     table = read_table(paths.out)
     assert table["plain"]["depth"] == "NA"
@@ -818,10 +822,10 @@ def test_probe_search_needs_a_majority_and_a_matching_length():
 # ======================================================================
 
 def test_depth_that_is_not_a_number_stops_the_script(tmp_path, capsys):
-    """A BlobTools table with text in the depth column is refused with exit code 1."""
+    """A depth table with text in the meandepth column is refused with exit code 1."""
     paths = make_inputs(tmp_path)
-    with open(paths.blob_table, "a") as table:
-        table.write("broken\t1000\t0.4\t0\tabc\tEukaryota\t1.0\n")
+    with open(paths.depth_table, "a") as table:
+        table.write("broken\t1\t1000\t10\t1000\t100\tabc\t30\t60\n")
 
     with pytest.raises(SystemExit) as stop:
         contig_summary.main(full_argv(paths))
@@ -832,6 +836,21 @@ def test_depth_that_is_not_a_number_stops_the_script(tmp_path, capsys):
     assert "'abc' is not a number" in message
     assert not os.path.exists(paths.out)
     assert not os.path.exists(paths.out_mqc)
+
+
+def test_a_depth_table_without_the_samtools_header_stops_the_script(tmp_path, capsys):
+    """A depth table that does not name the columns rname and meandepth is refused."""
+    paths = make_inputs(tmp_path)
+    with open(paths.depth_table, "w") as table:
+        table.write("#contig\tdepth\n")
+        table.write("plain\t23.0\n")
+
+    with pytest.raises(SystemExit) as stop:
+        contig_summary.main(full_argv(paths))
+
+    assert stop.value.code == 1
+    assert "rname and meandepth" in capsys.readouterr().err
+    assert not os.path.exists(paths.out)
 
 
 def test_table_without_the_needed_columns_stops_the_script(tmp_path, capsys):
@@ -981,3 +1000,29 @@ def test_a_deep_contig_with_a_gene_call_or_two_is_a_repeat():
     assert contig_summary.decide(row(3, 0, 3.4), 5, 3)[0] == "unclassified"
     assert contig_summary.decide(row(1, 1, 3.4), 5, 3)[0] == "unclassified"
     assert contig_summary.decide(row(1, 0, 1.0), 5, 3)[0] == "nuclear_contig"
+
+
+def test_a_depth_table_as_samtools_coverage_writes_it_is_read(tmp_path):
+    """A table in the exact layout of samtools coverage 1.21, rows without reads included."""
+    paths = make_inputs(tmp_path)
+    rows = []
+    for contig, depth in DEPTHS.items():
+        length = len(CONTIGS[contig])
+        if contig == "lowdepth":
+            # samtools writes a row of zeros for a contig that no read reaches.
+            rows.append(f"{contig}\t1\t{length}\t0\t0\t0\t0\t0\t0")
+        else:
+            rows.append(f"{contig}\t1\t{length}\t412\t{length}\t100\t{depth:.4g}\t38.2\t59.7")
+    with open(paths.depth_table, "w") as table:
+        table.write("#rname\tstartpos\tendpos\tnumreads\tcovbases\tcoverage\tmeandepth"
+                    "\tmeanbaseq\tmeanmapq\n")
+        table.write("\n".join(rows) + "\n")
+
+    contig_summary.main(full_argv(paths))
+
+    table = read_table(paths.out)
+    assert table["chrom_both"]["depth"] == "25.00"
+    assert table["lowdepth"]["depth"] == "0.00"
+    assert table["lowdepth"]["verdict"] == "low_depth"
+
+
