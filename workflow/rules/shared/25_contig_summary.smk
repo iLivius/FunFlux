@@ -15,8 +15,9 @@
 # this, spread over half a dozen files. The rules in this file gather it into one row per
 # contig and give every contig a verdict with its reasons: chromosome, chromosome_arm,
 # mitochondrion, rDNA_array, low_depth, repeat, nuclear_contig, nuclear_fragment,
-# contaminant or unclassified. The same file holds the contig adapter screen, which looks for
-# sequencing adapters and barcodes left in the contigs. Six rules:
+# contaminant, foreign_mitochondrion (another organism's mitochondrial DNA) or unclassified.
+# The same file holds the contig adapter screen, which looks for sequencing adapters and
+# barcodes left in the contigs. Six rules:
 #
 #   telomere_db      once per run: downloads the telomere repeat database of tidk and checks
 #                    its checksum.

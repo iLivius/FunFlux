@@ -962,7 +962,8 @@ def main():
            f"--mito-contigs {out_contigs}/02.assembly/SAM1/contigs_mitochondrial.fasta",
            f"--decisions {out_contigs}/02.assembly/SAM1/contaminants/contig_taxonomy_decisions.tsv",
            f"--mito-screen {out_contigs}/02.assembly/SAM1/mitochondria/mitochondrial_screen.tsv "
-           "--depth-table --assembly-evidence --its-windows", done],
+           "--depth-table --assembly-evidence --its-windows",
+           f'--assembly-evidence "" --taxonomy-nodes {base}/ref/blastdb/nodes.dmp', done],
           expect_jobs={"total": 39, "map_contigs": 1, "blast_contigs": 1, "blob_json": 1, "blob_table": 1,
                        "screen_mitochondria": 1, "select_contigs": 1, "finalize_assembly": 1,
                        "separate_mitochondria": 1, "telomere_units": 1, "contig_summary": 1})
@@ -1116,8 +1117,9 @@ def main():
     # SPAdes with the memory limit of resources.ram_gb (32 in the example), the contig
     # filter, bowtie2 of the trimmed pairs on the draft (the coverage track of the
     # screen), Qualimap on that BAM with a Java heap of the same 32 GB, samtools coverage of
-    # that BAM (rule contig_depth, the read depth for the contig summary), the screen, the
-    # telomere repeat search on the draft, and no long-read rule at all. The contig summary
+    # that BAM (rule contig_depth, the read depth for the contig summary), the screen with
+    # its species check (nodes.dmp of the BLAST database stand-in), the telomere repeat
+    # search on the draft, and no long-read rule at all. The contig summary
     # of this mode gets the three screen files and the depth table (real reads were
     # mapped), but no assembler table (SPAdes writes none): its --assembly-evidence stands
     # empty before --its-windows.
@@ -1131,7 +1133,8 @@ def main():
            "--java-mem-size=32G",
            f"--contigs {out_illumina}/02.assembly/SAM1/contigs_filt.fasta",
            f"--depth-table {out_illumina}/02.assembly/SAM1/contaminants/SAM1_depth.tsv "
-           "--assembly-evidence --its-windows", done],
+           "--assembly-evidence --its-windows",
+           f'--assembly-evidence "" --taxonomy-nodes {base}/ref/blastdb/nodes.dmp', done],
           ["check_medaka_model", "long_read_consensus", "filter_long_reads", "minimap2"],
           expect_jobs={"total": 47, "download_phix": 1, "build_phix": 1, "map_phix": 1, "trim_adapters": 1,
                        "illumina_assembly": 1, "filter_contigs": 1, "index_contigs": 1, "map_contigs": 1,
@@ -1182,6 +1185,8 @@ def main():
            f"--contigs {out_longread}/02.assembly/SAM1/assembly.fasta",
            f"--depth-table {out_longread}/02.assembly/SAM1/contaminants/SAM1_depth.tsv "
            f"--assembly-evidence {out_longread}/02.assembly/SAM1/assembly_evidence.tsv",
+           f'--assembly-evidence "{out_longread}/02.assembly/SAM1/assembly_evidence.tsv" '
+           f"--taxonomy-nodes {base}/ref/blastdb/nodes.dmp",
            f"mitochondria.py evidence-hifiasm --gfa {out_longread}/02.assembly/SAM1/hifiasm/hifiasm.p_ctg.gfa "
            f"--output {out_longread}/02.assembly/SAM1/assembly_evidence.tsv > ",
            f"mitochondria.py evidence-hifiasm --gfa {out_longread}/02.assembly/SAM2/hifiasm/hifiasm.p_ctg.gfa "
@@ -1329,6 +1334,9 @@ def main():
            f"--decisions {out_hybrid}/02.assembly/SAM1/contaminants/contig_taxonomy_decisions.tsv",
            f"--depth-table {out_hybrid}/02.assembly/SAM1/contaminants/SAM1_depth.tsv "
            f"--assembly-evidence {out_hybrid}/02.assembly/SAM1/assembly_evidence.tsv",
+           f'--assembly-evidence "{out_hybrid}/02.assembly/SAM1/assembly_evidence.tsv" '
+           f"--taxonomy-nodes {base}/ref/blastdb/nodes.dmp",
+           f'--assembly-evidence "" --taxonomy-nodes {base}/ref/blastdb/nodes.dmp',
            "-goterms -pa -dp -cpu",
            f"mitochondria.py evidence-hifiasm --gfa {out_hybrid}/02.assembly/SAM1/hifiasm/hifiasm.p_ctg.gfa "
            f"--output {out_hybrid}/02.assembly/SAM1/assembly_evidence.tsv > ", done],

@@ -55,7 +55,7 @@ OLD_REPORT_COLUMNS = [
     "assembler_circular", "assembler_coverage", "assembler_coverage_ratio",
     "assembler_repeat", "assembler_alt_group",
 ]
-NEW_REPORT_COLUMNS = ["best_mito_slen", "length_ratio", "concatemer_flag"]
+NEW_REPORT_COLUMNS = ["best_mito_slen", "length_ratio", "concatemer_flag", "best_mito_kingdom"]
 
 # Reference titles as they appear in the last BLAST column (stitle).
 MITO_TITLE = "Example fungus mitochondrion, complete sequence"
@@ -66,6 +66,29 @@ NUCLEAR_TITLE = "Fusarium oxysporum chromosome 3, complete sequence"
 MEDIAN_DEPTH = 20.0
 DEEP = 150.0
 
+# A small taxonomy in the layout of NCBI's nodes.dmp (taxonomy ID, parent ID, rank,
+# separated by a tab, a bar and a tab), enough for the species check: the root (1),
+# Eukaryota (2759); Fungi (4751) with Ascomycota (4890) and a fungus (5062); Metazoa
+# (33208) with Homo sapiens (9606); Viridiplantae (33090) with a plant (3702); an
+# environmental record filed under Eukaryota only (100272, "uncultured eukaryote"); and
+# an oomycete (4787, Phytophthora infestans) under the stramenopiles (33634), which NCBI
+# does not place in Fungi.
+TAXONOMY_LINES = [
+    "1\t|\t1\t|\tno rank\t|",
+    "2759\t|\t1\t|\tsuperkingdom\t|",
+    "4751\t|\t2759\t|\tkingdom\t|",
+    "4890\t|\t4751\t|\tphylum\t|",
+    "5062\t|\t4890\t|\tspecies\t|",
+    "33208\t|\t2759\t|\tkingdom\t|",
+    "9606\t|\t33208\t|\tspecies\t|",
+    "33090\t|\t2759\t|\tkingdom\t|",
+    "3702\t|\t33090\t|\tspecies\t|",
+    "100272\t|\t2759\t|\tspecies\t|",
+    "33634\t|\t2759\t|\tclade\t|",
+    "4787\t|\t33634\t|\tspecies\t|",
+]
+HUMAN_MITO_TITLE = "Homo sapiens isolate X1 mitochondrion, complete genome"
+
 
 def write_text(path, text):
     """Write a small text file and give back its path as a string."""
@@ -74,16 +97,17 @@ def write_text(path, text):
     return str(path)
 
 
-def blast_line(contig, title, qcovs, qlen=1000, slen=1000):
+def blast_line(contig, title, qcovs, qlen=1000, slen=1000, taxids="5062"):
     """Return one line of the workflow's BLAST table (15 tab-separated columns).
 
     The columns are: qseqid staxids bitscore pident evalue length qlen slen
     qcovs qcovhsp sskingdoms scomnames sscinames sblastnames stitle.
-    The script only reads the contig name, qlen, slen, qcovs and the title, so
-    the other columns are filled with plausible dummy values.
+    The script reads the contig name, the taxonomy IDs (for the species check),
+    qlen, slen, qcovs and the title, so the other columns are filled with
+    plausible dummy values. 5062 is a fungus in the small taxonomy of TAXONOMY_LINES.
     """
     fields = [
-        contig, "5062", "30000", "99.9", "0.0", "28000", str(qlen), str(slen),
+        contig, taxids, "30000", "99.9", "0.0", "28000", str(qlen), str(slen),
         str(qcovs), str(qcovs), "Eukaryota", "fungal sp.", "fungal sp.",
         "fungi", title,
     ]
@@ -721,7 +745,7 @@ def test_concatemer_columns_without_a_direct_hit_are_empty():
     assert mito.concatemer_columns(54000, None, None) == ("", "", "N")
 
 
-def test_screen_report_ends_with_the_three_new_columns(tmp_path):
+def test_screen_report_ends_with_the_new_columns(tmp_path):
     # Three contigs: a nuclear contig without hit, a single-copy mitogenome, and a
     # double-copy mitogenome. BLAST-only (no assembler evidence), as in short-read runs.
     contigs_path = write_contigs(tmp_path / "contigs.fasta", [
@@ -742,7 +766,7 @@ def test_screen_report_ends_with_the_three_new_columns(tmp_path):
     assert result.returncode == 0, result.stderr
 
     column_names, rows = read_table(report_path)
-    # The 13 older columns keep their places; the three new ones come last.
+    # The 13 older columns keep their places; the four new ones come last.
     assert column_names == OLD_REPORT_COLUMNS + NEW_REPORT_COLUMNS
 
     by_contig = rows_by_contig(report_path)
@@ -1213,3 +1237,135 @@ def test_cli_split_accepts_the_short_option_names(tmp_path):
     assert result.returncode == 0, result.stderr
     assert "1 mitochondrial and 3 nuclear contig(s)" in result.stdout
     assert mito_path.read_text().startswith(">ctg2 the mitochondrion\n")
+
+
+# =============================================================================
+# The species check (CHANGED in FunFlux 2.1.0): another organism's mitochondrion
+# =============================================================================
+
+def write_nodes(path):
+    """Write the small taxonomy of TAXONOMY_LINES as a nodes.dmp file."""
+    return write_text(path, "\n".join(TAXONOMY_LINES) + "\n")
+
+
+def test_read_taxonomy_parents_reads_the_first_two_fields(tmp_path):
+    parents = mito.read_taxonomy_parents(write_nodes(tmp_path / "nodes.dmp"))
+    assert parents[5062] == 4890
+    assert parents[9606] == 33208
+    assert parents[1] == 1
+
+
+def test_kingdom_of_walks_up_to_the_first_kingdom(tmp_path):
+    parents = mito.read_taxonomy_parents(write_nodes(tmp_path / "nodes.dmp"))
+    assert mito.kingdom_of("5062", parents) == "Fungi"
+    assert mito.kingdom_of("9606", parents) == "Metazoa"
+    assert mito.kingdom_of("3702", parents) == "Viridiplantae"
+    # Several IDs: one fungal ID is enough.
+    assert mito.kingdom_of("9606;5062", parents) == "Fungi"
+
+
+def test_kingdom_of_cannot_tell_without_a_clear_kingdom(tmp_path):
+    parents = mito.read_taxonomy_parents(write_nodes(tmp_path / "nodes.dmp"))
+    # 0 (a BLAST database without taxonomy IDs), text, an empty cell, an unknown ID.
+    assert mito.kingdom_of("0", parents) is None
+    assert mito.kingdom_of("N/A", parents) is None
+    assert mito.kingdom_of("", parents) is None
+    assert mito.kingdom_of("123456", parents) is None
+    # Filed under Eukaryota only, and an oomycete: neither is called foreign.
+    assert mito.kingdom_of("100272", parents) is None
+    assert mito.kingdom_of("4787", parents) is None
+    # A damaged file with a loop: the walk stops, and the answer is "cannot tell".
+    assert mito.kingdom_of("777", {777: 778, 778: 777}) is None
+
+
+def screen_two_contigs(tmp_path, other_title, other_taxids, other_qcovs=100,
+                       with_taxonomy=True, with_evidence=False):
+    """Screen a fungal mitochondrial contig and one other; give back (rows, confirmed IDs, stdout).
+
+    The other contig is 1,139 bp, like the human pieces of the B05.10 Illumina assembly.
+    With with_evidence, an assembler table says both contigs are circular and deep, as a
+    long-read assembler would.
+    """
+    contigs_path = write_contigs(tmp_path / "contigs.fasta", [
+        ("mito_fungal", 29980), ("mito_other", 1139), ("nuclear_1", 50000),
+    ])
+    blast_path = write_blast(tmp_path / "blastout", [
+        blast_line("mito_fungal", MITO_TITLE, 99, qlen=29980, slen=30000, taxids="5062"),
+        blast_line("mito_other", other_title, other_qcovs, qlen=1139, slen=16569, taxids=other_taxids),
+    ])
+    report_path = tmp_path / "mitochondrial_screen.tsv"
+    ids_path = tmp_path / "confirmed.ids"
+    arguments = [
+        "screen", "--blast", blast_path, "--contigs", contigs_path,
+        "--report", str(report_path), "--confirmed-ids", str(ids_path),
+    ]
+    if with_taxonomy:
+        arguments += ["--taxonomy-nodes", write_nodes(tmp_path / "nodes.dmp")]
+    if with_evidence:
+        evidence_path = write_text(tmp_path / "assembly_evidence.tsv",
+            "contig\tsource\tcircular\tcoverage\trepeat\talt_group\n"
+            "mito_fungal\thifiasm\tY\t400\tN\t*\n"
+            "mito_other\thifiasm\tY\t300\tN\t*\n"
+            "nuclear_1\thifiasm\tN\t50\tN\t*\n")
+        arguments += ["--assembly-evidence", evidence_path]
+    result = run_cli(*arguments)
+    assert result.returncode == 0, result.stderr
+    with open(str(ids_path), encoding="utf-8") as handle:
+        confirmed = handle.read().split()
+    return rows_by_contig(report_path), confirmed, result.stdout
+
+
+def test_screen_reports_a_human_mitochondrion_as_foreign(tmp_path):
+    rows, confirmed, stdout = screen_two_contigs(tmp_path, HUMAN_MITO_TITLE, "9606")
+    assert rows["mito_fungal"]["classification"] == "confirmed_mitochondrial"
+    assert rows["mito_fungal"]["best_mito_kingdom"] == "Fungi"
+    assert rows["mito_other"]["classification"] == "foreign_mitochondrial"
+    assert rows["mito_other"]["reason"] == "best_direct_hit_animal_or_plant"
+    assert rows["mito_other"]["best_mito_kingdom"] == "Metazoa"
+    # Only the fungus's own mitochondrion is set apart (and protected from the genus filter).
+    assert confirmed == ["mito_fungal"]
+    assert "foreign_mitochondrial" in stdout and "mito_other" in stdout
+
+
+def test_screen_reports_a_plant_mitochondrion_as_foreign(tmp_path):
+    plant_title = "Arabidopsis thaliana mitochondrion, complete genome"
+    rows, confirmed, stdout = screen_two_contigs(tmp_path, plant_title, "3702")
+    assert rows["mito_other"]["classification"] == "foreign_mitochondrial"
+    assert rows["mito_other"]["best_mito_kingdom"] == "Viridiplantae"
+
+
+def test_a_weak_human_hit_is_foreign_too(tmp_path):
+    # 20 % query cover makes a candidate; with a human best hit it is foreign instead.
+    rows, confirmed, stdout = screen_two_contigs(tmp_path, HUMAN_MITO_TITLE, "9606", other_qcovs=20)
+    assert rows["mito_other"]["classification"] == "foreign_mitochondrial"
+
+
+def test_a_deep_circular_human_contig_from_a_long_read_assembler_is_foreign(tmp_path):
+    rows, confirmed, stdout = screen_two_contigs(tmp_path, HUMAN_MITO_TITLE, "9606", with_evidence=True)
+    assert rows["mito_fungal"]["classification"] == "confirmed_mitochondrial"
+    assert rows["mito_other"]["classification"] == "foreign_mitochondrial"
+    assert rows["mito_other"]["assembler_circular"] == "Y"
+    assert confirmed == ["mito_fungal"]
+
+
+def test_screen_without_the_taxonomy_keeps_the_older_calls(tmp_path):
+    rows, confirmed, stdout = screen_two_contigs(tmp_path, HUMAN_MITO_TITLE, "9606", with_taxonomy=False)
+    assert rows["mito_other"]["classification"] == "confirmed_mitochondrial"
+    assert rows["mito_other"]["best_mito_kingdom"] == ""
+    assert confirmed == ["mito_fungal", "mito_other"]
+
+
+def test_screen_leaves_the_call_alone_when_it_cannot_tell(tmp_path):
+    # A BLAST database without taxonomy IDs writes 0 in staxids.
+    rows, confirmed, stdout = screen_two_contigs(tmp_path, HUMAN_MITO_TITLE, "0")
+    assert rows["mito_other"]["classification"] == "confirmed_mitochondrial"
+    assert rows["mito_other"]["best_mito_kingdom"] == ""
+    assert "mito_other" in confirmed
+
+
+def test_an_oomycete_keeps_its_own_mitochondrion(tmp_path):
+    # Phytophthora is not in NCBI's Fungi, but it is neither an animal nor a plant.
+    oomycete_title = "Phytophthora infestans mitochondrion, complete genome"
+    rows, confirmed, stdout = screen_two_contigs(tmp_path, oomycete_title, "4787")
+    assert rows["mito_other"]["classification"] == "confirmed_mitochondrial"
+    assert rows["mito_other"]["best_mito_kingdom"] == ""

@@ -986,7 +986,7 @@ def test_command_line_run_on_a_broken_table_exits_with_code_1(tmp_path):
 
 
 def test_a_deep_contig_with_a_gene_call_or_two_is_a_repeat():
-    """Rule 7 allows up to REPEAT_MAX_GENES predicted genes when there is no BUSCO marker."""
+    """Rule 8 allows up to REPEAT_MAX_GENES predicted genes when there is no BUSCO marker."""
     def row(genes, busco, depth_x):
         # Only the keys the rules and the reason texts read.
         return {"is_mitochondrion": False, "is_removed": False, "rdna_units": 0,
@@ -1025,4 +1025,28 @@ def test_a_depth_table_as_samtools_coverage_writes_it_is_read(tmp_path):
     assert table["lowdepth"]["depth"] == "0.00"
     assert table["lowdepth"]["verdict"] == "low_depth"
 
+
+def test_another_organisms_mitochondrion_gets_its_own_verdict(tmp_path):
+    """A contig the screen calls foreign_mitochondrial, kept by the genus filter, is named so."""
+    paths = make_inputs(tmp_path)
+    rows = []
+    for contig in CONTIGS:
+        if contig == "mito":
+            rows.append([contig, len(CONTIGS[contig]), "confirmed_mitochondrial",
+                         "direct_blast_plus_high_coverage", "99.00"])
+        elif contig == "fragment":
+            rows.append([contig, len(CONTIGS[contig]), "foreign_mitochondrial",
+                         "best_direct_hit_animal_or_plant", "100.00"])
+        else:
+            rows.append([contig, len(CONTIGS[contig]), "not_mitochondrial", "no_mitochondrial_evidence", ""])
+    write_tsv(paths.mito_screen, ["contig", "length", "classification", "reason", "best_mito_qcovs"], rows)
+
+    contig_summary.main(full_argv(paths))
+
+    table = read_table(paths.out)
+    assert table["fragment"]["verdict"] == "foreign_mitochondrion"
+    assert "foreign_mitochondrial (best_direct_hit_animal_or_plant)" in table["fragment"]["reason"]
+    # The screen column says it too, and the fungus's own mitochondrion is unchanged.
+    assert "foreign_mitochondrial" in table["fragment"]["screen"]
+    assert table["mito"]["verdict"] == "mitochondrion"
 

@@ -3,7 +3,8 @@
 
 Version 0.2 of FunFlux's mitochondrial screen, also used by the unpublished
 FunFluxL+, with three deliberate differences marked "CHANGED in FunFlux v2" in
-the code. It still accepts every command line of version 0.1 of the script.
+the code, and one more, the species check, marked "CHANGED in FunFlux 2.1.0".
+It still accepts every command line of version 0.1 of the script.
 
 Four subcommands; the first word after the script name chooses the job.
 screen: decides which contigs are mitochondrial, from the workflow's BLAST
@@ -14,7 +15,10 @@ split: writes the nuclear contigs and the mitochondrial contigs to two separate
 FASTA files; the input assembly is not changed.
 evidence-flye and evidence-hifiasm: turn the assembler's own output into that
 per-contig evidence table (read depth, circular or linear).
-A contig is never called mitochondrial from circularity or read depth alone.
+A contig is never called mitochondrial from circularity or read depth alone, and
+a contig whose best mitochondrial match is an animal or a plant (human
+mitochondrial DNA from the library, for example) is reported as foreign, not set
+apart as the sample's mitochondrion.
 """
 
 # =============================================================================
@@ -40,6 +44,7 @@ A contig is never called mitochondrial from circularity or read depth alone.
 #                                                                 v
 #   blastout, the BLAST table (rule blast_contigs) -----------> screen
 #   draft contigs, the FASTA that BLAST ran on ---------------> (rule screen_mitochondria)
+#   nodes.dmp, the NCBI taxonomy (BLAST database folder) -----> (the species check)
 #                                                                 |
 #        mitochondrial_screen.tsv     <---------------------------+  the report, for people
 #        confirmed_mitochondrial.ids  <---------------------------+  one contig name per line
@@ -165,6 +170,22 @@ DEFAULT_VERY_STRONG_QCOV = 70.0
 # concatemer (see concatemer_columns). One copy of the genome gives a ratio near
 # 1.0, two copies end to end give about 2.0; 1.5 sits safely between the two.
 CONCATEMER_RATIO = 1.5
+
+# CHANGED in FunFlux 2.1.0: the three kingdoms of the species check, by their NCBI
+# taxonomy IDs. A contig whose best direct organelle hit comes from an animal (Metazoa)
+# or a plant (Viridiplantae) is taken to be the mitochondrial DNA of another organism,
+# such as human mitochondrial DNA that came into the library with the sample, and
+# screen() reports it as foreign_mitochondrial instead of confirming it (see
+# kingdom_of()). Only these two kingdoms count as foreign: a best hit placed nowhere
+# more precise than "Eukaryota" (an environmental or unclassified record) means
+# "cannot tell", and so does a fungus-like organism outside Fungi, such as an oomycete,
+# whose own mitochondrion must not be called foreign.
+KINGDOMS = {
+    4751: "Fungi",
+    33208: "Metazoa",
+    33090: "Viridiplantae",
+}
+FOREIGN_KINGDOMS = {"Metazoa", "Viridiplantae"}
 
 
 # ── Small helpers: FASTA and ID files, output folders, table cells ───────────
@@ -305,8 +326,10 @@ def read_blast(path):
       6 length    7 qlen       8 slen       9 qcovs     10 qcovhsp
      11 sskingdoms  12 scomnames  13 sscinames  14 sblastnames  15 stitle
     (qlen is the length of the contig, slen the length of the reference
-    sequence; the columns are counted from one.) Only columns 1, 7, 8, 9 and 15
-    are read.
+    sequence; the columns are counted from one.) Only columns 1, 2, 7, 8, 9 and
+    15 are read. Column 2 (staxids, the taxonomy ID of the reference's organism)
+    is kept for the best hit only, for the species check in screen() (CHANGED in
+    FunFlux 2.1.0).
 
     Only direct organelle hits count (see is_direct_mito_title()). For each contig
     the best one is kept: the hit with the highest qcovs; on a tie the earlier
@@ -319,7 +342,7 @@ def read_blast(path):
     only partly covered (docs/methods/blast-hit-depth.md).
 
     Gives back {contig name: {"best_qcov", "best_title", "best_qlen",
-    "best_slen", "direct_hits"}}. direct_hits counts every direct organelle line
+    "best_slen", "best_taxids", "direct_hits"}}. direct_hits counts every direct organelle line
     of the contig, so a reference saved in five pieces counts five times.
     Contigs without a direct organelle hit are simply absent. screen() looks
     each contig up here.
@@ -373,12 +396,89 @@ def read_blast(path):
                     # reference for the best hit, kept as whole numbers of bases.
                     "best_qlen": int(query_length),
                     "best_slen": int(subject_length),
+                    # CHANGED in FunFlux 2.1.0: the NCBI taxonomy ID(s) of the
+                    # organism of the best hit, as BLAST wrote them: one ID ("5180",
+                    # Sclerotinia sclerotiorum), several joined by ";", or "0" when the
+                    # BLAST database carries no taxonomy ID for that sequence.
+                    "best_taxids": row[1].strip(),
                     "direct_hits": hit_count,
                 }
             else:
                 # Not better than the hit we already hold (a tie included); only count it.
                 previous["direct_hits"] = hit_count
     return evidence
+
+
+# ── The organism of the best hit: fungus, animal or plant? (CHANGED in FunFlux 2.1.0) ──
+# The title check above says whether a reference IS a mitochondrial genome, not whose.
+# A contig of human mitochondrial DNA (a few human reads in an Illumina library can
+# assemble into one) matches human mitochondrial genomes over its whole length and
+# would pass every check of classify(). The two functions below look the organism of
+# the best hit up in the NCBI taxonomy, which the BLAST database folder carries as
+# nodes.dmp (the same file BlobTools reads), and screen() reports such contigs as
+# foreign_mitochondrial instead of confirming them: they stay in the assembly.
+
+def read_taxonomy_parents(path):
+    """Read the parent of every taxon from the NCBI taxonomy file nodes.dmp.
+
+    Takes in:  nodes.dmp of the NCBI taxonomy dump (--taxonomy-nodes): one taxon
+               per line, the fields separated by a tab, a bar and a tab; field 1 is
+               the taxonomy ID and field 2 the ID of its parent (the root, 1, is its
+               own parent).
+    Does:      keeps those two numbers of every line. A line that does not start
+               with two numbers is skipped.
+    Gives back {taxonomy ID: parent ID}, used by kingdom_of(). The full NCBI file
+    has about 2.9 million taxa (July 2026) and is read in a few seconds.
+    """
+    parents = {}
+    with open(path, "r", encoding="utf-8", errors="replace") as handle:
+        for line in handle:
+            # Only the first two fields are needed, so the line is cut at its first two
+            # separators only (the 2); the rest of the line stays in one piece, unread.
+            fields = line.split("\t|\t", 2)
+            if len(fields) < 2:
+                continue
+            try:
+                parents[int(fields[0])] = int(fields[1])
+            except ValueError:
+                continue
+    return parents
+
+
+def kingdom_of(taxids_text, parents):
+    """Say whether the organism of a BLAST hit is a fungus, an animal or a plant.
+
+    Takes in:  the staxids cell of the hit (one taxonomy ID, several joined by ";",
+               or "0" when the BLAST database carries no taxonomy ID for that
+               sequence) and the parent table of read_taxonomy_parents().
+    Does:      walks from each ID up through its parents towards the root, and stops
+               at the first of the KINGDOMS it meets (Fungi, Metazoa, Viridiplantae).
+    Gives back "Fungi" when at least one ID lies inside Fungi; otherwise "Metazoa" or
+    "Viridiplantae" when an ID lies in one of those; otherwise None, which means
+    "cannot tell": an empty cell, "0", text, an ID missing from the taxonomy file, an
+    organism placed in none of the three kingdoms (an environmental record filed
+    under Eukaryota, an oomycete), or a damaged file whose walk never ends. screen()
+    then leaves the call as classify() made it.
+    """
+    found = None
+    for text in taxids_text.split(";"):
+        text = text.strip()
+        if not text.isdigit():
+            continue
+        taxid = int(text)
+        # Walk up to the root. The step limit only guards against a damaged file with
+        # a loop in it: the deepest taxon of the NCBI tree is about 40 levels down.
+        for _ in range(200):
+            if taxid in KINGDOMS:
+                if KINGDOMS[taxid] == "Fungi":
+                    return "Fungi"
+                found = KINGDOMS[taxid]
+                break
+            parent = parents.get(taxid)
+            if parent is None or parent == taxid:
+                break
+            taxid = parent
+    return found
 
 
 # ── Assembler evidence: read depth and circularity from Flye or hifiasm ──────
@@ -655,6 +755,9 @@ def classify(evidence, assembler_record, median_depth, minimum_qcov, minimum_rat
       coverage_ratio  contig depth divided by the median depth, or None
     Only "confirmed_mitochondrial" leads to a contig being split off. Circularity
     or high depth alone only ever give a "...unclassified" or "candidate" label.
+    CHANGED in FunFlux 2.1.0: screen() turns a confirmed or candidate call into
+    foreign_mitochondrial when the best direct hit is an animal or a plant (see
+    kingdom_of()).
     The checks below run in this order, and the first one that applies decides.
     """
     # Screening switched off: nothing is examined, nothing is confirmed.
@@ -783,6 +886,9 @@ def screen(args):
       --assembly-evidence  optional: the table from evidence-flye or
                            evidence-hifiasm (long-read modes; empty in contigs mode)
       --flye-info          optional, older way: Flye's assembly_info.txt directly
+      --taxonomy-nodes     optional, CHANGED in FunFlux 2.1.0: nodes.dmp of the NCBI
+                           taxonomy, for the species check (see kingdom_of); without
+                           it the check is skipped
       --mode and the thresholds (see classify)
     Writes:
       --report         mitochondrial_screen.tsv, one line per contig, in the
@@ -797,14 +903,18 @@ def screen(args):
                        assembler_alt_group (empty without assembler evidence);
                        and, CHANGED in FunFlux v2, three informational columns at
                        the end: best_mito_slen, length_ratio, concatemer_flag
-                       (see concatemer_columns).
+                       (see concatemer_columns); and, CHANGED in FunFlux 2.1.0,
+                       best_mito_kingdom: Fungi, Metazoa or Viridiplantae for the
+                       organism of the best direct hit, empty when that cannot be
+                       told or the check did not run.
       --confirmed-ids  confirmed_mitochondrial.ids, one confirmed contig per line
                        (empty unless --mode is separate_confirmed). Read by rule
                        select_contigs, which keeps these contigs whatever the
                        genus filter says, and by rule separate_mitochondria,
                        which splits them off.
     Prints one summary line (in the rule's log): how many contigs were
-    confirmed, and how many were selected for separation.
+    confirmed, and how many were selected for separation; and, when there are
+    any, a second line that names the foreign_mitochondrial contigs.
     """
     # 1. Read the inputs: the contigs, the BLAST evidence and, when it was given,
     #    the assembler evidence (with the median read depth over all contigs).
@@ -820,6 +930,8 @@ def screen(args):
         # current way.
         assembler_by_contig = read_flye_info(args.flye_info)
         median_depth = median_coverage(assembler_by_contig)
+    # CHANGED in FunFlux 2.1.0: the NCBI taxonomy, for the species check below.
+    taxonomy_parents = read_taxonomy_parents(args.taxonomy_nodes) if args.taxonomy_nodes else None
 
     # 2. Classify every contig and write the report, one line per contig.
     ensure_parent(args.report)
@@ -828,6 +940,7 @@ def screen(args):
     # decided only in step 3, so "report" mode shows the calls without changing
     # the nuclear assembly.
     confirmed = []
+    foreign = []
     with open(args.report, "w", encoding="utf-8", newline="") as report:
         writer = csv.writer(report, delimiter="\t", lineterminator="\n")
         writer.writerow([
@@ -838,6 +951,8 @@ def screen(args):
             # CHANGED in FunFlux v2: three informational columns added at the END,
             # so the position of every older column stays the same.
             "best_mito_slen", "length_ratio", "concatemer_flag",
+            # CHANGED in FunFlux 2.1.0: one more column at the end.
+            "best_mito_kingdom",
         ])
         # One report line per contig, in the order of the FASTA file.
         for contig, (_, sequence) in contigs.items():
@@ -858,6 +973,23 @@ def screen(args):
                 # to classify().
                 args.very_strong_qcov,
             )
+            # CHANGED in FunFlux 2.1.0: the species check. A contig whose best direct
+            # organelle hit comes from an animal or a plant is another organism's
+            # mitochondrial DNA. A confirmed or candidate call then becomes
+            # foreign_mitochondrial: the contig is not split off, and it is not protected
+            # from the genus filter of the contamination screen, which treats it like any
+            # other contig. kingdom_of() answers None when it cannot tell, and then the
+            # call stays as it is and the column stays empty.
+            best_mito_kingdom = ""
+            if taxonomy_parents is not None and evidence:
+                kingdom = kingdom_of(evidence["best_taxids"], taxonomy_parents)
+                if kingdom is not None:
+                    best_mito_kingdom = kingdom
+                if kingdom in FOREIGN_KINGDOMS and classification in (
+                        "confirmed_mitochondrial", "mitochondrial_candidate"):
+                    foreign.append(contig)
+                    classification = "foreign_mitochondrial"
+                    reason = "best_direct_hit_animal_or_plant"
             if classification == "confirmed_mitochondrial":
                 confirmed.append(contig)
             # CHANGED in FunFlux v2: compute the three informational concatemer
@@ -917,6 +1049,7 @@ def screen(args):
                 best_mito_slen,
                 length_ratio,
                 concatemer_flag,
+                best_mito_kingdom,
             ])
 
     # 3. Write the list of confirmed contig names that the later rules use.
@@ -932,6 +1065,12 @@ def screen(args):
         f"Mitochondrial screen: {len(confirmed)} confirmed call(s); "
         f"{len(selected)} selected for separation (mode={args.mode})."
     )
+    # CHANGED in FunFlux 2.1.0: name the contigs of another organism, if any.
+    if foreign:
+        print(
+            f"Mitochondrial screen: {len(foreign)} contig(s) of another organism's "
+            f"mitochondrial DNA (foreign_mitochondrial), not set apart: {', '.join(foreign)}"
+        )
 
 
 def split(args):
@@ -1029,6 +1168,9 @@ def build_parser():
     # The older way to give Flye's table, kept from script v0.1 so that a command
     # line written for it still works. No FunFlux v2 rule uses it.
     screen_parser.add_argument("--flye-info", default="")
+    # CHANGED in FunFlux 2.1.0: nodes.dmp of the NCBI taxonomy (the BLAST database
+    # folder holds it), for the species check; empty skips the check.
+    screen_parser.add_argument("--taxonomy-nodes", default="")
     # off, report or separate_confirmed (see VALID_MODES at the top of the file).
     screen_parser.add_argument("--mode", choices=sorted(VALID_MODES), default="separate_confirmed")
     # Percent of the contig a direct organelle hit must cover to count as confirming.

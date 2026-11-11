@@ -45,7 +45,8 @@
 #     eggnog_db, files.iprscan or (with the screen) blast_db does not exist on this machine.
 #     The one exception: the screen's jobs are planned in every block but the plain contigs
 #     one, and rule blob_json needs nodes.dmp and names.dmp from the blast_db folder as
-#     inputs, so those two files must exist (see below).
+#     inputs (the mitochondrion screen needs nodes.dmp too), so those two files must exist
+#     (see below).
 #   * The OPTIONAL local-database keys (antismash_db, unite_db, genemark_dir) are checked
 #     the moment they are set, so leave them out unless real.
 #

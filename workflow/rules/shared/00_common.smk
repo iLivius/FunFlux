@@ -445,8 +445,10 @@ OUT = str(Path(_required_text("directories", "output_dir")).resolve())
 
 # The three reference databases the user prepares before the first run.
 #   blast_db       : NCBI nucleotide BLAST database (core_nt), used by the
-#                    contamination and mitochondrion screen (rules blast_contigs and
-#                    blob_json). Only needed when that screen runs (every read-based
+#                    contamination and mitochondrion screen (rule blast_contigs; the
+#                    taxonomy files nodes.dmp and names.dmp in the same folder are read by
+#                    blob_json, and nodes.dmp also by the mitochondrion screens for their
+#                    species check). Only needed when that screen runs (every read-based
 #                    mode; contigs mode with screen), and only then required here.
 #   eggnog_db      : eggNOG-mapper database (rule eggnog_annotation).
 #   funannotate_db : the funannotate database snapshot (every funannotate rule). If
@@ -2119,7 +2121,8 @@ elif HAS_SHORT_READS:
 # the run learnt about every contig from files other rules wrote, in one table per sample
 # (CONTIG_SUMMARY, section 5), and gives each contig a verdict: chromosome, chromosome arm,
 # mitochondrion, rDNA array, low-depth copy, collapsed repeat, nuclear contig, nuclear
-# fragment, contaminant or unclassified. The telomere, a tandem array of a short repeat
+# fragment, contaminant, foreign mitochondrion (another organism's mitochondrial DNA) or
+# unclassified. The telomere, a tandem array of a short repeat
 # unit that caps every chromosome end, is the one piece of evidence worked out from the
 # sequence itself: a contig with the array at both ends is a whole chromosome, and at one
 # end a chromosome arm. The unit differs between fungal groups. The settings:

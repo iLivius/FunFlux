@@ -27,7 +27,7 @@
 # genus filter could already have thrown the mitochondrion away.
 #
 # The chain, step by step:
-#   1. screen_mitochondria    BLASTOUT + DRAFT_CONTIGS
+#   1. screen_mitochondria    BLASTOUT + DRAFT_CONTIGS + nodes.dmp (the NCBI taxonomy)
 #                             -> MITO_SCREEN_TSV (the report, for people) + CONFIRMED_MITO_IDS
 #   2. select_contigs         (shared/10_decontam.smk) reads CONFIRMED_MITO_IDS and keeps those
 #                             contigs whatever the genus filter says
@@ -56,6 +56,10 @@
 #     a repeat and not an alternative copy of another contig). A hit that covers at least
 #     parameters.mitochondria.very_strong_qcov percent of the contig (70 by default) is
 #     confirmed on its own.
+#   * In every mode, a contig whose best direct hit comes from an animal or a plant (human
+#     mitochondrial DNA from the library, for example) is not confirmed: it is reported as
+#     foreign_mitochondrial and stays in the assembly (the species check, explained at rule
+#     screen_mitochondria).
 # Every contig gets a row in the report with its class and the reason, so each call can be
 # checked afterwards.
 #
@@ -79,7 +83,8 @@
 # These names come from 00_common.smk, where each is defined once and never worked out
 # again: SCREEN, HAS_LONG_READS, BLASTOUT, DRAFT_CONTIGS, ASSEMBLY_EVIDENCE, MITO_SCREEN_TSV,
 # CONFIRMED_MITO_IDS, CONTIGS_ALL, FINAL_CONTIGS, MITO_CONTIGS, MITOCHONDRIA_SCRIPT, MITO_MODE,
-# MITO_MIN_QCOV, MITO_MIN_RATIO, MITO_VERY_STRONG_QCOV and LOGS.
+# MITO_MIN_QCOV, MITO_MIN_RATIO, MITO_VERY_STRONG_QCOV, BLASTDB (the folder that holds
+# nodes.dmp) and LOGS.
 #
 # conda: the path is written relative to THIS file (workflow/rules/shared/), so
 # "../../envs/python.yaml" climbs shared/ -> rules/ -> workflow/ and then goes into envs/.
@@ -111,7 +116,9 @@ if SCREEN:
     #              shared/10_decontam.smk), and DRAFT_CONTIGS, the contigs that BLAST was run
     #              on. The FASTA gives the contig lengths and makes sure that every contig,
     #              with or without a hit, gets a row in the report. In the long-read modes
-    #              also ASSEMBLY_EVIDENCE, the assembler's table (see below).
+    #              also ASSEMBLY_EVIDENCE, the assembler's table (see below). And nodes.dmp,
+    #              the family tree of the NCBI taxonomy, from the BLAST database folder (the
+    #              file BlobTools reads too), for the species check below.
     # Does:        python mitochondria.py screen (MITOCHONDRIA_SCRIPT). The settings come from
     #              the configuration through `params:`, so that Snakemake re-runs the rule
     #              when one changes:
@@ -120,14 +127,30 @@ if SCREEN:
     #                --min-assembler-coverage-ratio parameters.mitochondria.min_assembler_coverage_ratio
     #                --very-strong-qcov             parameters.mitochondria.very_strong_qcov
     #                --assembly-evidence            the assembler's table, or empty (see below)
+    #                --taxonomy-nodes               nodes.dmp, for the species check
     # Produces:    MITO_SCREEN_TSV: the report, one row per contig, with its class and the
-    #              reason (confirmed_mitochondrial, mitochondrial_candidate, not_mitochondrial,
-    #              ...), the best organelle hit and, in the long-read modes, the assembler's
-    #              numbers. In contigs mode it is also a delivered file: rule all asks for it.
+    #              reason (confirmed_mitochondrial, mitochondrial_candidate,
+    #              foreign_mitochondrial, not_mitochondrial, ...), the best organelle hit and,
+    #              in the long-read modes, the assembler's numbers. In contigs mode it is also a delivered file: rule all asks for it.
     #              CONFIRMED_MITO_IDS: the confirmed contigs, one name per line (empty unless
     #              the mode is separate_confirmed).
     # Consumed by: select_contigs in shared/10_decontam.smk (protects the listed contigs from
     #              the genus filter) and separate_mitochondria below.
+    #
+    # The species check. The script confirms a contig from the wording of its best BLAST
+    # match ("... mitochondrion, complete genome"), which says that the match IS a
+    # mitochondrial genome but not whose. A few human reads in an Illumina library can
+    # assemble into small contigs of human mitochondrial DNA that pass every other check.
+    # So the script looks the organism of the best match up in the taxonomy: an animal or a
+    # plant, and the contig is reported as foreign_mitochondrial, neither confirmed nor
+    # split off. It stays in the assembly, where the genus filter of the contamination
+    # screen treats it like any other contig (with the default,
+    # parameters.decontamination.mode: off, it is kept), and the contig summary gives it the
+    # verdict foreign_mitochondrion. FunFlux 2.0.0 confirmed these animal and plant contigs
+    # and wrote them to contigs_mitochondrial.fasta with the fungus's own mitochondrion. A
+    # best match that the taxonomy places in none of the three kingdoms (fungi, animals,
+    # plants) changes nothing: an environmental record filed under Eukaryota only, or the
+    # mitochondrion of an oomycete, which NCBI does not count among the fungi.
     #
     # The assembler evidence. In the long-read modes rule assembly_evidence writes a small
     # table next to the assembly, made from the assembler's own output (hifiasm or Flye):
@@ -147,9 +170,11 @@ if SCREEN:
     # also accepts its older name, --min-flye-coverage-ratio). --very-strong-qcov passes the
     # cut-off of 70 percent, which is an option of the script rather than a fixed number.
     # --assembly-evidence "" is passed in the modes without assembler evidence. The script is
-    # version 0.2 of the mitochondrial screen with three small changes; its report has the
-    # columns assembler_* and three informational columns at the end (best_mito_slen,
-    # length_ratio, concatemer_flag). The files go to the sample's mitochondria folder,
+    # version 0.2 of the mitochondrial screen with three small changes made for FunFlux v2
+    # and the species check added in FunFlux 2.1.0. Its report has the columns assembler_*,
+    # three informational columns at the end (best_mito_slen, length_ratio,
+    # concatemer_flag) and, last, best_mito_kingdom, the answer of the species check
+    # (Fungi, Metazoa, Viridiplantae, or empty). The files go to the sample's mitochondria folder,
     # 02.assembly/<sample>/mitochondria/ (MITO_DIR). The script runs with the pinned Python of
     # envs/python.yaml.
     rule screen_mitochondria:
@@ -157,6 +182,7 @@ if SCREEN:
             blast = BLASTOUT,
             contigs = DRAFT_CONTIGS,
             assembly_evidence = _EVIDENCE_INPUT,
+            nodes = os.path.join(BLASTDB, "nodes.dmp"),
         output:
             report = MITO_SCREEN_TSV,
             confirmed_ids = CONFIRMED_MITO_IDS,
@@ -177,6 +203,7 @@ if SCREEN:
               --blast {input.blast:q} \
               --contigs {input.contigs:q} \
               --assembly-evidence "{params.assembly_evidence}" \
+              --taxonomy-nodes {input.nodes:q} \
               --report {output.report:q} \
               --confirmed-ids {output.confirmed_ids:q} \
               --mode {params.mode:q} \

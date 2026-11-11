@@ -109,8 +109,9 @@ directories:
                                #   taxdb.btd and taxdb.bti, and nodes.dmp and names.dmp from the NCBI
                                #   taxonomy dump. Used to find contaminant contigs and the mitochondrial
                                #   genome. A missing folder only prints a NOTE while Snakemake reads the
-                               #   workflow, but nodes.dmp and names.dmp are inputs of rule blob_json, so
-                               #   without them the screen's jobs cannot even be planned.
+                               #   workflow, but nodes.dmp and names.dmp are inputs of rule blob_json
+                               #   (nodes.dmp also of the mitochondrion screens), so without them the
+                               #   screen's jobs cannot even be planned.
   eggnog_db:      ""           # REQUIRED. eggNOG-mapper database folder (eggnog.db, eggnog_proteins.dmnd,
                                #   ...), prepared by you. Not opened while Snakemake reads the workflow:
                                #   a missing folder only prints a NOTE, and the eggNOG step then fails.
@@ -332,7 +333,10 @@ parameters:
   # there is no assembler evidence, such a hit covering min_direct_blast_qcov percent of the
   # contig confirms it. In the long-read modes the assembler's own evidence must agree too
   # (read depth well above the nuclear contigs, or a clean circular contig), unless the hit
-  # alone is near-complete (very_strong_qcov).
+  # alone is near-complete (very_strong_qcov). A contig whose best such hit is an animal's or
+  # a plant's mitochondrial genome (human mitochondrial DNA from the library, for example) is
+  # never confirmed: it is reported as foreign_mitochondrial and stays in the assembly. No key
+  # changes this check.
   mitochondria:
     mode: separate_confirmed   # Options: off | report | separate_confirmed
                                #   off                examine no contig (nothing is protected or split off)
@@ -367,10 +371,11 @@ parameters:
   # contamination and mitochondrion screens, the adapter screen) into one table per sample,
   # 02.assembly/{sample}/eval/contig_summary.tsv, and gives each contig a verdict:
   # chromosome, chromosome_arm, mitochondrion, rDNA_array, low_depth, repeat,
-  # nuclear_contig, nuclear_fragment, contaminant or unclassified, with the evidence in a
-  # reason column. The table also appears in the MultiQC report. The telomere is the one
-  # piece of evidence worked out from the sequence itself, and its repeat unit differs
-  # between fungal groups, so it is chosen from the data unless you name it.
+  # nuclear_contig, nuclear_fragment, contaminant, foreign_mitochondrion or unclassified,
+  # with the evidence in a reason column. The table also appears in the MultiQC report. The
+  # telomere is the one piece of evidence worked out from the sequence itself, and its
+  # repeat unit differs between fungal groups, so it is chosen from the data unless you
+  # name it.
   contig_summary:
     telomere_motif: auto       # auto: the telomere repeat unit is chosen from the data. tidk lists every
                                #   tandem repeat unit at the contig ends; those units, the units of tidk's

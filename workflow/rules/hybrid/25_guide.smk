@@ -503,7 +503,9 @@ rule blob_guide_table:
 # shared rule's shape.
 #
 # Takes in:    GUIDE_BLASTOUT (blast_guide_contigs) and GUIDE_DRAFT, the contigs BLAST was
-#              run on (for the contig lengths, and so that every contig gets a row).
+#              run on (for the contig lengths, and so that every contig gets a row); and
+#              nodes.dmp of the BLAST database folder, for the species check that the shared
+#              rule explains (a contig of human mitochondrial DNA is foreign, not protected).
 # Does:        python mitochondria.py screen (MITOCHONDRIA_SCRIPT) with the settings of
 #              parameters.mitochondria through `params:`, as the shared rule.
 # Produces:    GUIDE_MITO_SCREEN_TSV (guide/mitochondria/mitochondrial_screen.tsv), the
@@ -522,6 +524,7 @@ rule screen_guide_mitochondria:
     input:
         blast = GUIDE_BLASTOUT,
         contigs = GUIDE_DRAFT,
+        nodes = os.path.join(BLASTDB, "nodes.dmp"),
     output:
         report = GUIDE_MITO_SCREEN_TSV,
         confirmed_ids = GUIDE_MITO_IDS,
@@ -541,6 +544,7 @@ rule screen_guide_mitochondria:
           --blast {input.blast:q} \
           --contigs {input.contigs:q} \
           --assembly-evidence "" \
+          --taxonomy-nodes {input.nodes:q} \
           --report {output.report:q} \
           --confirmed-ids {output.confirmed_ids:q} \
           --mode {params.mode:q} \

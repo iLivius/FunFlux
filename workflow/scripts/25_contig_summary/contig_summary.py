@@ -130,34 +130,41 @@ does not test it: "depth in 0.5-1.5 when known" passes when the depth is unknown
                         mitochondrial FASTA that the split step wrote.
    2. contaminant       the contamination screen removed it (action remove); the
                         reason names the genus.
-   3. rDNA_array        at least min_rdna_units rDNA units (3 by default), and fewer
+   3. foreign_mitochondrion
+                        the mitochondrion screen found the contig to be mitochondrial
+                        DNA of an animal or a plant, not of the fungus (classification
+                        foreign_mitochondrial): human DNA from the library, for example.
+                        The contamination screen kept it (with the default,
+                        decontamination mode off, it keeps every contig), so it stays in
+                        the assembly, and the verdict says what it is.
+   4. rDNA_array        at least min_rdna_units rDNA units (3 by default), and fewer
                         protein-coding genes than rDNA units (or the gene count is
                         unknown). A pure rDNA array holds no protein-coding gene, but
                         the gene predictor now and then calls one inside an rDNA
                         unit, so a strict zero would misname a real rDNA array that
                         carries a stray gene call; a contig with more rDNA units
                         than genes is mostly rDNA.
-   4. chromosome        telomere repeats at both ends, depth 0.5-1.5 times the
+   5. chromosome        telomere repeats at both ends, depth 0.5-1.5 times the
                         median when known, at least one gene when known. Size plays
                         no part: small accessory chromosomes qualify.
-   5. chromosome_arm    telomere repeats at one end, the rest as in 4.
-   6. low_depth         depth below 0.5 times the median: an alternative copy of a
+   6. chromosome_arm    telomere repeats at one end, the rest as in 5.
+   7. low_depth         depth below 0.5 times the median: an alternative copy of a
                         region (a second haplotype, a stretch assembled twice) or
                         noise.
-   7. repeat            no BUSCO marker, at most two predicted genes, depth above 1.5
+   8. repeat            no BUSCO marker, at most two predicted genes, depth above 1.5
                         times the median: a collapsed repeat, that is, several genome
                         copies of a transposon, a satellite or another repeat family
                         that the assembler folded into one contig, so that the reads
                         of all the copies pile up on it. A gene call or two is allowed
                         because predictors call open reading frames inside
                         transposons. When the depth is unknown this rule does not fire.
-   8. nuclear_contig    at least one gene or BUSCO marker, depth 0.5-1.5 when known,
+   9. nuclear_contig    at least one gene or BUSCO marker, depth 0.5-1.5 when known,
                         no telomere repeat: a chromosome fragment.
-   9. nuclear_fragment  no gene and no BUSCO marker, no telomere repeat, depth
+  10. nuclear_fragment  no gene and no BUSCO marker, no telomere repeat, depth
                         0.5-1.5 or unknown: a piece of the nuclear genome too short
                         to carry a gene. A short-read assembly ends in many of them.
-  10. unclassified      anything else; the reason says what was and was not seen.
-"No gene and no BUSCO marker" (rules 7 and 9) means that every known count is 0 and
+  11. unclassified      anything else; the reason says what was and was not seen.
+"No gene and no BUSCO marker" (rules 8 and 10) means that every known count is 0 and
 at least one of the two counts is known. In the workflow both are always counted
 (BUSCO and funannotate run in every mode), and only a contig without a scaffold in
 the annotated genome lacks its gene count. Run by hand without either file, the two
@@ -624,7 +631,8 @@ def read_mito_screen(path):
 
     Takes in:  --mito-screen (mitochondrial_screen.tsv): one row per draft contig
                with its classification (confirmed_mitochondrial,
-               mitochondrial_candidate, circular_unclassified,
+               mitochondrial_candidate, foreign_mitochondrial (mitochondrial DNA of
+               an animal or a plant, such as human), circular_unclassified,
                high_coverage_unclassified, not_mitochondrial or not_screened) and
                the reason code; the other columns are not read.
     Produces:  {contig: (classification, reason)}.
@@ -1127,7 +1135,7 @@ def decide(row, min_telomere_copies, min_rdna_units):
 
     Takes in:  one contig row built in run() (Python values, None for unknown) and the
                two thresholds (--min-telomere-copies, --min-rdna-units).
-    Does:      tries the ten rules in order; the first one that applies decides.
+    Does:      tries the eleven rules in order; the first one that applies decides.
                Unknown evidence is skipped, never counted against the contig.
     Produces:  (verdict, reason).
     Used by:   run().
@@ -1160,7 +1168,17 @@ def decide(row, min_telomere_copies, min_rdna_units):
             f"removed by the screen: genus {row['genus']} ({row['screen_reason']})"
         )
 
-    # 3. An rDNA array: enough rDNA units, and fewer genes than units (or unknown).
+    # 3. Mitochondrial DNA of an animal or a plant (human DNA from the library, for
+    #    example), which the contamination screen kept: say so, rather than let the
+    #    rules below call it nuclear sequence of the fungus.
+    # (.get: a row built by hand, as some tests do, may leave the screen fields out.)
+    if row.get("mito_classification") == "foreign_mitochondrial":
+        return "foreign_mitochondrion", (
+            f"mitochondrion screen: foreign_mitochondrial ({row['mito_reason']}); "
+            f"genus {row['genus']}; {depth_text(row)}"
+        )
+
+    # 4. An rDNA array: enough rDNA units, and fewer genes than units (or unknown).
     if rdna is not None and rdna >= min_rdna_units and (genes is None or genes < rdna):
         reason = f"{rdna} rDNA units; {genes_text(row)}"
         if at_start or at_end:
@@ -1168,7 +1186,7 @@ def decide(row, min_telomere_copies, min_rdna_units):
         reason += "; " + depth_text(row)
         return "rDNA_array", reason
 
-    # 4 and 5. Telomeres at both ends, or at one end, with normal depth and genes.
+    # 5 and 6. Telomeres at both ends, or at one end, with normal depth and genes.
     genes_present_or_unknown = genes is None or genes > 0
     if (at_start or at_end) and depth_normal and genes_present_or_unknown:
         reason = f"{telomere_text(row, min_telomere_copies)}; {depth_text(row)}; {genes_text(row)}"
@@ -1176,18 +1194,18 @@ def decide(row, min_telomere_copies, min_rdna_units):
             return "chromosome", reason
         return "chromosome_arm", reason
 
-    # 6. Too shallow: an alternative copy of a region, or noise.
+    # 7. Too shallow: an alternative copy of a region, or noise.
     if depth_ratio is not None and depth_ratio < NORMAL_DEPTH_LOW:
         return "low_depth", (
             f"{depth_text(row)}; {genes_text(row)}; {telomere_text(row, min_telomere_copies)}"
         )
 
-    # Rules 7 to 9 rest on whether the contig carries genes. "Has genes": a known gene
+    # Rules 8 to 10 rest on whether the contig carries genes. "Has genes": a known gene
     # count or BUSCO count above 0. "No genes": every known count is 0, and at least one
     # of the two is known. With neither count there is no gene evidence at all, and
-    # rules 7 and 9 must not call a contig gene-less for want of looking. In the
+    # rules 8 and 10 must not call a contig gene-less for want of looking. In the
     # workflow the BUSCO count is always known, so only a run by hand gets here without.
-    # Rule 7 is looser on the gene count: a deep contig with no BUSCO marker and at most
+    # Rule 8 is looser on the gene count: a deep contig with no BUSCO marker and at most
     # REPEAT_MAX_GENES predicted genes still counts as a repeat.
     has_genes = (genes is not None and genes > 0) or (busco is not None and busco > 0)
     gene_evidence_known = genes is not None or busco is not None
@@ -1198,7 +1216,7 @@ def decide(row, min_telomere_copies, min_rdna_units):
     if rdna is not None and rdna > 0:
         rdna_note = f"; {rdna} rDNA unit" + ("" if rdna == 1 else "s")
 
-    # 7. Too deep, no BUSCO marker, at most a gene call or two: a collapsed repeat.
+    # 8. Too deep, no BUSCO marker, at most a gene call or two: a collapsed repeat.
     #    Several genome copies of a transposon, a satellite or another repeat family
     #    were assembled into one contig, so the reads of all the copies pile up on it.
     #    Needs a known depth.
@@ -1211,13 +1229,13 @@ def decide(row, min_telomere_copies, min_rdna_units):
             reason += " (a gene call inside a repeat is common)"
         return "repeat", reason + f"; {telomere_text(row, min_telomere_copies)}" + rdna_note
 
-    # 8. Genuine nuclear sequence without a telomere: a chromosome fragment.
+    # 9. Genuine nuclear sequence without a telomere: a chromosome fragment.
     if has_genes and depth_normal and not (at_start or at_end):
         return "nuclear_contig", (
             f"{genes_text(row)}; {depth_text(row)}; {telomere_text(row, min_telomere_copies)}"
         )
 
-    # 9. Normal (or unknown) depth, no telomere, no gene: a piece of the nuclear genome
+    # 10. Normal (or unknown) depth, no telomere, no gene: a piece of the nuclear genome
     #    too short to carry a gene.
     if no_genes and depth_normal and not (at_start or at_end):
         return "nuclear_fragment", (
@@ -1225,7 +1243,7 @@ def decide(row, min_telomere_copies, min_rdna_units):
             + rdna_note
         )
 
-    # 10. Nothing above fits: say what was seen.
+    # 11. Nothing above fits: say what was seen.
     reason = f"{telomere_text(row, min_telomere_copies)}; {depth_text(row)}; {genes_text(row)}"
     if rdna is not None:
         reason += f"; {rdna} rDNA unit" + ("" if rdna == 1 else "s")
@@ -1312,7 +1330,8 @@ def mqc_header_lines(telomere_unit):
         "# id: contig_summary",
         "# section_name: 'Contig summary'",
         "# description: 'What each contig of the draft assembly is (chromosome, chromosome "
-        "arm, rDNA array, mitochondrion, contaminant, low-depth piece, collapsed repeat, "
+        "arm, rDNA array, mitochondrion, mitochondrial DNA of another organism, "
+        "contaminant, low-depth piece, collapsed repeat, "
         f"nuclear contig or fragment), judged from telomere repeats ({unit_text}), read "
         "depth, rDNA units, BUSCO markers and the gene prediction. The reason column names "
         "the evidence behind every verdict.'",
@@ -1482,8 +1501,9 @@ def screen_column_text(row, action):
                action of the decisions table (keep, remove, or None without the table).
     Produces:  "mitochondrion (<reason>)" for a confirmed mitochondrion, "kept (<reason>)"
                or "removed (<reason>)" from the decisions table, with the mitochondrion
-               screen's classification added when it is a candidate or an unclassified
-               circle or deep contig (something the reader should know about), and None
+               screen's classification added when it is a candidate, an unclassified
+               circle or deep contig, or another organism's mitochondrial DNA
+               (foreign_mitochondrial): something the reader should know about. None
                when neither screen ran.
     Used by:   run().
     """

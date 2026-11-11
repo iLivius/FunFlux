@@ -37,7 +37,8 @@
 #
 # The mitochondrion screen has its own file (shared/15_mitochondria.smk), and its first rule,
 # screen_mitochondria, runs between BLAST and the selector. It reads the same BLAST table,
-# finds the contig(s) that match a mitochondrial genome and writes their IDs
+# finds the contig(s) that match a mitochondrial genome, leaving out those whose best match
+# is an animal's or a plant's (class foreign_mitochondrial), and writes their IDs
 # (CONFIRMED_MITO_IDS). select_contigs reads that list and keeps those contigs whatever the
 # genus filter says. BLAST can give a fungal mitochondrion a genus that is not the
 # organism's own, and even a correct genus can differ from the genus most of the
@@ -446,9 +447,9 @@ if SCREEN:
     #
     # Do NOT change the -outfmt string (the list of columns). Both programs that read this
     # table pick columns by POSITION: BlobTools takes the contig name, the taxonomy ID and the
-    # bit score (columns 1, 2 and 3), and the mitochondrion screen takes the contig name,
-    # qlen, slen, qcovs and stitle (columns 1, 7, 8, 9 and 15). Moving or dropping a column
-    # can break both without any error message.
+    # bit score (columns 1, 2 and 3), and the mitochondrion screen takes the contig name, the
+    # taxonomy ID (for its species check), qlen, slen, qcovs and stitle (columns 1, 2, 7, 8, 9
+    # and 15). Moving or dropping a column can break both without any error message.
     #
     # BLASTDB={params.dir} points BLAST at the folder that also holds its taxonomy files
     # (taxdb.btd and taxdb.bti); without them the organism-name columns come out as N/A.
