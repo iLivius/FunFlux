@@ -3,8 +3,9 @@
 
 Version 0.2 of FunFlux's mitochondrial screen, also used by the unpublished
 FunFluxL+, with three deliberate differences marked "CHANGED in FunFlux v2" in
-the code, and one more, the species check, marked "CHANGED in FunFlux 2.1.0".
-It still accepts every command line of version 0.1 of the script.
+the code, and two more, the stricter title check and the species check, marked
+"CHANGED in FunFlux 2.1.0". It still accepts every command line of version 0.1
+of the script.
 
 Four subcommands; the first word after the script name chooses the job.
 screen: decides which contigs are mitochondrial, from the workflow's BLAST
@@ -106,6 +107,12 @@ from collections import OrderedDict  # FASTA records that keep the order of the 
 # below, with two regular expressions (text patterns), each searched for anywhere
 # in the title, upper or lower case alike. The match is on the wording of the
 # title, not on the species.
+#
+# CHANGED in FunFlux 2.1.0: the check is stricter. FunFlux 2.0.0 and FunFluxL+
+# used one pattern, with the first two wordings below only. The hyphen rule, the
+# "organelle: mitochondrion" wording and NUCLEAR_GENE_RECORD are new: a nuclear
+# gene named after mitochondrial DNA no longer counts as a mitochondrial genome,
+# and the mitochondrial sequence of a genome assembly now does.
 #
 # MITO_GENOME_WORDING: the wordings that say "this sequence IS mitochondrial DNA":
 #   - "mitochondrion," followed by "complete" or "partial" and then "genome" or

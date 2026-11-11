@@ -1002,6 +1002,20 @@ def test_a_deep_contig_with_a_gene_call_or_two_is_a_repeat():
     assert contig_summary.decide(row(1, 0, 1.0), 5, 3)[0] == "nuclear_contig"
 
 
+def test_a_foreign_mitochondrion_without_a_genus_says_genus_unknown():
+    """Rule 3's reason reads "genus unknown", not "genus None", when the decisions table has no row."""
+    # Only the keys that the rules before rule 3, and its reason text, read.
+    row = {"is_mitochondrion": False, "is_removed": False, "rdna_units": 0,
+           "telomere_start": 0, "telomere_end": 0, "depth_x_median": None,
+           "genes": None, "busco_markers": None, "genus": None,
+           "mito_classification": "foreign_mitochondrial",
+           "mito_reason": "best_direct_hit_animal_or_plant"}
+    verdict, reason = contig_summary.decide(row, 5, 3)
+    assert verdict == "foreign_mitochondrion"
+    assert "genus unknown" in reason
+    assert "None" not in reason
+
+
 def test_a_depth_table_as_samtools_coverage_writes_it_is_read(tmp_path):
     """A table in the exact layout of samtools coverage 1.21, rows without reads included."""
     paths = make_inputs(tmp_path)

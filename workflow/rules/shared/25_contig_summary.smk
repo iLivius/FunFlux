@@ -163,24 +163,27 @@
 # option without a value as "not given" and writes NA into the columns that need it; the
 # verdict rules then skip the evidence they lack. The other inputs exist in every mode and
 # are always given: the ITS windows, the BUSCO folder, the annotated genome with its GFF3,
-# and the two telomere files of rule telomere_units.
+# the two telomere files of rule telomere_units and the adapter loci of rule
+# screen_adapters.
 #
-# Both per-sample rules read the DRAFT assembly (DRAFT_CONTIGS: contigs_filt.fasta in
+# All four per-sample rules read the DRAFT assembly (DRAFT_CONTIGS: contigs_filt.fasta in
 # contigs and illumina mode, assembly.fasta in longread and hybrid mode, and
 # contigs_final.fasta in contigs mode without the screen), not the final genome: the
 # contigs the screen removed and the mitochondrion get a row too, so nothing disappears
 # silently.
 #
-# Where this file sits in the workflow. telomere_db needs nothing from other rules and runs
-# early, like the other database downloads. telomere_units needs only the draft and the
-# database, so it can run as soon as the assembly exists. contig_summary waits for the
-# finished annotation (ANNOTATION_COMPLETE, rule funannotate_annotation in
-# 40_annotation.smk), so it is one of the last jobs of a sample. The files of both
-# per-sample rules go to the sample's QC folder, 02.assembly/{sample}/eval/, next to the
-# QUAST and BUSCO results. Rule multiqc (90_report.smk) lists the _mqc copy of the table as
-# an input and hands it to MultiQC, so the table appears in the report; rule all asks for
-# the table itself (00_common.smk, section 15). No other rule reads the other files: they
-# are for people.
+# Where this file sits in the workflow. telomere_db and univec_illumina need nothing from
+# other rules and run early, like the other database downloads. telomere_units needs only
+# the draft and the telomere database, and blast_adapters only the draft and the adapter
+# lists, so both can run as soon as the assembly exists; screen_adapters follows
+# blast_adapters. contig_summary waits for the finished annotation (ANNOTATION_COMPLETE,
+# rule funannotate_annotation in 40_annotation.smk), so it is one of the last jobs of a
+# sample. The files of all four per-sample rules go to the sample's QC folder,
+# 02.assembly/{sample}/eval/, next to the QUAST and BUSCO results. Rule multiqc
+# (90_report.smk) lists the _mqc copies of the contig table and of the adapter row as
+# inputs and hands them to MultiQC, so both appear in the report; rule all asks for the
+# contig table and the adapter loci (00_common.smk, section 15). The telomere candidates
+# table and the provenance notes of the two downloads are for people; no rule reads them.
 #
 # Everything referenced here is defined once in 00_common.smk and not worked out again
 # here: TELOMERE_DB, TELOMERE_DB_PROVENANCE, TELOMERE_DB_URL, TELOMERE_DB_SHA256,
@@ -544,9 +547,10 @@ rule screen_adapters:
 #                                     their distance from the contig end, the telomere
 #                                     unit of the sample, rDNA units, BUSCO markers, genes,
 #                                     genus, the screens' verdicts, the adapter loci
-#                                     (none, at_end, internal), the scaffold name the
-#                                     annotation gave the contig, the verdict and its
-#                                     reason). A column a mode cannot fill reads NA.
+#                                     (none, at_end, internal or at_end+internal), the
+#                                     scaffold name the annotation gave the contig, the
+#                                     verdict and its reason). A column a mode cannot
+#                                     fill reads NA.
 #              CONTIG_SUMMARY_MQC     the same table with MultiQC's custom-content header
 #                                     lines, the rows named "<sample>: <contig>", so that
 #                                     the tables of all samples merge into one in the

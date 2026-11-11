@@ -29,6 +29,8 @@ CONTIG_LENGTH = 100_000
 
 
 def write_contigs(tmp_path, names=("ctg1", "ctg2")):
+    # A FASTA of contigs of CONTIG_LENGTH bases each (the screen needs only their names and
+    # lengths); returns its path, for --contigs.
     path = tmp_path / "contigs.fasta"
     with open(path, "w") as out:
         for name in names:
@@ -44,6 +46,10 @@ def blast_row(adapter, contig, identity, length, sstart, send, query_length=40):
 
 
 def run_screen(tmp_path, rows, choice=None, check=None):
+    # Run the script as rule screen_adapters does: on the BLAST rows given, the two test
+    # contigs and, when given, a choice and a check file of the read-level steps
+    # ("name<TAB>value" lines). Returns the loci table as a list of dicts (one per locus)
+    # and the MultiQC file as a list of lines.
     blast = tmp_path / "blast.tsv"
     blast.write_text("".join(rows))
     arguments = [
@@ -76,9 +82,10 @@ def test_an_end_hit_of_20_bp_at_90_percent_counts(tmp_path):
 
 
 def test_shorter_or_less_similar_end_hits_do_not_count(tmp_path):
+    # 19 bp at the very end of the contig; 30 bp, 50 bp from the end, but 89 % identical.
     rows = [
         blast_row("NB24", "ctg1", 95.0, 19, 1, 19),
-        blast_row("NB24", "ctg1", 89.0, 30, 500, 529),
+        blast_row("NB24", "ctg1", 89.0, 30, 51, 80),
     ]
     loci, _ = run_screen(tmp_path, rows)
     assert loci == []

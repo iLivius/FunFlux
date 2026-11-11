@@ -52,9 +52,9 @@
 #
 # Everything referenced here is defined once in 00_common.smk and never worked out again: OUT (the
 # output folder), DIR_REPORT, MULTIQC_REPORT, FASTP_JSON, NANOPLOT_RAW_DIR, NANOPLOT_FILTERED_DIR,
-# QUALIMAP_DIR, GUIDE_QUALIMAP_DIR, QUAST_DIR, BUSCO_DIR, CONTIG_SUMMARY_MQC, ADAPTER_SCREEN_MQC, AMR_SUMMARY_MQC,
-# AMR_ENABLED, SAMPLES, LOGS and the capability flags. A name that 00_common.smk does not have is
-# defined below, starting with an underscore.
+# QUALIMAP_DIR, GUIDE_QUALIMAP_DIR, QUAST_DIR, BUSCO_DIR, CONTIG_SUMMARY_MQC, ADAPTER_SCREEN_MQC,
+# AMR_SUMMARY_MQC, AMR_ENABLED, SAMPLES, LOGS and the capability flags. A name that 00_common.smk
+# does not have is defined below, starting with an underscore.
 #
 # conda: environment paths are written relative to THIS file (workflow/rules/shared/), so
 # "../../envs/multiqc.yaml" climbs shared/ -> rules/ -> workflow/ and then goes into envs/.
@@ -74,9 +74,9 @@ _MULTIQC_DATA = DIR_REPORT + "/multiqc_data"
 #              report, NanoPlot's two folders), the mapping QC (the Qualimap folder, and in
 #              hybrid mode the guide's Qualimap folder too), then QUAST_DIR, BUSCO_DIR, the
 #              contig summary table, the Adapters table and, when the AMR screen is on, the AMR
-#              table. MultiQC
-#              finds the right files inside the folders. Each group is added only when the run
-#              makes it: asking for a file that no rule makes would stop the workflow.
+#              table. MultiQC finds the right files inside the folders. Each group is added
+#              only when the run makes it: asking for a file that no rule makes would stop the
+#              workflow.
 # Produces:    a list of absolute paths. It is used twice: as the input of rule multiqc, which
 #              makes Snakemake build them first, and, turned into paths relative to the output
 #              folder, as the paths handed to MultiQC (see _relative_to_output_root).

@@ -56,6 +56,8 @@ TELOMERE = "CCCTAA" * 12
 
 
 def genome(generator, length):
+    # Random sequence standing in for genomic DNA, from the test's seeded generator
+    # (random.Random(n)), so that every run of the tests builds the same reads.
     return "".join(generator.choice("ACGT") for _ in range(length))
 
 
@@ -282,6 +284,11 @@ def test_tandem_repeats_are_recognised():
     assert not foa.is_tandem_repeat(ADAPTER)
     assert not foa.is_tandem_repeat(NB24_BLOCK)
     assert not foa.is_tandem_repeat("AAGGTTAA")
+    # The unit must fit at least twice: a 9 to 12 bp block is not a repeat of itself,
+    # while a short unit repeated over 9 bp still is.
+    assert not foa.is_tandem_repeat("AAGGTTAAC")
+    assert not foa.is_tandem_repeat("CCTGTACTTCCC")
+    assert foa.is_tandem_repeat("ATATATATA")
 
 
 def test_clean_sequence_upper_cases_and_refuses_other_letters():

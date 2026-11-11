@@ -53,6 +53,10 @@ Usage (rule screen_adapters, workflow/rules/shared/25_contig_summary.smk):
   --read-choice  optional: the choice file of rule find_ont_adapter (ONT samples)
   --read-check   optional: the check file of rule check_ont_trimming (ONT samples)
 
+One [FunFlux] summary line is printed for the console (the rule copies it to the log).
+Exit status 0; 1 with a message on stderr when an input file cannot be read or is not in the
+expected format (a BLAST line with too few columns, for example).
+
 Uses only the Python standard library. Tests: test_adapter_screen.py (same folder).
 """
 
@@ -228,6 +232,12 @@ def verdict_text(end_loci, internal_loci):
 
 
 def write_loci(path, loci):
+    """Write the loci table (--out): a header line, then one line per locus.
+
+    The columns are LOCUS_COLUMNS; a header line alone means that no adapter was found.
+    Rule contig_summary reads the file for its adapter column.
+    Used by:   main().
+    """
     with open(path, "w") as out:
         out.write("\t".join(LOCUS_COLUMNS) + "\n")
         for locus in loci:
@@ -268,6 +278,12 @@ def write_mqc(path, sample, loci, choice, check):
 
 
 def build_parser():
+    """Define the command line; the text at the top of this file says what each option holds.
+
+    --read-choice and --read-check may come without a value: for a sample whose reads were
+    not trimmed, Snakemake writes the empty path as nothing, and the option reads as "not given".
+    Used by:   main().
+    """
     parser = argparse.ArgumentParser(description="Report adapter loci on the draft contigs.")
     parser.add_argument("--blast", required=True)
     parser.add_argument("--contigs", required=True)
@@ -280,6 +296,15 @@ def build_parser():
 
 
 def main(argv=None):
+    """Read the inputs, merge the hits into loci, write both tables and print one summary line.
+
+    Takes in:  argv, the command line without the script name (None means the real command
+               line; the tests pass a list).
+    Does:      read_contig_lengths(), read_hits(), read_key_values(), merge_loci(),
+               write_loci() and write_mqc(). An input that cannot be read ends the run with
+               exit status 1 and one [FunFlux] line on stderr, instead of a Python traceback.
+    Used by:   rule screen_adapters (25_contig_summary.smk).
+    """
     args = build_parser().parse_args(argv)
     try:
         contig_lengths = read_contig_lengths(args.contigs)

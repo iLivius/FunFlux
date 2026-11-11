@@ -131,7 +131,8 @@ if SCREEN:
     # Produces:    MITO_SCREEN_TSV: the report, one row per contig, with its class and the
     #              reason (confirmed_mitochondrial, mitochondrial_candidate,
     #              foreign_mitochondrial, not_mitochondrial, ...), the best organelle hit and,
-    #              in the long-read modes, the assembler's numbers. In contigs mode it is also a delivered file: rule all asks for it.
+    #              in the long-read modes, the assembler's numbers. In contigs mode it is
+    #              also a delivered file: rule all asks for it.
     #              CONFIRMED_MITO_IDS: the confirmed contigs, one name per line (empty unless
     #              the mode is separate_confirmed).
     # Consumed by: select_contigs in shared/10_decontam.smk (protects the listed contigs from

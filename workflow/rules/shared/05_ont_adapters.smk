@@ -214,7 +214,7 @@ if HAS_LONG_READS and ONT_TRIM_SAMPLES:
             """
 
 
-    # ───────────── check_ont_trimming — count the adapters left in the reads Filtlong kept ─────────────
+    # ───────────── check_ont_trimming — count the adapters left after Filtlong ─────────────
     # Takes in:    FILTERED_LONG, the reads Filtlong kept from the trimmed reads (rule
     #              filter_long_reads), and ONT_ADAPTER_CHOICE from find_ont_adapter (to know which
     #              sequence was trimmed). The kept Filtlong output is read, not the temporary

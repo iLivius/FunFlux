@@ -103,7 +103,8 @@ Usage (rules find_ont_adapter and check_ont_trimming, workflow/rules/shared/05_o
   --out            (check) "name<TAB>value" lines: reads, and how many still carry the adapter
 
 Lines starting with [FunFlux] are printed for the console (the rules copy them from the log).
-Exit status 0; 1 with a message on stderr when a file cannot be read.
+Exit status 0; 1 with a message on stderr when a file cannot be read, or when --setting is
+neither detect nor a sequence of A, C, G and T only.
 
 00_common.smk imports this file too, for is_tandem_repeat(), clean_sequence(), ADAPTER_CORE and
 MIN_SPLIT_LENGTH, to check a sequence given in the configuration while Snakemake reads the workflow.
@@ -154,6 +155,11 @@ COMPLEMENT = str.maketrans("ACGT", "TGCA")
 
 
 def reverse_complement(sequence):
+    """Return the sequence of the other DNA strand, read 5' to 3' (A, C, G, T, upper case).
+
+    Used by:   write_sequences(), which writes every sequence to trim in both orientations,
+               because fastplong's -a does not add the reverse complement itself.
+    """
     return sequence.translate(COMPLEMENT)[::-1]
 
 
@@ -173,13 +179,18 @@ def is_tandem_repeat(sequence, max_unit=MAX_TANDEM_UNIT):
     """True if the sequence is a short unit (max_unit bp or less) repeated end to end.
 
     TTAGGGTTAGGGTTAGGG is TTAGGG three times and returns True; an adapter or a barcode does not.
-    A partial copy at the end counts too (TTAGGGTTAGGGTT). Sequences of 8 bp or less are never
-    called a repeat, so that a short block is judged by the other rules.
+    A partial copy at the end counts too (TTAGGGTTAGGGTT), but the unit must fit at least twice,
+    so a sequence is never a repeat of itself. Sequences of 8 bp or less are never called a
+    repeat, so that a short block is judged by the other rules.
     Used by:   choose_block() and 00_common.smk.
     """
     if len(sequence) <= 8:
         return False
-    for unit_length in range(1, max_unit + 1):
+    # The unit must fit at least twice. Otherwise a 9 or 10 bp sequence would count as one
+    # copy of a 9 or 10 bp "unit", and a short block that the scan finds after the adapter
+    # would be refused as a repeat.
+    longest_unit = min(max_unit, len(sequence) // 2)
+    for unit_length in range(1, longest_unit + 1):
         unit = sequence[:unit_length]
         repeated = unit * (len(sequence) // unit_length + 1)
         if repeated[:len(sequence)] == sequence:
@@ -687,6 +698,11 @@ def check(args):
 
 
 def build_parser():
+    """Define the command line: the subcommands scan and check, and their options.
+
+    The text at the top of this file says what each option holds.
+    Used by:   main().
+    """
     parser = argparse.ArgumentParser(description="Find the ONT adapter in reads, or check trimmed reads.")
     subcommands = parser.add_subparsers(dest="command", required=True)
 
@@ -709,6 +725,14 @@ def build_parser():
 
 
 def main(argv=None):
+    """Run the subcommand named on the command line.
+
+    Takes in:  argv, the command line without the script name (None means the real command
+               line; the tests pass a list).
+    Does:      scan() or check(). A file that cannot be read ends the run with exit status 1
+               and one [FunFlux] line on stderr, instead of a Python traceback.
+    Used by:   rules find_ont_adapter and check_ont_trimming (05_ont_adapters.smk).
+    """
     args = build_parser().parse_args(argv)
     try:
         if args.command == "scan":

@@ -939,10 +939,10 @@ QUALIMAP_DIR = ASSEMBLY_DIR + "/eval/qualimap"
 # mitochondrion, a piece of the rDNA array, ...) with the evidence behind each verdict
 # (CONTIG_SUMMARY), plus a copy in the form MultiQC reads (CONTIG_SUMMARY_MQC; rule
 # multiqc lists it as an input). The files sit next to the QUAST and BUSCO folders,
-# because the table is a judgement of the assembly, although the jobs run after the
-# annotation, whose gene counts the table uses (section 9h has the settings and the
-# inputs the summary has in each mode). The candidates table is for people; no rule
-# reads it.
+# because the table is a judgement of the assembly, although rule contig_summary runs
+# after the annotation, whose gene counts the table uses (section 9h has the settings
+# and the inputs the summary has in each mode). The candidates table is for people; no
+# rule reads it.
 TELOMERE_CANDIDATES = ASSEMBLY_DIR + "/eval/telomere_candidates.tsv"   # every candidate unit, scored; the chosen one marked
 TELOMERE_UNIT_FILE  = ASSEMBLY_DIR + "/eval/telomere_unit.txt"         # the chosen unit (canonical form), or none
 TELOMERE_ENDS       = ASSEMBLY_DIR + "/eval/telomere_ends.tsv"         # tidk's call at both ends of every contig, for that unit
@@ -3286,7 +3286,7 @@ for _sample in LONG_READ_SAMPLES:
         FINALIZE_SOURCE[_sample] = POLISH_SOURCE[_sample]
 
     # One line per sample for the log, for example
-    #   [FunFlux] SAM1: ont reads -> hifiasm --ont, minimap2 map-ont, Medaka.
+    #   [FunFlux] SAM1: ont reads -> adapter check + fastplong, hifiasm --ont, minimap2 map-ont, Medaka.
     # First the assembler with its technology flag, and whether Medaka runs.
     if LONG_READ_ASSEMBLER == "hifiasm":
         _assembler_text = "hifiasm" if READ_TECH[_sample] == "pacbio" else "hifiasm --ont"
@@ -3438,18 +3438,18 @@ def trimmed_adapter_inputs(wildcards):
     return []
 
 
-# The same two files one by one, for the params of rule screen_adapters: the path, or an empty
-# text. Snakemake writes an empty text as nothing at all, so the script then sees the option
-# without a value and reads it as "not given".
-
-
 def trimmed_adapter_choice(wildcards):
+    # The choice file of rule find_ont_adapter, for the --read-choice option of rule
+    # screen_adapters (a param): its path for an ONT sample whose reads were trimmed, an empty
+    # text for any other sample. Snakemake writes an empty text as nothing at all, so the
+    # script then sees the option without a value and reads it as "not given".
     if wildcards.sample in ONT_TRIM_SAMPLES:
         return ONT_ADAPTER_CHOICE.format(sample=wildcards.sample)
     return ""
 
 
 def trimmed_adapter_check(wildcards):
+    # The same for the check file of rule check_ont_trimming (--read-check).
     if wildcards.sample in ONT_TRIM_SAMPLES:
         return ONT_ADAPTER_CHECK.format(sample=wildcards.sample)
     return ""

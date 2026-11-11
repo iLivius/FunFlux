@@ -17,11 +17,16 @@ What this is for
       * in contigs mode, each optional feature (the contamination screen, SignalP 6,
         GeneMark-ES, Tiberius, local antiSMASH and UNITE copies, the UNITE reference filter,
         the AMR screen) must add or remove the expected rules in the planned jobs, and the
-        number of jobs must be the expected one;
+        number of jobs must be the expected one; the contig adapter screen, which runs in
+        every mode, must download UniVec from its default address and refuse a
+        univec_sha256 that is not a checksum;
       * in the three read-based modes (illumina, longread, hybrid), the example blocks
         and a few variants of them (the AMR screen on among them) must plan the expected
         number of jobs, the two Medaka rules must be planned only for the ONT samples that
-        use Medaka, and the commands Snakemake would run must carry each sample's settings
+        use Medaka, the three ONT adapter-trimming rules only for the ONT samples and as
+        parameters.<mode>.ont_adapter says (detect, off or a given sequence; a short unit
+        repeated end to end, or a letter other than A, C, G, T, is refused), and the
+        commands Snakemake would run must carry each sample's settings
         (the Medaka model, the Filtlong guidance, the Flye read mode, the SPAdes memory
         limit, the assembler's file the evidence table is made from);
       * rule download_all, named on the command line, must plan exactly the download

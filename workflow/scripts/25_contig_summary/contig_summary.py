@@ -1173,9 +1173,11 @@ def decide(row, min_telomere_copies, min_rdna_units):
     #    rules below call it nuclear sequence of the fungus.
     # (.get: a row built by hand, as some tests do, may leave the screen fields out.)
     if row.get("mito_classification") == "foreign_mitochondrial":
+        # The genus is None when the decisions table was not given or has no row for the contig.
+        genus_text = row.get("genus") or "unknown"
         return "foreign_mitochondrion", (
             f"mitochondrion screen: foreign_mitochondrial ({row['mito_reason']}); "
-            f"genus {row['genus']}; {depth_text(row)}"
+            f"genus {genus_text}; {depth_text(row)}"
         )
 
     # 4. An rDNA array: enough rDNA units, and fewer genes than units (or unknown).

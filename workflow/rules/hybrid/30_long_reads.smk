@@ -63,9 +63,9 @@
 # NANOPLOT_RAW_DIR, NANOPLOT_FILTERED_DIR, FILTLONG_MIN_LENGTH, FILTLONG_KEEP_PERCENT,
 # FILTLONG_LENGTH_WEIGHT, FILTLONG_TARGET_ARG, LOGS and CPUS, and the functions
 # raw_long_fastq() (the sample's raw long-read file), filtlong_input() (the file Filtlong
-# starts from: the trimmed reads of an ONT sample, the raw file otherwise), filtlong_guidance() (the sample's
-# guidance options, or nothing), filtlong_guide_reads() (the selected pairs those options
-# name, or nothing) and capped_cpus().
+# starts from: the trimmed reads of an ONT sample, the raw file otherwise),
+# filtlong_guidance() (the sample's guidance options, or nothing), filtlong_guide_reads()
+# (the selected pairs those options name, or nothing) and capped_cpus().
 #
 # conda: environment paths are relative to THIS file (workflow/rules/hybrid/), so
 # "../../envs/filtlong.yaml" is workflow/envs/filtlong.yaml.

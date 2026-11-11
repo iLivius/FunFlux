@@ -70,7 +70,7 @@
 #     SignalP 6; the mitochondrion screen and the long-read assembler where they apply) and
 #     one "Sample ... will be processed" line per sample. The longread and hybrid blocks also
 #     print, per sample, the tools it gets, such as
-#     "[FunFlux] SAM1: ont reads -> hifiasm --ont, minimap2 map-ont, Medaka.";
+#     "[FunFlux] SAM1: ont reads -> adapter check + fastplong, hifiasm --ont, minimap2 map-ont, Medaka.";
 #   * every block plans its mode's whole chain, up to multiqc: the illumina block 47 jobs
 #     (one sample), the longread block 85 (two samples, one of them with the Medaka model
 #     check, the ONT adapter steps and polishing), the hybrid block 117 (two samples), the

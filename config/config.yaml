@@ -212,9 +212,10 @@ links:
                                #   records join the adapters FunFlux ships (ONT, PacBio, MGI) in the contig
                                #   adapter screen. Downloaded once per output directory, into
                                #   00.resources/adapters/, and checked against
-                               #   parameters.contig_summary.univec_sha256; only the Illumina records are kept,
-                               #   because Illumina's oligonucleotide sequences are copyrighted. Left out, this
-                               #   address is used.
+                               #   parameters.contig_summary.univec_sha256. Only the Illumina records are
+                               #   kept (the other adapters are shipped); they are downloaded rather than
+                               #   shipped because Illumina's oligonucleotide sequences are copyrighted.
+                               #   Left out, this address is used.
   chroquetas_link: https://raw.githubusercontent.com/nmquijada/ChroQueTas/1aad051d6ad48f5e403636699d19095e655764f7
                                # REQUIRED when parameters.amr.chroquetas is on, not read when it is off.
                                #   ChroQueTas and its FungAMR database of resistance mutations, at one pinned
@@ -335,8 +336,9 @@ parameters:
   # (read depth well above the nuclear contigs, or a clean circular contig), unless the hit
   # alone is near-complete (very_strong_qcov). A contig whose best such hit is an animal's or
   # a plant's mitochondrial genome (human mitochondrial DNA from the library, for example) is
-  # never confirmed: it is reported as foreign_mitochondrial and stays in the assembly. No key
-  # changes this check.
+  # never confirmed: it is reported as foreign_mitochondrial and not split off, and the
+  # contamination screen's genus filter treats it like any other contig (with the default
+  # decontamination mode, off, it stays in the assembly). No key changes this check.
   mitochondria:
     mode: separate_confirmed   # Options: off | report | separate_confirmed
                                #   off                examine no contig (nothing is protected or split off)
