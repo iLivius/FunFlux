@@ -1,7 +1,7 @@
 {
   "upload_type": "software",
   "title": "FunFlux: Integrated workflow for fungal genome assembly and annotation",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "language": "eng",
   "access_right": "open",
   "license": "MIT",
@@ -15,7 +15,7 @@
       "affiliation": "AIT Austrian Institute of Technology"
     }
   ],
-  "description": "<p>FunFlux is a Snakemake workflow for fungal whole-genome sequencing data. It takes a fungal isolate from raw reads, or from an assembly made elsewhere, through assembly, contamination and mitochondrion screening, quality control, ITS taxonomy, repeat masking, gene prediction and functional annotation, with one MultiQC report per run.</p><p>Version 2.0.0 brings together the earlier FunFlux 1.x, Funnotator and FunFluxL workflows as four modes of one workflow: Illumina paired-end reads, Oxford Nanopore or PacBio HiFi long reads, a hybrid of Illumina and long reads, and genomes already assembled. The modes share every step after the assembly: assembly QC (QUAST, BUSCO), a per-contig summary, ITS taxonomy (ITSx, SINTAX against UNITE), gene prediction (funannotate with Tiberius), functional annotation (InterProScan, eggNOG-mapper, antiSMASH, optionally SignalP 6) and an optional screen for antifungal resistance mutations (ChroQueTas against FungAMR). Every tool runs in its own conda environment.</p><p>Documentation: <a href=\"https://iLivius.github.io/FunFlux/\">https://iLivius.github.io/FunFlux/</a></p>",
+  "description": "<p>FunFlux is a Snakemake workflow for fungal whole-genome sequencing data. It takes a fungal isolate from raw reads, or from an assembly made elsewhere, through assembly, contamination and mitochondrion screening, quality control, ITS taxonomy, repeat masking, gene prediction and functional annotation, with one MultiQC report per run.</p><p>Version 2.0.0 brings together the earlier FunFlux 1.x, Funnotator and FunFluxL workflows as four modes of one workflow: Illumina paired-end reads, Oxford Nanopore or PacBio HiFi long reads, a hybrid of Illumina and long reads, and genomes already assembled. The modes share every step after the assembly: assembly QC (QUAST, BUSCO), a per-contig summary, ITS taxonomy (ITSx, SINTAX against UNITE), gene prediction (funannotate with Tiberius), functional annotation (InterProScan, eggNOG-mapper, antiSMASH, optionally SignalP 6) and an optional screen for antifungal resistance mutations (ChroQueTas against FungAMR). Every tool runs in its own conda environment.</p><p>Version 2.1.0 trims Oxford Nanopore adapters and barcodes from the reads with fastplong before assembly, screens every assembly for leftover adapter sequence, recognises mitochondrial DNA of other organisms in the mitochondrion screen, and runs InterProScan without EBI's lookup service.</p><p>Documentation: <a href=\"https://iLivius.github.io/FunFlux/\">https://iLivius.github.io/FunFlux/</a></p>",
   "keywords": [
     "fungal genomics",
     "whole-genome sequencing",

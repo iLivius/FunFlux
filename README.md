@@ -186,7 +186,7 @@ hours and leaves in the order of 10 GB. What each stage holds, file by file, is 
 ## Citation
 
 > Antonielli, L., & Brader, G. (2026). *FunFlux: Integrated workflow for fungal genome assembly
-> and annotation* (v2.0.0). Zenodo. <https://doi.org/10.5281/zenodo.13612159>
+> and annotation* (v2.1.0). Zenodo. <https://doi.org/10.5281/zenodo.13612159>
 
 That DOI is the concept DOI and always resolves to the newest release; each tagged release also
 gets its own version DOI, which is the one to cite when the exact code matters.

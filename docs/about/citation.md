@@ -21,7 +21,7 @@ the full list of references and the works cited on [Validation on public genomes
 ## Citing FunFlux
 
 > Antonielli, L., & Brader, G. (2026). *FunFlux: Integrated workflow for fungal genome assembly
-> and annotation* (v2.0.0). Zenodo. <https://doi.org/10.5281/zenodo.13612159>
+> and annotation* (v2.1.0). Zenodo. <https://doi.org/10.5281/zenodo.13612159>
 
 The DOI 10.5281/zenodo.13612159 is the concept DOI, which always resolves to the newest version.
 Each release also has a version DOI of its own on Zenodo. Cite the version DOI when the exact code
