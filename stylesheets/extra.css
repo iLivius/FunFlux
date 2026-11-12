@@ -1,0 +1,53 @@
+/* Page width
+ * Material's default page is 61 rem wide (about 1220 px at its usual root font size),
+ * its two 12 rem sidebars included, which leaves about 37 rem for the text. These
+ * pages hold wide tables and Mermaid diagrams, and Mermaid shrinks a diagram to the
+ * width of its column, labels included, so in the default column the labels become
+ * too small to read. The wider page gives the text about 828 px in a usual desktop
+ * window, and every diagram of the manual is drawn to fit that width at full size.
+ * On screens 2000 px and wider, Material enlarges its root font and its own page
+ * (1464 px) is wider than this one, so there this rule makes the page narrower.
+ */
+.md-grid {
+  max-width: 1360px;
+}
+
+/* Mermaid label size
+ * Nothing is set here for the labels, because it would have no effect: Material draws
+ * each Mermaid diagram inside a closed shadow root, a sealed part of the page that
+ * this stylesheet cannot reach. Each diagram sets its own label size instead, in the
+ * configuration block at its top (themeVariables: fontSize: 14px).
+ *
+ * The diagrams set no fill or text colour either, on purpose. Material ignores
+ * `color:` in a Mermaid classDef, so a diagram with its own fill keeps the theme's text
+ * colour and becomes hard to read in either the light or the dark scheme. The theme's
+ * own colours work in both.
+ */
+
+/* A diagram wider than the page scrolls sideways instead of shrinking further. */
+.mermaid {
+  overflow-x: auto;
+}
+
+/* Colours: "fly agaric" red
+ * The red of an Amanita muscaria cap. mkdocs.yml asks for primary: custom and accent:
+ * custom, and the values are set here. White text on the header has a contrast of 6.5:1
+ * (web accessibility guidelines ask at least 4.5:1 for normal text). In the dark scheme the
+ * links use a lighter shade, because the main red is too dark to read on a dark background.
+ */
+:root > * {
+  --md-primary-fg-color: #b22a24;          /* header, tabs, links in the light scheme */
+  --md-primary-fg-color--light: #d4463a;
+  --md-primary-fg-color--dark: #8c1f1a;
+  --md-accent-fg-color: #d4463a;           /* hovered links, active controls */
+  --md-accent-fg-color--transparent: #d4463a1a;
+}
+
+[data-md-color-scheme="slate"][data-md-color-primary="custom"] {
+  --md-typeset-a-color: #f28b7d;           /* links in the dark scheme */
+}
+
+[data-md-color-scheme="slate"][data-md-color-accent="custom"] {
+  --md-accent-fg-color: #f5a091;           /* hovered links in the dark scheme */
+  --md-accent-fg-color--transparent: #f5a0911a;
+}

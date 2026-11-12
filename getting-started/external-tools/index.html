@@ -1,0 +1,2577 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/getting-started/external-tools/">
+      
+      
+        <link rel="prev" href="../databases/">
+      
+      
+        <link rel="next" href="../quick-start/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Licensed and external tools - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#licensed-and-external-tools" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Licensed and external tools
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#genemark-es" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeneMark-ES
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GeneMark-ES">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#licence-and-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licence and installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-licence-check-before-gene-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The licence check before gene prediction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#without-genemark-es" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Without GeneMark-ES
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signalp-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SignalP 6
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SignalP 6">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#licence-and-download" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licence and download
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-funflux-installs-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How FunFlux installs it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-the-conda-environment-is-rebuilt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When the conda environment is rebuilt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#without-signalp-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Without SignalP 6
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interproscan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InterProScan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="InterProScan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-funflux-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What FunFlux runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing-interproscan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing InterProScan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../from-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/longread/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/mitochondria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/assembly-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/contig-summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/gene-prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/adapter-trimming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adapter trimming and the adapter screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#genemark-es" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeneMark-ES
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GeneMark-ES">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#licence-and-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licence and installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-licence-check-before-gene-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The licence check before gene prediction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#without-genemark-es" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Without GeneMark-ES
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signalp-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SignalP 6
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SignalP 6">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#licence-and-download" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licence and download
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-funflux-installs-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How FunFlux installs it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-the-conda-environment-is-rebuilt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When the conda environment is rebuilt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#without-signalp-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Without SignalP 6
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interproscan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InterProScan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="InterProScan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-funflux-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What FunFlux runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing-interproscan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing InterProScan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/getting-started/external-tools.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="licensed-and-external-tools">Licensed and external tools<a class="headerlink" href="#licensed-and-external-tools" title="Permanent link">¶</a></h1>
+<p>Three tools are not installed by conda: InterProScan, which every run needs, and the optional
+GeneMark-ES and SignalP 6. You obtain them yourself, and FunFlux calls them from its own
+environments. Install InterProScan before the first run. For each tool, this page explains how to
+obtain and install it, how FunFlux runs it and what happens without it.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Needed</th>
+<th>Licence</th>
+<th>Config keys</th>
+<th>Without it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#genemark-es">GeneMark-ES</a></td>
+<td>optional</td>
+<td>free for academic, non-profit and US government users; the key expires one year after download</td>
+<td><code>directories.genemark_dir</code>, <code>parameters.genemark.mode</code></td>
+<td>funannotate predict runs without GeneMark-ES</td>
+</tr>
+<tr>
+<td><a href="#signalp-6">SignalP 6</a></td>
+<td>optional, off by default</td>
+<td>DTU: download page for academic users, others contact DTU</td>
+<td><code>files.signalp6_archive</code>, <code>parameters.signalp6.*</code></td>
+<td>no secretome annotation</td>
+</tr>
+<tr>
+<td><a href="#interproscan">InterProScan</a> 5.78-109.0</td>
+<td>required</td>
+<td>Apache-2.0</td>
+<td><code>files.iprscan</code></td>
+<td>the run stops: InterProScan cannot be switched off</td>
+</tr>
+</tbody>
+</table>
+<p>The licences of GeneMark-ES and SignalP 6 limit who may use them freely, and so do two of the
+databases InterProScan searches in every run: commercial users of PROSITE pay a yearly licence fee,
+and SMART is free for academic users only. The licence terms in full are on
+<a href="../../about/licensing/">Licensing</a>.</p>
+<p>The optional AMR screen, also called the resistance-mutation screen, runs ChroQueTas. ChroQueTas
+is not installed by conda either, and its licence allows non-commercial use only. You do not
+download it yourself. With <code>parameters.amr.chroquetas: on</code>, the workflow downloads it at run time,
+as described in <a href="../databases/#chroquetas">ChroQueTas and the FungAMR database</a>.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>self-training gene finder</strong></td>
+<td>a gene finder that learns its parameters from the genome it annotates, with no stored model; GeneMark-ES works this way</td>
+</tr>
+<tr>
+<td><strong>licence key</strong></td>
+<td>the file <code>~/.gm_key</code> that GeneMark-ES needs; it expires one year after download, and an expired key stops the run at <code>genemark_check</code>, before gene prediction</td>
+</tr>
+<tr>
+<td><strong>secretome</strong></td>
+<td>the predicted secreted proteins, which funannotate annotate lists from the SignalP 6 result in <code>annotations.secretome.txt</code>; none without SignalP 6</td>
+</tr>
+<tr>
+<td><strong>model weights</strong></td>
+<td>the trained numbers that make up a model, such as a SignalP 6 model</td>
+</tr>
+<tr>
+<td><strong>Sec/SPI</strong></td>
+<td>signal peptides of the Sec pathway, cleaved by signal peptidase I; with <code>--organism eukarya</code>, SignalP 6 predicts only these</td>
+</tr>
+<tr>
+<td><strong>pin file</strong></td>
+<td>the file <code>&lt;name&gt;.linux-64.pin.txt</code> beside each environment file: the exact package builds FunFlux v2 was tested with, installed without solving dependencies</td>
+</tr>
+<tr>
+<td><strong><code>--conda-prefix</code></strong></td>
+<td>the Snakemake option naming the folder the conda environments are built in, instead of <code>.snakemake/conda/</code> in the launch folder; several clones or users can share it</td>
+</tr>
+<tr>
+<td><strong>lookup service</strong></td>
+<td>the EBI online service that returns InterProScan matches already computed for known proteins; it receives checksums, not sequences. It did not answer InterProScan 5 in November 2026, and FunFlux does not ask it</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="genemark-es">GeneMark-ES<a class="headerlink" href="#genemark-es" title="Permanent link">¶</a></h2>
+<p>GeneMark-ES is a self-training gene finder that funannotate predict adds to AUGUSTUS, SNAP and
+GlimmerHMM. It is optional, and FunFlux uses it only when you name an installation.</p>
+<h3 id="licence-and-installation">Licence and installation<a class="headerlink" href="#licence-and-installation" title="Permanent link">¶</a></h3>
+<p>GeneMark-ES is free ("royalty free") for academic and non-profit institutions and US government
+agencies. Other users must contact the GeneMark team for a licence. Download the program and the
+licence key from <a href="https://genemark.bme.gatech.edu/license_download.cgi">https://genemark.bme.gatech.edu/license_download.cgi</a>. In October 2026, the
+download for 64-bit Linux was GeneMark-ES/ET/EP+ 4.73.</p>
+<p>The licence is valid for one year from the date of download, and the date of the key file does not
+tell when it expires. A key file dated January 2026 worked in July and had expired in October.</p>
+<p>Unpack the program, for example into <code>/path/to/gmes_linux_64_4</code>, and follow its <code>INSTALL</code> file:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>gunzip<span class="w"> </span>gm_key.gz
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>cp<span class="w"> </span>gm_key<span class="w"> </span>~/.gm_key
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">cd</span><span class="w"> </span>/path/to/gmes_linux_64_4
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>perl<span class="w"> </span>change_path_in_perl_scripts.pl<span class="w"> </span><span class="s2">"/usr/bin/env perl"</span>
+</code></pre></div>
+<p>The last command makes GeneMark's Perl scripts start the first <code>perl</code> on the <code>PATH</code> instead of
+<code>/usr/bin/perl</code>. This matters because funannotate predict starts <code>gmes_petap.pl</code> as a program, so
+the first line of the script chooses the Perl. Once the command has run, FunFlux runs GeneMark-ES
+with the Perl 5.32.1 of its <code>funannotate</code> environment. That environment contains the Perl modules
+the <code>INSTALL</code> file lists, so nothing has to be installed from CPAN. Without the command,
+GeneMark-ES runs with the computer's <code>/usr/bin/perl</code>, which often lacks those modules.</p>
+<p>The key must be <code>~/.gm_key</code> in the home folder of the account that runs Snakemake and its jobs. On
+a cluster, it must be in the home folder that the compute nodes see, as described in
+<a href="../../reference/running/#cluster-genemark">The GeneMark-ES key</a>. Do not commit or share the key
+file.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">directories</span><span class="p">:</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">genemark_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/gmes_linux_64_4</span><span class="w">   </span><span class="c1"># absolute path, holds gmes_petap.pl</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">genemark</span><span class="p">:</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span><span class="w">     </span><span class="c1"># auto: use GeneMark-ES when genemark_dir is set; off: never</span>
+</code></pre></div>
+<p>With GeneMark-ES enabled, the run stops before any job starts when <code>genemark_dir</code> is not an
+absolute path, when <code>gmes_petap.pl</code> is missing from it or not executable, or when <code>~/.gm_key</code> does
+not exist. Whether the key has expired is checked later, before gene prediction starts, as the
+next section describes.</p>
+<h3 id="the-licence-check-before-gene-prediction">The licence check before gene prediction<a class="headerlink" href="#the-licence-check-before-gene-prediction" title="Permanent link">¶</a></h3>
+<p>GeneMark-ES itself checks only that the key file exists. An expired key is found inside GeneMark's
+programs, partway through funannotate predict, which then fails with
+<code>Your license period has ended</code>. Rule <code>genemark_check</code> makes this failure show within a minute
+instead. It runs once per sample, after repeat masking. It starts GeneMark-ES the way funannotate
+does, with the options funannotate uses, on the first 200,000 bytes of the masked genome
+(<code>04.annotation/{sample}/contigs_mask.fasta</code>). funannotate predict waits for its result.</p>
+<p>What FunFlux does next depends on what GeneMark-ES prints on this slice:</p>
+<table>
+<thead>
+<tr>
+<th>GeneMark-ES output on the slice</th>
+<th>FunFlux</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mentions "license"</td>
+<td>stops: <code>[FunFlux] GeneMark-ES refused to run because of its licence (key file &lt;home&gt;/.gm_key). The key has probably expired: request a new one from the GeneMark site, or set parameters.genemark.mode: off. See &lt;log&gt;.</code></td>
+</tr>
+<tr>
+<td>contains "can't locate" or "bad interpreter"</td>
+<td>stops: <code>[FunFlux] GeneMark-ES could not start from &lt;genemark_dir&gt;: the Perl named in the first line of gmes_petap.pl (GeneMark ships it as /usr/bin/perl, the computer's own) is missing or lacks a Perl module GeneMark needs. ...</code>; the message names <code>change_path_in_perl_scripts.pl</code> as the fix</td>
+</tr>
+<tr>
+<td>contains "command not found" or "no such file"</td>
+<td>stops: <code>[FunFlux] GeneMark-ES could not start from &lt;genemark_dir&gt; (a program or a file is missing). See &lt;log&gt;.</code></td>
+</tr>
+<tr>
+<td>another error</td>
+<td>continues, because the slice may be too short to train on; <code>genemark_check.txt</code> records the exit status</td>
+</tr>
+<tr>
+<td>no error</td>
+<td>continues; <code>genemark_check.txt</code> reads <code>GeneMark-ES ran on the test slice.</code></td>
+</tr>
+</tbody>
+</table>
+<p>The check therefore stops the run only for an expired key or for a GeneMark-ES that cannot start.
+<code>genemark_check.txt</code> is written to <code>04.annotation/{sample}/</code>, and the GeneMark-ES output to
+<code>logs/genemark_check_{sample}.log</code>. After a stop, put the new key in <code>~/.gm_key</code> and start the same
+command again. The check then runs again, because a failed check leaves no result.</p>
+<h3 id="without-genemark-es">Without GeneMark-ES<a class="headerlink" href="#without-genemark-es" title="Permanent link">¶</a></h3>
+<p>With <code>genemark_dir</code> empty or <code>mode: off</code>, there is no <code>genemark_check</code> job, and funannotate predict
+runs without GeneMark-ES. Rule <code>funannotate_prediction</code> clears <code>GENEMARK_PATH</code> and limits <code>PATH</code> to
+the funannotate environment plus <code>/usr/bin</code> and <code>/bin</code>, so a GeneMark-ES installed elsewhere is not
+picked up. FunFlux v2 was tested with GeneMark-ES on, and with <code>mode: off</code> on one public genome, as
+reported in <a href="../../about/validation/#gene-finders">Validation on public genomes</a>.</p>
+<h2 id="signalp-6">SignalP 6<a class="headerlink" href="#signalp-6" title="Permanent link">¶</a></h2>
+<p>SignalP 6 finds signal peptides in the predicted proteins, and funannotate annotate turns its
+result into the secretome annotation,
+<code>04.annotation/{sample}/funannotate/annotate_misc/annotations.secretome.txt</code>. SignalP 6 is
+optional and off by default.</p>
+<h3 id="licence-and-download">Licence and download<a class="headerlink" href="#licence-and-download" title="Permanent link">¶</a></h3>
+<p>The SignalP 6 page of DTU, <a href="https://services.healthtech.dtu.dk/services/SignalP-6.0/">https://services.healthtech.dtu.dk/services/SignalP-6.0/</a>, states:
+"There is a download page for academic users; other users are requested to contact DTU Health
+Technology Software Package Manager". DTU offers version 6.0i as two packages, <code>fast</code> and
+<code>slow_sequential</code>. FunFlux never downloads SignalP and contains no DTU address. It installs the
+archive you name.</p>
+<p><code>parameters.signalp6.mode</code> chooses the model that SignalP 6 runs, and so the model that the
+archive must hold:</p>
+<table>
+<thead>
+<tr>
+<th><code>parameters.signalp6.mode</code></th>
+<th>Model the archive must hold</th>
+<th>Notes; speed and memory from the SignalP README</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>off</code> (default)</td>
+<td>none</td>
+<td></td>
+</tr>
+<tr>
+<td><code>fast</code></td>
+<td><code>distilled_model_signalp6.pt</code></td>
+<td>a smaller model that approximates the full one; the DTU package <code>fast</code> holds only this model; the mode FunFlux v2 was tested with</td>
+</tr>
+<tr>
+<td><code>slow</code></td>
+<td><code>ensemble_model_signalp6.pt</code></td>
+<td>the full model, run in parallel; needs more than 14 GB of RAM</td>
+</tr>
+<tr>
+<td><code>slow-sequential</code></td>
+<td><code>sequential_models_signalp6</code></td>
+<td>the full model, run sequentially: the memory of <code>fast</code>, 6 times slower</td>
+</tr>
+</tbody>
+</table>
+<p>FunFlux looks for the model in <code>models/</code> and in <code>signalp/model_weights/</code> of the archive.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">files</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">signalp6_archive</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/signalp-6.0i.fast.tar.gz</span><span class="w">   </span><span class="c1"># absolute path</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">signalp6</span><span class="p">:</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fast</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">archive_sha256</span><span class="p">:</span><span class="w">          </span><span class="c1"># optional: the 64-character checksum, the first field sha256sum &lt;archive&gt; prints</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">torch_num_threads</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span><span class="w">     </span><span class="c1"># threads of each signalp6_annotation job, at most resources.threads</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="nt">batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w">           </span><span class="c1"># proteins per batch (--bsize)</span>
+</code></pre></div>
+<p>With a mode other than <code>off</code>, the run stops before any job starts when <code>signalp6_archive</code> is empty,
+not an absolute path, or not a readable file.</p>
+<h3 id="how-funflux-installs-it">How FunFlux installs it<a class="headerlink" href="#how-funflux-installs-it" title="Permanent link">¶</a></h3>
+<p>FunFlux installs SignalP 6 from your archive once per output folder, and then runs it once per
+sample. The two steps appear in the log under these names:</p>
+<ol>
+<li><code>install_signalp6</code> runs once per output folder, before the first SignalP job. It checks the
+   archive against <code>archive_sha256</code> when that is set, and refuses an archive with absolute paths,
+   <code>..</code> or links in it. It then checks that the model of the chosen mode is there. It installs
+   SignalP 6 into the <code>signalp6</code> conda environment (Python 3.10, PyTorch 1.13.1 for CPU), with
+   nothing fetched from PyPI. It keeps the unpacked package, model weights included, in
+   <code>00.resources/signalp6/package/</code> (1.6 GB with the fast model), and records what it installed
+   in <code>00.resources/signalp6/installation.json</code>.</li>
+<li><code>signalp6_annotation</code> runs once per sample. It runs SignalP 6 on the predicted proteins with
+   <code>--organism eukarya</code>, the chosen <code>--mode</code>, <code>torch_num_threads</code> and <code>batch_size</code> (<code>--bsize</code>),
+   and writes the result to <code>04.annotation/{sample}/signalp6/prediction_results.txt</code>.
+   <code>--organism eukarya</code> limits the prediction to the Sec/SPI signal peptides of eukaryotes.</li>
+</ol>
+<p>The installation log is <code>logs/install_signalp6.log</code>, and its errors start with
+<code>SignalP 6 installation failed:</code>. The package inside the 6.0i <code>fast</code> archive reports version
+<code>6.0h</code>, and that is what <code>installation.json</code> records.</p>
+<h3 id="when-the-conda-environment-is-rebuilt">When the conda environment is rebuilt<a class="headerlink" href="#when-the-conda-environment-is-rebuilt" title="Permanent link">¶</a></h3>
+<p>SignalP 6 is installed inside the <code>signalp6</code> conda environment, and a new environment does not
+have it. Snakemake builds a new one when a FunFlux update changes <code>signalp6.yaml</code> or its pin file,
+when <code>--conda-prefix</code> points elsewhere, or when <code>.snakemake/conda</code> is deleted. The next SignalP job
+then stops with a message that names <code>00.resources/signalp6/installation.json</code>. Delete that file
+and start the same command again, with the environment folder writable, and SignalP 6 is installed
+again. See <a href="../../troubleshooting/#signalp-6">Troubleshooting</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">The SignalP 6 archive and its model weights must not be passed on</p>
+<p>Both are licensed. Do not commit, upload or pass on the archive or the model weights.
+<code>00.resources/signalp6/package/</code> holds the weights, so remove it before you share an output
+folder. pip also keeps a built copy of the SignalP package in the pip cache (<code>~/.cache/pip</code>)
+of the account that ran the installation. <code>pip cache remove signalp6</code> deletes that copy. With
+the <code>fast</code> archive, whose weights sit in <code>models/</code>, that copy holds no weights. With an archive
+whose weights sit in <code>signalp/model_weights/</code>, pip puts the weights into the pip cache and
+into the <code>signalp6</code> conda environment as well, and so into a shared <code>--conda-prefix</code>.</p>
+</div>
+<h3 id="without-signalp-6">Without SignalP 6<a class="headerlink" href="#without-signalp-6" title="Permanent link">¶</a></h3>
+<p>With <code>mode: off</code>, no SignalP job runs and funannotate annotate gets no SignalP result. The log of
+funannotate annotate then reads <code>Skipping secretome: neither SignalP nor Phobius searches were run</code>.
+Rule <code>funannotate_annotation</code> limits <code>PATH</code> to the funannotate environment plus <code>/usr/bin</code> and
+<code>/bin</code>, so a SignalP installed elsewhere is not picked up.</p>
+<h2 id="interproscan">InterProScan<a class="headerlink" href="#interproscan" title="Permanent link">¶</a></h2>
+<p>InterProScan assigns protein families, domains and GO terms to every predicted protein, and
+funannotate annotate builds the domain and GO annotation from its XML. Every run needs it.
+InterProScan 5 is not on bioconda, so FunFlux runs the <code>interproscan.sh</code> of your installation
+inside its <code>interproscan</code> environment. That environment supplies Java (OpenJDK 11.0.30) and the
+Python 3 (3.11.15) that InterProScan runs for seven of its analyses: Gene3D, FunFam, HAMAP,
+MobiDB-lite, PANTHER, PIRSR and the PROSITE profiles.</p>
+<div class="admonition note">
+<p class="admonition-title">FunFlux v2 runs InterProScan 5, not InterProScan 6</p>
+<p>FunFlux v2 was tested with InterProScan 5.78-109.0, the final release of InterProScan 5.
+Later InterPro releases need InterProScan 6, a different program that FunFlux v2 does not use.</p>
+</div>
+<h3 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">¶</a></h3>
+<p>The InterProScan documentation gives these steps for 5.78-109.0, a 7.0 GB download that takes
+50 GB once installed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/path/to/software<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/path/to/software
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>wget<span class="w"> </span>https://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/5.78-109.0/interproscan-5.78-109.0-64-bit.tar.gz
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>wget<span class="w"> </span>https://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/5.78-109.0/interproscan-5.78-109.0-64-bit.tar.gz.md5
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>md5sum<span class="w"> </span>-c<span class="w"> </span>interproscan-5.78-109.0-64-bit.tar.gz.md5
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>tar<span class="w"> </span>-pxvzf<span class="w"> </span>interproscan-5.78-109.0-64-bit.tar.gz
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nb">cd</span><span class="w"> </span>interproscan-5.78-109.0
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>python3<span class="w"> </span>setup.py<span class="w"> </span>-f<span class="w"> </span>interproscan.properties
+</code></pre></div>
+<p><code>setup.py</code> indexes the HMM databases, and <code>-f</code> re-indexes all of them. The InterProScan
+documentation also requires Perl 5 and Python 3.8 or newer on the machine. In a FunFlux run, both
+come from the <code>interproscan</code> environment (Python 3.11, Perl 5.32 with thread support), together
+with Java 11.</p>
+<p>To test the installation by hand, use the environment FunFlux runs InterProScan in. It is built
+from the pinned package list in the FunFlux repository and holds the same Java, Python and Perl,
+so the test runs as it would in FunFlux on any Linux system. On a system without Python 3.8 or
+newer, run <code>setup.py</code> in this environment too:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>interproscan_test<span class="w"> </span>--file<span class="w"> </span>/path/to/FunFlux/workflow/envs/interproscan.linux-64.pin.txt
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>conda<span class="w"> </span>activate<span class="w"> </span>interproscan_test
+</code></pre></div>
+<p>The InterProScan documentation gives two test commands, run in the installation folder:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>./interproscan.sh<span class="w"> </span>-i<span class="w"> </span>test_all_appl.fasta<span class="w"> </span>-f<span class="w"> </span>tsv<span class="w"> </span>-dp<span class="w">   </span><span class="c1"># every analysis computed locally</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>./interproscan.sh<span class="w"> </span>-i<span class="w"> </span>test_all_appl.fasta<span class="w"> </span>-f<span class="w"> </span>tsv<span class="w">       </span><span class="c1"># also contacts EBI's lookup service</span>
+</code></pre></div>
+<p>FunFlux runs InterProScan as in the first command, with <code>-dp</code>. The second command also asks EBI's
+lookup service, which did not answer InterProScan 5 in November 2026; InterProScan then printed an
+error before it computed every match itself.</p>
+<p>Then point <code>files.iprscan</code> at the <code>interproscan.sh</code> of the installation:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">files</span><span class="p">:</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">iprscan</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/software/interproscan-5.78-109.0/interproscan.sh</span>
+</code></pre></div>
+<h3 id="what-funflux-runs">What FunFlux runs<a class="headerlink" href="#what-funflux-runs" title="Permanent link">¶</a></h3>
+<p>Rule <code>iprscan_annotation</code> runs InterProScan once per sample, on the protein FASTA of funannotate
+predict:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>interproscan.sh -i &lt;proteins&gt; -f XML -goterms -pa -dp -cpu &lt;threads&gt;
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>                -T 04.annotation/{sample}/iprscan/tmp
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>                -o 04.annotation/{sample}/iprscan/interproscan_out.xml
+</code></pre></div>
+<ul>
+<li><strong>Threads and run time.</strong> InterProScan is capped at 10 threads (<code>-cpu</code>), because it gains little
+  from more. Snakemake reserves the 10 threads for the whole job, and with <code>--cores 24</code>
+  eggNOG-mapper (12 threads) runs beside it. InterProScan takes several hours for a fungal
+  proteome, because it computes every match itself: 4.0 to 6.6 hours for about 11,800 proteins of
+  <em>B. cinerea</em> B05.10 in the <a href="../../about/validation/#assembly">validation runs</a> made with
+  FunFlux 2.1.0. The XML can be a few GB.</li>
+<li><strong>The XML check.</strong> FunFlux calls InterProScan directly, not through <code>funannotate iprscan</code>. Before
+  funannotate annotate reads the XML, FunFlux checks that it parses and has the root element
+  <code>protein-matches</code>. If it does not, the rule stops with
+  <code>InterProScan XML validation failed for ...</code>.</li>
+<li><strong>The lookup service.</strong> FunFlux passes <code>-dp</code>, so InterProScan does not ask EBI's lookup service
+  for matches already computed for known proteins. The service did not answer InterProScan 5 in
+  November 2026: run without <code>-dp</code>, InterProScan failed its version check and wrote an error into
+  its log. With <code>-dp</code>, InterProScan needs no internet, and
+  <code>precalculated.match.lookup.service.url</code> in <code>interproscan.properties</code> does not matter to
+  FunFlux. See <a href="../../analysis/functional-annotation/#interproscan">Functional annotation</a>.</li>
+<li><strong>Licensed analyses.</strong> Phobius, SignalP and TMHMM are switched off in the InterProScan download
+  because they contain licensed components. FunFlux does not switch them on, and SignalP 6 is its
+  own optional step.</li>
+</ul>
+<h3 id="missing-interproscan">Missing InterProScan<a class="headerlink" href="#missing-interproscan" title="Permanent link">¶</a></h3>
+<p>InterProScan cannot be switched off, because funannotate annotate needs its result. What happens
+without it depends on <code>files.iprscan</code>:</p>
+<table>
+<thead>
+<tr>
+<th><code>files.iprscan</code></th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>empty</td>
+<td>the run stops before any job starts with <code>[FunFlux] files.iprscan: required, but it is missing or empty in the config.</code></td>
+</tr>
+<tr>
+<td>a path that does not exist</td>
+<td>a NOTE before any job starts, <code>[FunFlux] NOTE: files.iprscan '&lt;path&gt;' does not exist on this machine; the InterProScan step will fail without it.</code>; then <code>iprscan_annotation</code> fails when it starts, after gene prediction</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">A <code>files.iprscan</code> path that does not exist only prints a NOTE, and the run fails after gene prediction</p>
+<p>A NOTE does not stop the run, so a missing InterProScan shows only when <code>iprscan_annotation</code>
+starts. Read the NOTEs of the <a href="../../reference/running/#dry-run">dry run</a>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

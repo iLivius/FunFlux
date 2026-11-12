@@ -1,0 +1,3709 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/reference/running/">
+      
+      
+        <link rel="prev" href="../output/">
+      
+      
+        <link rel="next" href="../../troubleshooting/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Running FunFlux - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#running-funflux" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Running FunFlux
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/external-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/from-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/longread/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/mitochondria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/assembly-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/contig-summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/gene-prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/adapter-trimming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adapter trimming and the adapter screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#dry-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dry run
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cpu-cores-and-threads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CPU cores and threads
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conda-environments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conda environments
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resuming-after-an-interruption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resuming after an interruption
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-makes-snakemake-re-run-a-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What makes Snakemake re-run a rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-several-batches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running several batches
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#on-a-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On a cluster
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="On a cluster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cluster-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preparation, on a computer with internet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-run-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run A: Snakemake sends each step to Slurm
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Run A: Snakemake sends each step to Slurm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cluster-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the settings reach Slurm
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-run-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run B: the whole run in one batch job
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Run B: the whole run in one batch job">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-batch-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A batch script
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-busco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUSCO on compute nodes without internet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-genemark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The GeneMark-ES key
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning up
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#dry-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dry run
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cpu-cores-and-threads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CPU cores and threads
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conda-environments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conda environments
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resuming-after-an-interruption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resuming after an interruption
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-makes-snakemake-re-run-a-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What makes Snakemake re-run a rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-several-batches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running several batches
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#on-a-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On a cluster
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="On a cluster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cluster-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preparation, on a computer with internet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-run-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run A: Snakemake sends each step to Slurm
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Run A: Snakemake sends each step to Slurm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cluster-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the settings reach Slurm
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-run-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run B: the whole run in one batch job
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Run B: the whole run in one batch job">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-batch-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A batch script
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-busco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUSCO on compute nodes without internet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-genemark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The GeneMark-ES key
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning up
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/reference/running.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="running-funflux">Running FunFlux<a class="headerlink" href="#running-funflux" title="Permanent link">¶</a></h1>
+<p>This page describes how to launch FunFlux and how to manage a run. It covers the dry run, CPU
+cores and memory, conda environments and run times. It also explains what to do when a run stops
+or a step must run again, how to run several batches or use a cluster, and what to remove before
+you share an output folder. Read it before the first run.</p>
+<p>A run starts from the repository root, with a dry run first:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>/path/to/FunFlux
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>cp<span class="w"> </span>config/config.yaml<span class="w"> </span>config/config_custom.yaml<span class="w">     </span><span class="c1"># once; edit the copy</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># check the configuration and list the jobs, without running anything</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--cores<span class="w"> </span><span class="m">24</span><span class="w"> </span>--configfile<span class="w"> </span>config/config_custom.yaml<span class="w"> </span>-n
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># run</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--cores<span class="w"> </span><span class="m">24</span><span class="w"> </span>--configfile<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+<p>The configuration must be named with <code>--configfile</code>, and without it the run stops with
+<code>[FunFlux] No configuration supplied.</code> FunFlux has no default configuration, so nothing missing
+from your copy is filled in from the template. <code>config/config_custom.yaml</code> is ignored by git, so a
+<code>git pull</code> leaves it alone. Every key is described on <a href="../configuration/">Configuration</a>.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>launch folder</strong></td>
+<td>the folder Snakemake is started from, normally the FunFlux repository; relative paths are read from it, and <code>.snakemake/</code> is created there</td>
+</tr>
+<tr>
+<td><strong>dry run</strong></td>
+<td>a Snakemake run with <code>-n</code>: FunFlux checks the configuration and the inputs, and Snakemake lists the jobs it plans without running any</td>
+</tr>
+<tr>
+<td><strong>rule</strong></td>
+<td>one step of the workflow as Snakemake defines it, such as <code>select_contigs</code>; the console and the log files in <code>logs/</code> use its name</td>
+</tr>
+<tr>
+<td><strong>job</strong></td>
+<td>one run of a rule, for one sample or once for the whole run</td>
+</tr>
+<tr>
+<td><strong>lock</strong></td>
+<td>the record, in <code>.snakemake/</code>, of the files a run in progress reads and writes; a killed run leaves it behind, and <code>--unlock</code> removes it</td>
+</tr>
+<tr>
+<td><strong>batch</strong></td>
+<td>the samples one run finds in its mode's input folder; files of one kind share one extension</td>
+</tr>
+<tr>
+<td><strong>heavy step, long step, light step</strong></td>
+<td>on a cluster, heavy steps ask the scheduler for <code>ram_gb</code> and <code>runtime_hours</code>, long steps for <code>runtime_hours</code> only, and light steps for neither</td>
+</tr>
+<tr>
+<td><strong>login node, compute node</strong></td>
+<td>on a cluster, the computer you log in to, which usually has internet, and the machines the scheduler runs the jobs on, which may have none</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Launch from the repository root every time, because three things depend on the launch folder:</p>
+<ul>
+<li><code>workflow/Snakefile</code> is found there without <code>--snakefile</code>.</li>
+<li><code>.snakemake/</code> is created there. It holds Snakemake's record of how each output was made, its
+  locks, the markers of unfinished jobs, its run logs and, by default, the conda environments.</li>
+<li>Relative paths in the configuration are read from there, by Snakemake and by every job.</li>
+</ul>
+<p>FunFlux treats the paths in the configuration in three ways:</p>
+<table>
+<thead>
+<tr>
+<th>Paths</th>
+<th>A relative path is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>directories.output_dir</code>, the database folders, <code>files.iprscan</code>, <code>files.annotation_params</code>, the protein paths in the annotation parameter table</td>
+<td>turned into an absolute path when FunFlux starts</td>
+</tr>
+<tr>
+<td>the <code>input.*_dir</code> folders, the decontamination tables</td>
+<td>used as given</td>
+</tr>
+<tr>
+<td><code>directories.genemark_dir</code>, <code>files.signalp6_archive</code></td>
+<td>not allowed: these must be absolute</td>
+</tr>
+</tbody>
+</table>
+<p>With absolute paths throughout, a configuration works from any launch folder.</p>
+<h2 id="dry-run">Dry run<a class="headerlink" href="#dry-run" title="Permanent link">¶</a></h2>
+<p>A dry run shows whether a configuration is ready, without running anything. <code>-n</code> (<code>--dry-run</code>)
+runs every FunFlux check, builds the job list and stops. FunFlux checks the configuration before
+Snakemake plans any job, so a dry run takes seconds:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>What the dry run does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a wrong mode, a missing input folder, a bad sample name, a missing row in the annotation table, a mistyped key; when the contamination and mitochondrion screen runs, a decontamination table that is missing or malformed, or a sample in <code>include</code> mode without a genus</td>
+<td>the first failed check prints a <code>[FunFlux]</code> message and stops (<a href="../../troubleshooting/#stops-before-any-job-runs">Troubleshooting</a>)</td>
+</tr>
+<tr>
+<td>a missing eggNOG or InterProScan path (these are only tested for existence)</td>
+<td>prints a <code>[FunFlux] NOTE:</code>; the run fails later, in that rule</td>
+</tr>
+<tr>
+<td>a missing <code>directories.blast_db</code>, with the screen on</td>
+<td>prints the same NOTE, then stops with <code>MissingInputException in rule blob_json</code> (<code>blob_guide_json</code> in <code>hybrid</code> mode): the screen needs <code>nodes.dmp</code> and <code>names.dmp</code> from that folder</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">A missing eggNOG or InterProScan path does not stop the dry run</p>
+<p>Most configuration mistakes stop the dry run. These two paths only get a NOTE, and the run
+fails when the rule that reads them starts.</p>
+</div>
+<p>A dry run first prints the FunFlux banner and the settings FunFlux read, with any
+<code>[FunFlux] NOTE:</code> lines among them:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Mode: contigs — Annotation of fungal genome assemblies you already have.
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>[FunFlux] NOTE: contigs mode without parameters.contigs.screen: your FASTA gets no contamination or mitochondrion screen. ...
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Decontamination mode: off (discard_no_hit=false).
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>GeneMark-ES: off (funannotate runs its no-GeneMark branch).
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Tiberius: on (its gene models join the others in EVidenceModeler, weight 1).
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>SignalP 6: off.
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>Contig summary: telomere motif auto (the repeat unit is chosen from the data), a telomere from 5 tandem copies within 25000 bp of a contig end, an rDNA array from 3 rDNA unit(s).
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>AMR screen: off.
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>Sample SAMPLE1 will be processed.
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>AUGUSTUS: SAMPLE1 is trained on its BUSCO genes (checked once the database is unpacked).
+</code></pre></div>
+<p>Then comes Snakemake's plan:</p>
+<ul>
+<li><code>Conda environment workflow/envs/&lt;name&gt;.yaml will be created.</code> for each environment not built
+  yet</li>
+<li>the <code>Job stats</code> table</li>
+<li>one block per job, with its <code>reason:</code></li>
+<li><code>Would remove temporary output &lt;path&gt;</code> for each temporary file</li>
+<li>last, <code>This was a dry-run (flag -n). The order of jobs does not reflect the order of execution.</code></li>
+</ul>
+<p>When the output is redirected to a file, FunFlux's lines can land after Snakemake's.</p>
+<p>Check the <code>Job stats</code>. With Tiberius on, and GeneMark-ES, SignalP 6 and the AMR screen (the
+resistance-mutation screen) off, the first run of one sample plans:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Per sample</th>
+<th>Once per run</th>
+<th>First run, one sample</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>illumina</code></td>
+<td>35</td>
+<td>12</td>
+<td>47</td>
+</tr>
+<tr>
+<td><code>longread</code></td>
+<td>35, plus <code>find_ont_adapter</code>, <code>trim_ont_adapters</code> and <code>check_ont_trimming</code> for an ONT sample (unless <code>ont_adapter</code> is <code>off</code>), and <code>check_medaka_model</code> and <code>long_read_consensus</code> for an ONT sample with Medaka</td>
+<td>10</td>
+<td>45 (PacBio HiFi) or 50 (ONT with Medaka)</td>
+</tr>
+<tr>
+<td><code>hybrid</code></td>
+<td>50, plus the same five for an ONT sample</td>
+<td>12</td>
+<td>62 (PacBio HiFi) or 67 (ONT with Medaka)</td>
+</tr>
+<tr>
+<td><code>contigs</code></td>
+<td>21; the screen adds 8</td>
+<td>10</td>
+<td>31; 39 with the screen</td>
+</tr>
+</tbody>
+</table>
+<p><code>illumina</code> and <code>hybrid</code> add <code>download_phix</code> and <code>build_phix</code> to the jobs that run once per run.
+The other once-per-run jobs are <code>normalize_funannotate_db</code>, <code>antismash_db</code> or
+<code>antismash_db_local</code>, <code>unite_db</code> or <code>unite_db_local</code>, <code>telomere_db</code>, <code>univec_illumina</code>, <code>multiqc</code>
+and <code>all</code>. Six
+more are added only when their condition holds. The counts in the table include the first three,
+which hold on a first run with the default settings; with the funannotate database already in
+place, <code>funannotate_db</code> drops out and every count is one lower:</p>
+<ul>
+<li><code>funannotate_db</code>, only while the database is missing</li>
+<li><code>unite_identified</code>, unless <code>parameters.its.unite_identified_only</code> is <code>false</code></li>
+<li><code>tiberius_model</code>, with Tiberius on</li>
+<li><code>install_signalp6</code>, with SignalP 6 on</li>
+<li><code>chroquetas_db</code>, with the AMR screen on</li>
+<li><code>busco_data</code>, for a named BUSCO lineage</li>
+</ul>
+<p>The optional steps change these counts in every mode:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Jobs per sample</th>
+<th>Once per run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tiberius off</td>
+<td>2 fewer (a <code>contigs</code> sample without the screen: 19 instead of 21)</td>
+<td><code>tiberius_model</code> left out</td>
+</tr>
+<tr>
+<td>GeneMark-ES on</td>
+<td>1 more</td>
+<td></td>
+</tr>
+<tr>
+<td>SignalP 6 on</td>
+<td>1 more</td>
+<td><code>install_signalp6</code> added</td>
+</tr>
+<tr>
+<td>AMR screen on</td>
+<td>1 more (<code>amr_chroquetas</code>)</td>
+<td><code>chroquetas_db</code> added</td>
+</tr>
+<tr>
+<td><code>parameters.its.unite_identified_only: false</code></td>
+<td></td>
+<td><code>unite_identified</code> left out</td>
+</tr>
+<tr>
+<td><code>parameters.busco.lineage</code> names a lineage</td>
+<td></td>
+<td><code>busco_data</code> added</td>
+</tr>
+<tr>
+<td><code>parameters.contigs.screen: true</code> (<code>contigs</code> mode only)</td>
+<td>8 more</td>
+<td></td>
+</tr>
+<tr>
+<td><code>parameters.&lt;mode&gt;.ont_adapter: off</code> (ONT samples in <code>longread</code> and <code>hybrid</code>)</td>
+<td>3 fewer</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>For example, the first run of one <code>contigs</code> sample without the screen plans 31 jobs, and 33 with
+the AMR screen on. A batch of one ONT sample, with Medaka, and one PacBio sample plans 85 jobs in
+<code>longread</code> mode and 117 in <code>hybrid</code> mode, and 88 and 120 with the AMR screen on. On a finished output folder, a dry run prints
+<code>Nothing to be done (all requested files are present and up to date).</code></p>
+<h2 id="cpu-cores-and-threads">CPU cores and threads<a class="headerlink" href="#cpu-cores-and-threads" title="Permanent link">¶</a></h2>
+<p><code>--cores N</code> is the only CPU setting. Give it the same number as <code>resources.threads</code>.</p>
+<p>Snakemake starts a job only when the threads it asks for fit into what is left of N, and keeps
+them reserved until the job ends. Each step asks for what its tool can use. The assemblers, the
+read mappings, Tiberius and funannotate predict take every thread, while the other multi-threaded
+tools are capped, so that several run side by side. In the table, "up to 12" means 12, or
+<code>resources.threads</code> when that is smaller:</p>
+<table>
+<thead>
+<tr>
+<th>Threads asked for</th>
+<th>Steps (rule names as in the console)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>resources.threads</code></td>
+<td>SPAdes (<code>illumina_assembly</code>), hifiasm or Flye (<code>long_read_assembly</code>), Tiberius (<code>tiberius_prediction</code>), funannotate predict (<code>funannotate_prediction</code>); the read mappings: PhiX removal (<code>map_phix</code>), the coverage track (<code>map_contigs</code>) and, in <code>hybrid</code>, the guide mapping and the read selection (<code>map_guide_contigs</code>, <code>map_sel_contigs</code>)</td>
+</tr>
+<tr>
+<td>up to 24</td>
+<td>BLAST (<code>blast_contigs</code>, <code>blast_guide_contigs</code>), QUAST (<code>genome_assembly_evaluation</code>), BUSCO (<code>completeness</code>), Qualimap (<code>map_evaluation</code>, <code>map_guide_evaluation</code>), bwa mem before Polypolish (<code>short_read_correction</code>; Polypolish itself runs on one thread)</td>
+</tr>
+<tr>
+<td>up to 16</td>
+<td>fastp (<code>trim_adapters</code>), fastplong (<code>trim_ont_adapters</code>)</td>
+</tr>
+<tr>
+<td>up to 12</td>
+<td>Medaka (<code>long_read_consensus</code>), RepeatModeler and RepeatMasker (<code>repeat_masking</code>), antiSMASH (<code>antismash_annotation</code>), eggNOG-mapper (<code>eggnog_annotation</code>), funannotate annotate (<code>funannotate_annotation</code>)</td>
+</tr>
+<tr>
+<td>up to 10</td>
+<td>InterProScan (<code>iprscan_annotation</code>)</td>
+</tr>
+<tr>
+<td>up to 8</td>
+<td>nhmmer (<code>its_windows</code>), ITSx (<code>its_extraction</code>), NanoPlot (<code>raw_long_read_qc</code>, <code>filtered_long_read_qc</code>)</td>
+</tr>
+<tr>
+<td><code>parameters.signalp6.torch_num_threads</code> (default 8), at most <code>resources.threads</code></td>
+<td>SignalP 6 (<code>signalp6_annotation</code>)</td>
+</tr>
+<tr>
+<td>up to 4</td>
+<td>ChroQueTas, which hands them to miniprot and MAFFT (<code>amr_chroquetas</code>)</td>
+</tr>
+<tr>
+<td>up to 2</td>
+<td>funannotate clean (<code>funannotate_preprocess</code>)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>every other step, among them SINTAX (<code>its_classification</code>), Filtlong (<code>filter_long_reads</code>), the bowtie2 indexes (<code>build_phix</code>, <code>index_contigs</code>, <code>index_guide_contigs</code>, <code>index_selected_contigs</code>), the Medaka model check (<code>check_medaka_model</code>) and the GeneMark-ES licence test (<code>genemark_check</code>)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>With <code>--cores</code> equal to <code>resources.threads</code>, a step that asks for every thread runs alone.
+  InterProScan holds its 10 threads for hours, and eggNOG-mapper (12) and the ITS steps (8, 8, 1)
+  are capped so that they can run beside it.</li>
+<li>In <code>hybrid</code>, the guide BLAST and the long-read BLAST of a sample each ask for 24 threads, so
+  with <code>--cores 24</code> they run one after the other.</li>
+<li>At the start, Snakemake prints <code>Provided cores: N</code> and
+  <code>Rules claiming more threads will be scaled down.</code>, which means that a step asking for more
+  than N gets N.</li>
+<li>Two steps use a little more than they ask for. RepeatMasker's <code>-pa</code> counts parallel batches,
+  and each batch can run several RMBlast threads. <code>funannotate clean</code> runs 2 minimap2 searches at
+  a time, and each starts 3 threads.</li>
+<li>A <code>parameters.signalp6.torch_num_threads</code> above <code>resources.threads</code> is lowered to
+  <code>resources.threads</code>, with a NOTE.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Do not add <code>--jobs</code> on a single computer</p>
+<p>For a local run, Snakemake treats <code>--jobs</code> (<code>-j</code>) as another name for <code>--cores</code>. Passing both
+can let the rules use more CPUs than the machine has, so use <code>--cores</code> alone. On a cluster it
+is the other way round: <code>--executor slurm</code> needs <code>--jobs</code> (see <a href="#on-a-cluster">On a cluster</a>).</p>
+</div>
+<p>Snakemake does not limit memory on its own. <code>resources.ram_gb</code> reaches two steps:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Gets <code>resources.ram_gb</code> as</th>
+<th>To cap how many run at once</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SPAdes (<code>illumina_assembly</code>)</td>
+<td>its memory limit, <code>-m</code></td>
+<td><code>--resources mem_gb=N</code></td>
+</tr>
+<tr>
+<td>Qualimap (<code>map_evaluation</code>; in <code>hybrid</code> also <code>map_guide_evaluation</code>)</td>
+<td>its Java heap: the smaller of <code>ram_gb</code> and 64 GB</td>
+<td><code>--resources java_mem=N</code></td>
+</tr>
+</tbody>
+</table>
+<p>Snakemake passes the value on but limits nothing unless you ask it to. With
+<code>--resources mem_gb=N</code>, it starts only as many SPAdes jobs as fit into N GB at the same time.
+Changing <code>ram_gb</code> re-runs nothing. On a cluster, <code>ram_gb</code> is also the memory every heavy step asks
+the scheduler for, as described under <a href="#cluster-resources">How the settings reach Slurm</a>.
+InterProScan's Java heap is set in its own <code>interproscan.sh</code> (see
+<a href="../../troubleshooting/#interproscan">Troubleshooting</a>).</p>
+<h2 id="conda-environments">Conda environments<a class="headerlink" href="#conda-environments" title="Permanent link">¶</a></h2>
+<p><code>--sdm conda</code>, short for <code>--software-deployment-method conda</code>, makes Snakemake build one conda
+environment per tool from <code>workflow/envs/&lt;name&gt;.yaml</code> the first time a rule needs it, and run the
+rule inside it. The exact package builds come from <code>workflow/envs/&lt;name&gt;.linux-64.pin.txt</code> next to
+each file, captured from tested environments. Besides Snakemake, only InterProScan and the
+licensed tools are installed by hand, as described on
+<a href="../../getting-started/installation/">Installation</a> and
+<a href="../../getting-started/external-tools/">Licensed and external tools</a>.</p>
+<p>Building needs network access, once per environment. A <code>contigs</code> run builds 15 environments by
+default and a <code>hybrid</code> run up to 27. The full list is on
+<a href="../../getting-started/installation/#sdm-conda">Installation</a>.</p>
+<p>The environments are stored in <code>.snakemake/conda/</code> of the launch folder. <code>--conda-prefix</code> stores
+them elsewhere, so that several clones or launch folders share one set:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--conda-prefix<span class="w"> </span>/path/to/funflux_envs<span class="w"> </span>--cores<span class="w"> </span><span class="m">24</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span>--configfile<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+<p>The environments are built once and reused. The table lists two options that act on them, and
+what happens when they move or are deleted:</p>
+<table>
+<thead>
+<tr>
+<th>Option or event</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--conda-create-envs-only</code></td>
+<td>builds the environments and exits (<a href="../../getting-started/installation/#build-in-advance">Building the environments in advance</a>)</td>
+</tr>
+<tr>
+<td><code>--list-conda-envs</code> (with <code>--sdm conda --configfile ...</code>)</td>
+<td>prints the folder of each environment, for example to run <code>funannotate setup</code> inside the funannotate one with <code>conda activate &lt;folder&gt;</code></td>
+</tr>
+<tr>
+<td>another <code>--conda-prefix</code>, or the prefix moved, for runs from the same launch folder</td>
+<td>new environments, and the finished steps run again: Snakemake records where each step's environment was, and a step whose environment now sits elsewhere runs again (<code>Software environment definition has changed since last execution</code>), with every step after it</td>
+</tr>
+<tr>
+<td>a deleted <code>.snakemake/conda/</code> or prefix folder</td>
+<td>new environments in the same place; finished steps are kept</td>
+</tr>
+<tr>
+<td>either of the two rows above, with SignalP 6 on</td>
+<td>SignalP 6 was installed into the old signalp6 environment and has to be installed again: delete <code>00.resources/signalp6/installation.json</code> in the output folder (<a href="../../troubleshooting/#signalp-6">Troubleshooting</a>)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Keep one <code>--conda-prefix</code> for an output folder</p>
+<p>A new place for the environments means building them, and installing SignalP 6, again. From
+the same launch folder, it also re-runs every finished step.</p>
+</div>
+<p>Every job runs with <code>PYTHONNOUSERSITE=1</code>, so packages installed with <code>pip install --user</code> cannot
+be used instead of those of an environment.</p>
+<h2 id="run-time">Run time<a class="headerlink" href="#run-time" title="Permanent link">¶</a></h2>
+<p>One fungal genome in <code>contigs</code> mode takes several hours:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Time for one fungal genome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>InterProScan</td>
+<td>usually a few hours for a fungal proteome</td>
+</tr>
+<tr>
+<td>Tiberius</td>
+<td>about half an hour for a 40 Mb genome, with about 16 GB of memory</td>
+</tr>
+<tr>
+<td>GeneMark-ES licence test</td>
+<td>about one minute</td>
+</tr>
+<tr>
+<td>repeat masking with tantan</td>
+<td>seconds</td>
+</tr>
+<tr>
+<td>repeat masking with <code>masking_method: repeatmodeler_repeatmasker</code></td>
+<td>far longer than with tantan (<a href="../../analysis/repeat-masking/">Repeat masking</a>)</td>
+</tr>
+<tr>
+<td>most other steps</td>
+<td>minutes</td>
+</tr>
+</tbody>
+</table>
+<p>Tiberius, gene prediction, InterProScan and funannotate annotate run one after the other, so
+these steps set the length of a run. Because eggNOG-mapper is capped at 12 threads, it can run
+beside InterProScan with <code>--cores</code> 22 or more. With fewer, one of the two waits for the other. The
+read-based modes add read processing and assembly before this chain, and polishing where it runs
+(<code>hybrid</code>, and ONT samples with Medaka in <code>longread</code>).</p>
+<p>Whole runs from reads, one sample each, took 6.6 to 11.1 hours on 16 to 32 cores, on two public
+genomes (<a href="../../about/validation/">Validation on public genomes</a>). The four runs with ONT reads were
+made with FunFlux 2.1.0, the other four with FunFlux 2.0.0:</p>
+<table>
+<thead>
+<tr>
+<th>Genome</th>
+<th>Mode and reads</th>
+<th>Assembler</th>
+<th>Cores</th>
+<th>Run time (h)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Botrytis cinerea</em> B05.10, 42.6 Mb</td>
+<td><code>illumina</code>, Illumina 79x</td>
+<td>SPAdes</td>
+<td>24</td>
+<td>7.9</td>
+</tr>
+<tr>
+<td></td>
+<td><code>longread</code>, ONT 136x</td>
+<td>hifiasm</td>
+<td>28</td>
+<td>10.6</td>
+</tr>
+<tr>
+<td></td>
+<td><code>longread</code>, ONT 136x</td>
+<td>Flye</td>
+<td>20</td>
+<td>9.8</td>
+</tr>
+<tr>
+<td></td>
+<td><code>longread</code>, ONT 42x, with Medaka</td>
+<td>hifiasm</td>
+<td>16</td>
+<td>9.2</td>
+</tr>
+<tr>
+<td></td>
+<td><code>hybrid</code>, ONT 136x plus Illumina 79x</td>
+<td>hifiasm</td>
+<td>32</td>
+<td>11.1</td>
+</tr>
+<tr>
+<td><em>Cordyceps cateniannulata</em> GXU-8616, 32.7 Mb</td>
+<td><code>longread</code>, PacBio HiFi 85x</td>
+<td>hifiasm</td>
+<td>24</td>
+<td>6.6</td>
+</tr>
+<tr>
+<td></td>
+<td><code>longread</code>, PacBio HiFi 85x</td>
+<td>Flye</td>
+<td>20</td>
+<td>7.3</td>
+</tr>
+<tr>
+<td></td>
+<td><code>hybrid</code>, PacBio HiFi 85x plus MGISEQ short reads 2 x 150 bp, 151x</td>
+<td>hifiasm</td>
+<td>24</td>
+<td>7.8</td>
+</tr>
+</tbody>
+</table>
+<p>The runs shared one server with other runs going on at the same time, so the times are indicative
+only.</p>
+<ul>
+<li><strong>Run time</strong> is that of the main Snakemake run, from the first to the last time stamp of its log.</li>
+<li><strong>The Flye run on GXU-8616</strong> took two attempts, because InterProScan failed once and the run was
+  started again by hand. Its run time, 7.3 h, is the sum of the two attempts, 3.7 and 3.6 h
+  (<a href="../../about/validation/#hifi-assembly">Validation</a>).</li>
+</ul>
+<h2 id="resuming-after-an-interruption">Resuming after an interruption<a class="headerlink" href="#resuming-after-an-interruption" title="Permanent link">¶</a></h2>
+<p>Start the same command again from the same launch folder. Snakemake skips every job whose outputs
+exist and are up to date and runs the rest. The launch folder matters, because its <code>.snakemake/</code>
+records which outputs were being written when the run stopped.</p>
+<table>
+<thead>
+<tr>
+<th>Snakemake prints</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Error: Directory cannot be locked. ...</code></td>
+<td>A killed run (kill signal, power loss) left its lock. If no other Snakemake process runs from this folder, run the same command with <code>--unlock</code>, then the command again.</td>
+</tr>
+<tr>
+<td><code>The files below seem to be incomplete. ...</code></td>
+<td>Jobs were running when the run stopped; their outputs may be half-written. Add <code>--rerun-incomplete</code> (<code>--ri</code>): those jobs start again from the beginning.</td>
+</tr>
+<tr>
+<td><code>Exiting because a job execution failed. Look below for error messages</code></td>
+<td>A job failed and Snakemake deleted its outputs (<code>Removing output files of failed job ...</code>). The block <code>Error in rule &lt;rule&gt;:</code> names the log; fix the cause and run again (<a href="../../troubleshooting/">Troubleshooting</a>).</td>
+</tr>
+</tbody>
+</table>
+<p>Run the same command again, and add <code>--unlock</code> or <code>--rerun-incomplete</code> only when Snakemake prints
+the matching message:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--cores<span class="w"> </span><span class="m">24</span><span class="w"> </span>--configfile<span class="w"> </span>config/config_custom.yaml<span class="w"> </span>--unlock
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--cores<span class="w"> </span><span class="m">24</span><span class="w"> </span>--configfile<span class="w"> </span>config/config_custom.yaml<span class="w"> </span>--rerun-incomplete
+</code></pre></div>
+<ul>
+<li><code>--unlock</code> needs <code>--configfile</code> as well, because FunFlux reads the configuration before
+  Snakemake removes the lock, and stops without one.</li>
+<li><code>--keep-going</code> (<code>-k</code>) lets the jobs that do not depend on a failed job carry on, so the other
+  samples of a batch finish. It covers failures of running jobs, not <code>[FunFlux]</code> stops.</li>
+<li>A resumed run does not download or install again what is already in <code>00.resources/</code>. That
+  covers the UNITE reference, the antiSMASH database, the telomere repeat database, the SignalP 6
+  installation, ChroQueTas and its database, the data of a named BUSCO lineage and the repaired
+  funannotate database paths. The funannotate database is not downloaded again either: it is
+  downloaded only while <code>funannotate-db-info.txt</code> is missing from <code>directories.funannotate_db</code>.
+  With <code>parameters.busco.lineage: auto</code>, BUSCO downloads its lineage datasets again in every
+  BUSCO job.</li>
+<li>Snakemake deletes the log of a job when it starts that job again, so copy the log of a failed
+  job before you resume if you need it.</li>
+</ul>
+<h2 id="what-makes-snakemake-re-run-a-rule">What makes Snakemake re-run a rule<a class="headerlink" href="#what-makes-snakemake-re-run-a-rule" title="Permanent link">¶</a></h2>
+<p>A dry run lists every job Snakemake plans to run again, each with its reason. With its default
+<code>--rerun-triggers code input mtime params software-env</code>, Snakemake runs a job again when:</p>
+<table>
+<thead>
+<tr>
+<th>What happened</th>
+<th>The <code>reason:</code> a dry run prints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>an output is missing</td>
+<td><code>Missing output files</code></td>
+</tr>
+<tr>
+<td>an input file is newer than the output; for an input of at most 1,000,000 bytes only if its content changed as well, so touching a small file triggers nothing</td>
+<td><code>Updated input files</code></td>
+</tr>
+<tr>
+<td>a job before it runs again; a re-run spreads to every later step of that sample</td>
+<td><code>Input files updated by another job</code></td>
+</tr>
+<tr>
+<td>a value FunFlux passes to the rule changed</td>
+<td><code>Params have changed since last execution</code></td>
+</tr>
+<tr>
+<td>the rule's command changed, for example after updating FunFlux</td>
+<td><code>Code has changed since last execution</code></td>
+</tr>
+<tr>
+<td>its environment file changed, or its environment now sits in another folder (another <code>--conda-prefix</code>)</td>
+<td><code>Software environment definition has changed since last execution</code></td>
+</tr>
+<tr>
+<td>its list of input files changed, for example <code>multiqc</code> when the samples of the batch change</td>
+<td><code>Set of input files has changed since last execution</code></td>
+</tr>
+</tbody>
+</table>
+<p>A changed setting re-runs the first rule that reads it, and every later step follows. The
+settings FunFlux passes to rules, and the first rule each one re-runs:</p>
+<table>
+<thead>
+<tr>
+<th>Changed in the configuration</th>
+<th>First rule that runs again</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>directories.blast_db</code>, <code>parameters.nt_version</code>, <code>blast_max_target_seqs</code>, <code>blast_max_hsps</code></td>
+<td><code>blast_contigs</code>; in <code>hybrid</code> also <code>blast_guide_contigs</code></td>
+</tr>
+<tr>
+<td><code>parameters.decontamination.*</code></td>
+<td><code>select_contigs</code></td>
+</tr>
+<tr>
+<td><code>parameters.mitochondria.*</code></td>
+<td><code>screen_mitochondria</code></td>
+</tr>
+<tr>
+<td><code>parameters.busco.lineage</code></td>
+<td><code>busco_data</code> when a named lineage is not in <code>00.resources/busco/</code> yet, then <code>completeness</code></td>
+</tr>
+<tr>
+<td><code>parameters.contig_summary.telomere_motif</code>, <code>telomere_window</code>, <code>min_telomere_copies</code></td>
+<td><code>telomere_units</code>, then <code>contig_summary</code> and <code>multiqc</code>; nothing else</td>
+</tr>
+<tr>
+<td><code>parameters.contig_summary.min_rdna_units</code></td>
+<td><code>contig_summary</code>, then <code>multiqc</code>; nothing else</td>
+</tr>
+<tr>
+<td><code>links.telomere_db_link</code>, <code>parameters.contig_summary.telomere_db_sha256</code></td>
+<td><code>telomere_db</code>, then <code>telomere_units</code> of every sample, <code>contig_summary</code> and <code>multiqc</code></td>
+</tr>
+<tr>
+<td><code>links.univec_link</code>, <code>parameters.contig_summary.univec_sha256</code></td>
+<td><code>univec_illumina</code>, then <code>blast_adapters</code> and <code>screen_adapters</code> of every sample, <code>contig_summary</code> and <code>multiqc</code></td>
+</tr>
+<tr>
+<td><code>parameters.its.window_flank</code></td>
+<td><code>its_windows</code></td>
+</tr>
+<tr>
+<td><code>parameters.its.max_full_length</code>, <code>parameters.its_taxonomy_cutoff</code></td>
+<td><code>its_classification</code></td>
+</tr>
+<tr>
+<td><code>parameters.its.unite_identified_only</code></td>
+<td><code>its_classification</code> (its UNITE input changes); switched on, <code>unite_identified</code> runs first if its files are missing</td>
+</tr>
+<tr>
+<td><code>directories.unite_db</code>, <code>links.unite_its_link</code></td>
+<td><code>unite_db_local</code> or <code>unite_db</code></td>
+</tr>
+<tr>
+<td><code>links.funannotate_link</code></td>
+<td><code>funannotate_db</code>, if a run from this launch folder downloaded the database: the archive the new link names is downloaded unless present, checked and unpacked into <code>directories.funannotate_db</code></td>
+</tr>
+<tr>
+<td><code>directories.funannotate_db</code></td>
+<td><code>normalize_funannotate_db</code></td>
+</tr>
+<tr>
+<td><code>directories.antismash_db</code></td>
+<td><code>antismash_db_local</code> or <code>antismash_db</code></td>
+</tr>
+<tr>
+<td><code>parameters.masking_method</code>, <code>repeatmodeler_quick</code>, <code>repeatmodeler_ltrstruct</code>, <code>repeatmodeler_seed</code></td>
+<td><code>repeat_masking</code></td>
+</tr>
+<tr>
+<td><code>directories.genemark_dir</code>, <code>parameters.genemark.mode</code></td>
+<td><code>genemark_check</code> when GeneMark-ES is on after the change, otherwise <code>funannotate_prediction</code></td>
+</tr>
+<tr>
+<td><code>parameters.prediction.busco_db</code>, column 3 (proteins) of a sample's row in the annotation table</td>
+<td><code>funannotate_prediction</code></td>
+</tr>
+<tr>
+<td>column 2 (species) or 4 (AUGUSTUS model) of a sample's row in the annotation table</td>
+<td><code>augustus_model_check</code>, then <code>funannotate_prediction</code>; for column 2 also <code>amr_chroquetas</code> (AMR screen on)</td>
+</tr>
+<tr>
+<td><code>parameters.prediction.augustus_optimize</code></td>
+<td><code>augustus_model_check</code> of the samples whose column 4 is empty, then their <code>funannotate_prediction</code></td>
+</tr>
+<tr>
+<td><code>parameters.tiberius.mode</code></td>
+<td>from <code>off</code> to <code>on</code>: <code>tiberius_model</code> (when the model is not there yet), then <code>tiberius_prediction</code>; from <code>on</code> to <code>off</code>: <code>funannotate_prediction</code></td>
+</tr>
+<tr>
+<td><code>links.tiberius_model_link</code>, <code>parameters.tiberius.model_sha256</code></td>
+<td><code>tiberius_model</code>, then <code>tiberius_prediction</code> of every sample</td>
+</tr>
+<tr>
+<td><code>files.iprscan</code></td>
+<td><code>iprscan_annotation</code></td>
+</tr>
+<tr>
+<td><code>directories.eggnog_db</code></td>
+<td><code>eggnog_annotation</code></td>
+</tr>
+<tr>
+<td><code>parameters.signalp6.mode</code></td>
+<td><code>install_signalp6</code> when SignalP 6 is on after the change, otherwise <code>funannotate_annotation</code></td>
+</tr>
+<tr>
+<td><code>parameters.signalp6.archive_sha256</code>, <code>files.signalp6_archive</code></td>
+<td><code>install_signalp6</code></td>
+</tr>
+<tr>
+<td><code>parameters.signalp6.batch_size</code></td>
+<td><code>signalp6_annotation</code></td>
+</tr>
+<tr>
+<td><code>parameters.amr.chroquetas</code></td>
+<td>from <code>off</code> to <code>on</code>: <code>chroquetas_db</code> (when its files are not there yet), then <code>amr_chroquetas</code> of every sample and <code>multiqc</code>; from <code>on</code> to <code>off</code>: <code>multiqc</code> only, and <code>05.amr/</code> stays on disk</td>
+</tr>
+<tr>
+<td><code>parameters.amr.mito_genetic_code</code></td>
+<td><code>amr_chroquetas</code>, then <code>multiqc</code>; nothing else</td>
+</tr>
+<tr>
+<td><code>links.chroquetas_link</code>, <code>parameters.amr.chroquetas_script_sha256</code>, <code>parameters.amr.chroquetas_db_sha256</code></td>
+<td><code>chroquetas_db</code>, then <code>amr_chroquetas</code> of every sample and <code>multiqc</code></td>
+</tr>
+<tr>
+<td><code>links.phix_link</code></td>
+<td><code>download_phix</code>, then <code>build_phix</code> and every <code>map_phix</code></td>
+</tr>
+<tr>
+<td><code>parameters.spades_kmers</code></td>
+<td><code>illumina_assembly</code> (in <code>hybrid</code>: the guide assembly)</td>
+</tr>
+<tr>
+<td><code>parameters.&lt;mode&gt;.ont_adapter</code></td>
+<td><code>find_ont_adapter</code> of every ONT sample, then the trimming, Filtlong and the whole assembly; switched off, <code>filter_long_reads</code> reads the raw reads, which re-runs the same chain</td>
+</tr>
+<tr>
+<td><code>parameters.&lt;mode&gt;.filtlong.*</code>, <code>parameters.hybrid.short_read_guidance</code>, <code>parameters.hybrid.filtlong_split</code></td>
+<td><code>filter_long_reads</code></td>
+</tr>
+<tr>
+<td><code>parameters.&lt;mode&gt;.assembler</code>, <code>flye_input_mode</code>, <code>hifiasm.*</code></td>
+<td><code>long_read_assembly</code></td>
+</tr>
+<tr>
+<td><code>parameters.&lt;mode&gt;.medaka_model</code>, <code>medaka_model_fallback_auto</code></td>
+<td><code>check_medaka_model</code>; <code>long_read_assembly</code> of every ONT sample waits for its file and runs again too. Switching Medaka off or on also changes which file <code>finalize_assembly</code> (<code>longread</code>) or <code>short_read_correction</code> (<code>hybrid</code>) copies or corrects</td>
+</tr>
+</tbody>
+</table>
+<p>A new BUSCO lineage, for example, re-runs BUSCO, the contig summary and the report, and a new
+<code>directories.funannotate_db</code> re-runs the whole annotation of every sample.</p>
+<p>Other changes re-run nothing, except where a changed file is itself an input of a step:</p>
+<table>
+<thead>
+<tr>
+<th>Changed</th>
+<th>Re-runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>resources.threads</code>, <code>resources.ram_gb</code>, <code>resources.runtime_hours</code>, <code>--cores</code>, <code>parameters.signalp6.torch_num_threads</code></td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>the content of the databases and of the protein evidence files (only their paths are passed)</td>
+<td>nothing, except for the files in the next row</td>
+</tr>
+<tr>
+<td>a newer copy of <code>nodes.dmp</code> or <code>names.dmp</code> in <code>directories.blast_db</code>, <code>funannotate-db-info.txt</code>, the SignalP 6 archive, the folder named in <code>directories.antismash_db</code> (its own modification time, which changes when an entry is added or removed), the <code>unite_its_sintax.fasta</code> that <code>directories.unite_db</code> points to (Snakemake follows the link)</td>
+<td>the steps that read it</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Updating a database in place re-runs nothing, unless a file in the last row becomes newer</p>
+<p>Only the paths of the databases and of the protein evidence files are passed to the rules. A
+change to their content therefore re-runs nothing, unless one of the files in the last row of
+the table becomes newer.</p>
+</div>
+<p>To redo a step anyway:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># this rule for every sample, and every step after it</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--cores<span class="w"> </span><span class="m">24</span><span class="w"> </span>--configfile<span class="w"> </span>config/config_custom.yaml<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span>--forcerun<span class="w"> </span>iprscan_annotation
+</code></pre></div>
+<p>To redo a step for one sample only, delete that step's output, for example
+<code>04.annotation/{sample}/iprscan/interproscan_out.xml</code>. A deleted final result is rebuilt on the
+next run, with every step after it. A deleted intermediate file that no pending job needs is not
+rebuilt. The final results are the files every run makes sure exist:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Final results</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>every mode</td>
+<td><code>eval/quast/</code>, <code>eval/busco/</code>, <code>eval/contig_summary.tsv</code>, <code>eval/adapter_screen.tsv</code>, the seven ITS files, <code>contigs_clean.fasta</code>, <code>contigs_sort.fasta</code>, <code>contigs_mask.fasta</code>, <code>funannotate/</code>, <code>iprscan/interproscan_out.xml</code>, <code>eggnog/</code>, <code>antismash/</code>, <code>signalp6/prediction_results.txt</code> (SignalP 6 on) and <code>.cleanup_complete.txt</code> of every sample, <code>05.amr/{sample}/amr_summary.tsv</code> (AMR screen on), plus <code>00.resources/funannotate_db_paths.normalized.json</code> and <code>06.report/multiqc_report.html</code></td>
+</tr>
+<tr>
+<td><code>contigs</code></td>
+<td>also <code>contigs_final.fasta</code>; with the screen also <code>contigs_mitochondrial.fasta</code> and <code>mitochondria/mitochondrial_screen.tsv</code></td>
+</tr>
+<tr>
+<td><code>illumina</code></td>
+<td>also the three genome files, always (<code>contigs_final.fasta</code>, <code>contigs_mitochondrial.fasta</code>, <code>mitochondria/mitochondrial_screen.tsv</code>); <code>01.reads/{sample}/illumina/{sample}_fastp.json</code> and <code>eval/qualimap/</code></td>
+</tr>
+<tr>
+<td><code>longread</code></td>
+<td>also the three genome files; <code>01.reads/{sample}/long/{sample}_filtered.fastq</code>, <code>raw_qc/</code>, <code>filtered_qc/</code>, for ONT samples <code>adapters/{sample}_adapter_check.tsv</code> (unless <code>ont_adapter: off</code>), <code>assembly_provenance.tsv</code>, <code>eval/qualimap/</code> and, for ONT samples with Medaka, <code>medaka/consensus.fasta</code></td>
+</tr>
+<tr>
+<td><code>hybrid</code></td>
+<td>also the three genome files; all of the <code>longread</code> files plus the fastp JSON, the two selected read files, <code>polypolish/polished.fasta</code> and <code>guide/eval/qualimap/</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>--list-changes params</code> (or <code>code</code>, <code>input</code>) lists the output files whose parameters, code or
+inputs changed since they were made.</p>
+<h2 id="running-several-batches">Running several batches<a class="headerlink" href="#running-several-batches" title="Permanent link">¶</a></h2>
+<p>A run processes every sample in the input folder of its mode, and those samples form one batch.
+All files of one kind in a batch share one file extension, but in <code>hybrid</code> the Illumina files and
+the long-read files may have different ones. The annotation table may hold rows for samples of
+other batches, and FunFlux ignores the rows without a sample in the batch.</p>
+<ul>
+<li><strong>One output folder per batch</strong> gives each folder its own <code>00.resources/</code>. The UNITE reference
+  (207 MB), the antiSMASH database and a named BUSCO lineage are downloaded into each, and
+  SignalP 6 is installed into each (1.6 GB). Point <code>directories.unite_db</code> and
+  <code>directories.antismash_db</code> at shared copies to download them once, and give every run the same
+  <code>--conda-prefix</code>.</li>
+<li><strong>Several batches can share one output folder</strong> when their sample names differ. <code>00.resources/</code>
+  is reused, and <code>06.report/multiqc_report.html</code> is rewritten with the samples of the latest run
+  only. A sample name that comes back with another input file is processed again, and its earlier
+  results are replaced.</li>
+<li><strong>Runs at the same time</strong> each count only their own <code>--cores</code>, and the sum must fit the machine.
+  From one launch folder, Snakemake refuses a second run (<code>Directory cannot be locked</code>) only when
+  both would write the same file, or one would write a file the other reads. Runs from different
+  launch folders are not checked against each other.</li>
+<li><strong>Runs that name the same <code>directories.funannotate_db</code></strong>: start one, let it pass
+  <code>normalize_funannotate_db</code>, then start the others. Every run must reach the folder under the
+  same real path (see <a href="../../getting-started/databases/#what-the-workflow-does">Reference databases</a>).</li>
+</ul>
+<h2 id="on-a-cluster">On a cluster<a class="headerlink" href="#on-a-cluster" title="Permanent link">¶</a></h2>
+<p>FunFlux runs on a Slurm cluster in one of two ways. In run A, Snakemake spreads the samples and
+steps over many nodes and keeps every download on the login node. Run B is a single-computer run
+inside one batch job:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>A. Snakemake sends each step to Slurm</th>
+<th>B. The whole run in one batch job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Where Snakemake runs</td>
+<td>on the login node, or another node with internet, for the whole run</td>
+<td>inside one batch job, on one compute node</td>
+</tr>
+<tr>
+<td>Where the steps run</td>
+<td>each step is a Slurm job of its own, on any compute node; the download steps and <code>augustus_model_check</code> run where Snakemake runs</td>
+<td>all on that node</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>--executor slurm --jobs N</code> (<a href="#cluster-run-a">Run A</a>)</td>
+<td><code>--cores N</code>, as on a single computer (<a href="#cluster-run-b">Run B</a>)</td>
+</tr>
+<tr>
+<td>Memory and time</td>
+<td>each heavy step asks Slurm for <code>resources.ram_gb</code> and <code>resources.runtime_hours</code></td>
+<td>the batch job asks once, for the whole run</td>
+</tr>
+<tr>
+<td>Internet on the compute nodes</td>
+<td>not needed, except by BUSCO with <code>parameters.busco.lineage: auto</code></td>
+<td>not needed once the <a href="#cluster-preparation">preparation</a> has run, except by BUSCO with <code>lineage: auto</code></td>
+</tr>
+<tr>
+<td>Needs</td>
+<td>the Slurm executor plugin; a login node on which Snakemake may run for many hours</td>
+<td>one node with the cores, memory and time of the whole run</td>
+</tr>
+<tr>
+<td>Checked</td>
+<td>with Snakemake's generic cluster executor and a submit command that only records each job; not yet on a Slurm cluster</td>
+<td>as on a single computer</td>
+</tr>
+</tbody>
+</table>
+<p>Both start with the same preparation, and both need the same <a href="#cluster-storage">shared storage</a>.</p>
+<h3 id="cluster-preparation">Preparation, on a computer with internet<a class="headerlink" href="#cluster-preparation" title="Permanent link">¶</a></h3>
+<p>The preparation builds the environments, fetches what FunFlux downloads itself and checks the
+result, from the folder and with the <code>--conda-prefix</code> of the real run. Run these commands from the
+FunFlux folder on a computer that has internet and sees the same storage as the compute nodes:
+the login node or a data-transfer node.</p>
+<ol>
+<li>
+<p>Copy the template and fill it in. Put every path on <a href="#cluster-storage">shared storage</a>, and
+   set <code>resources.threads</code>, <code>ram_gb</code> and <code>runtime_hours</code> from the limits of the cluster
+   (<a href="#cluster-resources">table below</a>). When the compute nodes have no internet, also name a
+   <a href="#cluster-busco">BUSCO lineage</a>. The command that lists the lineage names runs in the busco
+   environment, which step 2 builds, so you can name the lineage after step 2.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>conda<span class="w"> </span>activate<span class="w"> </span>snakemake
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nb">cd</span><span class="w"> </span>/path/to/FunFlux
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>cp<span class="w"> </span>config/config.yaml<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+</li>
+<li>
+<p>Build the conda environments of every step of the run. To build them, conda first downloads
+   every package into its package cache, by default inside the conda installation. If that sits
+   in a home folder with a small quota, move the cache to project space first, as in the first
+   line:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CONDA_PKGS_DIRS</span><span class="o">=</span>/path/to/project_space/conda_pkgs
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--conda-prefix<span class="w"> </span>/path/to/project_space/funflux_envs<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span>--conda-create-envs-only<span class="w"> </span>--configfile<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+</li>
+<li>
+<p>Fetch everything FunFlux downloads itself, and nothing else. Add <code>-n</code> first to see the plan.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>snakemake<span class="w"> </span>download_all<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--conda-prefix<span class="w"> </span>/path/to/project_space/funflux_envs<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span>--cores<span class="w"> </span><span class="m">4</span><span class="w"> </span>--configfile<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+</li>
+<li>
+<p>Check. The dry run must print
+   <code>Nothing to be done (all requested files are present and up to date).</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>snakemake<span class="w"> </span>download_all<span class="w"> </span>-n<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--conda-prefix<span class="w"> </span>/path/to/project_space/funflux_envs<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span>--configfile<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+<p>Two more lines can follow it, <code>1 jobs have missing provenance/metadata ...</code> and
+<code>Rules with missing metadata: funannotate_db</code>. Both are harmless: the funannotate database
+was already in its folder, downloaded by hand or by a run from another launch folder, so
+Snakemake holds no record of downloading it.</p>
+</li>
+</ol>
+<p>Four points about these commands, each with its reason:</p>
+<table>
+<thead>
+<tr>
+<th>Point</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Write <code>download_all</code> right after <code>snakemake</code>.</td>
+<td><code>--configfile</code> and <code>--sdm</code> take one or more values. At the end of the line <code>download_all</code> is read as a second configuration file, and Snakemake stops with <code>No such file or directory: 'download_all'</code>.</td>
+</tr>
+<tr>
+<td>Run steps 2 to 4 and the real run from the same folder, with the same configuration and the same <code>--conda-prefix</code>.</td>
+<td>Relative paths in the configuration are read from the launch folder, and Snakemake keeps its records in <code>.snakemake/</code> there. Without <code>--conda-prefix</code> the environments are in that <code>.snakemake/conda/</code> too, and Medaka keeps the model weights the check downloads inside its environment. From another folder, the real run builds the environments again, without the weights. With another prefix it also runs every download step again: Snakemake records where each step's environment was (reason <code>Software environment definition has changed since last execution</code>), and step 4 plans the downloads instead of printing <code>Nothing to be done</code>.</td>
+</tr>
+<tr>
+<td>Run steps 2 to 4 again after any change to the configuration or to the input folders.</td>
+<td>A new sample, another Medaka model, the AMR screen switched on or a lineage named each add a download.</td>
+</tr>
+<tr>
+<td>Run step 4 even when step 3 went well.</td>
+<td>FunFlux checks <code>parameters.prediction.busco_db</code> against the funannotate database only once the database is on disk. A set the newly downloaded database lacks stops step 4 with the command that adds it, and that command needs internet too (<a href="../../troubleshooting/#databases-and-links">Troubleshooting</a>).</td>
+</tr>
+</tbody>
+</table>
+<p><code>download_all</code> covers every download of the run except BUSCO with <code>lineage: auto</code>, and with that
+setting it prints a note that every BUSCO job will need internet. What it fetches depends on the
+configuration:</p>
+<table>
+<thead>
+<tr>
+<th>Download</th>
+<th>Rule</th>
+<th>When</th>
+<th>Where it lands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PhiX genome</td>
+<td><code>download_phix</code></td>
+<td><code>illumina</code>, <code>hybrid</code></td>
+<td><code>00.resources/phix/</code></td>
+</tr>
+<tr>
+<td>funannotate database, then the repair of the paths stored in it</td>
+<td><code>funannotate_db</code>, <code>normalize_funannotate_db</code></td>
+<td>the download only while <code>directories.funannotate_db</code> holds no database</td>
+<td><code>directories.funannotate_db</code></td>
+</tr>
+<tr>
+<td>UNITE reference</td>
+<td><code>unite_db</code></td>
+<td>unless <code>directories.unite_db</code> names your copy</td>
+<td><code>00.resources/unite/</code></td>
+</tr>
+<tr>
+<td>telomere repeat database</td>
+<td><code>telomere_db</code></td>
+<td>always</td>
+<td><code>00.resources/telomeres/</code></td>
+</tr>
+<tr>
+<td>Illumina adapter records of NCBI UniVec</td>
+<td><code>univec_illumina</code></td>
+<td>always</td>
+<td><code>00.resources/adapters/</code></td>
+</tr>
+<tr>
+<td>Tiberius <code>fungi</code> model</td>
+<td><code>tiberius_model</code></td>
+<td>Tiberius on, the default</td>
+<td><code>00.resources/tiberius/</code></td>
+</tr>
+<tr>
+<td>ChroQueTas and its FungAMR database</td>
+<td><code>chroquetas_db</code></td>
+<td>AMR screen on</td>
+<td><code>00.resources/chroquetas/</code></td>
+</tr>
+<tr>
+<td>antiSMASH databases (9.4 GB)</td>
+<td><code>antismash_db</code></td>
+<td>unless <code>directories.antismash_db</code> names your copy</td>
+<td><code>00.resources/antismash/</code></td>
+</tr>
+<tr>
+<td>BUSCO lineage data</td>
+<td><code>busco_data</code></td>
+<td><code>parameters.busco.lineage</code> names a lineage</td>
+<td><code>00.resources/busco/</code></td>
+</tr>
+<tr>
+<td>Medaka model weights</td>
+<td><code>check_medaka_model</code>, which reads the first reads of each sample, so the reads must be in place</td>
+<td>ONT samples polished with Medaka</td>
+<td>inside the <code>medaka</code> environment, or <code>~/.medaka/data</code> when that cannot be written</td>
+</tr>
+</tbody>
+</table>
+<p>The large databases and the licensed tools stay yours to install. You provide them yourself and
+name them by path, as described on <a href="../../getting-started/databases/">Reference databases</a> and
+<a href="../../getting-started/external-tools/">Licensed and external tools</a>:</p>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>Key</th>
+<th>Needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NCBI <code>core_nt</code> and its taxonomy files</td>
+<td><code>directories.blast_db</code></td>
+<td>with the screen on</td>
+</tr>
+<tr>
+<td>eggNOG-mapper data</td>
+<td><code>directories.eggnog_db</code></td>
+<td>always</td>
+</tr>
+<tr>
+<td>InterProScan</td>
+<td><code>files.iprscan</code></td>
+<td>always</td>
+</tr>
+<tr>
+<td>GeneMark-ES and its key</td>
+<td><code>directories.genemark_dir</code>, <code>~/.gm_key</code></td>
+<td>GeneMark-ES on</td>
+</tr>
+<tr>
+<td>SignalP 6 archive</td>
+<td><code>files.signalp6_archive</code></td>
+<td>SignalP 6 on</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cluster-run-a">Run A: Snakemake sends each step to Slurm<a class="headerlink" href="#cluster-run-a" title="Permanent link">¶</a></h3>
+<p>Install the Slurm executor plugin once into the launcher environment, Snakemake's own conda
+environment:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>conda<span class="w"> </span>activate<span class="w"> </span>snakemake
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span>snakemake-executor-plugin-slurm
+</code></pre></div>
+<p>Then, on the login node, start Snakemake inside <code>tmux</code> or <code>screen</code>, so that it keeps running when
+you log out:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>snakemake<span class="w"> </span>--executor<span class="w"> </span>slurm<span class="w"> </span>--jobs<span class="w"> </span><span class="m">20</span><span class="w"> </span>--latency-wait<span class="w"> </span><span class="m">60</span><span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span>--conda-prefix<span class="w"> </span>/path/to/project_space/funflux_envs<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span>--default-resources<span class="w"> </span><span class="nv">slurm_account</span><span class="o">=</span>&lt;account&gt;<span class="w"> </span><span class="nv">slurm_partition</span><span class="o">=</span>&lt;partition&gt;<span class="w"> </span><span class="nv">mem_mb</span><span class="o">=</span><span class="m">8000</span><span class="w"> </span><span class="nv">runtime</span><span class="o">=</span><span class="m">240</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span>--configfile<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--executor slurm</code></td>
+<td>submits every step to Slurm with <code>sbatch</code>, except the local ones: the download steps and <code>augustus_model_check</code> run on the login node</td>
+</tr>
+<tr>
+<td><code>--jobs 20</code></td>
+<td>the most jobs Snakemake keeps queued or running at once; it refuses to start without <code>--jobs</code></td>
+</tr>
+<tr>
+<td><code>--latency-wait 60</code></td>
+<td>after a job ends, Snakemake waits up to 60 seconds for its files to appear on the login node. Shared storage can show a file written on a compute node only some seconds later, and the default wait, 5 seconds, is often too short</td>
+</tr>
+<tr>
+<td><code>--default-resources</code></td>
+<td>the values for every job that does not set its own: the account and partition for every job (leave them out if your cluster needs none), memory (MB) and time (minutes) for the light steps. A rule's own value wins over it</td>
+</tr>
+</tbody>
+</table>
+<p><code>--cores</code> is not needed, because <code>resources.threads</code> already caps the CPUs of each job. Given
+together with <code>--executor</code>, it lowers the threads of every job to at most that number, and so what
+each job asks Slurm for.</p>
+<p>Each Slurm job writes a log of its own, <code>&lt;Slurm job id&gt;.log</code>, under
+<code>.snakemake/slurm_logs/rule_&lt;rule&gt;/</code> in the launch folder. For the steps that run per sample, the
+log is one folder further down, in a folder named after the sample. When a job fails, the
+<code>Error in rule</code> block names that file. The plugin deletes the logs of jobs that succeeded, and any
+log older than 10 days. The messages of the tool itself are in <code>logs/</code> of the output folder, as on
+a single computer.</p>
+<h4 id="cluster-resources">How the settings reach Slurm<a class="headerlink" href="#cluster-resources" title="Permanent link">¶</a></h4>
+<p>What each job asks Slurm for comes from three settings of the configuration and from
+<code>--default-resources</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Each job asks Slurm for</th>
+<th>Must not exceed</th>
+<th>Shown by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>resources.threads</code></td>
+<td><code>--cpus-per-task</code>: the threads of its step, at most this number (<a href="#cpu-cores-and-threads">CPU cores and threads</a>)</td>
+<td>the CPUs of one compute node</td>
+<td><code>sinfo -o "%n %c"</code></td>
+</tr>
+<tr>
+<td><code>resources.ram_gb</code></td>
+<td><code>--mem</code>: <code>ram_gb</code> × 1024 MB for every heavy step (table below)</td>
+<td>the memory Slurm offers one compute node</td>
+<td><code>sinfo -o "%n %m"</code>, in MB: divide by 1024 and round down; it is often a little less than the size the node is sold with</td>
+</tr>
+<tr>
+<td><code>resources.runtime_hours</code></td>
+<td><code>-t</code>: <code>runtime_hours</code> × 60 minutes for every heavy and every long step</td>
+<td>the time limit of the partition</td>
+<td><code>sinfo -o "%P %l"</code></td>
+</tr>
+<tr>
+<td><code>--default-resources mem_mb=... runtime=...</code></td>
+<td><code>--mem</code> and <code>-t</code> for the light steps</td>
+<td>the same limits</td>
+<td>the same commands</td>
+</tr>
+</tbody>
+</table>
+<p>The memory and time a step asks for depend on the kind of step:</p>
+<table>
+<thead>
+<tr>
+<th>Steps</th>
+<th>Memory asked for</th>
+<th>Time asked for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the heavy steps: SPAdes (<code>illumina_assembly</code>), hifiasm or Flye (<code>long_read_assembly</code>), Medaka (<code>long_read_consensus</code>), Polypolish (<code>short_read_correction</code>), the read mappings with BAM sorting (<code>map_contigs</code>, <code>map_guide_contigs</code>), BLAST (<code>blast_contigs</code>, <code>blast_guide_contigs</code>), BUSCO (<code>completeness</code>), <code>repeat_masking</code>, Tiberius (<code>tiberius_prediction</code>), funannotate predict and annotate, InterProScan, eggNOG-mapper, antiSMASH, SignalP 6, and in <code>hybrid</code> Filtlong (<code>filter_long_reads</code>), guided or not</td>
+<td><code>ram_gb</code></td>
+<td><code>runtime_hours</code></td>
+</tr>
+<tr>
+<td>Qualimap (<code>map_evaluation</code>, <code>map_guide_evaluation</code>)</td>
+<td>its Java heap (<code>ram_gb</code>, at most 64 GB) plus 4 GB, never more than <code>ram_gb</code></td>
+<td><code>runtime_hours</code></td>
+</tr>
+<tr>
+<td>the long steps that hold little in memory: the PhiX filter (<code>map_phix</code>), the read selection of <code>hybrid</code> (<code>map_sel_contigs</code>), Filtlong in <code>longread</code> (<code>filter_long_reads</code>), the ONT adapter scan, trimming and check (<code>find_ont_adapter</code>, <code>trim_ont_adapters</code>, <code>check_ont_trimming</code>)</td>
+<td>nothing</td>
+<td><code>runtime_hours</code></td>
+</tr>
+<tr>
+<td>every other step (seconds to minutes, a few GB at most)</td>
+<td>nothing</td>
+<td>nothing</td>
+</tr>
+</tbody>
+</table>
+<p>Set <code>threads</code>, <code>ram_gb</code> and <code>runtime_hours</code> so that one job fits one node and one partition. The
+largest memory peaks measured on the 42.6 Mb genome of B05.10 were about 19 GB for SPAdes with 32
+threads (about 15 GB with 24), 17 GB for hifiasm, about 16 GB for Tiberius and 12 GB for Flye.
+The other heavy steps were not measured.
+A <code>ram_gb</code> well below the node's memory lets several heavy jobs share a node.</p>
+<ul>
+<li>A step that asks for nothing gets Slurm's defaults, often a GB or two per CPU and the
+  partition's default time. The Slurm plugin then warns <code>No wall time information given</code> and
+  <code>No job memory information ('mem_mb' or 'mem_mb_per_cpu') is given - submitting without</code>. If
+  the defaults are smaller than a few GB or an hour, give
+  <code>--default-resources mem_mb=8000 runtime=240</code> as above.</li>
+<li>Changing <code>threads</code>, <code>ram_gb</code> or <code>runtime_hours</code> re-runs nothing.</li>
+</ul>
+<h3 id="cluster-run-b">Run B: the whole run in one batch job<a class="headerlink" href="#cluster-run-b" title="Permanent link">¶</a></h3>
+<p>Run B treats the allocated node like a single computer:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Request</td>
+<td>one node with N cores and enough memory: about 16 GB for Tiberius, <code>resources.ram_gb</code> (default 128) for SPAdes in <code>illumina</code> and <code>hybrid</code> mode, and up to 64 GB for Qualimap in the read-based modes (<a href="../../getting-started/installation/#memory">Memory</a>)</td>
+</tr>
+<tr>
+<td>Configure</td>
+<td><code>resources.threads: N</code>, the number of cores you request</td>
+</tr>
+<tr>
+<td>Prepare</td>
+<td>when the node has no internet: the <a href="#cluster-preparation">preparation</a> above, on the login node, with the folder and <code>--conda-prefix</code> of the batch script</td>
+</tr>
+<tr>
+<td>Launch</td>
+<td>inside the job, from the same folder, the usual command with <code>--cores N</code> (<a href="#a-batch-script">script below</a>)</td>
+</tr>
+<tr>
+<td>Time limit</td>
+<td>allow for the run times <a href="#run-time">above</a>, 6.6 to 11.1 hours from reads, plus the building of the environments and the downloads when they were not prepared. After a job is stopped at its time limit, submit the same script again (<a href="#resuming-after-an-interruption">Resuming after an interruption</a>); if Snakemake asks for <code>--unlock</code>, run the command once with it first</td>
+</tr>
+</tbody>
+</table>
+<p>On one node, Snakemake counts only threads, so <code>resources.ram_gb</code> is only the memory cap of SPAdes
+and the heap of Qualimap, and <code>runtime_hours</code> is ignored.</p>
+<h4 id="a-batch-script">A batch script<a class="headerlink" href="#a-batch-script" title="Permanent link">¶</a></h4>
+<p>The script below is for Slurm, and other schedulers take the same commands with their own
+resource lines. Save it as <code>funflux.sbatch</code> and submit it with <code>sbatch funflux.sbatch</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="ch">#!/bin/bash</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="c1">#SBATCH --job-name=funflux</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="c1">#SBATCH --nodes=1</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1">#SBATCH --cpus-per-task=24      # N: the same number as resources.threads</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="c1">#SBATCH --mem=160G              # more than resources.ram_gb (Request row above)</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="c1">#SBATCH --time=24:00:00         # Time limit row above</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="c1"># Make "conda activate" work inside a batch job, then activate Snakemake.</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>conda<span class="w"> </span>shell.bash<span class="w"> </span>hook<span class="k">)</span><span class="s2">"</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>conda<span class="w"> </span>activate<span class="w"> </span>snakemake
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="nb">cd</span><span class="w"> </span>/path/to/FunFlux
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--conda-prefix<span class="w"> </span>/path/to/project_space/funflux_envs<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">    </span>--cores<span class="w"> </span><span class="s2">"</span><span class="nv">$SLURM_CPUS_PER_TASK</span><span class="s2">"</span><span class="w"> </span>--configfile<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+<p><code>$SLURM_CPUS_PER_TASK</code> holds the number of cores Slurm gave the job, so <code>--cores</code> always matches
+the request.</p>
+<h3 id="cluster-storage">Shared storage<a class="headerlink" href="#cluster-storage" title="Permanent link">¶</a></h3>
+<p>Both runs need shared storage, which on most clusters means project space plus the home folder:</p>
+<table>
+<thead>
+<tr>
+<th>Must be on storage every compute node sees, under the same path</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the FunFlux folder and the launch folder, with its <code>.snakemake/</code></td>
+<td>every job reads the workflow and Snakemake's records</td>
+</tr>
+<tr>
+<td>the conda installation, with the launcher environment (Snakemake's conda environment) in it</td>
+<td>in A, each job starts Snakemake again with the same Python, and Snakemake switches to each step's environment with that installation's <code>activate</code> script; in B, the batch script activates it</td>
+</tr>
+<tr>
+<td>the <code>--conda-prefix</code> folder</td>
+<td>every step runs in its environment from there</td>
+</tr>
+<tr>
+<td>the output folder</td>
+<td>every step reads and writes it</td>
+</tr>
+<tr>
+<td>every path in the configuration: the input folders, the annotation table and its protein files, the BLAST, eggNOG, funannotate, antiSMASH and UNITE folders, the InterProScan installation, the GeneMark-ES folder, the SignalP 6 archive</td>
+<td>the steps read them</td>
+</tr>
+<tr>
+<td>your home folder: <code>~/.gm_key</code> with GeneMark-ES on, and <code>~/.medaka/data</code> when Medaka could not write into its environment</td>
+<td>GeneMark-ES and Medaka look there, in the home folder of the account the job runs under</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Put the environments on project space with one <code>--conda-prefix</code>, not on a home folder with a
+  small quota. A <code>contigs</code> run needs 20 to 25 GB, and the read-based modes more
+  (<a href="../../getting-started/installation/#conda-prefix">Sharing environments</a>).
+  <code>export CONDA_PKGS_DIRS=/path/to/project_space/conda_pkgs</code> moves conda's package cache there too.</li>
+<li>With SignalP 6 on, a prefix that other people use also gives them the SignalP 6 installation,
+  which is licensed to you (<a href="../../getting-started/external-tools/#signalp-6">SignalP 6</a>).</li>
+<li>A compute node can have other base commands than the login node, so run the check under
+  <a href="../../getting-started/installation/#host-commands">Commands outside the conda environments</a>
+  inside a job on a compute node.</li>
+</ul>
+<h3 id="cluster-busco">BUSCO on compute nodes without internet<a class="headerlink" href="#cluster-busco" title="Permanent link">¶</a></h3>
+<p>BUSCO is the one step that can need internet on the compute nodes. Where its lineage data come
+from depends on <code>parameters.busco.lineage</code>:</p>
+<table>
+<thead>
+<tr>
+<th><code>parameters.busco.lineage</code></th>
+<th>Where the lineage data come from</th>
+<th>Needs internet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auto</code>, the default</td>
+<td>downloaded inside every BUSCO job, on the compute node, because BUSCO picks the lineage only after it has looked at the genome</td>
+<td>on the compute nodes</td>
+</tr>
+<tr>
+<td>a lineage, for example <code>hypocreales_odb12</code></td>
+<td>downloaded once per output folder by <code>busco_data</code> into <code>00.resources/busco/</code>, where Snakemake runs; every BUSCO job reads it with <code>--offline</code></td>
+<td>only where Snakemake runs</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Name a BUSCO lineage when the compute nodes have no internet</p>
+<p>Choose one that holds every sample of the batch. The report then shows one BUSCO row per
+sample, without the generic eukaryota row (see
+<a href="../../analysis/assembly-qc/#busco">Assembly QC</a>).</p>
+</div>
+<p><code>busco --list-datasets</code> lists the names. Run it on the login node, in FunFlux's <code>busco</code>
+environment, after step 2 of the <a href="#cluster-preparation">preparation</a>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Print the folder of each environment; the busco one is on the line workflow/envs/busco.yaml.</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>snakemake<span class="w"> </span>--sdm<span class="w"> </span>conda<span class="w"> </span>--conda-prefix<span class="w"> </span>/path/to/project_space/funflux_envs<span class="w"> </span>--list-conda-envs<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span>--configfile<span class="w"> </span>config/config_custom.yaml
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>conda<span class="w"> </span>activate<span class="w"> </span>/path/to/project_space/funflux_envs/&lt;the<span class="w"> </span>folder<span class="w"> </span>on<span class="w"> </span>that<span class="w"> </span>line&gt;
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>busco<span class="w"> </span>--list-datasets<span class="w">     </span><span class="c1"># needs internet; leaves a small busco_downloads/ folder here</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>rm<span class="w"> </span>-r<span class="w"> </span>busco_downloads
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>conda<span class="w"> </span>activate<span class="w"> </span>snakemake
+</code></pre></div>
+<p>The list prints each name with its version after a dot, for example <code>hypocreales_odb12.2</code>. Write
+the name without the dot and the number after it, as in <code>lineage: hypocreales_odb12</code>. BUSCO then
+downloads the newest version.</p>
+<h3 id="cluster-genemark">The GeneMark-ES key<a class="headerlink" href="#cluster-genemark" title="Permanent link">¶</a></h3>
+<p>GeneMark-ES reads its licence key from <code>~/.gm_key</code> in the home folder of the account the job runs
+under, so the key must be there on every compute node. FunFlux checks that the file exists before
+any job starts. In run A every job reads the workflow again, so a compute node that does not see
+the key stops that job with <code>[FunFlux] GeneMark is enabled but there is no licence key at &lt;home&gt;/.gm_key</code>.
+On clusters whose home folder is shared, copying the key once is enough (see
+<a href="../../getting-started/external-tools/#genemark-es">GeneMark-ES</a>).</p>
+<h2 id="cleaning-up">Cleaning up<a class="headerlink" href="#cleaning-up" title="Permanent link">¶</a></h2>
+<p>During the run, FunFlux removes the temporary files and the scratch folders of the rules. As the
+last step of each sample, rule <code>cleanup</code> also removes the <code>clean_*</code> folders, <code>*.log</code> files and
+<code>genome.fixedproducts</code> left in <code>04.annotation/{sample}/</code>, and lists them in
+<code>logs/cleanup_{sample}.log</code>. The full list of what FunFlux removes is on
+<a href="../output/#temporary-files-and-folders-a-re-run-replaces">Output files</a>.</p>
+<p>Before you share or archive an output folder, see <a href="../output/#disk-use">Disk use</a> for its largest
+items. Deleting a final result makes the next run on that folder rebuild it, with every step
+after it.</p>
+<div class="admonition warning">
+<p class="admonition-title">Remove the SignalP 6 package from a copy you share</p>
+<p><code>00.resources/signalp6/package/</code> (1.6 GB) holds DTU's licensed SignalP 6 model weights, and
+FunFlux does not remove it. In a folder you keep running, a missing package stops the next
+SignalP job with <code>SignalP installation manifest points to a missing model directory</code>.</p>
+</div>
+<p>The environments are in <code>.snakemake/conda/</code> or in the <code>--conda-prefix</code> folder. After deleting that
+folder, they are built again on the next run, and SignalP 6 needs a new installation (see
+<a href="#conda-environments">Conda environments</a>).</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

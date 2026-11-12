@@ -1,0 +1,2726 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/analysis/assembly-qc/">
+      
+      
+        <link rel="prev" href="../mitochondria/">
+      
+      
+        <link rel="next" href="../contig-summary/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Assembly QC - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#assembly-qc" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Assembly QC
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/external-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/from-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/longread/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mitochondria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#quast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QUAST
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="QUAST">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-the-numbers-mean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the numbers mean
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#busco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUSCO
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BUSCO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automatic-or-fixed-lineage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic or fixed lineage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-the-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#downloads-disk-and-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Downloads, disk and network
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qualimap-read-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qualimap (read modes)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#in-the-multiqc-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In the MultiQC report
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#re-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Re-runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output files
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contig-summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gene-prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/adapter-trimming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adapter trimming and the adapter screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#quast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QUAST
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="QUAST">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-the-numbers-mean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the numbers mean
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#busco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUSCO
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BUSCO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automatic-or-fixed-lineage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic or fixed lineage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-the-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#downloads-disk-and-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Downloads, disk and network
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qualimap-read-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qualimap (read modes)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#in-the-multiqc-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In the MultiQC report
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#re-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Re-runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output files
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/analysis/assembly-qc.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="assembly-qc">Assembly QC<a class="headerlink" href="#assembly-qc" title="Permanent link">¶</a></h1>
+<p>Three tools check the quality of each sample's assembly. QUAST measures its size and contiguity,
+and BUSCO its completeness. In the read-based modes, Qualimap also shows how the sample's reads map
+back to the draft. Read this page to interpret their results, to choose the BUSCO lineage of a
+batch and to find their files.</p>
+<p>QUAST and BUSCO run on <code>02.assembly/{sample}/contigs_final.fasta</code>, the nuclear genome that ITS
+extraction and funannotate also read. When the contamination and mitochondrion screen runs with
+the default <code>parameters.mitochondria.mode: separate_confirmed</code>, the mitochondrion has been split
+off before this point, as described in <a href="../mitochondria/">Mitochondria</a>. If it were left in, its
+genetic code, gene content and copy number would distort both the contig statistics and the BUSCO
+counts of a genome that is annotated as nuclear. In <code>contigs</code> mode without the screen,
+<code>contigs_final.fasta</code> is the input FASTA after the contig filter.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Version</th>
+<th>Measures</th>
+<th>Rule</th>
+<th>Output, in <code>02.assembly/{sample}/</code></th>
+<th>If the tool fails</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUAST</td>
+<td>5.3.0</td>
+<td>size and contiguity</td>
+<td><code>genome_assembly_evaluation</code></td>
+<td><code>eval/quast/</code></td>
+<td>a line in the log; the run continues</td>
+</tr>
+<tr>
+<td>BUSCO</td>
+<td>6.0.0</td>
+<td>completeness of conserved single-copy genes</td>
+<td><code>completeness</code></td>
+<td><code>eval/busco/</code></td>
+<td>the job fails and the run stops (<code>--keep-going</code> lets the other jobs finish)</td>
+</tr>
+<tr>
+<td>Qualimap</td>
+<td>2.3</td>
+<td>reads mapped back to the draft (read-based modes)</td>
+<td><code>map_evaluation</code></td>
+<td><code>eval/qualimap/</code></td>
+<td>a line in the log; the run continues</td>
+</tr>
+</tbody>
+</table>
+<p>Only MultiQC and the contig summary read these results. The contig summary counts the complete
+BUSCO markers on each contig and is written after the annotation
+(<a href="../contig-summary/">Contig summary</a>).</p>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>nuclear genome</strong></td>
+<td>the delivered genome without the confirmed mitochondrial contigs, <code>contigs_final.fasta</code>; it holds every contig when nothing is split off (<code>parameters.mitochondria.mode</code> <code>off</code> or <code>report</code>, or no screen)</td>
+</tr>
+<tr>
+<td><strong>the screen</strong></td>
+<td>the contamination and mitochondrion screen of the draft: BLAST against core_nt, BlobTools, the mitochondrion screen and the contig selector; in <code>contigs</code> mode only with <code>parameters.contigs.screen: true</code></td>
+</tr>
+<tr>
+<td><strong>draft assembly (the draft)</strong></td>
+<td>the assembly the screen examines, before any contig is removed: <code>contigs_filt.fasta</code> in <code>illumina</code> mode and in <code>contigs</code> mode with the screen, <code>assembly.fasta</code> in <code>longread</code> and <code>hybrid</code></td>
+</tr>
+<tr>
+<td><strong>guide assembly</strong></td>
+<td>in <code>hybrid</code> mode, the SPAdes assembly of the Illumina reads; it is screened, and only the pairs that map to it go on</td>
+</tr>
+<tr>
+<td><strong>read-based modes (read modes)</strong></td>
+<td>the modes <code>illumina</code>, <code>longread</code> and <code>hybrid</code>, which start from reads, as against <code>contigs</code></td>
+</tr>
+<tr>
+<td><strong>coverage track</strong></td>
+<td>the reads aligned back to the draft, <code>contaminants/{sample}_map.bam</code>; BlobTools takes each contig's coverage from it, the contig summary its read depth and Qualimap its report; in <code>contigs</code> mode, the contigs aligned to themselves</td>
+</tr>
+<tr>
+<td><strong>lineage dataset</strong></td>
+<td>the BUSCO gene set of one taxonomic group, such as <code>hypocreales_odb12</code>, for the completeness check; with <code>lineage: auto</code>, BUSCO chooses one by placing the genome</td>
+</tr>
+<tr>
+<td><strong>contig summary</strong></td>
+<td>the table <code>02.assembly/{sample}/eval/contig_summary.tsv</code>: one row per contig of the draft, with its evidence (telomeres, depth, rDNA units, genes) and a verdict</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="quast">QUAST<a class="headerlink" href="#quast" title="Permanent link">¶</a></h2>
+<p>QUAST measures the size and contiguity of the genome. Rule <code>genome_assembly_evaluation</code> runs it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>quast<span class="w"> </span>contigs_final.fasta<span class="w"> </span>-o<span class="w"> </span>eval/quast<span class="w"> </span>--labels<span class="w"> </span><span class="o">{</span>sample<span class="o">}</span><span class="w"> </span>--no-icarus<span class="w"> </span>-t<span class="w"> </span>&lt;threads&gt;
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># hybrid: the screened guide assembly first, then the final genome, two labels</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>quast<span class="w"> </span>guide/contaminants/contigs_decontam.fasta<span class="w"> </span>contigs_final.fasta<span class="w"> </span>-o<span class="w"> </span>eval/quast<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>--labels<span class="w"> </span><span class="o">{</span>sample<span class="o">}</span>_guide,<span class="o">{</span>sample<span class="o">}</span><span class="w"> </span>--no-icarus<span class="w"> </span>-t<span class="w"> </span>&lt;threads&gt;
+</code></pre></div>
+<p>QUAST uses <code>min(resources.threads, 24)</code> threads. It runs without a reference genome, so it reports
+size and contiguity only, with no misassemblies, no genome fraction and no NG50. Contigs shorter
+than 500 bp, QUAST's default minimum, are left out of every statistic except the rows marked
+<code>(&gt;= 0 bp)</code>. <code>--labels</code> names the assembly after the sample, so QUAST and MultiQC show the sample
+name. <code>--no-icarus</code> leaves out QUAST's interactive contig viewer.</p>
+<p>When QUAST fails, its log ends with
+<code>[FunFlux] genome_assembly_evaluation: QUAST exited with an error for sample S. ...</code>,
+<code>eval/quast/</code> stays in place, and the MultiQC page has no QUAST row for that sample.</p>
+<p>In <code>hybrid</code> mode, one QUAST call compares the screened Illumina guide assembly with the final
+genome, labelled <code>{sample}_guide</code> and <code>{sample}</code> in that order. The guide is the short-read view
+of the same isolate, so the two rows show what the long reads added.</p>
+<h3 id="what-the-numbers-mean">What the numbers mean<a class="headerlink" href="#what-the-numbers-mean" title="Permanent link">¶</a></h3>
+<p>QUAST writes its report as <code>eval/quast/report.tsv</code>, also as <code>.txt</code>, <code>.html</code>, <code>.pdf</code> and <code>.tex</code>,
+and transposed as <code>transposed_report.*</code>. These are some of its rows:</p>
+<table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code># contigs (&gt;= 0 bp)</code></td>
+<td>all contigs</td>
+</tr>
+<tr>
+<td><code># contigs (&gt;= 1000 bp)</code> to <code>(&gt;= 50000 bp)</code></td>
+<td>contigs of at least 1, 5, 10, 25 and 50 kb</td>
+</tr>
+<tr>
+<td><code>Total length (&gt;= 0 bp)</code></td>
+<td>sum of all contig lengths (bp)</td>
+</tr>
+<tr>
+<td><code>Total length (&gt;= 50000 bp)</code></td>
+<td>bases in contigs of 50 kb or more</td>
+</tr>
+<tr>
+<td><code># contigs</code></td>
+<td>contigs of 500 bp or more</td>
+</tr>
+<tr>
+<td><code>Largest contig</code></td>
+<td>length of the longest contig (bp)</td>
+</tr>
+<tr>
+<td><code>Total length</code></td>
+<td>bases in contigs of 500 bp or more</td>
+</tr>
+<tr>
+<td><code>GC (%)</code></td>
+<td>GC content</td>
+</tr>
+<tr>
+<td><code>N50</code></td>
+<td>contigs of this length or longer hold half of the total length</td>
+</tr>
+<tr>
+<td><code>N90</code></td>
+<td>the same for 90 % of the total length</td>
+</tr>
+<tr>
+<td><code>auN</code></td>
+<td>sum of the squared contig lengths divided by the total length: the mean length of the contig that a random base lies in</td>
+</tr>
+<tr>
+<td><code>L50</code></td>
+<td>the number of contigs, longest first, that hold half of the total length</td>
+</tr>
+<tr>
+<td><code>L90</code></td>
+<td>the same for 90 %</td>
+</tr>
+<tr>
+<td><code># N's per 100 kbp</code></td>
+<td>gap characters</td>
+</tr>
+</tbody>
+</table>
+<p>A higher N50 and auN and a lower L50 mean fewer and longer contigs.</p>
+<h2 id="busco">BUSCO<a class="headerlink" href="#busco" title="Permanent link">¶</a></h2>
+<p>BUSCO searches the genome for genes that nearly every member of a lineage carries exactly
+once (single-copy orthologs) and reports how many it finds whole, duplicated, in pieces or
+not at all.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>busco<span class="w"> </span>--mode<span class="w"> </span>genome<span class="w"> </span>-i<span class="w"> </span>contigs_final.fasta<span class="w"> </span>--out<span class="w"> </span><span class="o">{</span>sample<span class="o">}</span><span class="w"> </span>--out_path<span class="w"> </span>eval/busco<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>--download_path<span class="w"> </span>eval/busco/busco_tmp<span class="w"> </span>--auto-lineage-euk<span class="w"> </span>--opt-out-run-stats<span class="w"> </span>--cpu<span class="w"> </span>&lt;threads&gt;
+</code></pre></div>
+<p>Rule <code>completeness</code> uses <code>min(resources.threads, 24)</code> threads, as QUAST does. With a fixed
+lineage, <code>-l &lt;lineage&gt;</code> replaces <code>--auto-lineage-euk</code>, and <code>--offline --download_path 00.resources/busco</code>
+replaces the download folder of the sample. In a eukaryote genome, BUSCO 6.0.0 finds the genes
+with miniprot unless another predictor is requested. FunFlux requests none, and the summary says
+<code>BUSCO was run in mode: euk_genome_min</code>.</p>
+<h3 id="automatic-or-fixed-lineage">Automatic or fixed lineage<a class="headerlink" href="#automatic-or-fixed-lineage" title="Permanent link">¶</a></h3>
+<p>The key <code>parameters.busco.lineage</code> names the dataset BUSCO uses, or leaves the choice to BUSCO:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">parameters</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">busco</span><span class="p">:</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">lineage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span><span class="w">        </span><span class="c1"># or a dataset name such as hypocreales_odb12</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>What BUSCO runs</th>
+<th>Summaries in <code>eval/busco/</code></th>
+<th>MultiQC rows per sample</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auto</code> (default)</td>
+<td>eukaryota_odb12, then the most specific lineage it reaches by placing the genome in the eukaryote tree</td>
+<td><code>short_summary.generic.eukaryota_odb12.{sample}.txt</code> and <code>short_summary.specific.&lt;lineage&gt;.{sample}.txt</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td>a dataset name</td>
+<td>that dataset only</td>
+<td><code>short_summary.specific.&lt;lineage&gt;.{sample}.txt</code></td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">For a batch, a fixed lineage keeps the BUSCO numbers comparable</p>
+<p>Each sample is placed on its own, so <code>auto</code> can choose different lineages for the samples of
+one batch, and their numbers are then not comparable. A fixed lineage gives every sample the
+same dataset, skips the eukaryota run and the placement, and leaves a smaller result folder.</p>
+</div>
+<p>Each summary also exists as <code>.json</code>. The log names the lineage that the placement chose, in the
+line <code>Lineage &lt;lineage&gt; is selected, supported by &lt;n&gt; markers out of &lt;m&gt;</code>. A dataset name must
+match <code>[a-z0-9_]+_odb[0-9]+</code> after lower-casing, or the dry run stops. <code>busco --list-datasets</code>
+prints the available names, each with its version after a dot, as in <code>hypocreales_odb12.2</code>.
+Leave out the dot and the number after it.</p>
+<h3 id="reading-the-summary">Reading the summary<a class="headerlink" href="#reading-the-summary" title="Permanent link">¶</a></h3>
+<p>Each summary has one result line of this form:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>C:&lt;C&gt;%[S:&lt;S&gt;%,D:&lt;D&gt;%],F:&lt;F&gt;%,M:&lt;M&gt;%,n:&lt;n&gt;,E:&lt;E&gt;%
+</code></pre></div>
+<p>C is the completeness of the genome, and D, F, M and E say what lies behind it:</p>
+<table>
+<thead>
+<tr>
+<th>Letter</th>
+<th>Meaning</th>
+<th>What an unusual value can mean</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C</td>
+<td>complete: found over its full length, S + D</td>
+<td>a lower C after a decontamination policy removed contigs points to removed genome rather than removed contamination (<a href="../decontamination/#log-messages">Decontamination</a>)</td>
+</tr>
+<tr>
+<td>S</td>
+<td>complete, one copy</td>
+<td></td>
+</tr>
+<tr>
+<td>D</td>
+<td>complete, two or more copies</td>
+<td>a high D can come from a recent whole-genome duplication, from haplotypes assembled separately, or from a mixed culture of two fungi of the same lineage, in which each gene is present twice</td>
+</tr>
+<tr>
+<td>F</td>
+<td>fragmented: found in part</td>
+<td>the gene is only partly present, or no full-length gene model was built although the gene may be there</td>
+</tr>
+<tr>
+<td>M</td>
+<td>missing</td>
+<td>the gene is absent, or the search found no significant match</td>
+</tr>
+<tr>
+<td>n</td>
+<td>genes in the dataset</td>
+<td></td>
+</tr>
+<tr>
+<td>E</td>
+<td>complete genes whose miniprot prediction contains an internal stop codon</td>
+<td>caution before using BUSCO's predicted sequences downstream; those genes still count as complete</td>
+</tr>
+</tbody>
+</table>
+<p>The readings of D (genome duplication, haplotypes), F, M and E are those of the BUSCO user guide.</p>
+<p>The header of each summary names the dataset and its creation date, for example
+<code>hypocreales_odb12 (Creation date: 2026-05-22, number of genomes: 76, number of BUSCOs: 4349)</code>.
+With <code>auto</code>, BUSCO downloads the current dataset at every run, and a newer dataset can change the
+numbers. Compare samples only across runs with the same dataset date. A fixed lineage is
+downloaded once per output folder, so every later run into that folder uses the same release.</p>
+<h3 id="downloads-disk-and-network">Downloads, disk and network<a class="headerlink" href="#downloads-disk-and-network" title="Permanent link">¶</a></h3>
+<p>The lineage setting also decides where the datasets come from, and when BUSCO needs the network:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Where the datasets come from</th>
+<th>Network</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auto</code></td>
+<td>every BUSCO job downloads its datasets into <code>eval/busco/busco_tmp/</code>, which is deleted when the job ends. Each sample downloads its own copy, because two BUSCO jobs downloading into one folder can corrupt it. The job downloads eukaryota_odb12, the placement files and the chosen lineage</td>
+<td>in every BUSCO job, on the computer that runs it</td>
+</tr>
+<tr>
+<td>a fixed lineage</td>
+<td>rule <code>busco_data</code> downloads it once per output folder into <code>00.resources/busco/lineages/&lt;lineage&gt;/</code>, on the computer that runs Snakemake (<code>logs/busco_data.log</code>). Every BUSCO job reads it with <code>--offline</code> and writes nothing there, so the samples share one copy</td>
+<td>once; the BUSCO jobs need none</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">With <code>auto</code>, the computer that runs BUSCO needs internet in every job</p>
+<p>A fixed lineage needs internet once, on the computer that runs Snakemake, and the BUSCO jobs
+need none. This is how BUSCO runs on cluster nodes without internet
+(<a href="../../getting-started/installation/#network">Network access</a>).</p>
+</div>
+<p>With a fixed lineage, the JSON summary records <code>offline: True</code> and the path of the shared lineage
+folder, <code>00.resources/busco/lineages/&lt;lineage&gt;/</code>. The <code>.txt</code> summary and <code>full_table.tsv</code> are the
+same as with a download per job.</p>
+<p>The odb12 datasets of 2026-05-22 have these archive sizes:</p>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Archive size (MB)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eukaryota</td>
+<td>29.1</td>
+</tr>
+<tr>
+<td>fungi</td>
+<td>125.8</td>
+</tr>
+<tr>
+<td>ascomycota</td>
+<td>310.5</td>
+</tr>
+<tr>
+<td>sordariomycetes</td>
+<td>311.7</td>
+</tr>
+<tr>
+<td>hypocreales</td>
+<td>274.6</td>
+</tr>
+<tr>
+<td>basidiomycota</td>
+<td>151.2</td>
+</tr>
+<tr>
+<td>agaricomycetes</td>
+<td>196.7</td>
+</tr>
+<tr>
+<td>mucoromycota</td>
+<td>132.1</td>
+</tr>
+</tbody>
+</table>
+<p>With <code>auto</code>, a job therefore downloads tens to hundreds of MB, every time. This is what stays on
+disk afterwards:</p>
+<table>
+<thead>
+<tr>
+<th>In <code>eval/busco/</code></th>
+<th>After the run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the summaries</td>
+<td>kept</td>
+</tr>
+<tr>
+<td><code>run_&lt;lineage&gt;/</code>: <code>full_table.tsv</code> (one line per gene with its status and location), <code>missing_busco_list.tsv</code>, <code>miniprot_output/</code>, BUSCO's own copy of the summary</td>
+<td>kept</td>
+</tr>
+<tr>
+<td><code>auto_lineage/</code>, <code>logs/</code>, <code>tmp/</code></td>
+<td>kept</td>
+</tr>
+<tr>
+<td>every <code>hmmer_output/</code> and <code>busco_sequences/</code> folder</td>
+<td>deleted</td>
+</tr>
+</tbody>
+</table>
+<p>The folder keeps hundreds of MB per sample.</p>
+<p>FunFlux passes <code>--opt-out-run-stats</code>, so BUSCO 6.0.0 sends no usage statistics to
+busco-data.ezlab.org and makes no ipinfo.io lookup. Without the flag, BUSCO would send run details,
+results, a checksum of the input FASTA and the country of the machine's IP address. The flag
+changes no result.</p>
+<h2 id="qualimap-read-modes">Qualimap (read modes)<a class="headerlink" href="#qualimap-read-modes" title="Permanent link">¶</a></h2>
+<p>Qualimap shows how the sample's reads map back to the draft. Rule <code>map_evaluation</code> runs it in
+<code>illumina</code>, <code>longread</code> and <code>hybrid</code> mode:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">unset</span><span class="w"> </span>DISPLAY
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">JAVA_TOOL_OPTIONS</span><span class="o">=</span><span class="s2">"-Djava.awt.headless=true"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>qualimap<span class="w"> </span>bamqc<span class="w"> </span>-bam<span class="w"> </span>contaminants/<span class="o">{</span>sample<span class="o">}</span>_map.bam<span class="w"> </span>--java-mem-size<span class="o">=</span>&lt;min<span class="o">(</span>ram_gb,<span class="w"> </span><span class="m">64</span><span class="o">)</span>&gt;G<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span>-nt<span class="w"> </span>&lt;min<span class="o">(</span>threads,<span class="w"> </span><span class="m">24</span><span class="o">)</span>&gt;<span class="w"> </span>-outdir<span class="w"> </span>eval/qualimap<span class="w"> </span>-outformat<span class="w"> </span>html
+</code></pre></div>
+<p>The BAM is the coverage track of the screen, the sample's reads aligned to the draft before
+decontamination (<a href="../decontamination/#coverage-track">Decontamination</a>). Every read-based mode gets
+a report on the reads that built the draft, <code>hybrid</code> a second one for the Illumina guide, and
+<code>contigs</code> mode none:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Rule</th>
+<th>Reads in the BAM</th>
+<th>Report in <code>02.assembly/{sample}/</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>illumina</code></td>
+<td><code>map_evaluation</code></td>
+<td>the trimmed Illumina pairs (bowtie2)</td>
+<td><code>eval/qualimap/</code></td>
+</tr>
+<tr>
+<td><code>longread</code></td>
+<td><code>map_evaluation</code></td>
+<td>the filtered long reads (minimap2)</td>
+<td><code>eval/qualimap/</code></td>
+</tr>
+<tr>
+<td><code>hybrid</code></td>
+<td><code>map_evaluation</code></td>
+<td>the filtered long reads (minimap2)</td>
+<td><code>eval/qualimap/</code></td>
+</tr>
+<tr>
+<td><code>hybrid</code></td>
+<td><code>map_guide_evaluation</code>, the same command</td>
+<td>the Illumina pairs mapped to the guide assembly (<code>guide/contaminants/{sample}_map.bam</code>)</td>
+<td><code>guide/eval/qualimap/</code></td>
+</tr>
+<tr>
+<td><code>contigs</code></td>
+<td>none</td>
+<td>its only BAM is the contigs aligned to themselves</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The Java heap is the smaller of <code>resources.ram_gb</code> and 64 GB, and a changed <code>ram_gb</code> does not
+re-run the report (<a href="../../reference/running/#cpu-cores-and-threads">CPU cores and threads</a>). The two
+settings in front of the command let Qualimap draw its plots on a server without a display. The
+Java runtime notes them with one <code>Picked up JAVA_TOOL_OPTIONS</code> line in the log, which is expected.</p>
+<p>When Qualimap fails, the log ends with
+<code>[FunFlux] map_evaluation: Qualimap exited with an error for sample S. ...</code>,
+<code>eval/qualimap/</code> stays in place, empty, and the MultiQC page has no mapping table for the sample.</p>
+<p>The report gives the share of mapped reads, insert sizes of read pairs, mapping quality, GC
+content, error rate, the depth along the draft and, in <code>genome_results.txt</code>, the mean depth of
+every contig. The mitochondrion stands out by its depth, because a cell holds many copies of it.
+A contaminant often has a depth different from that of the isolate.</p>
+<h2 id="in-the-multiqc-report">In the MultiQC report<a class="headerlink" href="#in-the-multiqc-report" title="Permanent link">¶</a></h2>
+<p>MultiQC reads <code>eval/quast/report.tsv</code>, the BUSCO summaries and, in the read-based modes,
+<code>eval/qualimap/</code> of every sample into <code>06.report/multiqc_report.html</code>. In <code>hybrid</code> it also reads
+<code>guide/eval/qualimap/</code>. Each tool has one row per sample, with a second QUAST and Qualimap row for
+the guide in <code>hybrid</code> and a second BUSCO row with the automatic lineage:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>QUAST rows</th>
+<th>BUSCO rows</th>
+<th>Qualimap rows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contigs</code></td>
+<td>1</td>
+<td>2 with the automatic lineage, 1 with a fixed one</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>illumina</code>, <code>longread</code></td>
+<td>1</td>
+<td>as above</td>
+<td>1: <code>mapping QC | &lt;sample&gt;</code></td>
+</tr>
+<tr>
+<td><code>hybrid</code></td>
+<td>2</td>
+<td>as above</td>
+<td>2: <code>mapping QC | &lt;sample&gt;</code> and <code>mapping Illumina QC | &lt;sample&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p>The report also holds the contig summary table of every sample, with one row per contig of the
+draft assembly (<a href="../contig-summary/#multiqc">Contig summary</a>). <a href="../report/">Report</a> describes the
+row names, the General Statistics table and the BUSCO folders that MultiQC skips.</p>
+<h2 id="re-runs">Re-runs<a class="headerlink" href="#re-runs" title="Permanent link">¶</a></h2>
+<p>Snakemake deletes <code>eval/quast/</code>, <code>eval/busco/</code> and <code>eval/qualimap/</code> before it runs the step
+again, so files you add to these folders are lost. These changes re-run the following steps:</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Re-runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contigs_final.fasta</code>, for example after a new decontamination policy or mitochondrion threshold</td>
+<td>QUAST and BUSCO</td>
+</tr>
+<tr>
+<td>the BAM, that is, a new draft or new reads</td>
+<td>Qualimap</td>
+</tr>
+<tr>
+<td><code>busco.lineage</code></td>
+<td>BUSCO, the contig summary and MultiQC only, after <code>busco_data</code> has downloaded a newly named lineage</td>
+</tr>
+</tbody>
+</table>
+<p>A new BUSCO lineage therefore re-runs only BUSCO and the two steps that read it, not the assembly
+or the annotation.</p>
+<h2 id="output-files">Output files<a class="headerlink" href="#output-files" title="Permanent link">¶</a></h2>
+<p>Everything these steps write is kept, except BUSCO's download folder, <code>busco_tmp/</code>, and the
+<code>hmmer_output/</code> and <code>busco_sequences/</code> folders inside <code>eval/busco/</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Kept</th>
+<th>Read by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>02.assembly/{sample}/eval/quast/</code></td>
+<td>yes</td>
+<td>MultiQC (<code>report.tsv</code>)</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/eval/busco/</code></td>
+<td>yes</td>
+<td>MultiQC (the <code>short_summary.*.txt</code> files)</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/eval/busco/busco_tmp/</code> (<code>auto</code> only)</td>
+<td>no</td>
+<td>BUSCO (downloaded datasets)</td>
+</tr>
+<tr>
+<td><code>00.resources/busco/lineages/&lt;lineage&gt;/</code>, <code>00.resources/busco/file_versions.tsv</code> (fixed lineage only)</td>
+<td>yes</td>
+<td>BUSCO, in every later run into the output folder</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/eval/qualimap/</code></td>
+<td>yes (read-based modes)</td>
+<td>MultiQC</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/guide/eval/qualimap/</code></td>
+<td>yes (<code>hybrid</code>)</td>
+<td>MultiQC</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/eval/telomere_candidates.tsv</code>, <code>telomere_unit.txt</code>, <code>telomere_ends.tsv</code></td>
+<td>yes</td>
+<td>the contig summary; you. The telomere repeat unit of the assembly, from tidk (<a href="../contig-summary/#telomeres">Contig summary</a>)</td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/eval/contig_summary.tsv</code>, <code>contig_summary_mqc.tsv</code></td>
+<td>yes</td>
+<td>you; MultiQC (<code>contig_summary_mqc.tsv</code>). Written after the annotation (<a href="../contig-summary/">Contig summary</a>)</td>
+</tr>
+<tr>
+<td><code>06.report/multiqc_report.html</code>, <code>06.report/multiqc_data/</code>, <code>06.report/multiqc_config.yaml</code></td>
+<td>yes</td>
+<td>you</td>
+</tr>
+<tr>
+<td><code>logs/genome_assembly_evaluation_{sample}.log</code>, <code>logs/completeness_{sample}.log</code>, <code>logs/busco_data.log</code> (fixed lineage), <code>logs/map_evaluation_{sample}.log</code>, <code>logs/map_guide_evaluation_{sample}.log</code>, <code>logs/telomere_units_{sample}.log</code>, <code>logs/contig_summary_{sample}.log</code>, <code>logs/multiqc.log</code></td>
+<td>yes</td>
+<td>you</td>
+</tr>
+</tbody>
+</table>
+<p>The full output tree is on <a href="../../reference/output/">Output files</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

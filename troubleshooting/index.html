@@ -1,0 +1,3786 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/troubleshooting/">
+      
+      
+        <link rel="prev" href="../reference/running/">
+      
+      
+        <link rel="next" href="../about/validation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Troubleshooting - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#troubleshooting" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Troubleshooting
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/external-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/from-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../modes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modes/illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modes/longread/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modes/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modes/contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis/decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis/mitochondria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis/assembly-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis/contig-summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis/its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis/repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis/gene-prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis/functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis/amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis/report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods/adapter-trimming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adapter trimming and the adapter screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#where-to-look" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to look
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stops-before-any-job-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stops before any job runs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stops before any job runs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration-file-and-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration file and mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keys-and-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keys and values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-files-and-sample-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input files and sample names
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#annotation-parameter-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Annotation parameter table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#databases-and-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Databases and links
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#screen-masking-and-busco-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Screen, masking and BUSCO settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#genemark-es-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeneMark-ES settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiberius-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tiberius settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signalp-6-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SignalP 6 settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amr-screen-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AMR screen settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-based-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read-based modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notes-that-announce-a-later-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes that announce a later failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failures-while-the-workflow-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failures while the workflow runs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Failures while the workflow runs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#genemark-es-licence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeneMark-ES licence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signalp-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SignalP 6
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interproscan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InterProScan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiberius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tiberius
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telomere-repeat-database-and-tidk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telomere repeat database and tidk
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#univec-and-the-adapter-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UniVec and the adapter screen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chroquetas-amr-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ChroQueTas (AMR screen)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#funannotate-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        funannotate database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#busco-downloads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUSCO downloads
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medaka-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medaka model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-stops-in-the-shared-stages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other stops in the shared stages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#messages-that-do-not-stop-the-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Messages that do not stop the run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#on-a-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On a cluster
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#where-to-look" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to look
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stops-before-any-job-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stops before any job runs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stops before any job runs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration-file-and-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration file and mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keys-and-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keys and values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-files-and-sample-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input files and sample names
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#annotation-parameter-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Annotation parameter table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#databases-and-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Databases and links
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#screen-masking-and-busco-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Screen, masking and BUSCO settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#genemark-es-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeneMark-ES settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiberius-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tiberius settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signalp-6-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SignalP 6 settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amr-screen-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AMR screen settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-based-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read-based modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notes-that-announce-a-later-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes that announce a later failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failures-while-the-workflow-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failures while the workflow runs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Failures while the workflow runs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#genemark-es-licence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GeneMark-ES licence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signalp-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SignalP 6
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interproscan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InterProScan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tiberius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tiberius
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telomere-repeat-database-and-tidk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telomere repeat database and tidk
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#univec-and-the-adapter-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UniVec and the adapter screen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chroquetas-amr-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ChroQueTas (AMR screen)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#funannotate-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        funannotate database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#busco-downloads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUSCO downloads
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medaka-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medaka model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-stops-in-the-shared-stages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other stops in the shared stages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#messages-that-do-not-stop-the-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Messages that do not stop the run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#on-a-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On a cluster
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/troubleshooting.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">¶</a></h1>
+<p>This page lists the messages that stop a FunFlux run or leave a result missing, with the cause of
+each and what to change. It follows a run from start to end: the checks of the configuration
+before any job starts, the failures of single steps while the workflow runs, and the stops
+particular to a cluster.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>dry run</strong></td>
+<td>a Snakemake run with <code>-n</code>: FunFlux checks the configuration and the inputs, and Snakemake lists the jobs it plans without running any</td>
+</tr>
+<tr>
+<td><strong>rule</strong></td>
+<td>one step of the workflow as Snakemake defines it, such as <code>select_contigs</code>; the console and the log files in <code>logs/</code> use its name</td>
+</tr>
+<tr>
+<td><strong>launch folder</strong></td>
+<td>the folder Snakemake is started from, normally the FunFlux repository; relative paths are read from it, and <code>.snakemake/</code> is created there</td>
+</tr>
+<tr>
+<td><strong>lock</strong></td>
+<td>the record, in <code>.snakemake/</code>, of the files a run in progress reads and writes; a killed run leaves it behind, and <code>--unlock</code> removes it</td>
+</tr>
+<tr>
+<td><strong>the screen</strong></td>
+<td>the contamination and mitochondrion screen of the draft: BLAST against core_nt, BlobTools, the mitochondrion screen and the contig selector; in <code>contigs</code> mode only with <code>parameters.contigs.screen: true</code></td>
+</tr>
+<tr>
+<td><strong>contig selector</strong></td>
+<td>rule <code>select_contigs</code>, the last step of the screen: it keeps or removes each contig by genus, as <code>parameters.decontamination</code> says; the default, <code>off</code>, keeps every contig</td>
+</tr>
+<tr>
+<td><strong>annotation parameter table</strong></td>
+<td>the tab-separated file named by <code>files.annotation_params</code>, one row per sample: name, species, a protein FASTA of related fungi and, optionally, an AUGUSTUS model</td>
+</tr>
+<tr>
+<td><strong>heavy step, long step, light step</strong></td>
+<td>on a cluster, heavy steps ask the scheduler for <code>ram_gb</code> and <code>runtime_hours</code>, long steps for <code>runtime_hours</code> only, and light steps for neither</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="where-to-look">Where to look<a class="headerlink" href="#where-to-look" title="Permanent link">¶</a></h2>
+<p>What you see, and when it appears, tells you where the cause is and which part of this page to
+read.</p>
+<table>
+<thead>
+<tr>
+<th>What you see</th>
+<th>Where the cause is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A <code>[FunFlux] ...</code> line before Snakemake's <code>Building DAG of jobs...</code>, and the run ends</td>
+<td>A configuration check failed and nothing ran. The message names the key. See <a href="#stops-before-any-job-runs">Stops before any job runs</a>.</td>
+</tr>
+<tr>
+<td>A <code>[FunFlux] &lt;step&gt;: ...</code> line after jobs have started, for example <code>[FunFlux] funannotate_db: ...</code></td>
+<td>That step failed or, if it is a report step such as QUAST, it warns and the run goes on. Look the step up under <a href="#failures-while-the-workflow-runs">Failures while the workflow runs</a>. Its log is <code>logs/&lt;step&gt;.log</code> or <code>logs/&lt;step&gt;_{sample}.log</code>.</td>
+</tr>
+<tr>
+<td><code>Error in rule &lt;rule&gt;:</code> while the workflow runs</td>
+<td>The block names the job's <code>log:</code>, the file that holds the tool's own messages. See <a href="#failures-while-the-workflow-runs">Failures while the workflow runs</a>.</td>
+</tr>
+<tr>
+<td><code>Error: Directory cannot be locked.</code> or <code>The files below seem to be incomplete.</code></td>
+<td>A previous run was killed. <code>Directory cannot be locked</code> has a second cause: another run from the same launch folder would write the same files, or one of the two runs would write a file the other reads. Use <code>--unlock</code> only when no other Snakemake process runs from that folder. See <a href="../reference/running/#resuming-after-an-interruption">Resuming after an interruption</a>.</td>
+</tr>
+<tr>
+<td>A finished run with an empty or missing result</td>
+<td>Some messages go only to the logs and never stop the run. See <a href="#messages-that-do-not-stop-the-run">Messages that do not stop the run</a>.</td>
+</tr>
+<tr>
+<td>A message from Slurm, a job killed for memory or time, <code>SSL certificate problem</code>, or a step that works on one computer but not on the cluster</td>
+<td>See <a href="#on-a-cluster">On a cluster</a>.</td>
+</tr>
+</tbody>
+</table>
+<p>Three kinds of log are kept:</p>
+<table>
+<thead>
+<tr>
+<th>Log of</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>every per-sample rule</td>
+<td><code>&lt;output_dir&gt;/logs/&lt;rule&gt;_{sample}.log</code></td>
+</tr>
+<tr>
+<td>the rules that run once for all samples</td>
+<td><code>&lt;output_dir&gt;/logs/</code>, without a sample name: <code>funannotate_db.log</code>, <code>normalize_funannotate_db.log</code>, <code>unite_db.log</code>, <code>unite_identified.log</code>, <code>antismash_db.log</code> or <code>antismash_db_local.log</code>, <code>tiberius_model.log</code>, <code>telomere_db.log</code>, <code>univec_illumina.log</code>, <code>busco_data.log</code> (a named BUSCO lineage), <code>download_phix.log</code>, <code>build_phix.log</code>, <code>install_signalp6.log</code>, <code>chroquetas_db.log</code>, <code>multiqc.log</code></td>
+</tr>
+<tr>
+<td>Snakemake itself</td>
+<td><code>.snakemake/log/</code> in the launch folder, one file per run, named after its start time</td>
+</tr>
+</tbody>
+</table>
+<p><code>--show-failed-logs</code> makes Snakemake print the log of every failed job at the end of the run.</p>
+<h2 id="stops-before-any-job-runs">Stops before any job runs<a class="headerlink" href="#stops-before-any-job-runs" title="Permanent link">¶</a></h2>
+<p>FunFlux checks the whole configuration before any job starts, on every run and every dry run. A
+failed check prints one <code>[FunFlux]</code> line and exits with status 1. Only the first failed check is
+reported, so fix it and run <code>-n</code> again. Lines that start with <code>[FunFlux] NOTE:</code> do not stop the
+run.</p>
+<p>Placeholders in the messages below are in angle brackets. An empty cell means that the message
+itself already says what is wrong or what to change.</p>
+<h3 id="configuration-file-and-mode">Configuration file and mode<a class="headerlink" href="#configuration-file-and-mode" title="Permanent link">¶</a></h3>
+<p>These checks concern the configuration file itself and its <code>mode</code> key.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] No configuration supplied. Pass one explicitly, e.g.:</code></td>
+<td>No <code>--configfile</code> on the command line. FunFlux has no default configuration.</td>
+<td>Add <code>--configfile config/config_custom.yaml</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] mode: this configuration has no 'mode' key. ...</code></td>
+<td>A v1 configuration (FunFlux 1.x, FunFluxL, FunFluxL+), or an empty <code>mode:</code>.</td>
+<td>Start from the v2 template. <a href="../getting-started/from-v1/">Coming from v1</a> lists what moved.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] mode: must be one of illumina | longread | hybrid | contigs (got: '&lt;value&gt;')</code></td>
+<td>Another word in <code>mode</code>.</td>
+<td>Use one of the four.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="keys-and-values">Keys and values<a class="headerlink" href="#keys-and-values" title="Permanent link">¶</a></h3>
+<p>These messages name a key that is missing, unknown or in the wrong block, or whose value has the
+wrong form or is out of range.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] &lt;block&gt;: must be a block of 'key: value' lines.</code></td>
+<td><code>input</code>, <code>directories</code>, <code>files</code>, <code>links</code>, <code>resources</code>, <code>parameters</code> or a block inside <code>parameters</code> holds a single value or a list.</td>
+<td>Indent the keys under the block name.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] &lt;section&gt;.&lt;key&gt;: required, but it is missing or empty in the config.</code></td>
+<td>A required entry is empty: <code>directories.output_dir</code>, <code>eggnog_db</code>, <code>funannotate_db</code>, <code>blast_db</code> (when the screen runs), <code>files.iprscan</code>, <code>files.annotation_params</code>, <code>links.funannotate_link</code>, <code>links.phix_link</code> (in <code>illumina</code> and <code>hybrid</code> mode). The template leaves them empty on purpose.</td>
+<td>Fill it in.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] &lt;key&gt;: expected true or false (got &lt;value&gt;).</code></td>
+<td>A yes/no key holds another word. <code>parameters.contigs.screen</code> is checked in every mode, although only <code>contigs</code> mode uses it.</td>
+<td>Write <code>true</code> or <code>false</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] &lt;key&gt;: expected a whole number (got &lt;value&gt;).</code>, <code>... must be at least N (got M).</code>, <code>... must be at most N (got M).</code></td>
+<td>The value is not an integer, or it is out of range.</td>
+<td>The allowed values are listed on <a href="../reference/configuration/">Configuration</a>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] &lt;key&gt;: expected a number (got &lt;value&gt;).</code>, <code>... must be above 0 (got X).</code>, <code>... must be at most N (got X).</code></td>
+<td>The same for decimal keys, for example <code>min_direct_blast_qcov: 150</code>. <code>nan</code> and <code>inf</code>, and YAML's <code>.nan</code> and <code>.inf</code>, count as not a number.</td>
+<td>As above.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.&lt;block&gt;: unsupported key(s): &lt;keys&gt;. Supported keys: &lt;list&gt;.</code></td>
+<td>A misspelled key inside a block of <code>parameters</code>.</td>
+<td>Use a key from the list.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.&lt;key&gt;: unknown setting (a typo?). Known settings: ...</code></td>
+<td>A misspelled key directly under <code>parameters</code>.</td>
+<td>Use a name from the list.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.&lt;key&gt;: this setting moved into the block named after your mode: ...</code></td>
+<td><code>long_read_assembler</code>, <code>flye_input_mode</code>, <code>medaka_model</code>, <code>filtlong</code> or <code>hifiasm</code> at the top of <code>parameters</code>, as in FunFluxL.</td>
+<td>Move it into <code>parameters.longread</code> or <code>parameters.hybrid</code>. <code>long_read_assembler</code> is now called <code>assembler</code>.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">A misspelled optional key outside <code>parameters</code> is ignored without a message</p>
+<p>Only <code>parameters</code> and its blocks are checked for unknown keys. A misspelled optional key in
+<code>directories</code>, <code>files</code>, <code>links</code>, <code>input</code> or <code>resources</code> is ignored, and the default applies.
+For example, <code>antismash:</code> instead of <code>antismash_db:</code> in <code>directories</code> means that the antiSMASH
+database is downloaded, and <code>resources.thread:</code> means 24 threads.</p>
+</div>
+<h3 id="input-files-and-sample-names">Input files and sample names<a class="headerlink" href="#input-files-and-sample-names" title="Permanent link">¶</a></h3>
+<p>These checks look for the input files of the active mode and take the sample names from the file
+names.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] mode=&lt;mode&gt; requires input.&lt;key&gt; to be set in the config.</code></td>
+<td>The key for the input folder of the active mode is missing or empty.</td>
+<td>Set <code>input.contigs_dir</code>, <code>input.illumina_dir</code> or <code>input.longread_dir</code> or, in <code>hybrid</code> mode, the last two.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] input.&lt;key&gt;: '&lt;value&gt;' is not an existing directory.</code></td>
+<td>Wrong path. A relative path is read from the launch folder, not from <code>output_dir</code>.</td>
+<td>Use an absolute path.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] input.&lt;key&gt;: no input files found. Expected names like &lt;example&gt;.</code></td>
+<td>No file follows the naming pattern.</td>
+<td>Name the files as the mode expects: <code>{sample}.fasta</code> (or <code>.fa</code>, <code>.fna</code>) for assemblies, <code>{sample}_R1.fastq.gz</code> and <code>{sample}_R2.fastq.gz</code> for Illumina pairs, and <code>{sample}_ont.fastq.gz</code> or <code>{sample}_pacbio.fastq.gz</code> for long reads.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] input.&lt;key&gt;: more than one file extension in this folder (&lt;a&gt;, &lt;b&gt;). ...</code></td>
+<td>Mixed extensions, or other files in the folder. In <code>contigs</code> mode every file whose name contains a dot is taken as a sample, so a <code>README.txt</code> gives <code>(fasta, txt)</code>.</td>
+<td>Use one extension for all files of one kind. In <code>hybrid</code> mode the Illumina files and the long-read files may have different ones. Keep other files elsewhere.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] input.&lt;key&gt;: file extension '&lt;ext&gt;' is not recognised (expected one of: ...).</code></td>
+<td>An extension FunFlux does not recognise, for example <code>.fas</code>.</td>
+<td>Use <code>fasta</code>, <code>fa</code> or <code>fna</code> for assemblies, and <code>fastq</code>, <code>fq</code>, <code>fastq.gz</code> or <code>fq.gz</code> for reads.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] sample name '&lt;name&gt;' contains characters that are not allowed (...). Rename the input files.</code></td>
+<td>The name holds a space or one of <code>* # @ % ^ / ! ? &amp; : ; | &lt; &gt;</code>. A FASTA in a subfolder of <code>contigs_dir</code> becomes the sample <code>subfolder/name</code> and stops here.</td>
+<td>Rename the files. Underscores and dots are allowed. Keep the input folder flat.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] input.illumina_dir: sample '&lt;name&gt;' has an R1 file but no R2 mate: &lt;path&gt;</code></td>
+<td>The R2 file is missing or named differently.</td>
+<td>Name the pair <code>{sample}_R1.&lt;ext&gt;</code> and <code>{sample}_R2.&lt;ext&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] sample '&lt;name&gt;' has both _ont and _pacbio files in &lt;dir&gt;. ...</code></td>
+<td>One sample has files of both long-read technologies.</td>
+<td>Keep one long-read file per sample.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] hybrid mode needs Illumina and long reads for every sample.</code></td>
+<td>Some samples have reads of one kind only. The message goes on with <code>No _ont or _pacbio file for:</code>, <code>No Illumina _R1 file for:</code> or both, each followed by the sample names.</td>
+<td>Supply both kinds of reads, or run the sample in another batch.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="annotation-parameter-table">Annotation parameter table<a class="headerlink" href="#annotation-parameter-table" title="Permanent link">¶</a></h3>
+<p>These messages concern the annotation parameter table, its rows and its columns.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] files.annotation_params: '&lt;path&gt;' not found.</code></td>
+<td>Wrong path in <code>files.annotation_params</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[FunFlux] files.annotation_params: line N has K tab-separated columns; expected 3 or 4 (sample, species, proteins and, optionally, augustus_species).</code></td>
+<td>Spaces instead of tabs, or a missing or extra column. A species name with a space is still one column.</td>
+<td>Separate the columns with tabs.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] files.annotation_params: sample '&lt;name&gt;' names the AUGUSTUS model '&lt;model&gt;', which is not a trained species of the funannotate database at '&lt;db&gt;'. Did you mean '&lt;model&gt;'? Leave column 4 empty, or write '-', to train AUGUSTUS on this genome instead. ...</code></td>
+<td>Column 4 names a model that the database does not hold, for example through a typo, or with capitals where the folder name has none. The message appears at start-up when the database is already on disk. Otherwise it comes from rule <code>augustus_model_check</code>, right after the database is unpacked, and is also written to <code>logs/augustus_model_check_{sample}.log</code>.</td>
+<td>Use one of the suggested names, which are the folder names in <code>&lt;db&gt;/trained_species/</code>, or leave column 4 empty to train AUGUSTUS on the genome.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] files.annotation_params: sample '&lt;name&gt;' names the AUGUSTUS model '&lt;model&gt;', which is not a possible model name (letters, digits, '_', '-' and '.' only). ...</code></td>
+<td>Column 4 holds a path, a space or another character that no model name has.</td>
+<td>Write the model's folder name only, or leave column 4 empty.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] files.annotation_params: sample '&lt;name&gt;' appears more than once (line N).</code></td>
+<td>A duplicate row.</td>
+<td>Keep one row per sample.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] files.annotation_params: sample '&lt;name&gt;' has no row in '&lt;path&gt;'.</code></td>
+<td>Every sample of the batch needs a row. Rows for samples outside the batch are ignored.</td>
+<td>Add the row.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] files.annotation_params: protein file '&lt;path&gt;' of sample '&lt;name&gt;' does not exist.</code> (or <code>... is empty.</code>)</td>
+<td>A relative path in the table is read from the launch folder.</td>
+<td>Give an absolute path to a non-empty protein FASTA.</td>
+</tr>
+</tbody>
+</table>
+<p>A sample whose column 4 is empty can also stop later, during gene prediction, with
+<code>Not enough gene models &lt;N&gt; to train Augustus</code>; see
+<a href="#other-stops-in-the-shared-stages">Other stops in the shared stages</a>.</p>
+<h3 id="databases-and-links">Databases and links<a class="headerlink" href="#databases-and-links" title="Permanent link">¶</a></h3>
+<p>These messages concern the reference databases and the download links of the configuration.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] directories.antismash_db: '&lt;path&gt;' is not a directory. ...</code> (or <code>... has no 'clusterblast'. ...</code>)</td>
+<td>The key must name the antiSMASH databases folder itself, the one that holds <code>clusterblast/</code>, <code>pfam/</code> and the rest.</td>
+<td>Point it there, or leave it empty to download the database.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] directories.unite_db: '&lt;path&gt;' is not a directory. ...</code> (or <code>... has no 'unite_its_sintax.fasta'. ...</code>)</td>
+<td>The folder must hold the UNITE SINTAX reference as an uncompressed <code>unite_its_sintax.fasta</code>.</td>
+<td>Unpack or rename the file, or leave the key empty to download it.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] links.unite_its_link: required, unless directories.unite_db names a local UNITE copy.</code></td>
+<td>Both are empty.</td>
+<td>Set one of them.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] links.funannotate_link: expected a Zenodo URL of the form https://zenodo.org/records/&lt;id&gt;/files/&lt;archive&gt;, got: &lt;url&gt;</code></td>
+<td>FunFlux finds the checksum file in the same Zenodo record, so the link must be a Zenodo record URL.</td>
+<td>Use a Zenodo record URL, as the template does.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] links.funannotate_link: cannot read a file name from the URL: &lt;url&gt;</code></td>
+<td>The URL ends without a file name.</td>
+<td>As above.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] links.telomere_db_link: required, but it is missing or empty in the config.</code></td>
+<td>The link to tidk's telomere repeat database is required in every mode. A configuration written before the contig summary existed lacks it.</td>
+<td>Copy the line from <code>config/config.yaml</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.prediction.busco_db: '&lt;name&gt;' is not in the funannotate database at '&lt;db&gt;'. Add it with FunFlux's funannotate conda environment activated ('Other BUSCO sets for gene prediction' in the documentation shows how to find it): funannotate setup -i busco -b &lt;name&gt; -d &lt;db&gt; -w</code></td>
+<td>The funannotate database ships only <code>dikarya</code>.</td>
+<td>Run the command shown, in the activated environment (see <a href="../getting-started/databases/#busco-sets">Other BUSCO sets for gene prediction</a>), or use <code>dikarya</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.prediction.busco_db: expected a plain dataset name such as dikarya (got: '&lt;value&gt;')</code></td>
+<td>The name holds characters other than letters, digits and underscores.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>MissingInputException in rule blob_json ...</code>, in <code>hybrid</code> mode <code>blob_guide_json</code> (from Snakemake)</td>
+<td>The screen runs, and <code>nodes.dmp</code> or <code>names.dmp</code> is missing from <code>directories.blast_db</code>. When the folder itself is missing, <code>[FunFlux] NOTE: directories.blast_db '&lt;path&gt;' does not exist on this machine; ...</code> comes first.</td>
+<td>Correct the path, or unpack the NCBI taxonomy dump into that folder (see <a href="../getting-started/databases/">Reference databases</a>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="screen-masking-and-busco-settings">Screen, masking and BUSCO settings<a class="headerlink" href="#screen-masking-and-busco-settings" title="Permanent link">¶</a></h3>
+<p>These messages concern the settings of the screen, of repeat masking, of BUSCO and of the contig
+summary.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] parameters.decontamination.mode: must be one of off | include | exclude (got: &lt;value&gt;)</code></td>
+<td>Another word.</td>
+<td>Use one of the three.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.decontamination.mode: 'auto' is not available in FunFlux. BLAST genus labels are unreliable for poorly sequenced fungi, so auto can remove most of the genome. Use off (the default), read contig_taxonomy_decisions.tsv, then exclude the contaminant genera or include the genera that BLAST assigned to the isolate's own contigs.</code></td>
+<td><code>mode: auto</code>, which FunFlux 1.x, FunFluxL and FunFluxL+ had, is removed, for the reasons given on <a href="../reference/configuration/#decontamination">Configuration</a>.</td>
+<td>Use <code>off</code>. To filter, use <code>exclude</code> or <code>include</code> as the message says.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.mitochondria.mode: must be one of off | report | separate_confirmed (got: &lt;value&gt;)</code></td>
+<td>Another word, or <code>true</code> or <code>yes</code>, which YAML reads as true. An unquoted <code>off</code> is accepted.</td>
+<td>Use one of the three.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.masking_method: must be tantan | repeatmodeler_repeatmasker (got: &lt;value&gt;)</code></td>
+<td>Another word.</td>
+<td>Use one of the two.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.busco.lineage: must be 'auto' or a BUSCO lineage name such as hypocreales_odb12 (got: &lt;value&gt;). ...</code></td>
+<td>A lineage name must end in <code>_odb</code> and a number. <code>busco --list-datasets</code> prints each name with its version after a dot, such as <code>hypocreales_odb12.2</code>, and the dot and the number after it are not part of the name.</td>
+<td>Write <code>auto</code>, or a name such as <code>hypocreales_odb12</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.contig_summary.telomere_motif: must be auto (the unit is chosen from the data) or the telomere repeat unit of the species, 4 to 30 letters A, C, G and T, such as TTAGGG (got: &lt;value&gt;)</code></td>
+<td>A value that is neither <code>auto</code> nor a plain unit. It may hold a character other than A, C, G and T, for example an IUPAC code such as N, a bracket or a digit. It may also be shorter than 4 or longer than 30 letters.</td>
+<td>Write <code>auto</code>, or the unit in plain letters. The known units are listed on <a href="../analysis/contig-summary/#which-fungi-carry-which-repeat">Contig summary</a>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.contig_summary.telomere_db_sha256: must be the SHA-256 checksum of the telomere database file, 64 hexadecimal characters (got: &lt;value&gt;)</code></td>
+<td>A shortened or mistyped checksum.</td>
+<td>Copy the 64 characters from <code>config/config.yaml</code> or, for another version of the database, the ones <code>sha256sum</code> prints for that file (see <a href="../getting-started/databases/#telomere-db">Telomere repeat database</a>).</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.decontamination.sample_overrides: sample '&lt;sample&gt;' has mode 'auto' in '&lt;path&gt;'. Mode auto is not available in FunFlux. BLAST genus labels are unreliable ...</code> (the rest as in the <code>auto</code> message above)</td>
+<td><code>auto</code> in the <code>mode</code> column of the override table.</td>
+<td>Write <code>off</code>, <code>include</code>, <code>exclude</code> or nothing in that cell.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.decontamination.sample_overrides: sample '&lt;sample&gt;' has mode '&lt;mode&gt;' in '&lt;path&gt;'; the mode column must be off, include, exclude or blank (blank keeps the run-wide mode).</code></td>
+<td>Another word in the <code>mode</code> column. Every row is checked, including the rows of samples outside the batch.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.decontamination.sample_overrides: sample '&lt;sample&gt;' has discard_no_hit '&lt;value&gt;' in '&lt;path&gt;'; the discard_no_hit column must be true or false (also yes/no, on/off, 1/0) or blank (blank keeps the run-wide setting).</code></td>
+<td>Another word in the <code>discard_no_hit</code> column of a sample of the batch.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.decontamination.&lt;key&gt;: '&lt;path&gt;' is not an existing file.</code></td>
+<td><code>include_genera_by_sample</code>, <code>exclude_genera_file</code> or <code>sample_overrides</code> names a file that does not exist. A relative path is read from the launch folder.</td>
+<td>Correct the path, or use an absolute one.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.decontamination.&lt;key&gt;: '&lt;path&gt;' is not UTF-8 text. Save it again as plain text with UTF-8 encoding.</code></td>
+<td>The file has another encoding, for example a table that a spreadsheet program saved as UTF-16.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.decontamination.&lt;key&gt;: '&lt;path&gt;' must start with a tab-separated header line that has the columns sample and genus (missing: &lt;columns&gt;).</code> (<code>sample and mode</code> for <code>sample_overrides</code>)</td>
+<td>The first line lacks a column name, or the columns are separated by spaces.</td>
+<td>Start the table with the column names, separated by tabs.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.decontamination: mode include keeps only the genera you name, but no genus is given for sample(s) &lt;samples&gt;. Name the genus in include_genera, in include_genera_by_sample (one row per sample) or in the include_genera column of sample_overrides.</code></td>
+<td><code>include</code> is set, run-wide or in <code>sample_overrides</code>, for samples without a genus.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The two <code>decontamination.mode</code> messages can stop any run. The checks of the decontamination files
+and of <code>include</code> without a genus run only when the screen runs, after the checks of the input
+folder and of the annotation table.</p>
+<h3 id="genemark-es-settings">GeneMark-ES settings<a class="headerlink" href="#genemark-es-settings" title="Permanent link">¶</a></h3>
+<p>These messages concern GeneMark-ES and its licence key.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] parameters.genemark.mode: must be auto | off (got: &lt;value&gt;)</code></td>
+<td>Another word. An empty value (<code>mode:</code> or <code>mode: ""</code>) means <code>auto</code>.</td>
+<td>Write <code>auto</code> or <code>off</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] directories.genemark_dir: must be an absolute path when GeneMark is enabled.</code></td>
+<td>A relative path.</td>
+<td>Use an absolute path.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] directories.genemark_dir: '&lt;dir&gt;' has no executable gmes_petap.pl.</code></td>
+<td>Wrong folder, or the script lacks execute permission.</td>
+<td>Point at the folder that holds <code>gmes_petap.pl</code>, or make it executable (<code>chmod u+x</code>).</td>
+</tr>
+<tr>
+<td><code>[FunFlux] GeneMark is enabled but there is no licence key at &lt;home&gt;/.gm_key. ...</code></td>
+<td>GeneMark-ES is on (<code>directories.genemark_dir</code> set, <code>genemark.mode: auto</code>), but the user running Snakemake has no <code>~/.gm_key</code>.</td>
+<td>Install the key (see <a href="../getting-started/external-tools/">Licensed and external tools</a>), or set <code>parameters.genemark.mode: off</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tiberius-settings">Tiberius settings<a class="headerlink" href="#tiberius-settings" title="Permanent link">¶</a></h3>
+<p>These messages concern Tiberius, which is on by default, and the download of its model.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] parameters.tiberius.mode: must be on | off (got: &lt;value&gt;)</code></td>
+<td>Another word. An empty value means <code>on</code>.</td>
+<td>Write <code>on</code> or <code>off</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.tiberius.model_sha256: expected the SHA-256 checksum of the model archive, 64 characters 0-9 and a-f (got: &lt;value&gt;)</code></td>
+<td>A shortened or mistyped checksum.</td>
+<td>Copy the 64 characters <code>sha256sum</code> prints, or leave the key out for the default.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] links.tiberius_model_link: required, but it is missing or empty in the config.</code></td>
+<td>Tiberius is on (the default) and the link is not in the configuration, for example in a configuration written before Tiberius was added.</td>
+<td>Copy the line from <code>config/config.yaml</code>, or set <code>parameters.tiberius.mode: off</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="signalp-6-settings">SignalP 6 settings<a class="headerlink" href="#signalp-6-settings" title="Permanent link">¶</a></h3>
+<p>These messages concern SignalP 6 and the DTU archive it is installed from.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] parameters.signalp6.mode: must be off | fast | slow | slow-sequential (got: &lt;value&gt;)</code></td>
+<td>Another word.</td>
+<td>Use one of the four.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] files.signalp6_archive: required when parameters.signalp6.mode is not off.</code></td>
+<td>SignalP 6 is on without an archive.</td>
+<td>Name the DTU archive, or set <code>mode: off</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] files.signalp6_archive: must be an absolute path to the official DTU archive.</code></td>
+<td>A relative path.</td>
+<td>Use an absolute path.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] files.signalp6_archive: '&lt;path&gt;' is not a readable file.</code></td>
+<td>Wrong path or permissions.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="amr-screen-settings">AMR screen settings<a class="headerlink" href="#amr-screen-settings" title="Permanent link">¶</a></h3>
+<p>These messages concern the AMR screen (the resistance-mutation screen), which runs ChroQueTas
+against the FungAMR database.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] parameters.amr.chroquetas: must be on | off (got: &lt;value&gt;)</code></td>
+<td>Another word. An empty value means <code>off</code>.</td>
+<td>Write <code>on</code> or <code>off</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.amr.mito_genetic_code: must be auto or the number of an NCBI genetic code: 1-6, 9-16 or 21-33 (got: &lt;value&gt;)</code></td>
+<td>Another word, or a number that is not an NCBI genetic code (7, 8 and 17-20 are none, and miniprot refuses them). An unquoted <code>yes</code>, <code>no</code>, <code>on</code> or <code>off</code> fails too, because YAML reads it as true or false.</td>
+<td>Write <code>auto</code>, or the number of the code (see <a href="../analysis/amr/#two-runs">Two runs</a>).</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.amr.chroquetas_script_sha256: must be the SHA-256 checksum of ChroQueTas.sh, 64 hexadecimal characters (got: &lt;value&gt;)</code> (or <code>chroquetas_db_sha256: must be the SHA-256 checksum of the FungAMR database archive, ...</code>)</td>
+<td>A shortened or mistyped checksum.</td>
+<td>Copy the 64 characters from <code>config/config.yaml</code>, or leave the key out for the default.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] links.chroquetas_link: required, but it is missing or empty in the config.</code></td>
+<td>The AMR screen is on and the link is not in the configuration.</td>
+<td>Copy the line from <code>config/config.yaml</code>, or set <code>parameters.amr.chroquetas: off</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="read-based-modes">Read-based modes<a class="headerlink" href="#read-based-modes" title="Permanent link">¶</a></h3>
+<p>These messages concern the read and assembly settings of the read-based modes. <code>&lt;mode&gt;</code> is
+<code>longread</code> or <code>hybrid</code>, and each of these blocks is checked only in its own mode. <code>spades_kmers</code>
+is checked in <code>illumina</code> and <code>hybrid</code> mode.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] parameters.spades_kmers: expected auto, or whole numbers separated by commas (got: &lt;value&gt;).</code></td>
+<td>A word other than <code>auto</code>, or a list with another separator.</td>
+<td>Write <code>auto</code>, or for example <code>"21,33,55,77,99,127"</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.spades_kmers: every k must be odd and below 128, and the list ascending (got: &lt;value&gt;).</code></td>
+<td>An even k, a k below 1 or above 127, a k given twice, or a list out of order.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.&lt;mode&gt;.assembler: must be hifiasm | flye (got: &lt;value&gt;)</code></td>
+<td>Another word.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.&lt;mode&gt;.flye_input_mode: 'pacbio-hifi' is not a value any more. ...</code></td>
+<td>PacBio HiFi reads are recognised from the file name.</td>
+<td>Name the reads <code>{sample}_pacbio.fastq.gz</code> and set <code>flye_input_mode: auto</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.&lt;mode&gt;.flye_input_mode: must be auto | nano-raw | nano-hq (got: &lt;value&gt;)</code></td>
+<td>Another word.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.&lt;mode&gt;.filtlong.target_bases: must be empty or a size such as 1500000000 or 1.5g (got: &lt;value&gt;)</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.&lt;mode&gt;.hifiasm.genome_size: must be empty or a size such as 40000000 or 40m (got: &lt;value&gt;)</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.&lt;mode&gt;.hifiasm.telomere_motif: must be empty or a DNA/IUPAC motif (got: &lt;value&gt;)</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.&lt;mode&gt;.ont_adapter: write detect, off, or the sequence to trim (20 to 200 bases of A, C, G and T; got: &lt;value&gt;)</code></td>
+<td>Another word, a sequence with other letters, or one shorter than 20 or longer than 200 bases.</td>
+<td>Write <code>detect</code>, <code>off</code> or the sequence.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] parameters.&lt;mode&gt;.ont_adapter: &lt;sequence&gt; is a short unit repeated end to end (a telomere repeat, for example), not an adapter. ...</code></td>
+<td>The sequence repeats a unit of 10 bp or less, as a telomere does. Trimming it would cut real genome from the read ends.</td>
+<td>Write the adapter sequence, or <code>detect</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="notes-that-announce-a-later-failure">Notes that announce a later failure<a class="headerlink" href="#notes-that-announce-a-later-failure" title="Permanent link">¶</a></h3>
+<p>These NOTE lines do not stop the run. Each one warns of a problem that shows later, in a step or in
+the result.</p>
+<table>
+<thead>
+<tr>
+<th>Note</th>
+<th>What follows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] NOTE: directories.eggnog_db '&lt;path&gt;' does not exist on this machine; ...</code></td>
+<td><code>eggnog_annotation</code> fails.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] NOTE: files.iprscan '&lt;path&gt;' does not exist on this machine; ...</code></td>
+<td><code>iprscan_annotation</code> fails.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] NOTE: GeneMark-ES is enabled and needs a valid, unexpired licence key at &lt;home&gt;/.gm_key. ...</code></td>
+<td>An expired key stops the run at <code>genemark_check</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] NOTE: sample name '&lt;name&gt;' is not a valid NCBI locus-tag prefix ...</code></td>
+<td>The run finishes, but the gene IDs cannot be submitted to GenBank as they are. A valid prefix is 3 to 12 letters or digits, starting with a letter.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title"><code>directories.eggnog_db</code> and <code>files.iprscan</code> are only tested for existence</p>
+<p>An eggNOG folder without the data, or an InterProScan installation that does not start,
+passes these checks and fails when its rule runs.</p>
+</div>
+<h2 id="failures-while-the-workflow-runs">Failures while the workflow runs<a class="headerlink" href="#failures-while-the-workflow-runs" title="Permanent link">¶</a></h2>
+<p>These messages come from single steps after the jobs have started. Each entry gives the message
+and its cause, and most also say what to do. The step's log holds the tool's own messages.</p>
+<h3 id="genemark-es-licence">GeneMark-ES licence<a class="headerlink" href="#genemark-es-licence" title="Permanent link">¶</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>[FunFlux] GeneMark-ES refused to run because of its licence (key file &lt;home&gt;/.gm_key). The key has probably expired: request a new one from the GeneMark site, or set parameters.genemark.mode: off. See &lt;log&gt;.
+</code></pre></div>
+<p><strong>Cause.</strong> Rule <code>genemark_check</code> ran GeneMark-ES on a slice of the masked genome, and the output
+mentioned the licence. The key in <code>~/.gm_key</code> has most likely expired (see
+<a href="../getting-started/external-tools/#the-licence-check-before-gene-prediction">The licence check before gene prediction</a>).</p>
+<p><strong>Fix.</strong> Download a new key from the GeneMark site and copy it to <code>~/.gm_key</code> of the user who runs
+Snakemake. GeneMark's INSTALL file gives the two commands: <code>gunzip gm_key.gz</code>, then
+<code>cp gm_key ~/.gm_key</code>. Then run the same Snakemake command again.</p>
+<p>To run without GeneMark-ES, set <code>parameters.genemark.mode: off</code>. Gene prediction, and every step
+after it, then runs again for the samples already predicted with GeneMark-ES.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[FunFlux] GeneMark-ES could not start from &lt;dir&gt;: the Perl named in the first line of gmes_petap.pl (GeneMark ships it as /usr/bin/perl, the computer's own) is missing or lacks a Perl module GeneMark needs. funannotate starts GeneMark the same way, so its gene prediction would fail too. Fix it once, in that folder: perl change_path_in_perl_scripts.pl '/usr/bin/env perl' (GeneMark's scripts then use the Perl of FunFlux's funannotate environment, which has the modules), or install the missing modules into that Perl, or set parameters.genemark.mode: off. See &lt;log&gt;.
+</code></pre></div>
+<p><strong>Cause.</strong> The test output contained <code>Can't locate</code>, which means a missing Perl module, or
+<code>bad interpreter</code>, which means that the Perl named in the script's first line does not exist. The
+check starts <code>gmes_petap.pl</code> the way funannotate predict does, so the first line of the script
+chooses the Perl. GeneMark ships it as <code>#!/usr/bin/perl</code>, which often lacks GeneMark's modules. On
+a cluster, the compute nodes can have another <code>/usr/bin/perl</code> than the login node.</p>
+<p><strong>Fix.</strong> Run <code>perl change_path_in_perl_scripts.pl "/usr/bin/env perl"</code> once in the GeneMark
+folder. The scripts then use the Perl of the funannotate environment, which holds the modules.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[FunFlux] GeneMark-ES could not start from &lt;dir&gt; (a program or a file is missing). See &lt;log&gt;.
+</code></pre></div>
+<p><strong>Cause.</strong> The test output contained <code>command not found</code> or <code>No such file</code>.
+<code>logs/genemark_check_{sample}.log</code> holds GeneMark's output and names what is missing.</p>
+<p>Any other failure on the test slice, for example too little sequence to train on, is logged and
+the run continues.</p>
+<h3 id="signalp-6">SignalP 6<a class="headerlink" href="#signalp-6" title="Permanent link">¶</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>[FunFlux] signalp6_annotation: SignalP 6 is not installed in the conda environment of this rule (the environment was probably rebuilt after SignalP 6 was installed). Delete the file &lt;output_dir&gt;/00.resources/signalp6/installation.json and run the workflow again, so that install_signalp6 installs SignalP 6 into the current environment.
+</code></pre></div>
+<p><strong>Cause.</strong> SignalP 6 is installed into the signalp6 conda environment, and the record of that
+installation, <code>installation.json</code>, lives in the output folder. A run with another
+<code>--conda-prefix</code>, from another launch folder, or after <code>.snakemake/conda/</code> was deleted gets a new
+environment without SignalP 6. The old record still keeps <code>install_signalp6</code> from running again.</p>
+<p><strong>Fix.</strong> Delete <code>00.resources/signalp6/installation.json</code> and run again. SignalP 6 and funannotate
+annotate then run again for every sample of the run.</p>
+<p>When the installation itself fails, <code>install_signalp6</code> stops with
+<code>SignalP 6 installation failed: ...</code> in <code>logs/install_signalp6.log</code>. The rest of the message names
+the cause:</p>
+<table>
+<thead>
+<tr>
+<th>The message continues with</th>
+<th>Cause and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>the supplied archive does not contain the '&lt;mode&gt;' model (...). Download the DTU archive for the selected mode.</code></td>
+<td>The archive holds the model of another mode. A fast archive such as <code>signalp-6.0i.fast.tar.gz</code> works only with <code>mode: fast</code>. Get the archive for the mode, or change the mode.</td>
+</tr>
+<tr>
+<td><code>configured archive_sha256 does not match the supplied archive (expected ..., observed ...)</code></td>
+<td><code>files.signalp6_archive</code> names another file than the one the checksum was taken from. Check the path, or update <code>parameters.signalp6.archive_sha256</code> with what <code>sha256sum &lt;archive&gt;</code> prints.</td>
+</tr>
+<tr>
+<td><code>archive_sha256 must be a 64-character hexadecimal SHA-256 digest</code></td>
+<td>A typo in <code>parameters.signalp6.archive_sha256</code>.</td>
+</tr>
+<tr>
+<td><code>expected exactly one SignalP Python package ...</code>, <code>archive member has an unsafe path: ...</code>, <code>archive contains an unsupported link or special file: ...</code></td>
+<td>The file is not the archive as DTU distributes it. Use the downloaded file unchanged.</td>
+</tr>
+<tr>
+<td><code>the official archive did not install the signalp6 command</code></td>
+<td>The package installed without its command-line program. The pip output is above the message in the same log.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="interproscan">InterProScan<a class="headerlink" href="#interproscan" title="Permanent link">¶</a></h3>
+<p>A failed InterProScan job is started once more before the run stops, and
+<code>logs/iprscan_annotation_{sample}.log</code> keeps the last attempt only.</p>
+<p>InterProScan is a Java program, and the memory it may use, its heap, is the <code>-Xmx</code> value on the
+<code>java</code> line at the end of <code>interproscan.sh</code> in your InterProScan installation. FunFlux does not
+change it, and <code>resources.ram_gb</code> does not reach it. If <code>logs/iprscan_annotation_{sample}.log</code>
+shows <code>java.lang.OutOfMemoryError</code>, raise <code>-Xmx</code> there. Keep it below the memory the machine can
+spare while eggNOG-mapper, antiSMASH and SignalP 6 run beside InterProScan.</p>
+<p>After InterProScan ends, the rule checks that <code>iprscan/interproscan_out.xml</code> is complete and is an
+InterProScan result, and stops otherwise:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>InterProScan XML validation failed for &lt;path&gt;: &lt;reason&gt;
+</code></pre></div>
+<p><strong>Cause.</strong> InterProScan exited without an error but left a file that does not parse, or that is
+not an InterProScan result. Its own messages are above this line in the same log. A full disk is
+one cause to rule out, as the XML can be a few GB.</p>
+<p><strong>Fix.</strong> Run again. The rule deletes the old XML before it starts, so a stale file is never taken
+for a new result.</p>
+<p><code>Could not find a *.proteins.fa file in &lt;dir&gt;/predict_results or update_results.</code> means that
+funannotate predict wrote no protein file. Its messages are in
+<code>logs/funannotate_prediction_{sample}.log</code>.</p>
+<h3 id="tiberius">Tiberius<a class="headerlink" href="#tiberius" title="Permanent link">¶</a></h3>
+<p>Rule <code>tiberius_model</code> downloads the Tiberius model, and <code>tiberius_prediction</code> runs Tiberius on
+each sample.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Log</th>
+<th>Cause and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] tiberius_model: the file downloaded from &lt;link&gt; does not match parameters.tiberius.model_sha256, so it was NOT unpacked ...</code></td>
+<td><code>tiberius_model.log</code></td>
+<td>The download was cut short, or the authors replaced the model at the same address. Run again for a fresh download. If the checksum still differs, the model has changed, so check it and put its checksum into <code>parameters.tiberius.model_sha256</code>, or set <code>parameters.tiberius.mode: off</code> (see <a href="../getting-started/databases/#tiberius-model">Tiberius model</a>).</td>
+</tr>
+<tr>
+<td><code>curl: (6) Could not resolve host</code> or another <code>curl</code> error</td>
+<td><code>tiberius_model.log</code></td>
+<td>No network access to <code>bioinf.uni-greifswald.de</code> (see <a href="../getting-started/installation/#network">Network access</a>).</td>
+</tr>
+<tr>
+<td>the job ends with <code>Killed</code>, or Snakemake reports that <code>tiberius_prediction</code> was terminated without a Python error</td>
+<td><code>tiberius_prediction_{sample}.log</code></td>
+<td>The job ran out of memory, as Tiberius needs about 16 GB. Free memory, run fewer jobs at once, or set <code>parameters.tiberius.mode: off</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="telomere-repeat-database-and-tidk">Telomere repeat database and tidk<a class="headerlink" href="#telomere-repeat-database-and-tidk" title="Permanent link">¶</a></h3>
+<p>Rule <code>telomere_db</code> downloads tidk's telomere repeat database, and <code>telomere_units</code> reads it when it
+chooses the telomere unit of each sample.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Log</th>
+<th>Cause and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] telomere_db: the file downloaded from &lt;link&gt; does not match parameters.contig_summary.telomere_db_sha256, so it was NOT used ...</code></td>
+<td><code>telomere_db.log</code></td>
+<td>The download was cut short, or the link and the checksum do not belong together. The template address names one commit of the database repository, so the file behind it does not change. The download is kept as <code>00.resources/telomeres/telo_database_v2.tsv.failed</code>. Run again for a fresh download. To accept a file you have looked at, put its checksum, which <code>sha256sum &lt;file&gt;</code> prints, into <code>parameters.contig_summary.telomere_db_sha256</code>. For another version of the database, set the link and its checksum together (see <a href="../getting-started/databases/#telomere-db">Telomere repeat database</a>).</td>
+</tr>
+<tr>
+<td><code>curl: (6) Could not resolve host</code> or another <code>curl</code> error</td>
+<td><code>telomere_db.log</code></td>
+<td>No network access to <code>raw.githubusercontent.com</code> (see <a href="../getting-started/installation/#network">Network access</a>).</td>
+</tr>
+<tr>
+<td><code>[FunFlux] telomere_units: error: ...</code></td>
+<td><code>telomere_units_{sample}.log</code></td>
+<td>The script stopped on a missing input, a malformed database file or a tidk failure, and tidk's own message follows. A database file that does not parse means that the file at the link has changed. Delete <code>00.resources/telomeres/telo_database_v2.tsv</code> and run again, and the checksum then says whether it is still the expected file.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="univec-and-the-adapter-screen">UniVec and the adapter screen<a class="headerlink" href="#univec-and-the-adapter-screen" title="Permanent link">¶</a></h3>
+<p>Rule <code>univec_illumina</code> downloads NCBI's UniVec for the contig adapter screen; rules <code>blast_adapters</code>
+and <code>screen_adapters</code> run the screen for every sample.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Log</th>
+<th>Cause and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] univec_illumina: the file downloaded from &lt;link&gt; does not match parameters.contig_summary.univec_sha256, so it was NOT used ...</code></td>
+<td><code>univec_illumina.log</code></td>
+<td>The download was cut short, or the link and the checksum do not belong together. The download is kept as <code>00.resources/adapters/univec_illumina.fasta.download.failed</code>. Run again for a fresh download, or set the link and its checksum together (see <a href="../getting-started/databases/#univec">UniVec</a>).</td>
+</tr>
+<tr>
+<td><code>curl: (6) Could not resolve host</code> or another <code>curl</code> error</td>
+<td><code>univec_illumina.log</code></td>
+<td>No network access to <code>ftp.ncbi.nlm.nih.gov</code> (see <a href="../getting-started/installation/#network">Network access</a>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="chroquetas-amr-screen">ChroQueTas (AMR screen)<a class="headerlink" href="#chroquetas-amr-screen" title="Permanent link">¶</a></h3>
+<p>With the AMR screen on, rule <code>chroquetas_db</code> downloads ChroQueTas and the FungAMR database, and
+<code>amr_chroquetas</code> runs for each sample.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Log</th>
+<th>Cause and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] chroquetas_db: the file downloaded from &lt;link&gt; does not match parameters.amr.chroquetas_script_sha256, so it was NOT used ...</code> (or <code>... parameters.amr.chroquetas_db_sha256, so it was NOT unpacked ...</code>)</td>
+<td><code>chroquetas_db.log</code></td>
+<td>The download was cut short, or the link and the checksums do not belong together. The template address names one commit, so the files behind it do not change. The download is kept as <code>00.resources/chroquetas/ChroQueTas.sh.failed</code> or <code>db-v20250811.tgz.failed</code>. Run again for a fresh download. For another version of ChroQueTas, set the link and both checksums together (see <a href="../getting-started/databases/#chroquetas">ChroQueTas and the FungAMR database</a>).</td>
+</tr>
+<tr>
+<td><code>[FunFlux] chroquetas_db: the database archive from &lt;link&gt; holds no species folder ...</code></td>
+<td><code>chroquetas_db.log</code></td>
+<td>The link names a commit whose <code>FungAMR_db/db-v20250811.tgz</code> is not the database ChroQueTas expects. Use the template link.</td>
+</tr>
+<tr>
+<td><code>curl: (6) Could not resolve host</code> or another <code>curl</code> error</td>
+<td><code>chroquetas_db.log</code></td>
+<td>No network access to <code>raw.githubusercontent.com</code> (see <a href="../getting-started/installation/#network">Network access</a>).</td>
+</tr>
+<tr>
+<td><code>[FunFlux] amr_chroquetas: error: ...</code></td>
+<td><code>amr_chroquetas_{sample}.log</code></td>
+<td>The script stopped on a missing input file, a database folder without species folders, or a position list of the database (<code>&lt;target&gt;.txt</code>) that does not look like the one of ChroQueTas 1.0.1. It also stops on a path with a space, or when a ChroQueTas run left neither its summary file nor the message that no target could be extracted. The last 20 lines of ChroQueTas's log follow the message. A position list unlike that of ChroQueTas 1.0.1 means another version of the database, so use the template link and checksums. ChroQueTas cannot handle a path with a space, so move the output folder to a path without spaces. ChroQueTas also takes <code>bash</code>, <code>grep -P</code> and other shell commands from the machine, so check them as shown under <a href="../getting-started/installation/#host-commands">Commands outside the conda environments</a>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="funannotate-database">funannotate database<a class="headerlink" href="#funannotate-database" title="Permanent link">¶</a></h3>
+<p>Rule <code>funannotate_db</code> downloads the funannotate database and unpacks it into
+<code>directories.funannotate_db</code>, and <code>normalize_funannotate_db</code> repairs the paths stored in it.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Log</th>
+<th>Cause and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] funannotate_db: &lt;archive&gt; does not match its checksum file &lt;sha256&gt;, so it was NOT unpacked ...</code></td>
+<td><code>funannotate_db.log</code></td>
+<td>The download was cut short or damaged. Delete both files from <code>directories.funannotate_db</code> and run again. Both are then downloaded afresh.</td>
+</tr>
+<tr>
+<td><code>curl: (6) Could not resolve host</code> or another <code>curl</code> error</td>
+<td><code>funannotate_db.log</code></td>
+<td>No network access to <code>zenodo.org</code> (see <a href="../getting-started/installation/#network">Network access</a>). Download the funannotate database by hand on a machine with network access and unpack it into <code>directories.funannotate_db</code>, as described under <a href="../getting-started/databases/#downloading-it-by-hand">Downloading it by hand</a>. Then run again. A folder that holds <code>funannotate-db-info.txt</code> is not downloaded again.</td>
+</tr>
+<tr>
+<td><code>ERROR: Funannotate trained-species directory is missing: ...</code>, <code>ERROR: Funannotate database index is missing: ...</code></td>
+<td><code>normalize_funannotate_db.log</code></td>
+<td><code>directories.funannotate_db</code> does not hold a complete, unpacked funannotate database. Point it at the folder that holds <code>trained_species/</code> and <code>funannotate-db-info.txt</code>. If the path is right but the database is incomplete, delete <code>funannotate-db-info.txt</code> and run again, as in the next row.</td>
+</tr>
+<tr>
+<td><code>ERROR: Trained-species asset is missing after extraction: ...</code>, <code>ERROR: Database asset is missing after extraction for archived path: ...</code></td>
+<td><code>normalize_funannotate_db.log</code></td>
+<td>The unpacked database lacks files. Delete <code>funannotate-db-info.txt</code> from the database folder and run again. The archive kept there is then checked against its checksum and unpacked again, without a new download.</td>
+</tr>
+<tr>
+<td><code>ERROR: [Errno 13] Permission denied: ...</code></td>
+<td><code>normalize_funannotate_db.log</code></td>
+<td>The database folder is read-only and its stored paths still need repair. Make it writable for one run. Once the paths are right, this step only reads it.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Two runs repairing one funannotate database at once can damage it</p>
+<p>Two runs repairing one database at the same time, or one database reached under two different
+paths, cause damage or repeated work. See
+<a href="../getting-started/databases/#what-the-workflow-does">Reference databases</a>.</p>
+</div>
+<h3 id="busco-downloads">BUSCO downloads<a class="headerlink" href="#busco-downloads" title="Permanent link">¶</a></h3>
+<p>Where BUSCO's lineage data come from depends on <code>parameters.busco.lineage</code>. With <code>auto</code>, every
+BUSCO job needs network access, while a named lineage needs it once, on the computer that runs
+Snakemake (see <a href="../reference/running/#cluster-busco">BUSCO on compute nodes without internet</a>).</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Download</th>
+<th>Without network access</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auto</code>, the default</td>
+<td>every BUSCO job downloads the datasets for its sample into <code>02.assembly/{sample}/eval/busco/busco_tmp/</code>, which is deleted when the job ends, and samples do not share the download. A hypocrealean fungus fetches <code>eukaryota_odb12</code> (29.1 MB), six placement files (8.3 MB) and <code>hypocreales_odb12</code> (274.6 MB)</td>
+<td>the BUSCO job fails and the run stops, but <code>--keep-going</code> lets the other jobs finish. BUSCO's messages are in <code>logs/completeness_{sample}.log</code></td>
+</tr>
+<tr>
+<td>a lineage, such as <code>hypocreales_odb12</code></td>
+<td>rule <code>busco_data</code> downloads it once per output folder into <code>00.resources/busco/</code>, on the computer that runs Snakemake, and every BUSCO job reads it offline</td>
+<td><code>busco_data</code> fails, and its messages are in <code>logs/busco_data.log</code>. The BUSCO jobs themselves need no network</td>
+</tr>
+</tbody>
+</table>
+<p>With a named lineage, a failed download stops rule <code>busco_data</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Log</th>
+<th>Cause and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] busco_data: BUSCO did not download the lineage &lt;lineage&gt; (details in &lt;log&gt;). Check parameters.busco.lineage against the list that busco --list-datasets prints, or set it to auto.</code></td>
+<td><code>busco_data.log</code></td>
+<td>A name BUSCO's server does not know, or no network access to <code>busco-data.ezlab.org</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>When BUSCO publishes a newer dataset, a run with <code>auto</code> uses it, and its completeness figures can
+differ from an earlier run of the same genome. A named lineage stays at the release in
+<code>00.resources/busco/</code> for every later run into the same output folder.</p>
+<h3 id="medaka-model">Medaka model<a class="headerlink" href="#medaka-model" title="Permanent link">¶</a></h3>
+<p>These messages apply to ONT samples in <code>longread</code> and <code>hybrid</code> mode. Rule <code>check_medaka_model</code>
+checks the Medaka model before the assembler starts. When the check fails, it prints its log, with
+the table of available models, to the console as well.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>ERROR: Medaka could not infer a model from the reads: their FASTQ headers carry no basecaller tag, or one this Medaka version does not recognise. Set parameters.&lt;mode&gt;.medaka_model to one of the consensus models below (pick by your flowcell / device / accuracy), or to FALSE to skip Medaka.
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>ERROR: Configured medaka_model '&lt;model&gt;' is not available in this Medaka version.
+</code></pre></div>
+<p><strong>Fix.</strong> Use one of these settings:</p>
+<table>
+<thead>
+<tr>
+<th>To</th>
+<th>Set</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name the model</td>
+<td><code>parameters.&lt;mode&gt;.medaka_model</code>, for example <code>parameters.longread.medaka_model: r1041_e82_400bps_sup_v4.3.0</code></td>
+</tr>
+<tr>
+<td>skip Medaka</td>
+<td><code>parameters.&lt;mode&gt;.medaka_model: false</code></td>
+</tr>
+<tr>
+<td>fall back to the inferred model when a named one is not available</td>
+<td><code>parameters.&lt;mode&gt;.medaka_model_fallback_auto: true</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ERROR: Medaka model '&lt;model&gt;' exists, but its weights are not stored on this computer and could not be downloaded (Medaka downloads them from GitHub). ...
+</code></pre></div>
+<p><strong>Cause.</strong> The check downloads the weights of a model Medaka does not ship, so that polishing
+needs no network, and it runs on the computer that runs Snakemake.</p>
+<p><strong>Fix.</strong> Start Snakemake on a computer with internet, which on a cluster is the login node.
+Otherwise name a model whose weights come with Medaka 2.2.2, <code>r1041_e82_400bps_hac_v6.0.0</code> or
+<code>r1041_e82_400bps_sup_v5.2.0</code>, or set <code>parameters.&lt;mode&gt;.medaka_model: false</code>.</p>
+<p><a href="../methods/medaka-model/#what-can-fail">The Medaka model</a> describes the other messages of the
+check, what <code>auto</code> needs in the read headers and how to look at them.</p>
+<h3 id="other-stops-in-the-shared-stages">Other stops in the shared stages<a class="headerlink" href="#other-stops-in-the-shared-stages" title="Permanent link">¶</a></h3>
+<p>The steps below run in more than one mode, and each can stop the run. Where a row mentions the
+log, it is the log of the rule in the Rule column.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Rule</th>
+<th>Cause and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] filter_contigs: no contig of &lt;sample&gt; is left (kept 0 of M records). ...</code></td>
+<td><code>filter_contigs</code></td>
+<td>In <code>contigs</code> mode, the FASTA is empty, or its headers are SPAdes-style and no contig reaches 500 bp and 2x coverage. The log says which filter ran. In <code>illumina</code> and <code>hybrid</code> mode, no SPAdes contig reached 500 bp and 2x coverage, so check <code>spades/spades.log</code> and the reads.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] long_read_consensus: Medaka failed for sample &lt;sample&gt; with model '&lt;model&gt;' ...</code></td>
+<td><code>long_read_consensus</code></td>
+<td>Medaka itself failed, for example for lack of memory or on a damaged read file, after the model had passed <code>check_medaka_model</code>. Medaka's messages are in the same log. <code>parameters.&lt;mode&gt;.medaka_model: false</code> runs without polishing.</td>
+</tr>
+<tr>
+<td>the hifiasm rule stops after <code>hifiasm</code> finished, with no <code>[FunFlux]</code> line</td>
+<td><code>long_read_assembly</code></td>
+<td>hifiasm's primary graph holds no contig, so the step that turns it into <code>assembly.fasta</code> stopped the rule. hifiasm's own messages are in the log.</td>
+</tr>
+<tr>
+<td><code>No contigs were kept for sample '&lt;sample&gt;' with mode '&lt;mode&gt;'. ...</code></td>
+<td><code>select_contigs</code></td>
+<td>The decontamination policy removed every contig, for example <code>include</code> with a genus that BLAST never assigned. Snakemake deletes the outputs of the failed job, the decision table included. <code>contaminants/bestscore.blob.blobDB.table.txt</code> still shows the genus of every contig, and <code>--keep-incomplete</code> keeps the failed job's files. See <a href="../analysis/decontamination/">Decontamination</a>.</td>
+</tr>
+<tr>
+<td><code>Mode 'include' requires at least one genus.</code></td>
+<td><code>select_contigs</code></td>
+<td><code>decontamination.mode: include</code> is set without a genus for the sample. The dry run stops on this first, with <code>[FunFlux] parameters.decontamination: mode include keeps only the genera you name, ...</code> (above), so the rule meets it only when a table was changed after the run started.</td>
+</tr>
+<tr>
+<td><code>ERROR: Mitochondrial split would leave an empty nuclear assembly.</code></td>
+<td><code>separate_mitochondria</code></td>
+<td>Every contig was confirmed mitochondrial, for example in a FASTA that holds only a mitogenome. Run it without the screen, or with <code>mitochondria.mode: report</code>.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] its_windows: ITSx's fungal profile file .../ITSx_db/HMMs/F.hmm is missing or empty. Is the job running in its itsx conda environment (--sdm conda), with the pinned ITSx 1.1.3?</code></td>
+<td><code>its_windows</code></td>
+<td>The job did not run in the itsx environment, or that environment has no intact ITSx 1.1.3. Run with <code>--sdm conda</code>. If the run already does, delete that environment's folder, which <code>--list-conda-envs</code> shows, so that Snakemake builds it again from the pin file.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] its_windows: no 5.8S profile found in .../ITSx_db/HMMs/F.hmm (no NAME line contains 58S). Does this ITSx version name its 5.8S profiles differently?</code></td>
+<td><code>its_windows</code></td>
+<td>The ITSx in the itsx environment is not the pinned 1.1.3. Delete that environment's folder, which <code>--list-conda-envs</code> shows, so that Snakemake builds it again from the pin file.</td>
+</tr>
+<tr>
+<td><code>RepeatModeler did not produce a usable repeat library.</code></td>
+<td><code>repeat_masking</code></td>
+<td>Neither <code>{sample}_rm-families.fa</code> nor <code>consensi.fa.classified</code> exists or holds sequence. RepeatModeler's messages are in the same log. <code>masking_method: tantan</code> does not use RepeatModeler.</td>
+</tr>
+<tr>
+<td><code>Not enough gene models &lt;N&gt; to train Augustus (200 required), exiting</code> (in <code>logs/funannotate_prediction_{sample}.log</code>)</td>
+<td><code>funannotate_prediction</code></td>
+<td>Column 4 of the sample is empty, so funannotate trains AUGUSTUS, and BUSCO found fewer than 200 usable training genes. The assembly may be fragmented, or the fungus far from the BUSCO set (<code>fungi</code> has 290 genes). Name a stored AUGUSTUS model in column 4 (see <a href="../analysis/gene-prediction/#augustus-model">The AUGUSTUS model</a>), or use a BUSCO set closer to the fungus.</td>
+</tr>
+<tr>
+<td><code>Funannotate did not create annotations.secretome.txt from the supplied SignalP 6 results.</code></td>
+<td><code>funannotate_annotation</code></td>
+<td>funannotate annotate did not use the SignalP 6 table. Its messages are in the same log.</td>
+</tr>
+<tr>
+<td>any MultiQC error</td>
+<td><code>multiqc</code></td>
+<td>Unlike a failed QUAST report, a failed MultiQC report stops the run. See <code>logs/multiqc.log</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="messages-that-do-not-stop-the-run">Messages that do not stop the run<a class="headerlink" href="#messages-that-do-not-stop-the-run" title="Permanent link">¶</a></h3>
+<p>After these messages the run goes on, so a finished run can still lack a result. The Log column
+says where each message is written.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Log</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[FunFlux] genome_assembly_evaluation: QUAST exited with an error for sample &lt;sample&gt;. ...</code></td>
+<td><code>genome_assembly_evaluation_{sample}.log</code></td>
+<td>QUAST is a report that no other step reads, so the run continues and the MultiQC page lacks the QUAST table for this sample. After fixing the cause, delete <code>02.assembly/{sample}/eval/quast/</code> and run again.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] map_evaluation: Qualimap exited with an error for sample &lt;sample&gt;. ...</code> (in <code>hybrid</code> also <code>map_guide_evaluation</code>)</td>
+<td><code>map_evaluation_{sample}.log</code>, <code>map_guide_evaluation_{sample}.log</code></td>
+<td>Qualimap is a report, so the run continues and the MultiQC page lacks the mapping table for this sample. After fixing the cause, delete <code>02.assembly/{sample}/eval/qualimap/</code> (or <code>guide/eval/qualimap/</code>) and run again.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] raw_long_read_qc: NanoPlot exited with an error for sample &lt;sample&gt;. ...</code> (or <code>filtered_long_read_qc</code>)</td>
+<td><code>raw_long_read_qc_{sample}.log</code>, <code>filtered_long_read_qc_{sample}.log</code></td>
+<td>NanoPlot is a report, so the run continues and the MultiQC page lacks the read-QC row for this sample. After fixing the cause, delete <code>01.reads/{sample}/long/raw_qc/</code> (or <code>filtered_qc/</code>) and run again.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] its_extraction: no 5.8S window was found in the genome of &lt;sample&gt; ...</code></td>
+<td><code>its_extraction_{sample}.log</code></td>
+<td>No 5.8S gene matched the 358 anchor profiles of ITSx. The ITS files are empty and <code>{sample}_ITS_copies.txt</code> holds only a comment line. A fungus whose 5.8S differs from all of them gives this result.</td>
+</tr>
+<tr>
+<td><code>No ITS1 sequence to classify for sample &lt;sample&gt; ...</code> (or ITS2)</td>
+<td><code>its_classification_{sample}.log</code></td>
+<td>ITSx found none, or every record failed the length guard, which accepts ITS1 and ITS2 of 50-600 bp. <code>{sample}_ITS_copies.txt</code> lists the rejected records.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] telomere_units &lt;sample&gt;: no telomere repeat identified (best candidate &lt;UNIT&gt;: &lt;n&gt; ends in the telomere orientation, &lt;m&gt; opposite)</code></td>
+<td><code>telomere_units_{sample}.log</code>, and the console</td>
+<td>No unit reached 2 contig ends in the telomere orientation with more than twice as many as in the opposite one. <code>telomere_unit.txt</code> reads <code>none</code>, the telomere columns of the contig summary read <code>0</code>, and chromosomes come out as <code>nuclear_contig</code>. This is usual in a fragmented assembly or in a yeast with irregular telomeres. Set <code>parameters.contig_summary.telomere_motif</code> when the repeat is known (see <a href="../analysis/contig-summary/#telomeres">Telomeres</a>).</td>
+</tr>
+<tr>
+<td><code>[FunFlux] NOTE telomere_units &lt;sample&gt;: ...</code></td>
+<td><code>telomere_units_{sample}.log</code>, and the console</td>
+<td>The chosen telomere unit is unknown to the literature and to the tidk database, or the unit set in <code>parameters.contig_summary.telomere_motif</code> is not the unit the data favour. <code>eval/telomere_candidates.tsv</code> shows every unit with its score.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] NOTE amr_chroquetas &lt;sample&gt;: ...</code></td>
+<td><code>amr_chroquetas_{sample}.log</code>, and the console</td>
+<td>The species in column 2 of the annotation table matches no folder of the FungAMR database, so the sample is not screened. The NOTE names the folders of the same genus, if any. Correct the name when it is misspelt (see <a href="../analysis/amr/#species">The species</a>). <code>00.resources/chroquetas/species.txt</code> lists the folders. Column 2 is also funannotate's species. A corrected name re-runs <code>augustus_model_check</code>, <code>funannotate_prediction</code> and everything after them, and it goes into the GenBank and GFF files and their names. Change it only when the new name is the right one for the annotation as well.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] NOTE find_ont_adapter &lt;sample&gt;: the reads carry &lt;n&gt; barcodes in at least 10% of the reads with the adapter (...); all of them are trimmed. ...</code></td>
+<td><code>find_ont_adapter_{sample}.log</code>, and the console</td>
+<td>The ONT reads of the sample carry two or more of ONT's published barcodes in quantity, and every one of them was trimmed. If they belong to different samples, demultiplex the reads and run each sample on its own (see <a href="../methods/adapter-trimming/">Adapter trimming</a>).</td>
+</tr>
+<tr>
+<td><code>[FunFlux] NOTE find_ont_adapter &lt;sample&gt;: the barcode after the adapter is not in ONT's published list; it is trimmed as found in the reads.</code></td>
+<td><code>find_ont_adapter_{sample}.log</code>, and the console</td>
+<td>The reads carry barcode flanks around a barcode ONT does not publish (a custom or new kit). It is trimmed as found; nothing needs fixing unless the barcode should be known.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] NOTE find_ont_adapter &lt;sample&gt;: the reads continue with several different sequences after the adapter that are not published ONT barcodes ...</code></td>
+<td><code>find_ont_adapter_{sample}.log</code>, and the console</td>
+<td>Only the part the sequences share was trimmed, so they stay in the reads, and the adapter screen reports them. Write the whole sequence into <code>parameters.&lt;mode&gt;.ont_adapter</code> to trim it.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] NOTE check_ont_trimming &lt;sample&gt;: more than 1% of the reads kept after trimming still start with the ONT adapter. ...</code></td>
+<td><code>check_ont_trimming_{sample}.log</code>, and the console</td>
+<td>The adapter of these reads may differ from the one FunFlux looks for. The Adapters table of the report and the <code>adapter</code> column of the contig summary show whether adapter reached the assembly.</td>
+</tr>
+<tr>
+<td><code>[FunFlux] screen_adapters &lt;sample&gt;: adapter at &lt;n&gt; contig ends ...</code></td>
+<td><code>screen_adapters_{sample}.log</code>, and the console</td>
+<td>Adapter or barcode sequence lies within 100 bp of these contig ends. <code>02.assembly/{sample}/eval/adapter_screen.tsv</code> gives the positions. For ONT reads, check that <code>ont_adapter</code> is not <code>off</code>; for an assembly made elsewhere, trim the contig ends before submission. NCBI's FCS-adaptor gives the final check before a GenBank submission.</td>
+</tr>
+<tr>
+<td><code>WARNING: N genera each hold at least 5% of this assembly (...)</code></td>
+<td><code>select_contigs_{sample}.log</code></td>
+<td>A mixed culture, or one genome split across related genera by BLAST. Read <code>contig_taxonomy_decisions.tsv</code> before trusting the assembly.</td>
+</tr>
+<tr>
+<td><code>WARNING: decontamination is discarding X% of the assembly (...)</code></td>
+<td><code>select_contigs_{sample}.log</code></td>
+<td>More than 20 % of the bases were removed. If the kept assembly looks incomplete but not contaminated, the contig selector most likely removed genome.</td>
+</tr>
+<tr>
+<td><code>GeneMark-ES stopped on the test slice (exit status N) but not because of its licence or installation; ...</code></td>
+<td><code>genemark_check_{sample}.log</code></td>
+<td>Gene prediction itself then decides whether GeneMark-ES suits the genome.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="on-a-cluster">On a cluster<a class="headerlink" href="#on-a-cluster" title="Permanent link">¶</a></h2>
+<p>Most stops on a cluster come from a value larger than a node or a partition allows, or from a
+compute node that cannot see a file or the internet. The step's log in <code>logs/</code> and its Slurm log
+say which. How to run FunFlux on a cluster is described under
+<a href="../reference/running/#on-a-cluster">On a cluster</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>maximum number of parallel jobs/used nodes has to be specified for remote execution (use --jobs N with N being a number &gt;= 1)</code></td>
+<td><code>--executor slurm</code> without <code>--jobs</code>.</td>
+<td>Add <code>--jobs N</code>, the number of jobs Snakemake may keep queued at once.</td>
+</tr>
+<tr>
+<td><code>SLURM job submission failed. The error message was sbatch: error: Batch job submission failed: Requested node configuration is not available</code></td>
+<td>A job asks for more CPUs (<code>resources.threads</code>) or more memory (<code>resources.ram_gb</code>) than any node of the partition has.</td>
+<td>Lower the value to what <code>sinfo -o "%n %c"</code> shows for CPUs, or <code>sinfo -o "%n %m"</code> for memory in MB (see <a href="../reference/running/#cluster-resources">How the settings reach Slurm</a>).</td>
+</tr>
+<tr>
+<td><code>sbatch: error: Batch job submission failed: Requested time limit is invalid (missing or exceeds some limit)</code>, or jobs that stay pending with the reason <code>PartitionTimeLimit</code> in <code>squeue</code></td>
+<td><code>resources.runtime_hours</code> is longer than the time limit of the partition.</td>
+<td>Lower it to what <code>sinfo -o "%P %l"</code> shows, or choose a partition with a longer limit through <code>slurm_partition</code> in <code>--default-resources</code>.</td>
+</tr>
+<tr>
+<td><code>SLURM-job '&lt;id&gt;' failed, SLURM status is: 'OUT_OF_MEMORY'</code></td>
+<td>The step used more memory than it asked for.</td>
+<td>The <code>Error in rule &lt;rule&gt;:</code> block names the step. For a heavy step, raise <code>resources.ram_gb</code>. The heavy steps are listed under <a href="../reference/running/#cluster-resources">How the settings reach Slurm</a>. For a light step, raise <code>mem_mb</code> in <code>--default-resources</code>.</td>
+</tr>
+<tr>
+<td><code>SLURM-job '&lt;id&gt;' failed, SLURM status is: 'TIMEOUT'</code></td>
+<td>The step ran past its time limit.</td>
+<td>For a heavy or long step, raise <code>resources.runtime_hours</code>. For a light step, raise <code>runtime</code> in <code>--default-resources</code>.</td>
+</tr>
+<tr>
+<td><code>No wall time information given. ...</code> and <code>No job memory information ('mem_mb' or 'mem_mb_per_cpu') is given - submitting without. ...</code> (warnings)</td>
+<td>The light steps ask for no time and no memory, so Slurm's defaults apply.</td>
+<td>Nothing, if those defaults are a few GB and an hour or more. Otherwise add <code>--default-resources mem_mb=8000 runtime=240</code>.</td>
+</tr>
+<tr>
+<td><code>MissingOutputException ... Missing files after 5 seconds. This might be due to filesystem latency.</code> (or after 60 seconds)</td>
+<td>The shared storage shows a file on the login node a while after a compute node wrote it.</td>
+<td>Add <code>--latency-wait 60</code>, as in the <a href="../reference/running/#cluster-run-a">Run A command</a>. If it is already there, raise it, for example to 120.</td>
+</tr>
+<tr>
+<td>a dry run plans finished steps, or <code>download_all -n</code> plans downloads again, with the reason <code>Software environment definition has changed since last execution</code></td>
+<td>The run uses another <code>--conda-prefix</code> than the one the steps ran with.</td>
+<td>Use the same <code>--conda-prefix</code> as before, from the same launch folder.</td>
+</tr>
+<tr>
+<td>BUSCO (<code>completeness</code>) fails on the compute nodes and <code>logs/completeness_{sample}.log</code> shows a failed download</td>
+<td><code>parameters.busco.lineage: auto</code> needs internet in every BUSCO job.</td>
+<td>Name a lineage, and run <code>download_all</code> on the login node (see <a href="../reference/running/#cluster-busco">BUSCO on compute nodes without internet</a>).</td>
+</tr>
+<tr>
+<td><code>[FunFlux] GeneMark is enabled but there is no licence key at &lt;home&gt;/.gm_key</code> in a job's log</td>
+<td>The compute node does not see the key in the home folder.</td>
+<td>Copy <code>~/.gm_key</code> to the home folder the compute nodes see (see <a href="../reference/running/#cluster-genemark">The GeneMark-ES key</a>).</td>
+</tr>
+<tr>
+<td><code>SSL certificate problem</code> (curl) or <code>CERTIFICATE_VERIFY_FAILED</code> (BUSCO, antiSMASH) in a download log</td>
+<td>A network proxy re-signs HTTPS with an in-house certificate, and the conda environments trust only their own list.</td>
+<td>Export <code>CURL_CA_BUNDLE</code> and <code>SSL_CERT_FILE</code> before starting Snakemake (see <a href="../getting-started/installation/#proxy">Behind a proxy that re-signs HTTPS</a>).</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

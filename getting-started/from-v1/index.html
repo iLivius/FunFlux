@@ -1,0 +1,2741 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Fungal genome assembly and annotation from Illumina short reads, ONT or PacBio HiFi long reads, a hybrid of short and long reads, or an existing assembly">
+      
+      
+        <meta name="author" content="Livio Antonielli">
+      
+      
+        <link rel="canonical" href="https://iLivius.github.io/FunFlux/getting-started/from-v1/">
+      
+      
+        <link rel="prev" href="../quick-start/">
+      
+      
+        <link rel="next" href="../../modes/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Coming from v1 - FunFlux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#coming-from-v1" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="FunFlux" class="md-header__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FunFlux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Coming from v1
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="FunFlux" class="md-nav__button md-logo" aria-label="FunFlux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    FunFlux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iLivius/FunFlux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    iLivius/FunFlux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choosing-a-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Choosing a mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensed and external tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming from v1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#why-a-v1-configuration-stops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why a v1 configuration stops
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command line
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-folders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output folders
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#behaviour-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behaviour changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../modes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/illumina/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illumina
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/longread/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Long reads (ONT and PacBio HiFi)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hybrid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modes/contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-assembled contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5">
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis stages
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis stages
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/decontamination/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decontamination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/mitochondria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitochondria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/assembly-qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assembly QC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/contig-summary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contig summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/its-taxonomy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS taxonomy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/repeat-masking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repeat masking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/gene-prediction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gene prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/functional-annotation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functional annotation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/amr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AMR mutations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6">
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Method references
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Method references
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/blast-hit-depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BLAST hit depth
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/its-long-read-contigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ITS on long-read contigs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/adapter-trimming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adapter trimming and the adapter screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/filtlong-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filtlong guidance in hybrid mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/medaka-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Medaka model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/run-to-run-differences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run-to-run differences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7">
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running FunFlux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9">
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation on public genomes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/rationale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rationale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/licensing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licensing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation and references
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#why-a-v1-configuration-stops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why a v1 configuration stops
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command line
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-folders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output folders
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#behaviour-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behaviour changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/iLivius/FunFlux/edit/main/docs/getting-started/from-v1.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+
+
+<h1 id="coming-from-v1">Coming from v1<a class="headerlink" href="#coming-from-v1" title="Permanent link">¶</a></h1>
+<p>This page explains how to move from FunFlux 1.x, Funnotator, FunFluxL or FunFluxL+ to FunFlux
+v2. Version 2.0.0 replaces these four workflows, and the <code>mode</code> key selects what used to be a
+separate workflow.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Terms used on this page</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NOTE</strong></td>
+<td>a line starting <code>[FunFlux] NOTE</code> that reports something to check without stopping the run; read them after every dry run</td>
+</tr>
+<tr>
+<td><strong>launch folder</strong></td>
+<td>the folder Snakemake is started from, normally the FunFlux repository; relative paths are read from it, and <code>.snakemake/</code> is created there</td>
+</tr>
+<tr>
+<td><strong>funannotate database</strong></td>
+<td>the frozen snapshot of funannotate's data, such as Swiss-Prot, Pfam, the BUSCO set and stored AUGUSTUS models, downloaded once from Zenodo into <code>directories.funannotate_db</code></td>
+</tr>
+<tr>
+<td><strong>path repair</strong></td>
+<td>rule <code>normalize_funannotate_db</code>, which rewrites the absolute paths stored in the funannotate database to your folder, in place and without a lock</td>
+</tr>
+<tr>
+<td><strong>the screen</strong></td>
+<td>the contamination and mitochondrion screen of the draft: BLAST against core_nt, BlobTools, the mitochondrion screen and the contig selector; in <code>contigs</code> mode only with <code>parameters.contigs.screen: true</code></td>
+</tr>
+<tr>
+<td><strong>confirmed mitochondrial contig</strong></td>
+<td>a contig the mitochondrion screen classes <code>confirmed_mitochondrial</code>; with the default <code>parameters.mitochondria.mode: separate_confirmed</code>, it is kept whatever its genus</td>
+</tr>
+<tr>
+<td><strong>guide assembly</strong></td>
+<td>in <code>hybrid</code> mode, the SPAdes assembly of the Illumina reads; it is screened, and only the pairs that map to it go on</td>
+</tr>
+</tbody>
+</table>
+</div>
+<table>
+<thead>
+<tr>
+<th>Was</th>
+<th>Input</th>
+<th>Now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FunFlux 1.x</td>
+<td>Illumina paired-end reads</td>
+<td><code>mode: illumina</code></td>
+</tr>
+<tr>
+<td>Funnotator, shipped inside FunFlux 1.x as <code>workflow/Funnotator</code></td>
+<td>assembled genomes (FASTA)</td>
+<td><code>mode: contigs</code></td>
+</tr>
+<tr>
+<td>FunFluxL 0.1</td>
+<td>ONT or PacBio HiFi reads</td>
+<td><code>mode: longread</code></td>
+</tr>
+<tr>
+<td>FunFluxL+, never published</td>
+<td>Illumina pairs plus ONT or PacBio HiFi reads</td>
+<td><code>mode: hybrid</code></td>
+</tr>
+</tbody>
+</table>
+<p>The FunFlux repository continues as v2 under the same concept DOI, 10.5281/zenodo.13612159.
+Cite results produced with a v1 workflow by the version you ran, as described on
+<a href="../../about/citation/">Citation and references</a>.</p>
+<p>The v1 workflows are no longer in the main branch, but their releases stay available. FunFlux
+v1.1.0, with Funnotator inside it, is the tag <code>v1.1.0</code> of this repository:
+<code>git clone --branch v1.1.0 https://github.com/iLivius/FunFlux.git FunFlux-v1.1.0</code> puts it in
+a folder of its own. FunFluxL 0.1.0 is the tag <code>v0.1.0</code> of the
+<a href="https://github.com/iLivius/FunFluxL">FunFluxL repository</a>.</p>
+<p>Neither a v1 configuration nor a v1 output folder can be reused as it is. Make these changes, in
+this order:</p>
+<ol>
+<li>Start from the v2 template, add <code>mode</code> and the <code>input:</code> block, and move the long-read settings
+   into <code>parameters.longread</code> or <code>parameters.hybrid</code>
+   (<a href="#why-a-v1-configuration-stops">Why a v1 configuration stops</a>).</li>
+<li>Name the configuration with <code>--configfile</code>, give <code>--cores</code> the value of <code>resources.threads</code>,
+   and, on a single computer, drop <code>--jobs</code> (<a href="#command-line">Command line</a>).</li>
+<li>Give v2 a new, empty <code>output_dir</code> (<a href="#output-folders">Output folders</a>).</li>
+<li>Point <code>directories.funannotate_db</code> at a new, empty folder, to get the newer snapshot of the
+   funannotate database (<a href="#behaviour-changes">Behaviour changes</a>).</li>
+<li>Replace <code>decontamination.mode: auto</code> and <code>parameters.genus</code>, if you used them
+   (<a href="#behaviour-changes">Behaviour changes</a>).</li>
+<li>Update scripts that read renamed files or columns (<a href="#output-folders">Output folders</a>,
+   <a href="#behaviour-changes">Behaviour changes</a>).</li>
+</ol>
+<p>The "What to do" column of <a href="#behaviour-changes">Behaviour changes</a> lists the rest.</p>
+<h2 id="why-a-v1-configuration-stops">Why a v1 configuration stops<a class="headerlink" href="#why-a-v1-configuration-stops" title="Permanent link">¶</a></h2>
+<p>A v1 configuration has no <code>mode</code> key, so FunFlux v2 stops before any job starts:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>[FunFlux] mode: this configuration has no 'mode' key. FunFlux v2 needs one of illumina | longread | hybrid | contigs, and an 'input:' block that names the input directory for that mode. A configuration written for FunFlux, FunFluxL or FunFluxL+ v1 does not run unchanged: start from the config template shipped with FunFlux v2 (see 'Coming from v1' in the documentation).
+</code></pre></div>
+<p>Adding <code>mode:</code> is not enough. The input folder moved out of <code>directories</code>, and FunFluxL and
+FunFluxL+ kept their long-read settings at the top of <code>parameters</code>, where v2 stops on them:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[FunFlux] mode=illumina requires input.illumina_dir to be set in the config.
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>[FunFlux] parameters.flye_input_mode: this setting moved into the block named after your mode: parameters.longread.flye_input_mode or parameters.hybrid.flye_input_mode.
+</code></pre></div>
+<p>Start from the v2 template and copy your paths and settings into it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>cp<span class="w"> </span>config/config.yaml<span class="w"> </span>config/config_custom.yaml
+</code></pre></div>
+<p>The table lists the v1 keys that moved or were renamed, and some new keys. The other new keys are
+named under <a href="#behaviour-changes">Behaviour changes</a>.</p>
+<table>
+<thead>
+<tr>
+<th>v1 key</th>
+<th>v2 key</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>none</td>
+<td><code>mode</code></td>
+<td>required: <code>illumina</code>, <code>longread</code>, <code>hybrid</code> or <code>contigs</code></td>
+</tr>
+<tr>
+<td><code>directories.input_dir</code></td>
+<td><code>input.illumina_dir</code>, <code>input.longread_dir</code> or <code>input.contigs_dir</code></td>
+<td><code>hybrid</code> reads two keys, which may name the same folder; v2 ignores <code>directories.input_dir</code> without a message</td>
+</tr>
+<tr>
+<td>none in FunFluxL 0.1, which assembled with Flye; <code>parameters.long_read_assembler</code> in FunFluxL+</td>
+<td><code>parameters.&lt;mode&gt;.assembler</code></td>
+<td><code>hifiasm</code> (the default) or <code>flye</code></td>
+</tr>
+<tr>
+<td><code>parameters.flye_input_mode</code></td>
+<td><code>parameters.&lt;mode&gt;.flye_input_mode</code></td>
+<td>the value <code>pacbio-hifi</code> is gone: name the reads <code>{sample}_pacbio.&lt;ext&gt;</code></td>
+</tr>
+<tr>
+<td><code>parameters.medaka_model</code></td>
+<td><code>parameters.&lt;mode&gt;.medaka_model</code></td>
+<td></td>
+</tr>
+<tr>
+<td>none in FunFluxL 0.1, which ran Filtlong with <code>--min_length 1000 --keep_percent 90 --target_bases 500000000</code>; <code>parameters.filtlong.*</code> in FunFluxL+</td>
+<td><code>parameters.&lt;mode&gt;.filtlong.*</code></td>
+<td><code>min_length</code> 1000, <code>keep_percent</code> 90, <code>length_weight</code> 10, <code>target_bases</code> empty (no cap); see <a href="#behaviour-changes">Behaviour changes</a></td>
+</tr>
+<tr>
+<td><code>parameters.filtlong.split</code> (FunFluxL+)</td>
+<td><code>parameters.hybrid.filtlong_split</code></td>
+<td>a <code>split</code> key inside <code>filtlong</code> stops the run</td>
+</tr>
+<tr>
+<td><code>parameters.hifiasm.*</code> (FunFluxL+)</td>
+<td><code>parameters.&lt;mode&gt;.hifiasm.*</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>parameters.genus</code></td>
+<td><code>parameters.decontamination</code></td>
+<td>translated with a NOTE when there is no <code>decontamination</code> block: a genus becomes <code>mode: include</code>, an empty value <code>mode: off</code> (v1: <code>mode: auto</code>, which v2 does not have)</td>
+</tr>
+<tr>
+<td>none (FunFlux 1.x searched <code>core_nt</code>)</td>
+<td><code>parameters.nt_version</code></td>
+<td>now read in every mode</td>
+</tr>
+<tr>
+<td>none (FunFlux 1.x kept 10 database sequences per contig, with 1 alignment each)</td>
+<td><code>parameters.blast_max_target_seqs</code>, <code>parameters.blast_max_hsps</code></td>
+<td>defaults 10 and 5</td>
+</tr>
+</tbody>
+</table>
+<p>On this page, <code>&lt;mode&gt;</code> is <code>longread</code> or <code>hybrid</code>. The long-read settings live in the block named
+after the mode, and only that block is read. All other v1 keys keep their names and meanings,
+apart from the exceptions listed under <a href="#behaviour-changes">Behaviour changes</a>, such as
+<code>decontamination.mode: auto</code>, which is gone. In addition, <code>'null'</code> in quotes as <code>medaka_model</code>
+means off, as described on <a href="../../methods/medaka-model/#settings">The Medaka model</a>.</p>
+<h2 id="command-line">Command line<a class="headerlink" href="#command-line" title="Permanent link">¶</a></h2>
+<p>The table compares the v1 and v2 command lines. Relative paths and the conda environments now
+belong to the launch folder, not to <code>output_dir</code>.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>v1</th>
+<th>v2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Command</td>
+<td><code>snakemake --configfile config/config.yaml --sdm conda --cores 12 --jobs 2</code>; Funnotator added <code>--snakefile workflow/Funnotator</code></td>
+<td><code>snakemake --sdm conda --cores 24 --configfile config/config_custom.yaml</code></td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td><code>config/config.yaml</code> was loaded by default</td>
+<td>must be named with <code>--configfile</code>; without it FunFlux stops with <code>[FunFlux] No configuration supplied.</code></td>
+</tr>
+<tr>
+<td>CPUs</td>
+<td>most rules took their threads from <code>resources.threads</code> through <code>resources: cpus</code>, which <code>--cores</code> does not limit, so tools could run on more threads than <code>--cores</code> allowed</td>
+<td>every CPU-bound rule declares <code>threads:</code>, so <code>--cores</code>, equal to <code>resources.threads</code>, limits the whole run; no <code>--jobs</code></td>
+</tr>
+<tr>
+<td>Working folder</td>
+<td>Snakemake moved into <code>output_dir</code> (<code>workdir:</code>): relative paths in the config were read from there, and the conda environments were built in <code>&lt;output_dir&gt;/.snakemake/conda/</code></td>
+<td>Snakemake stays in the launch folder: relative paths are read from there, and <code>.snakemake/</code> with the conda environments is created there</td>
+</tr>
+</tbody>
+</table>
+<h2 id="output-folders">Output folders<a class="headerlink" href="#output-folders" title="Permanent link">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">FunFlux v2 does not upgrade a v1 output folder in place</p>
+<p>Give v2 a new <code>output_dir</code>. Do not resume a v1 run with v2, and do not point v2 at a v1 output
+folder. The old layout is not converted, and some paths exist in both layouts
+(<code>02.assembly/{sample}/</code>, <code>04.annotation/{sample}/</code>), so old and new files would mix.</p>
+</div>
+<p>The v2 layout is the same in every mode, and a mode that has nothing for a folder leaves it out:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&lt;output_dir&gt;/
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>├── 00.resources/    material shared by the run: UNITE, antiSMASH databases, telomere repeat database, SignalP 6, ChroQueTas, PhiX
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>├── 01.reads/        read QC, filtered and selected reads (not in contigs mode)
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>├── 02.assembly/     assembly, screen, mitochondrion split, QUAST, BUSCO, Qualimap
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>├── 03.taxonomy/     ITS extraction and classification
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>├── 04.annotation/   masking, gene prediction, functional annotation
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>├── 05.amr/          antifungal resistance mutations (new; only with the AMR screen on)
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>├── 06.report/       MultiQC
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>└── logs/            one log per rule and sample
+</code></pre></div>
+<p><strong>FunFlux 1.x and FunFluxL</strong></p>
+<table>
+<thead>
+<tr>
+<th>v1</th>
+<th>v2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>01.pre-processing/</code> (PhiX index, fastp reports, trimmed reads)</td>
+<td><code>00.resources/phix/</code>, <code>01.reads/{sample}/illumina/</code></td>
+</tr>
+<tr>
+<td><code>01.pre-processing/{sample}_long_filt.fastq</code>, <code>01.pre-processing/read_qc/</code> (FunFluxL)</td>
+<td><code>01.reads/{sample}/long/</code></td>
+</tr>
+<tr>
+<td><code>02.assembly/{sample}/</code></td>
+<td><code>02.assembly/{sample}/</code></td>
+</tr>
+<tr>
+<td><code>03.post-processing/contaminants/{sample}/</code>, and the read-mapping BAM in <code>03.post-processing/{sample}/</code> (FunFlux 1.x) or <code>03.post-processing/contaminants/{sample}_map.bam</code> (FunFluxL)</td>
+<td><code>02.assembly/{sample}/contaminants/</code></td>
+</tr>
+<tr>
+<td><code>03.post-processing/consensus/{sample}/</code> (FunFluxL, Medaka)</td>
+<td><code>02.assembly/{sample}/medaka/</code></td>
+</tr>
+<tr>
+<td><code>03.post-processing/assembly_evaluation/{sample}/</code> (FunFlux 1.x)</td>
+<td><code>02.assembly/{sample}/eval/quast/</code>, now also in <code>longread</code> mode</td>
+</tr>
+<tr>
+<td><code>03.post-processing/completeness_evaluation/{sample}/</code></td>
+<td><code>02.assembly/{sample}/eval/busco/</code></td>
+</tr>
+<tr>
+<td><code>03.post-processing/mapping_evaluation/{sample}/</code></td>
+<td><code>02.assembly/{sample}/eval/qualimap/</code></td>
+</tr>
+<tr>
+<td><code>03.post-processing/ITS_extraction/{sample}/</code></td>
+<td><code>03.taxonomy/{sample}/</code></td>
+</tr>
+<tr>
+<td><code>03.post-processing/ITS_extraction/unite_its_sintax.fasta</code></td>
+<td><code>00.resources/unite/</code></td>
+</tr>
+<tr>
+<td><code>04.annotation/{sample}/</code></td>
+<td><code>04.annotation/{sample}/</code></td>
+</tr>
+<tr>
+<td><code>04.annotation/antismash_db/</code></td>
+<td><code>00.resources/antismash/databases/</code></td>
+</tr>
+<tr>
+<td><code>report/</code></td>
+<td><code>06.report/</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>FunFluxL+</strong></p>
+<table>
+<thead>
+<tr>
+<th>FunFluxL+</th>
+<th>v2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>01.read_processing/illumina/</code>, <code>01.read_processing/long/</code></td>
+<td><code>00.resources/phix/</code>, <code>01.reads/{sample}/illumina/</code>, <code>01.reads/{sample}/long/</code></td>
+</tr>
+<tr>
+<td><code>02.short-read_assembly/{sample}/</code></td>
+<td><code>02.assembly/{sample}/guide/</code></td>
+</tr>
+<tr>
+<td><code>03.read_selection/contamination/{sample}/</code></td>
+<td><code>02.assembly/{sample}/guide/contaminants/</code>; the selected pairs in <code>01.reads/{sample}/selected/</code></td>
+</tr>
+<tr>
+<td><code>03.read_selection/mapping_evaluation/{sample}/</code></td>
+<td><code>02.assembly/{sample}/guide/eval/qualimap/</code></td>
+</tr>
+<tr>
+<td><code>03.read_selection/assembly_evaluation/{sample}/</code> and <code>07.genome_qc/assembly_evaluation/{sample}/</code></td>
+<td><code>02.assembly/{sample}/eval/quast/</code>, one report with the labels <code>{sample}_guide</code> and <code>{sample}</code></td>
+</tr>
+<tr>
+<td><code>04.long-read_assembly/{sample}/</code></td>
+<td><code>02.assembly/{sample}/</code> (<code>hifiasm/</code> or <code>flye/</code>, <code>assembly.fasta</code>)</td>
+</tr>
+<tr>
+<td><code>05.assembly_curation/contamination/{sample}/</code></td>
+<td><code>02.assembly/{sample}/contaminants/</code></td>
+</tr>
+<tr>
+<td><code>05.assembly_curation/mapping_evaluation/{sample}/</code></td>
+<td><code>02.assembly/{sample}/eval/qualimap/</code></td>
+</tr>
+<tr>
+<td><code>06.polishing/medaka/{sample}/</code>, <code>06.polishing/polypolish/{sample}/</code></td>
+<td><code>02.assembly/{sample}/medaka/</code>, <code>02.assembly/{sample}/polypolish/</code></td>
+</tr>
+<tr>
+<td><code>07.genome_qc/completeness_evaluation/{sample}/</code></td>
+<td><code>02.assembly/{sample}/eval/busco/</code></td>
+</tr>
+<tr>
+<td><code>07.genome_qc/ITS_extraction/{sample}/</code></td>
+<td><code>03.taxonomy/{sample}/</code></td>
+</tr>
+<tr>
+<td><code>07.genome_qc/ITS_extraction/unite_its_sintax.fasta</code></td>
+<td><code>00.resources/unite/</code></td>
+</tr>
+<tr>
+<td><code>08.annotation/{sample}/</code>, <code>08.annotation/antismash_db/</code></td>
+<td><code>04.annotation/{sample}/</code>, <code>00.resources/antismash/databases/</code></td>
+</tr>
+<tr>
+<td><code>09.report/</code></td>
+<td><code>06.report/</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Funnotator</strong></p>
+<table>
+<thead>
+<tr>
+<th>Funnotator</th>
+<th>v2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>01.pre-processing/pre_filtering/{sample}/contigs_filt.fasta</code></td>
+<td><code>02.assembly/{sample}/contigs_final.fasta</code></td>
+</tr>
+<tr>
+<td><code>01.pre-processing/assembly_evaluation/{sample}/</code></td>
+<td><code>02.assembly/{sample}/eval/quast/</code></td>
+</tr>
+<tr>
+<td><code>01.pre-processing/completeness_evaluation/{sample}/</code></td>
+<td><code>02.assembly/{sample}/eval/busco/</code></td>
+</tr>
+<tr>
+<td><code>01.pre-processing/ITS_extraction/{sample}/</code></td>
+<td><code>03.taxonomy/{sample}/</code></td>
+</tr>
+<tr>
+<td><code>01.pre-processing/ITS_extraction/unite_its_sintax.fasta</code></td>
+<td><code>00.resources/unite/</code></td>
+</tr>
+<tr>
+<td><code>02.annotation/{sample}/</code>, <code>02.annotation/antismash_db/</code></td>
+<td><code>04.annotation/{sample}/</code>, <code>00.resources/antismash/databases/</code></td>
+</tr>
+<tr>
+<td><code>report/</code></td>
+<td><code>06.report/</code></td>
+</tr>
+</tbody>
+</table>
+<p>The delivered assembly files have new names, and the mitochondrion now has a file of its own:</p>
+<table>
+<thead>
+<tr>
+<th>v1</th>
+<th>v2, in <code>02.assembly/{sample}/</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contigs_sel.fasta</code> (FunFlux 1.x), the Medaka <code>consensus.fasta</code> (FunFluxL), <code>polished.fasta</code> (FunFluxL+)</td>
+<td><code>contigs_all.fasta</code>: the complete assembly after the screen and polishing, mitochondrion included</td>
+</tr>
+<tr>
+<td>none</td>
+<td><code>contigs_final.fasta</code>: the nuclear genome, read by QUAST, BUSCO, the ITS steps and funannotate</td>
+</tr>
+<tr>
+<td>none</td>
+<td><code>contigs_mitochondrial.fasta</code>: the confirmed mitochondrial contigs; an empty file when there are none</td>
+</tr>
+</tbody>
+</table>
+<p>A new file, <code>04.annotation/{sample}/contigs_removed_by_clean.txt</code>, lists the contigs that
+<code>funannotate clean</code> removed before gene prediction.</p>
+<h2 id="behaviour-changes">Behaviour changes<a class="headerlink" href="#behaviour-changes" title="Permanent link">¶</a></h2>
+<p>The tables below group the changes by part of the workflow. The "Affects" column names the v1
+workflows that a change concerns, and the "What to do" column names the action. "Nothing" means
+that the change needs no action.</p>
+<p><strong>Running and configuration</strong></p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Affects</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One workflow with a <code>mode</code> key; the configuration must be named with <code>--configfile</code></td>
+<td>all</td>
+<td>Start from the v2 template; add <code>mode</code> and the <code>input</code> block</td>
+</tr>
+<tr>
+<td>Every CPU-bound rule declares <code>threads:</code>, so <code>--cores</code> limits the whole run</td>
+<td>all</td>
+<td>Give <code>--cores</code> the value of <code>resources.threads</code> (24 in the template, as in v1); drop <code>--jobs</code> on a single computer</td>
+</tr>
+<tr>
+<td>FunFlux runs on a cluster with <code>--executor slurm --jobs N</code>. Every heavy step asks the scheduler for <code>resources.ram_gb</code> of memory and for the time limit of the new key <code>resources.runtime_hours</code> (default 48). Every download step runs where Snakemake runs, and <code>snakemake download_all</code> fetches all downloads in advance (<a href="../../reference/running/#on-a-cluster">On a cluster</a>)</td>
+<td>all</td>
+<td>On a cluster, set the three <code>resources</code> keys from the limits of a node and a partition</td>
+</tr>
+<tr>
+<td>curl, tar and gzip come from a conda environment (<code>download</code>), and InterProScan's Perl from the <code>interproscan</code> environment; v1 took them from the computer</td>
+<td>all</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>No <code>workdir:</code>: relative paths are read from the launch folder</td>
+<td>all</td>
+<td>Use absolute paths, or paths relative to the launch folder</td>
+</tr>
+<tr>
+<td>Thread caps: eggNOG-mapper 12 (FunFlux 1.x: 24), nhmmer and ITSx 8, SINTAX 1, SignalP 6 at most <code>resources.threads</code> (<a href="../../reference/running/#cpu-cores-and-threads">CPU cores and threads</a>)</td>
+<td>all</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>Conda environments built from pinned package lists of the tested tool versions (<code>workflow/envs/*.linux-64.pin.txt</code>), with the Python version pinned in every environment that contains Python</td>
+<td>all</td>
+<td>Nothing; the first v2 run builds new environments</td>
+</tr>
+<tr>
+<td>New optional keys whose defaults keep the v1 behaviour: <code>spades_kmers</code>, <code>busco.lineage</code>, <code>prediction.busco_db</code>, <code>repeatmodeler_seed</code>, <code>directories.antismash_db</code>, <code>directories.unite_db</code>, <code>contigs.screen</code>, <code>medaka_model_fallback_auto</code></td>
+<td>all</td>
+<td>Nothing</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Inputs</strong></p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Affects</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One input key per technology: <code>input.illumina_dir</code>, <code>input.longread_dir</code>, <code>input.contigs_dir</code> replace the v1 key <code>directories.input_dir</code></td>
+<td>all</td>
+<td>Move the path</td>
+</tr>
+<tr>
+<td>The suffixes stay <code>_ont</code> and <code>_pacbio</code>, and <code>flye_input_mode: pacbio-hifi</code> is removed. Illumina plus PacBio HiFi is allowed in <code>hybrid</code></td>
+<td>FunFluxL, FunFluxL+</td>
+<td>Name PacBio HiFi reads <code>{sample}_pacbio.&lt;ext&gt;</code></td>
+</tr>
+<tr>
+<td>Underscores are allowed in sample names (v1 rejected them). FunFlux prints a NOTE when a name is not a valid locus-tag prefix</td>
+<td>all</td>
+<td>For GenBank submission, use 3 to 12 letters or digits starting with a letter</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Assembly and screen</strong></p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Affects</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Long reads are assembled with hifiasm by default. FunFluxL 0.1 used Flye, which stays available</td>
+<td>FunFluxL, FunFluxL+</td>
+<td>Set <code>parameters.&lt;mode&gt;.assembler: flye</code> to keep Flye</td>
+</tr>
+<tr>
+<td>Since FunFlux 2.1.0, the ONT adapter and the barcode after it are trimmed from the reads of ONT samples with fastplong before Filtlong. By default (<code>parameters.&lt;mode&gt;.ont_adapter: detect</code>) FunFlux works out from the reads what to trim, and leaves reads that are already trimmed as they are. FunFluxL 0.1 and FunFluxL+ assembled the reads untrimmed (<a href="../../methods/adapter-trimming/">Adapter trimming</a>)</td>
+<td>FunFluxL, FunFluxL+, ONT samples</td>
+<td>Nothing; <code>ont_adapter: off</code> assembles the reads untrimmed, as v1 did</td>
+</tr>
+<tr>
+<td>Filtlong keeps every read that passes its length and quality filters: <code>target_bases</code> is empty (no cap) by default, and <code>length_weight: 10</code> favours longer reads. FunFluxL 0.1 kept at most 500 Mb (<code>--target_bases 500000000</code>) with Filtlong's default length weight of 1</td>
+<td>FunFluxL</td>
+<td>To repeat FunFluxL 0.1's read selection, set <code>parameters.longread.filtlong.target_bases: 500000000</code> and <code>length_weight: 1</code></td>
+</tr>
+<tr>
+<td>Before the assembly starts, a named Medaka model is checked against Medaka's list of models, and <code>auto</code> is worked out from the basecaller tag of the first 100 reads of the raw FASTQ. A wrong model therefore fails in seconds instead of after the assembly. <code>auto</code> needs network access once and exactly one basecaller tag in those reads. New key <code>medaka_model_fallback_auto</code>. The assembler waits for the check's file, so a changed <code>medaka_model</code> also re-runs the assembly of the ONT samples</td>
+<td>FunFluxL, FunFluxL+, ONT samples</td>
+<td>For public or re-headered ONT reads, name the model or set <code>medaka_model: false</code> (<a href="../../methods/medaka-model/">The Medaka model</a>)</td>
+</tr>
+<tr>
+<td>The PhiX genome and its bowtie2 index are downloaded once per output folder and kept in <code>00.resources/phix/</code>. In v1, they were kept with the processed reads and deleted after the run. The PhiX-free pairs are called <code>{sample}_nophix_R1.fastq</code> and <code>_R2.fastq</code></td>
+<td>FunFlux 1.x, FunFluxL+</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>SPAdes writes into <code>02.assembly/{sample}/spades/</code> (in <code>hybrid</code>, <code>guide/spades/</code>), so a re-run of SPAdes no longer deletes the screen's files of the sample. In FunFlux 1.x the whole sample folder was SPAdes' output. Flye likewise works in <code>flye/</code>, and its assembly is copied up one level</td>
+<td>FunFlux 1.x, FunFluxL, FunFluxL+</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>Filtlong guidance by the Illumina reads is off by default. Switched on (<code>short_read_guidance: true</code>, <code>filtlong_split: 1000</code>), it applies to ONT samples only. FunFluxL+ always guided and cut every sample, PacBio included</td>
+<td>FunFluxL+</td>
+<td>For FunFluxL+'s behaviour on ONT samples, set <code>short_read_guidance: true</code>; move <code>filtlong.split</code> to <code>parameters.hybrid.filtlong_split</code> (<a href="../../methods/filtlong-guidance/">Filtlong guidance</a>)</td>
+</tr>
+<tr>
+<td>Polypolish output headers are cut at the first space or tab (v1: <code>&gt;ptg000001l polypolish</code>)</td>
+<td>FunFluxL+</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td><code>assembly_linearized.fasta</code> and <code>assembly_single_line.fasta</code> are no longer written</td>
+<td>FunFluxL, FunFluxL+</td>
+<td>Update scripts that read them</td>
+</tr>
+<tr>
+<td>Since FunFlux 2.1.0 the BLAST search keeps 10 database sequences per contig, with up to 5 alignments each, in every mode, and drops matches with an e-value above 1e-10 (FunFlux 2.0.0: 50, 5 and 1e-5; FunFlux 1.x: 10, 1 and 1e-5; FunFluxL and FunFluxL+: 50, 5 and 1e-5). FunFlux prints a NOTE when <code>blast_max_hsps</code> is below 5 and the mitochondrion screen is on</td>
+<td>FunFlux 1.x, FunFluxL, FunFluxL+</td>
+<td>Nothing. To come close to earlier numbers, set <code>blast_max_hsps: 1</code> (FunFlux 1.x) or <code>blast_max_target_seqs: 50</code> (FunFluxL, FunFluxL+) (<a href="../../methods/blast-hit-depth/">BLAST hit depth</a>)</td>
+</tr>
+<tr>
+<td><code>parameters.nt_version</code> is read in <code>illumina</code> mode too</td>
+<td>FunFlux 1.x</td>
+<td>Set it if your BLAST database has another name than <code>core_nt</code></td>
+</tr>
+<tr>
+<td>New: a mitochondrion screen and split in every mode with the screen. The screen classes each contig of the draft from its BLAST hits and, in <code>longread</code> and <code>hybrid</code>, from the assembler's read depth and circularity. With the default <code>parameters.mitochondria.mode: separate_confirmed</code>, the confirmed mitochondrial contigs are kept whatever their genus, on the <code>hybrid</code> guide assembly too. After polishing they are split off into <code>contigs_mitochondrial.fasta</code>, so that QUAST, BUSCO, the ITS steps and funannotate read only the nuclear genome, <code>contigs_final.fasta</code>. Since FunFlux 2.1.0, a contig whose best mitochondrial match is an animal's or a plant's, such as human mitochondrial DNA from the library, is not confirmed (<code>foreign_mitochondrial</code>): it stays in the assembly, where the genus filter treats it like any other contig. A confirmed mitochondrial contig missing from the BlobTools table is kept as <code>no-taxonomy</code>, and a confirmed ID missing from the FASTA stops the run (<a href="../../analysis/mitochondria/">Mitochondria</a>)</td>
+<td>all</td>
+<td>Read <code>contigs_final.fasta</code> as the genome; <code>parameters.mitochondria.mode: report</code> or <code>off</code> keeps the mitochondrial contigs in it</td>
+</tr>
+<tr>
+<td><code>decontamination.mode: auto</code> is removed and stops the run before any job starts, also as a mode in <code>sample_overrides</code> when the screen runs. BLAST genus labels are unreliable for poorly sequenced fungi, so <code>auto</code> can remove most of the genome (<a href="../../reference/configuration/#decontamination">Configuration</a>)</td>
+<td>FunFlux 1.x, FunFluxL, FunFluxL+</td>
+<td>Use <code>off</code> (the default), read <code>contig_taxonomy_decisions.tsv</code>, then <code>exclude</code> the contaminant genera or <code>include</code> the genera BLAST assigned to the isolate's own contigs</td>
+</tr>
+<tr>
+<td>With the screen, the decontamination files (<code>include_genera_by_sample</code>, <code>exclude_genera_file</code>, <code>sample_overrides</code>) and an <code>include</code> mode without a genus are checked before any job starts (v1: when <code>select_contigs</code> ran, after BLAST)</td>
+<td>FunFlux 1.x, FunFluxL, FunFluxL+</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td><code>parameters.genus</code> is translated with a NOTE, and an empty <code>genus</code> now means <code>mode: off</code> (v1: <code>auto</code>, the genus with the most contigs). The template sets <code>discard_no_hit: false</code>, where the v1 template had <code>true</code> (the v1 code default was already <code>false</code>)</td>
+<td>all</td>
+<td>Replace <code>genus</code> with <code>parameters.decontamination</code>; set <code>discard_no_hit: true</code> if you relied on the v1 template</td>
+</tr>
+<tr>
+<td>With SPAdes headers, the <code>contigs</code> mode filter keeps contigs of at least 500 bp and 2x coverage. Any other FASTA only has its headers cut at the first space or tab (Funnotator removed every contig of 500 bp or less). An empty result stops the run, and the screen is optional</td>
+<td>Funnotator</td>
+<td>Expect 500 bp contigs to be kept and no length filter on non-SPAdes FASTA</td>
+</tr>
+<tr>
+<td>Delivered files renamed (table above)</td>
+<td>all</td>
+<td>Update downstream scripts</td>
+</tr>
+</tbody>
+</table>
+<p><strong>QC and ITS</strong></p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Affects</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUAST also runs in <code>longread</code> mode. In <code>hybrid</code>, one QUAST report holds the guide (<code>{sample}_guide</code>) and the final assembly (<code>{sample}</code>)</td>
+<td>FunFluxL, FunFluxL+</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>BUSCO's result tree is now kept, except <code>hmmer_output/</code> and <code>busco_sequences/</code> (v1 deleted <code>run_*/</code> and <code>auto_lineage/</code>). With the <code>auto</code> lineage, that is up to about 2 GB per sample. With <code>auto</code>, the lineage data is still downloaded per sample into a temporary folder, while a named lineage is downloaded once per output folder into <code>00.resources/busco/</code> and read offline. New key <code>busco.lineage</code>. With a named lineage, MultiQC shows one BUSCO row per sample instead of two</td>
+<td>all</td>
+<td>Allow up to about 2 GB per sample, or name a lineage, for example <code>hypocreales_odb12</code>, which keeps the result tree of that lineage only</td>
+</tr>
+<tr>
+<td>New: the contig summary, <code>02.assembly/{sample}/eval/contig_summary.tsv</code>. It has one row per contig of the draft assembly, with a verdict (<code>chromosome</code>, <code>chromosome_arm</code>, <code>mitochondrion</code>, <code>rDNA_array</code>, <code>low_depth</code>, <code>repeat</code>, <code>nuclear_contig</code>, <code>nuclear_fragment</code>, <code>contaminant</code>, <code>foreign_mitochondrion</code> or <code>unclassified</code>) and the evidence behind it, and is also shown as a table in the MultiQC report. Its <code>annotated_as</code> column links each contig to its <code>scaffold_N</code> name in the annotation (<a href="../../analysis/contig-summary/">Contig summary</a>). The telomere repeat unit of each assembly is chosen from the data with tidk and checked against tidk's telomere repeat database, downloaded once per output folder. New keys <code>parameters.contig_summary.*</code>, new required link <code>links.telomere_db_link</code></td>
+<td>all</td>
+<td>Copy the <code>links.telomere_db_link</code> line from the v2 template; the run stops without it</td>
+</tr>
+<tr>
+<td>New since FunFlux 2.1.0: the contig adapter screen. Every draft assembly is searched with BLAST for ONT, PacBio, MGI and Illumina adapters and barcodes; the loci go to <code>02.assembly/{sample}/eval/adapter_screen.tsv</code>, to the <code>adapter</code> column of the contig summary and to the Adapters table of the MultiQC report. The Illumina records of NCBI UniVec are downloaded once per output folder. New optional link <code>links.univec_link</code> and key <code>parameters.contig_summary.univec_sha256</code> (<a href="../../methods/adapter-trimming/#the-contig-adapter-screen">The contig adapter screen</a>)</td>
+<td>all</td>
+<td>Nothing; the screen only reports, and changes no genome file</td>
+</tr>
+<tr>
+<td>ITS is cut out of <code>contigs_final.fasta</code> in one strand-oriented window per rDNA unit before ITSx runs (Funnotator ran ITSx on its raw input). New keys <code>its.window_flank</code> (2,000 bp on each side of the 5.8S gene) and <code>its.max_full_length</code> (1,500 bp). Identical ITS copies are collapsed and counted. ITS1 or ITS2 outside 50-600 bp is listed in <code>{sample}_ITS_copies.txt</code> and not classified, and a full ITS longer than <code>its.max_full_length</code> is marked <code>rejected_too_long</code> there (only ITS1 and ITS2 are classified, as in v1). Long-read assemblies, which could give empty or wrong ITS files in v1, now give the ITS</td>
+<td>all</td>
+<td>Update scripts that parse ITS record names: records are named after their window (<code>contig:start-end_strand</code>), classified copies <code>{sample}_ITS1_1</code>, <code>{sample}_ITS2_1</code>, ... (<a href="../../methods/its-long-read-contigs/">ITS on long-read contigs</a>)</td>
+</tr>
+<tr>
+<td>SINTAX runs on one thread with <code>--randseed 1</code>, so the ITS confidences repeat from run to run. In v1, SINTAX used several threads and no fixed seed</td>
+<td>all</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>SINTAX classifies against the UNITE records whose taxonomy names a genus (new rule <code>unite_identified</code>, new key <code>its.unite_identified_only</code>, default <code>true</code>). In v1, SINTAX used the whole release, in which about a third of the records stop above the genus, and one identical to the query can stop the result at <code>d:Fungi</code></td>
+<td>all</td>
+<td>Nothing; <code>its.unite_identified_only: false</code> gives the v1 reference</td>
+</tr>
+<tr>
+<td>QC-only rules (QUAST, Qualimap, NanoPlot) no longer stop the run when the tool fails</td>
+<td>all</td>
+<td>Check the log and the MultiQC page for a missing table</td>
+</tr>
+<tr>
+<td>NanoPlot writes its plots as HTML pages only (<code>--no_static</code>). FunFluxL also wrote them as PNG, but the pinned NanoPlot 1.46.2 draws PNG only where a Chrome or Chromium browser is installed, so the output would differ between computers</td>
+<td>FunFluxL, FunFluxL+</td>
+<td>Open the HTML plots; MultiQC reads the NanoStats table as before</td>
+</tr>
+<tr>
+<td>Qualimap runs without a display, so it works on a server with no X session. Its Java heap is <code>min(ram_gb, 64)</code> GB, as in v1</td>
+<td>FunFlux 1.x, FunFluxL, FunFluxL+</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>BUSCO runs with <code>--opt-out-run-stats</code>, so it sends no usage statistics and makes no ipinfo.io lookup (v1 sent both). MultiQC no longer shortens sample names, so a sample named <code>SAMPLE1.clean</code> keeps its name</td>
+<td>all</td>
+<td>Nothing</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Annotation and databases</strong></p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Affects</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The antiSMASH database stays in <code>00.resources/antismash/databases/</code> between runs on the same output folder (v1 deleted it and downloaded it again on every resume), or is linked from <code>directories.antismash_db</code>. The same holds for UNITE, with <code>PROVENANCE.txt</code></td>
+<td>all</td>
+<td>Optionally point <code>directories.antismash_db</code> and <code>directories.unite_db</code> at copies you have</td>
+</tr>
+<tr>
+<td>The funannotate database archive is checked with <code>sha256sum -c</code> before it is unpacked (v1 downloaded the checksum file but did not check it). A mismatch stops the run</td>
+<td>all</td>
+<td>Delete the archive and its <code>.sha256</code> file and run again</td>
+</tr>
+<tr>
+<td>The template links a newer snapshot of the funannotate database, <code>funannotate_db_1.8.17_2026-10-08</code> (Zenodo record 23265189), with newer Swiss-Prot, Pfam, InterPro, Gene Ontology and gene2product releases. The v1 templates link the 2025-12-15 snapshot (record 18271295). What changed is listed under <a href="../databases/#funannotate-db">funannotate database snapshot</a></td>
+<td>all</td>
+<td>Point <code>directories.funannotate_db</code> at a new, empty folder, because a folder that holds the v1 snapshot keeps being used</td>
+</tr>
+<tr>
+<td>Since FunFlux 2.1.0, InterProScan runs with <code>-dp</code>: it computes every match itself and does not ask EBI's lookup service for matches already computed (the service did not answer InterProScan 5 in November 2026), so it needs no internet connection (<a href="../../analysis/functional-annotation/#interproscan">Functional annotation</a>)</td>
+<td>all</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>With GeneMark-ES on, the new rule <code>genemark_check</code> runs GeneMark-ES on a 200 kb slice of each masked genome before gene prediction (about a minute). An expired licence key therefore stops the run before <code>funannotate predict</code> starts instead of partway through it</td>
+<td>all, with GeneMark-ES</td>
+<td>Renew the key when the message asks for it</td>
+</tr>
+<tr>
+<td>The AUGUSTUS model (column 4 of the annotation parameter table, <code>files.annotation_params</code>) is optional. Empty or <code>-</code> makes funannotate train AUGUSTUS on the genome's BUSCO genes, which v1 never did, because v1 required a model. A named model must exist in the funannotate database, or the run stops with the closest names (v1 passed any name on, and funannotate silently trained AUGUSTUS under a misspelt one). The new rule <code>augustus_model_check</code> records the choice in <code>04.annotation/{sample}/augustus_model.txt</code> and at the top of the gene prediction log. <code>parameters.prediction.augustus_optimize</code> adds the long training</td>
+<td>all</td>
+<td>Nothing for a v1 table with a valid model name: AUGUSTUS gets the same option as in v1</td>
+</tr>
+<tr>
+<td>Tiberius, a gene finder with a model trained by its authors on many fungal genomes, runs by default before gene prediction, and <code>funannotate predict</code> adds its gene models to the evidence it combines (<code>--other_gff</code>, weight 1). It needs about 16 GB of memory and downloads its model (30 MB) once per output folder. New keys <code>parameters.tiberius.mode</code> and <code>model_sha256</code>, new link <code>links.tiberius_model_link</code></td>
+<td>all</td>
+<td>Nothing; <code>parameters.tiberius.mode: off</code> gives gene prediction without it, as in v1</td>
+</tr>
+<tr>
+<td>New key <code>parameters.genemark.mode</code>: <code>auto</code>, the default, uses GeneMark-ES when <code>directories.genemark_dir</code> is set, and <code>off</code> never uses it. An empty value (<code>mode:</code> or <code>mode: ""</code>) means <code>auto</code>, as for the other mode keys</td>
+<td>all</td>
+<td>Nothing; leave <code>directories.genemark_dir</code> empty to run without GeneMark-ES</td>
+</tr>
+<tr>
+<td>New, off by default: SignalP 6, which predicts signal peptides for funannotate annotate. It needs the licensed archive from DTU (<code>files.signalp6_archive</code>) and a <code>parameters.signalp6.mode</code> other than <code>off</code> (<a href="../external-tools/">Licensed and external tools</a>)</td>
+<td>all</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>New: rule <code>normalize_funannotate_db</code>, the path repair, rewrites the absolute paths stored inside the funannotate database to your folder. It runs in place and without a lock, so let one run pass it before others start on the same database (<a href="../databases/#what-the-workflow-does">Reference databases</a>)</td>
+<td>all</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>New, off by default: the AMR screen. ChroQueTas screens each genome for the point mutations that the FungAMR database lists with evidence for or against resistance, and writes <code>05.amr/{sample}/</code>. New keys <code>parameters.amr.*</code>, new link <code>links.chroquetas_link</code> (<a href="../../analysis/amr/">Antifungal resistance mutations</a>)</td>
+<td>all</td>
+<td>Nothing; <code>parameters.amr.chroquetas: on</code> switches it on, and accepts the non-commercial licence of ChroQueTas</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Logs</strong></p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Affects</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One log per rule and sample in <code>logs/</code>; InterProScan's scratch folder is <code>04.annotation/{sample}/iprscan/tmp/</code> (no top-level <code>temp/</code>)</td>
+<td>all</td>
+<td>Nothing</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Kept as in v1</strong></p>
+<ul>
+<li><code>decontamination.mode: off</code> as the default</li>
+<li>BUSCO on the final genome only</li>
+<li>the filtered long reads, the selected pairs and the read-mapping BAM of the read-based modes,
+  kept after the run</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>
